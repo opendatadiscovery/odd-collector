@@ -1,0 +1,3 @@
+package:
+  - name: importing_dynamodb_adapter
+    type: odd_dynamodb_adapter.adapter
