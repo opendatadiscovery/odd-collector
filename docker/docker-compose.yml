@@ -1,10 +1,10 @@
 version: "3.8"
 services:
-  odd-dynamodb-adapter:
+  odd-collector:
     build:
       context: ..
       dockerfile: Dockerfile
-    container_name: odd-collector_
+    container_name: odd-collector
     restart: always
     environment:
       # Cache refreshing interval (minutes):

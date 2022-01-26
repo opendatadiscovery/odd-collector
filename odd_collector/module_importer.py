@@ -6,7 +6,7 @@ import yaml
 import logging
 
 
-def parse_config_file(yaml_dict: dict, parent_id: str = 'package', package_id: str = "type") -> list:
+def parse_config_file(yaml_dict: dict, parent_id: str = 'package', package_id: str = "name") -> list:
     """Return the list of modules to import"""
     return [names[package_id] for names in yaml_dict[parent_id]]
 
@@ -23,7 +23,7 @@ def open_config_module_file(path: str) -> list:
 
 
 def check_packages(list_of_custom_modules: list) -> list:
-    """Checking is modules have been already imported or there are modules with this name to import"""
+    """Checking if modules have been already imported"""
     if list_of_custom_modules is not None:
         # deletes duplicates
         list_of_custom_modules = list(dict.fromkeys(list_of_custom_modules))
@@ -38,7 +38,7 @@ def check_packages(list_of_custom_modules: list) -> list:
 
 
 def import_custom_packages(path: str):
-    """Importing the modules that are provided in the config.yaml file in package parent"""
+    """Importing the modules that are provided in the config.yaml file in the package parent"""
     list_of_custom_modules_to_import = check_packages(open_config_module_file(path=path))
     if list_of_custom_modules_to_import is not None:
         module = map(import_module, list_of_custom_modules_to_import)
@@ -46,7 +46,7 @@ def import_custom_packages(path: str):
 
 
 def get_adapters(path_to_config: str = "config.yaml") -> map:
-    """For the modules provided in file its child files are loaded"""
+    """For the modules provided its core files are loaded"""
     module, list_of_modules = import_custom_packages(path=path_to_config)
     list_of_underlying_packages = []
     for l, module in enumerate(list(module)):

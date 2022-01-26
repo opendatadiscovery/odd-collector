@@ -45,7 +45,13 @@ class Adapter:
     def get_data_transformers(self) -> list[DataEntity]:
         return []
 
+    def get_transformers(self) -> list[DataEntity]:
+        return []
+
     def get_data_transformer_runs(self) -> list[DataEntity]:
+        return []
+
+    def get_transformers_runs(self) -> list[DataEntity]:
         return []
 
     def __fetch_tables(self) -> Iterable[Dict[str, Any]]:

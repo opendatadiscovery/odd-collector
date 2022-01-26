@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict, Callable, Union, Any, Iterable, Optional
-
+import logging
 import boto3
 from more_itertools import chunked, flatten
 from odd_models.models import DataEntity
@@ -25,18 +25,19 @@ class PaginatorConfig:
     mapper_args: Optional[Dict[str, Any]] = None
 
 
-class GlueAdapter:
-    def __init__(self, region_name: str) -> None:
+class Adapter:
+    def __init__(self, config) -> None:
         account_id = boto3.client('sts').get_caller_identity()["Account"]
-        self._glue_client = boto3.client('glue', region_name=region_name)
+        self._glue_client = boto3.client('glue', region_name=config['AWS_REGION'])
         self._oddrn_generator = GlueGenerator(
-            cloud_settings={'region': region_name, 'account': account_id}
+            cloud_settings={'region': config['AWS_REGION'], 'account': account_id}
         )
 
     def get_data_source_oddrn(self) -> str:
         return self._oddrn_generator.get_data_source_oddrn()
 
     def get_datasets(self) -> Iterable[DataEntity]:
+        logging.info([self.__get_tables(dn) for dn in self.__get_database_names()])
         return flatten([self.__get_tables(dn) for dn in self.__get_database_names()])
 
     def get_transformers(self) -> Iterable[DataEntity]:

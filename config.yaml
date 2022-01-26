@@ -1,3 +1,5 @@
 package:
-  - name: importing_dynamodb_adapter
-    type: odd_dynamodb_adapter.adapter
+  - name: odd_glue_adapter
+    SCHEDULER_INTERVAL_MINUTES: 60
+  - name: odd_dynamodb_adapter
+    SCHEDULER_INTERVAL_MINUTES: 1
