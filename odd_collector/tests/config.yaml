@@ -1,0 +1,7 @@
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: odd_glue_adapter
+    aws_region: ""
+  - type: odd_dynamodb_adapter
+    aws_region: ""

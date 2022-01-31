@@ -3,36 +3,41 @@ import os
 
 from odd_models.adapter import init_flask_app, init_controller
 
-#from .adapter import DynamoDBAdapter
 from .cache import Cache
-from .config import log_env_vars
+from .config import config
 from .controllers import Controller
 from .scheduler import Scheduler
-import odd_collector.module_importer
+
+
+from odd_collector.module_importer import get_config, load_plugins_packages
 
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+    level=logging.INFO, format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
 )
 
-LIST_OF_ADAPTERS = list(odd_collector.module_importer.get_adapters())
 
 def create_app(conf):
+    collector_config = get_config(
+        os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "../collector_config.yaml"
+        )
+    )
+    loaded_adapters = load_plugins_packages(collector_config)
+
     app = init_flask_app()
     app.config.from_object(conf)
-    log_env_vars(app.config)
+
     with app.app_context():
-        for modules in LIST_OF_ADAPTERS:
-            if "/adapter" in modules.__file__:
-                cache = Cache()
-                adapter = modules.Adapter(app.config)
-                init_controller(Controller(adapter, cache))
-                Scheduler(adapter, cache).start_scheduler(int(app.config['SCHEDULER_INTERVAL_MINUTES']))
+        for package, plugin_config in loaded_adapters:
+            print(plugin_config.__dict__)
+            cache = Cache()
+            adapter = package.adapter.Adapter(plugin_config)
+            init_controller(Controller(adapter, cache))
+            Scheduler(adapter, cache).start_scheduler(
+                collector_config.default_pulling_interval
+            )
         return app
 
 
-if os.environ.get('FLASK_ENVIRONMENT') == "production":
-    application = create_app('odd_collector.config.ProductionConfig')
-else:
-    application = create_app('odd_collector.config.DevelopmentConfig')
+application = create_app(config)
