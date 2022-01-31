@@ -1,5 +1,0 @@
-package:
-  - name: odd_glue_adapter
-    SCHEDULER_INTERVAL_MINUTES: 60
-  - name: odd_dynamodb_adapter
-    SCHEDULER_INTERVAL_MINUTES: 1

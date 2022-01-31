@@ -1,0 +1,5 @@
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: odd_glue_adapter
+  - type: odd_dynamodb_adapter
