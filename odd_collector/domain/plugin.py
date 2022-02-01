@@ -15,3 +15,7 @@ class GluePlugin(Plugin):
 class DynamoDbPlugin(Plugin):
     type: Literal["odd_dynamodb_adapter"]
     exclude_tables: Optional[List[str]] = []
+
+
+class AthenaPlugin(Plugin):
+    type: Literal["odd_athena_adapter"]

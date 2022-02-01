@@ -29,13 +29,15 @@ class PaginatorConfig:
 
 class Adapter:
     def __init__(self, config: GluePlugin) -> None:
-        account_id = boto3.client("sts").get_caller_identity()["Account"]
         self._glue_client = boto3.client(
             "glue",
             aws_access_key_id=config.aws_access_key_id,
             aws_secret_access_key=config.aws_secret_access_key,
             region_name=config.aws_region,
         )
+        account_id = boto3.client("sts",
+                                  aws_access_key_id=config.aws_access_key_id,
+                                  aws_secret_access_key=config.aws_secret_access_key).get_caller_identity()["Account"]
         self._oddrn_generator = GlueGenerator(
             cloud_settings={"region": config.aws_region, "account": account_id}
         )
@@ -60,7 +62,7 @@ class Adapter:
         )
 
     def get_transformers_runs(
-        self, transformer: DataEntity = None
+            self, transformer: DataEntity = None
     ) -> Iterable[DataEntity]:
         if transformer is None:
             return flatten(
@@ -147,7 +149,7 @@ class Adapter:
         )
 
     def __get_stats_for_columns(
-        self, column_names: Iterable[str], raw_table_data: Dict[str, Any]
+            self, column_names: Iterable[str], raw_table_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         return self._glue_client.get_column_statistics_for_table(
             DatabaseName=raw_table_data["DatabaseName"],
