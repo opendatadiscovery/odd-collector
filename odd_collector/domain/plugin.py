@@ -19,3 +19,8 @@ class DynamoDbPlugin(Plugin):
 
 class AthenaPlugin(Plugin):
     type: Literal["odd_athena_adapter"]
+
+
+class S3Plugin(Plugin):
+    type: Literal["odd_s3_adapter"]
+    buckets: Optional[List[str]] = []

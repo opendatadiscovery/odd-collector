@@ -19,6 +19,8 @@ oddrn-generator = "^0.1.10"
 odd-models = "^1.0.4"
 pydantic = "^1.0.4"
 black = "^21.12b0"
+pyarrow = "^6.0.1"
+numpy = "^1.22.1"
 
 
 [tool.poetry.dev-dependencies]
