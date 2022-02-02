@@ -16,8 +16,8 @@ lark-parser = "^0.12.0"
 APScheduler = "^3.7.0"
 humps = "^0.2.2"
 oddrn-generator = "^0.1.10"
-odd-models = "^1.0.4"
-pydantic = "^1.0.4"
+odd-models = "^1.0.14"
+pydantic = "^1.8.2"
 black = "^21.12b0"
 
 

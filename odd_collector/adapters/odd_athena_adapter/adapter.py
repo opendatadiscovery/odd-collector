@@ -30,7 +30,6 @@ class Adapter:
         account_id = boto3.client("sts",
                                   aws_access_key_id=config.aws_access_key_id,
                                   aws_secret_access_key=config.aws_secret_access_key).get_caller_identity()["Account"]
-        #print(config.aws_secret_access_key)
         self._athena_client = boto3.client('athena',
                                            aws_access_key_id=config.aws_access_key_id,
                                            aws_secret_access_key=config.aws_secret_access_key,

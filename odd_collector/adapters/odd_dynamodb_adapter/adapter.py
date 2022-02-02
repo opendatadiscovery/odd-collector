@@ -38,7 +38,11 @@ class Adapter:
             aws_secret_access_key=config.aws_secret_access_key,
             region_name=config.aws_region,
         )
-        self.__aws_account_id = boto3.client("sts").get_caller_identity()["Account"]
+        self.__aws_account_id = boto3.client(
+            "sts", aws_access_key_id=config.aws_access_key_id,
+            aws_secret_access_key=config.aws_secret_access_key,
+            region_name=config.aws_region
+        ).get_caller_identity()["Account"]
         self.__exclude_tables = config.exclude_tables
         self.__metadata_extractor = MetadataExtractor()
         self.__oddrn_generator = DynamodbGenerator(

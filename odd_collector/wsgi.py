@@ -30,7 +30,6 @@ def create_app(conf):
 
     with app.app_context():
         for package, plugin_config in loaded_adapters:
-            print(plugin_config.__dict__)
             cache = Cache()
             adapter = package.adapter.Adapter(plugin_config)
             init_controller(Controller(adapter, cache))

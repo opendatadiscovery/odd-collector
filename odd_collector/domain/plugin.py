@@ -1,5 +1,6 @@
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Union
 import pydantic
+from typing_extensions import Annotated
 
 
 class Plugin(pydantic.BaseSettings):
@@ -19,3 +20,5 @@ class DynamoDbPlugin(Plugin):
 
 class AthenaPlugin(Plugin):
     type: Literal["odd_athena_adapter"]
+
+AvailablePlugin = Annotated[Union[GluePlugin, DynamoDbPlugin, AthenaPlugin], pydantic.Field(discriminator='type')]

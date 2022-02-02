@@ -1,13 +1,13 @@
 import pydantic
 
-from typing import List, Union
-from odd_collector.domain.plugin import Plugin, DynamoDbPlugin, GluePlugin, AthenaPlugin
+from typing import List
+from odd_collector.domain.plugin import AvailablePlugin
 
 
 class CollectorConfig(pydantic.BaseModel):
     default_pulling_interval: int
     token: str
-    plugins: List[Union[DynamoDbPlugin, GluePlugin, AthenaPlugin]] = pydantic.Field(...)
+    plugins: List[AvailablePlugin]
 
     class Config:
         smart_union = True

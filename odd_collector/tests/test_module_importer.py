@@ -3,7 +3,6 @@ import pydantic
 import yaml
 import sys
 import pytest
-from odd_collector.domain import collector_config
 from odd_collector.domain.plugin import DynamoDbPlugin, GluePlugin
 
 from odd_collector.module_importer import (
@@ -14,10 +13,9 @@ from odd_collector.domain.collector_config import CollectorConfig
 
 test_folder_path = path.realpath(path.dirname(__file__))
 
-
 def test_creating_collector_config():
     empty_config = """
-        default_pulling_interval: 10s
+        default_pulling_interval: 10
         token: ""
         plugins:
         - type: odd_glue_adapter
@@ -29,6 +27,10 @@ def test_creating_collector_config():
           aws_access_key_id: ""
           aws_region: ""
           exclude_tables: []
+        - type: odd_athena_adapter
+          aws_secret_access_key: ""
+          aws_access_key_id: ""
+          aws_region: ""
     """
 
     obj = yaml.load(empty_config, yaml.Loader)
@@ -76,7 +78,7 @@ def test_config_with_duplicated_adapter():
 
 
 def test_importing_modules():
-    package_name = "odd_glue_adapter"
+    package_name = "odd_collector.adapters.odd_glue_adapter"
     config = get_config(path.join(test_folder_path, "config.yaml"))
 
     assert package_name not in sys.modules
@@ -84,6 +86,6 @@ def test_importing_modules():
 
     imported_packages = load_plugins_packages(config)
 
-    assert len(imported_packages) == 2
+    assert len(imported_packages) == 3
     assert package_name in sys.modules
     assert f"{package_name}.adapter" in sys.modules
