@@ -8,8 +8,8 @@ from oddrn_generator.generators import S3Generator
 
 from odd_collector.domain.plugin import S3Plugin
 
-from odd_s3_adapter.mapper.dataset import map_dataset
-from odd_s3_adapter.schema.s3_parquet_schema_retriever import S3ParquetSchemaRetriever
+from .mapper.dataset import map_dataset
+from .schema.s3_parquet_schema_retriever import S3ParquetSchemaRetriever
 
 SDK_LIST_OBJECTS_MAX_RESULTS = 1000
 DATA_EXTENSIONS = ['.csv', '.parquet']

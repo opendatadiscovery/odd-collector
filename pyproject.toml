@@ -23,6 +23,7 @@ pyarrow = "^6.0.1"
 numpy = "^1.22.1"
 
 
+
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"
 pytest = "^6.2.5"

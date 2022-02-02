@@ -21,4 +21,10 @@ class DynamoDbPlugin(Plugin):
 class AthenaPlugin(Plugin):
     type: Literal["odd_athena_adapter"]
 
-AvailablePlugin = Annotated[Union[GluePlugin, DynamoDbPlugin, AthenaPlugin], pydantic.Field(discriminator='type')]
+
+class S3Plugin(Plugin):
+    type: Literal["odd_s3_adapter"]
+    buckets: Optional[List[str]] = []
+
+
+AvailablePlugin = Annotated[Union[GluePlugin, DynamoDbPlugin, AthenaPlugin, S3Plugin], pydantic.Field(discriminator='type')]
