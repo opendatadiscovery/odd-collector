@@ -5,7 +5,6 @@ from typing import Tuple, Any, Dict, Optional
 from odd_models.adapter import ODDController
 from odd_models.models import DataEntityList
 
-#from .adapter import DynamoDBAdapter
 from .cache import Cache
 
 

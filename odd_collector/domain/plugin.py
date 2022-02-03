@@ -27,4 +27,14 @@ class S3Plugin(Plugin):
     buckets: Optional[List[str]] = []
 
 
-AvailablePlugin = Annotated[Union[GluePlugin, DynamoDbPlugin, AthenaPlugin, S3Plugin], pydantic.Field(discriminator='type')]
+class QuicksightPlugin(Plugin):
+    type: Literal["odd_quicksight_adapter"]
+
+
+class SagemakerPlugin(Plugin):
+    type: Literal["odd_sagemaker_featurestore_adapter"]
+
+
+AvailablePlugin = Annotated[
+    Union[GluePlugin, DynamoDbPlugin, AthenaPlugin, S3Plugin, QuicksightPlugin, SagemakerPlugin], pydantic.Field(
+        discriminator='type')]

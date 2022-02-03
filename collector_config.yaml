@@ -1,9 +1,8 @@
 default_pulling_interval: 10
 token: ""
 plugins:
-  - type: odd_s3_adapter
+  - type: odd_sagemaker_featurestore_adapter
     aws_region: ""
     aws_secret_access_key: ""
     aws_access_key_id: ""
-    buckets: []
 

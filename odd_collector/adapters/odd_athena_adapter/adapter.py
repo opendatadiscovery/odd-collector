@@ -63,13 +63,7 @@ class Adapter:
             mapper=lambda catalog, _: catalog['CatalogName']
         ))
 
-    def get_data_transformers(self) -> List[DataEntity]:
-        return []
-
     def get_transformers(self) -> List[DataEntity]:
-        return []
-
-    def get_data_transformer_runs(self) -> List[DataEntity]:
         return []
 
     def get_transformers_runs(self) -> List[DataEntity]:
