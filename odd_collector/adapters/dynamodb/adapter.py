@@ -12,12 +12,13 @@ from odd_models.models import (
 from oddrn_generator import DynamodbGenerator
 
 from odd_collector.domain.plugin import DynamoDbPlugin
+from odd_collector.domain.paginator_config import PaginatorConfig
 
 from .metadata import MetadataExtractor
 
 SDK_DATASET_MAX_RESULTS = 100
 
-
+"""
 @dataclass
 class PaginatorConfig:
     op_name: str
@@ -26,7 +27,7 @@ class PaginatorConfig:
     parameters: Dict[str, Union[str, int]] = field(default_factory=dict)
     mapper: Callable = None
     mapper_args: Dict[str, Any] = None
-
+"""
 
 class Adapter:
     __dynamo_types = {"N": "TYPE_NUMBER", "S": "TYPE_STRING", "B": "TYPE_BINARY"}
@@ -84,6 +85,7 @@ class Adapter:
             PaginatorConfig(
                 op_name="list_tables",
                 payload_key="TableNames",
+                page_size = SDK_DATASET_MAX_RESULTS
             )
         )
 

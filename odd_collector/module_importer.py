@@ -20,10 +20,12 @@ def get_config(path: str) -> CollectorConfig:
         except (yaml.YAMLError, pydantic.ValidationError) as e:
             logging.error(e)
 
+
 def file_path_to_module_path(original_file_path: str) -> str:
     without_file_extension = original_file_path.replace('.py', '')
     module_path = without_file_extension.replace('/', '.')
     return module_path
+
 
 def import_odd_package_modules(package: ModuleType) -> List[ModuleType]:
     package_name = package.__name__
@@ -37,7 +39,7 @@ def import_odd_package_modules(package: ModuleType) -> List[ModuleType]:
     ]
 
     imported = [import_module(module_path) for module_path in package_modules]
-    
+
     return imported
 
 

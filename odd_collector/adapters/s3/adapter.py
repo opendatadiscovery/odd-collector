@@ -7,7 +7,7 @@ from odd_models.models import DataEntity
 from oddrn_generator.generators import S3Generator
 
 from odd_collector.domain.plugin import S3Plugin
-
+from odd_collector.domain.paginator_config import PaginatorConfig
 from .mapper.dataset import map_dataset
 from .schema.s3_parquet_schema_retriever import S3ParquetSchemaRetriever
 
@@ -15,13 +15,13 @@ SDK_LIST_OBJECTS_MAX_RESULTS = 1000
 DATA_EXTENSIONS = ['.csv', '.parquet']
 
 
-@dataclass
+"""@dataclass
 class PaginatorConfig:
     op_name: str
     parameters: Dict[str, Union[str, int]]
     page_size: int
     list_fetch_key: str
-
+"""
 
 def is_data_file(filepath: str) -> bool:
     for ext in DATA_EXTENSIONS:

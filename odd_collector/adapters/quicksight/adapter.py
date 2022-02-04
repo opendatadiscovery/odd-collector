@@ -1,7 +1,9 @@
 import logging
 from dataclasses import dataclass
 from typing import Dict, Callable, Union, Any, Iterable, Optional, List
+
 from odd_collector.domain.plugin import QuicksightPlugin
+from odd_collector.domain.paginator_config import PaginatorConfig
 
 import boto3
 from more_itertools import flatten
@@ -16,7 +18,7 @@ SDK_DATASET_MAX_RESULTS = 1000
 SDK_DATASET_COL_STATS_MAX_RESULTS = 100
 SDK_DATA_TRANSFORMERS_MAX_RESULTS = 100
 
-
+"""
 @dataclass
 class PaginatorConfig:
     op_name: str
@@ -25,7 +27,7 @@ class PaginatorConfig:
     list_fetch_key: str
     mapper: Optional[Callable] = None
     mapper_args: Optional[Dict[str, Any]] = None
-
+"""
 
 class Adapter:
     def __init__(self, config: QuicksightPlugin) -> None:
