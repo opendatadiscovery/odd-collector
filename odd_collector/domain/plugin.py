@@ -21,4 +21,8 @@ class DynamoDbPlugin(Plugin):
 class AthenaPlugin(Plugin):
     type: Literal["odd_athena_adapter"]
 
-AvailablePlugin = Annotated[Union[GluePlugin, DynamoDbPlugin, AthenaPlugin], pydantic.Field(discriminator='type')]
+
+AvailablePlugin = Annotated[
+    Union[GluePlugin, DynamoDbPlugin, AthenaPlugin],
+    pydantic.Field(discriminator="type"),
+]

@@ -5,6 +5,7 @@ import boto3
 from more_itertools import chunked, flatten
 from odd_models.models import DataEntity
 from oddrn_generator import GlueGenerator
+from odd_collector.domain.adapter import AbstractAdapter
 
 from odd_collector.domain.plugin import GluePlugin
 
@@ -18,7 +19,7 @@ SDK_DATA_TRANSFORMERS_MAX_RESULTS = 100
 
 
 @dataclass
-class PaginatorConfig:
+class PaginatorConfig():
     op_name: str
     parameters: Dict[str, Union[str, int]]
     page_size: int
@@ -27,7 +28,7 @@ class PaginatorConfig:
     mapper_args: Optional[Dict[str, Any]] = None
 
 
-class Adapter:
+class Adapter(AbstractAdapter):
     def __init__(self, config: GluePlugin) -> None:
         self._glue_client = boto3.client(
             "glue",
@@ -45,7 +46,7 @@ class Adapter:
     def get_data_source_oddrn(self) -> str:
         return self._oddrn_generator.get_data_source_oddrn()
 
-    def get_datasets(self) -> Iterable[DataEntity]:
+    def get_data_entities(self) -> Iterable[DataEntity]:
         logging.info([self.__get_tables(dn) for dn in self.__get_database_names()])
         return flatten([self.__get_tables(dn) for dn in self.__get_database_names()])
 

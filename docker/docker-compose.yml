@@ -7,12 +7,10 @@ services:
     container_name: odd-collector
     restart: always
     environment:
-      # Cache refreshing interval (minutes):
       - AWS_REGION=${AWS_REGION}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       # FLASK:
       - FLASK_ENVIRONMENT=${FLASK_ENVIRONMENT}
-      - FLASK_APP=${FLASK_APP}
     ports:
       - "127.0.0.1:8080:8080"

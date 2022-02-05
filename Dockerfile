@@ -1,4 +1,4 @@
-FROM python:3.9.1-slim-buster as base
+FROM python:3.8.12-slim-bullseye as base
 ENV POETRY_PATH=/opt/poetry \
     POETRY_VERSION=1.1.6
 ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
@@ -28,13 +28,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN=true
 ENV UCF_FORCE_CONFOLD=1
 ENV PYTHONUNBUFFERED=1
-ENV FLASK_APP=odd_collector.wsgi:application
-
-EXPOSE 8080
 
 WORKDIR /app
 COPY . ./
-COPY --from=build /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-COPY --from=build /usr/local/bin/gunicorn /usr/local/bin/gunicorn
+COPY --from=build /usr/local/lib/python3.8/site-packages /usr/local/lib/python3.8/site-packages
 
-ENTRYPOINT gunicorn --bind 0.0.0.0:8080 --workers=1 ${FLASK_APP}
+ENTRYPOINT ["bash", "start.sh"]
