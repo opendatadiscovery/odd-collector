@@ -10,6 +10,7 @@ from odd_models.models import (
     DataSetFieldType,
 )
 from oddrn_generator import DynamodbGenerator
+from odd_collector.domain.adapter import AbstractAdapter
 
 from odd_collector.domain.plugin import DynamoDbPlugin
 from odd_collector.domain.paginator_config import PaginatorConfig
@@ -29,7 +30,7 @@ class PaginatorConfig:
     mapper_args: Dict[str, Any] = None
 """
 
-class Adapter:
+class Adapter(AbstractAdapter):
     __dynamo_types = {"N": "TYPE_NUMBER", "S": "TYPE_STRING", "B": "TYPE_BINARY"}
 
     def __init__(self, config: DynamoDbPlugin) -> None:
@@ -40,9 +41,10 @@ class Adapter:
             region_name=config.aws_region,
         )
         self.__aws_account_id = boto3.client(
-            "sts", aws_access_key_id=config.aws_access_key_id,
+            "sts",
+            aws_access_key_id=config.aws_access_key_id,
             aws_secret_access_key=config.aws_secret_access_key,
-            region_name=config.aws_region
+            region_name=config.aws_region,
         ).get_caller_identity()["Account"]
         self.__exclude_tables = config.exclude_tables
         self.__metadata_extractor = MetadataExtractor()
@@ -56,7 +58,7 @@ class Adapter:
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
 
-    def get_datasets(self) -> List[DataEntity]:
+    def get_data_entities(self) -> List[DataEntity]:
         return [
             self.__map_table_from_response(table) for table in self.__fetch_tables()
         ]

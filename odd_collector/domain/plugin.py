@@ -21,7 +21,6 @@ class DynamoDbPlugin(Plugin):
 class AthenaPlugin(Plugin):
     type: Literal["athena"]
 
-
 class S3Plugin(Plugin):
     type: Literal["s3"]
     buckets: Optional[List[str]] = []

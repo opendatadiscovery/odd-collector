@@ -9,7 +9,7 @@ from odd_collector.module_importer import (
     get_config,
     load_plugins_packages,
 )
-from odd_collector.domain.collector_config import CollectorConfig
+from odd_collector.odd_collector_sdk.collector_config import CollectorConfig
 
 test_folder_path = path.realpath(path.dirname(__file__))
 

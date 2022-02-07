@@ -1,11 +1,16 @@
-from dataclasses import dataclass
-from typing import Dict, Callable, Union, Any, Iterable, Optional
-import logging
 import boto3
+
+from typing import Dict
+from typing import Any
+from typing import Iterable
+
 from more_itertools import chunked, flatten
+
 from odd_models.models import DataEntity
+from odd_models.models import DataEntityList
 from oddrn_generator import GlueGenerator
 
+from odd_collector.domain.adapter import AbstractAdapter
 from odd_collector.domain.plugin import GluePlugin
 from odd_collector.domain.paginator_config import PaginatorConfig
 
@@ -19,7 +24,7 @@ SDK_DATA_TRANSFORMERS_MAX_RESULTS = 100
 
 """
 @dataclass
-class PaginatorConfig:
+class PaginatorConfig():
     op_name: str
     parameters: Dict[str, Union[str, int]]
     page_size: int
@@ -28,7 +33,8 @@ class PaginatorConfig:
     mapper_args: Optional[Dict[str, Any]] = None
 """
 
-class Adapter:
+
+class Adapter(AbstractAdapter):
     def __init__(self, config: GluePlugin) -> None:
         self._glue_client = boto3.client(
             "glue",
@@ -36,9 +42,11 @@ class Adapter:
             aws_secret_access_key=config.aws_secret_access_key,
             region_name=config.aws_region,
         )
-        account_id = boto3.client("sts",
-                                  aws_access_key_id=config.aws_access_key_id,
-                                  aws_secret_access_key=config.aws_secret_access_key).get_caller_identity()["Account"]
+        account_id = boto3.client(
+            "sts",
+            aws_access_key_id=config.aws_access_key_id,
+            aws_secret_access_key=config.aws_secret_access_key,
+        ).get_caller_identity()["Account"]
         self._oddrn_generator = GlueGenerator(
             cloud_settings={"region": config.aws_region, "account": account_id}
         )
@@ -46,9 +54,14 @@ class Adapter:
     def get_data_source_oddrn(self) -> str:
         return self._oddrn_generator.get_data_source_oddrn()
 
-    def get_datasets(self) -> Iterable[DataEntity]:
-        logging.info([self.__get_tables(dn) for dn in self.__get_database_names()])
+    def get_data_entities(self) -> Iterable[DataEntity]:
         return flatten([self.__get_tables(dn) for dn in self.__get_database_names()])
+
+    def get_data_entity_list(self) -> DataEntityList:
+        return DataEntityList(
+            data_source_oddrn=self.get_data_source_oddrn(),
+            items=list(self.get_data_entities()),
+        )
 
     def get_transformers(self) -> Iterable[DataEntity]:
         return self.__fetch_paginator(
@@ -63,7 +76,7 @@ class Adapter:
         )
 
     def get_transformers_runs(
-            self, transformer: DataEntity = None
+        self, transformer: DataEntity = None
     ) -> Iterable[DataEntity]:
         if transformer is None:
             return flatten(
@@ -150,7 +163,7 @@ class Adapter:
         )
 
     def __get_stats_for_columns(
-            self, column_names: Iterable[str], raw_table_data: Dict[str, Any]
+        self, column_names: Iterable[str], raw_table_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         return self._glue_client.get_column_statistics_for_table(
             DatabaseName=raw_table_data["DatabaseName"],

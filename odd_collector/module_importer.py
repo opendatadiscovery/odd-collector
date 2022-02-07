@@ -7,8 +7,8 @@ import logging
 from importlib import import_module
 from typing import List, Tuple
 
-from odd_collector.domain.collector_config import CollectorConfig
 from odd_collector.domain.plugin import Plugin
+from odd_collector.domain.collector_config import CollectorConfig
 
 
 def get_config(path: str) -> CollectorConfig:
@@ -22,14 +22,14 @@ def get_config(path: str) -> CollectorConfig:
 
 
 def file_path_to_module_path(original_file_path: str) -> str:
-    without_file_extension = original_file_path.replace('.py', '')
-    module_path = without_file_extension.replace('/', '.')
+    without_file_extension = original_file_path.replace(".py", "")
+    module_path = without_file_extension.replace("/", ".")
     return module_path
 
 
 def import_odd_package_modules(package: ModuleType) -> List[ModuleType]:
     package_name = package.__name__
-    package_path = package_name.replace('.', '/')
+    package_path = package_name.replace(".", "/")
 
     package_modules = [
         file_path_to_module_path(os.path.join(root, file))
