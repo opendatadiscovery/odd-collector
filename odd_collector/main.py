@@ -21,11 +21,15 @@ logging.basicConfig(
 
 
 async def get_entities(adapters: List[Tuple[Plugin, AbstractAdapter]]):
-    async with aiohttp.ClientSession() as session:
-        for plugin, adapter in adapters:
-            await session.post(
-                config.platform_host_url, adapter.get_data_entity_list().json()
-            )
+    for plugin, adapter in adapters:
+        res = adapter.get_data_entity_list()
+        print(res)
+
+    # async with aiohttp.ClientSession() as session:
+    #     for plugin, adapter in adapters:
+    #         await session.post(
+    #             config.platform_host_url, adapter.get_data_entity_list().json()
+    #         )
 
 
 if __name__ == "__main__":

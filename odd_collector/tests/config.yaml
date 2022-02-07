@@ -1,15 +1,15 @@
 default_pulling_interval: 10
 token: ""
 plugins:
-  - type: odd_athena_adapter
+  - type: athena
     aws_region: "us-east-1"
     aws_secret_access_key: ""
     aws_access_key_id: ""
-  - type: odd_glue_adapter
+  - type: glue
     aws_region: "us-east-1"
     aws_secret_access_key: ""
     aws_access_key_id: ""
-  - type: odd_dynamodb_adapter
+  - type: dynamodb
     aws_region: "us-east-1"
     aws_secret_access_key: ""
     aws_access_key_id: ""

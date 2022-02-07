@@ -8,6 +8,7 @@ from oddrn_generator import AthenaGenerator
 from odd_collector.domain.adapter import AbstractAdapter
 
 from odd_collector.domain.plugin import AthenaPlugin
+from odd_collector.domain.paginator_config import PaginatorConfig
 
 from .mappers.tables import map_athena_table
 
@@ -16,7 +17,7 @@ SDK_DATASET_COL_STATS_MAX_RESULTS = 100
 SDK_DATA_TRANSFORMERS_MAX_RESULTS = 100
 
 
-@dataclass
+"""@dataclass
 class PaginatorConfig:
     op_name: str
     parameters: Dict[str, Union[str, int]]
@@ -24,7 +25,7 @@ class PaginatorConfig:
     list_fetch_key: str
     mapper: Optional[Callable] = None
     mapper_args: Optional[Dict[str, Any]] = None
-
+"""
 
 class Adapter(AbstractAdapter):
     def __init__(self, config: AthenaPlugin) -> None:
@@ -66,13 +67,7 @@ class Adapter(AbstractAdapter):
             )
         )
 
-    def get_data_transformers(self) -> List[DataEntity]:
-        return []
-
     def get_transformers(self) -> List[DataEntity]:
-        return []
-
-    def get_data_transformer_runs(self) -> List[DataEntity]:
         return []
 
     def get_transformers_runs(self) -> List[DataEntity]:

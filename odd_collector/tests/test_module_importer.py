@@ -18,16 +18,16 @@ def test_creating_collector_config():
         default_pulling_interval: 10
         token: ""
         plugins:
-        - type: odd_glue_adapter
+        - type: glue
           aws_secret_access_key: ""
           aws_access_key_id: ""
           aws_region: ""
-        - type: odd_dynamodb_adapter
+        - type: dynamodb
           aws_secret_access_key: ""
           aws_access_key_id: ""
           aws_region: ""
           exclude_tables: []
-        - type: odd_athena_adapter
+        - type: athena
           aws_secret_access_key: ""
           aws_access_key_id: ""
           aws_region: ""
@@ -62,11 +62,11 @@ def test_config_with_duplicated_adapter():
         default_pulling_interval: 10s
         token: ""
         plugins:
-        - type: odd_glue_adapter
+        - type: glue
           aws_secret_access_key: ""
           aws_access_key_id: ""
           aws_region: ""
-        - type: odd_glue_adapter
+        - type: glue
           aws_secret_access_key: ""
           aws_access_key_id: ""
           aws_region: ""
@@ -78,7 +78,7 @@ def test_config_with_duplicated_adapter():
 
 
 def test_importing_modules():
-    package_name = "odd_collector.adapters.odd_glue_adapter"
+    package_name = "odd_collector.adapters.glue"
     config = get_config(path.join(test_folder_path, "config.yaml"))
 
     assert package_name not in sys.modules

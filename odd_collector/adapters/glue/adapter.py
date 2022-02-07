@@ -8,6 +8,7 @@ from oddrn_generator import GlueGenerator
 from odd_collector.domain.adapter import AbstractAdapter
 
 from odd_collector.domain.plugin import GluePlugin
+from odd_collector.domain.paginator_config import PaginatorConfig
 
 from .mappers.columns import map_column_stats
 from .mappers.jobs import map_glue_job, map_glue_job_run
@@ -17,7 +18,7 @@ SDK_DATASET_MAX_RESULTS = 1000
 SDK_DATASET_COL_STATS_MAX_RESULTS = 100
 SDK_DATA_TRANSFORMERS_MAX_RESULTS = 100
 
-
+"""
 @dataclass
 class PaginatorConfig():
     op_name: str
@@ -26,7 +27,7 @@ class PaginatorConfig():
     list_fetch_key: str
     mapper: Optional[Callable] = None
     mapper_args: Optional[Dict[str, Any]] = None
-
+"""
 
 class Adapter(AbstractAdapter):
     def __init__(self, config: GluePlugin) -> None:

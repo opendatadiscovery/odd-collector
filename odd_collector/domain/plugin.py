@@ -10,19 +10,30 @@ class Plugin(pydantic.BaseSettings):
 
 
 class GluePlugin(Plugin):
-    type: Literal["odd_glue_adapter"]
+    type: Literal["glue"]
 
 
 class DynamoDbPlugin(Plugin):
-    type: Literal["odd_dynamodb_adapter"]
+    type: Literal["dynamodb"]
     exclude_tables: Optional[List[str]] = []
 
 
 class AthenaPlugin(Plugin):
-    type: Literal["odd_athena_adapter"]
+    type: Literal["athena"]
+
+class S3Plugin(Plugin):
+    type: Literal["s3"]
+    buckets: Optional[List[str]] = []
+
+
+class QuicksightPlugin(Plugin):
+    type: Literal["quicksight"]
+
+
+class SagemakerPlugin(Plugin):
+    type: Literal["sagemaker_featurestore"]
 
 
 AvailablePlugin = Annotated[
-    Union[GluePlugin, DynamoDbPlugin, AthenaPlugin],
-    pydantic.Field(discriminator="type"),
-]
+    Union[GluePlugin, DynamoDbPlugin, AthenaPlugin, S3Plugin, QuicksightPlugin, SagemakerPlugin], pydantic.Field(
+        discriminator='type')]
