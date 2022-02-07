@@ -19,6 +19,7 @@ oddrn-generator = "^0.1.10"
 odd-models = "^1.0.14"
 pydantic = "^1.8.2"
 black = "^21.12b0"
+aiohttp = "^3.8.1"
 
 
 [tool.poetry.dev-dependencies]
