@@ -20,16 +20,21 @@ logging.basicConfig(
 )
 
 
-async def get_entities(adapters: List[Tuple[Plugin, AbstractAdapter]]):
-    for plugin, adapter in adapters:
-        res = adapter.get_data_entity_list()
-        print(res)
+async def send_request(session: aiohttp.ClientSession, adapter: AbstractAdapter):
+    headers = {"content-type": "application/json"}
+    async with session.post(
+        url=f"{config.platform_host_url}/ingestion/entities",
+        data=adapter.get_data_entity_list().json(),
+        headers=headers,
+    ) as response:
+        print(response)
 
-    # async with aiohttp.ClientSession() as session:
-    #     for plugin, adapter in adapters:
-    #         await session.post(
-    #             config.platform_host_url, adapter.get_data_entity_list().json()
-    #         )
+
+async def get_entities(adapters: List[Tuple[Plugin, AbstractAdapter]]):
+    async with aiohttp.ClientSession() as session:
+        for plugin, adapter in adapters:
+            logging.info(adapter.get_data_entity_list().json())
+            await send_request(session, adapter)
 
 
 if __name__ == "__main__":
@@ -56,5 +61,5 @@ if __name__ == "__main__":
 
         asyncio.get_event_loop().run_forever()
     except Exception as e:
-        logging.error(e.message)
+        logging.error(e)
         asyncio.get_event_loop().stop()
