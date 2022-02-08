@@ -21,6 +21,7 @@ class DynamoDbPlugin(Plugin):
 class AthenaPlugin(Plugin):
     type: Literal["athena"]
 
+
 class S3Plugin(Plugin):
     type: Literal["s3"]
     buckets: Optional[List[str]] = []
@@ -35,5 +36,13 @@ class SagemakerPlugin(Plugin):
 
 
 AvailablePlugin = Annotated[
-    Union[GluePlugin, DynamoDbPlugin, AthenaPlugin, S3Plugin, QuicksightPlugin, SagemakerPlugin], pydantic.Field(
-        discriminator='type')]
+    Union[
+        GluePlugin,
+        DynamoDbPlugin,
+        AthenaPlugin,
+        S3Plugin,
+        QuicksightPlugin,
+        SagemakerPlugin,
+    ],
+    pydantic.Field(discriminator="type"),
+]

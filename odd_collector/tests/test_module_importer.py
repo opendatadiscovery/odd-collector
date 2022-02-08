@@ -5,13 +5,14 @@ import sys
 import pytest
 from odd_collector.domain.plugin import DynamoDbPlugin, GluePlugin
 
-from odd_collector.module_importer import (
-    get_config,
-    load_plugins_packages,
-)
-from odd_collector.odd_collector_sdk.collector_config import CollectorConfig
+from odd_collector.domain.collector_config import CollectorConfig
+from odd_collector.domain.collector_config_loader import CollectorConfigLoader
+from odd_collector.domain.adapters_initializer import AdaptersInitializer
+from odd_collector.domain.adapters_folder_meta import AdapterFolderMetadata
+
 
 test_folder_path = path.realpath(path.dirname(__file__))
+
 
 def test_creating_collector_config():
     empty_config = """
@@ -78,14 +79,24 @@ def test_config_with_duplicated_adapter():
 
 
 def test_importing_modules():
-    package_name = "odd_collector.adapters.glue"
-    config = get_config(path.join(test_folder_path, "config.yaml"))
+    config_path = path.join(test_folder_path, "collector_config.yaml")
+    load_config = CollectorConfigLoader()
+    config = load_config(config_path)
+
+    adapters_meta = AdapterFolderMetadata(
+        folder_path=path.join(test_folder_path, "../adapters"),
+        root_package="odd_collector.tests.adapters",
+    )
+
+    init_adapters = AdaptersInitializer(adapters_meta, config.plugins)
+
+    package_name = "odd_collector.tests.adapters.glue"
 
     assert package_name not in sys.modules
     assert f"{package_name}.adapter" not in sys.modules
 
-    imported_packages = load_plugins_packages(config)
+    imported_packages = init_adapters()
 
-    assert len(imported_packages) == 3
+    assert len(imported_packages) == 1
     assert package_name in sys.modules
     assert f"{package_name}.adapter" in sys.modules

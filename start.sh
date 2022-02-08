@@ -1,1 +1,1 @@
-python -m odd_collector.main
+python -m odd_collector
