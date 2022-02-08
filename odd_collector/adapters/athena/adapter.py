@@ -4,6 +4,7 @@ from typing import Dict, Callable, Union, Any, Iterable, Optional, List
 import boto3
 from more_itertools import flatten
 from odd_models.models import DataEntity
+from odd_models.models import DataEntityList
 from oddrn_generator import AthenaGenerator
 from odd_collector.domain.adapter import AbstractAdapter
 
@@ -16,16 +17,6 @@ SDK_DATASET_MAX_RESULTS = 1000
 SDK_DATASET_COL_STATS_MAX_RESULTS = 100
 SDK_DATA_TRANSFORMERS_MAX_RESULTS = 100
 
-
-"""@dataclass
-class PaginatorConfig:
-    op_name: str
-    parameters: Dict[str, Union[str, int]]
-    page_size: int
-    list_fetch_key: str
-    mapper: Optional[Callable] = None
-    mapper_args: Optional[Dict[str, Any]] = None
-"""
 
 class Adapter(AbstractAdapter):
     def __init__(self, config: AthenaPlugin) -> None:
@@ -54,6 +45,12 @@ class Adapter(AbstractAdapter):
                 for cn in self.__get_catalog_names()
                 for dn in self.__get_database_names(cn)
             ]
+        )
+
+    def get_data_entity_list(self) -> DataEntityList:
+        return DataEntityList(
+            data_source_oddrn=self.get_data_source_oddrn(),
+            items=list(self.get_data_entities()),
         )
 
     def __get_catalog_names(self) -> Iterable[str]:
@@ -85,7 +82,7 @@ class Adapter(AbstractAdapter):
         )
 
     def __get_table_metadata(
-        self, catalog_name: str, database_name: str
+            self, catalog_name: str, database_name: str
     ) -> Iterable[DataEntity]:
         raw_tables: Iterable[Dict[str, Any]] = self.__fetch_paginator(
             PaginatorConfig(
@@ -122,7 +119,7 @@ class Adapter(AbstractAdapter):
             token = sdk_response.resume_token
 
     def __process_table_raw_data(
-        self, raw_table_data: Dict[str, Any], catalog_name: str, database_name: str
+            self, raw_table_data: Dict[str, Any], catalog_name: str, database_name: str
     ) -> DataEntity:
         return map_athena_table(
             raw_table_data, catalog_name, database_name, self._oddrn_generator

@@ -3,14 +3,16 @@ from typing import Iterable
 import boto3
 import pytz
 from odd_models.models import DataEntity, DataEntityType, DataSet, List
+from odd_models.models import DataEntityList
 from odd_collector.domain.plugin import SagemakerPlugin
+from odd_collector.domain.adapter import AbstractAdapter
 
 from .mappers.datasets import DatasetMapper
 from .mappers.metadata import metadata_extractor
 from .mappers.oddrn import ODDRN_BASE
 
 
-class Adapter:
+class Adapter(AbstractAdapter):
 
     def __init__(self, config: SagemakerPlugin) -> None:
         self.__sagemaker_client = boto3.client('sagemaker',
@@ -25,8 +27,22 @@ class Adapter:
         self.__region_name = config.aws_region
         self.__dataset_mapper = DatasetMapper(self.__region_name, self.__aws_account_id)
 
+    def get_data_source_oddrn(self) -> str:
+        return self._oddrn_generator.get_data_source_oddrn()
+    """
     def get_datasets(self) -> Iterable[DataEntity]:
         return self.__fetch_feature_groups()
+    """
+
+    def get_data_entities(self) -> Iterable[DataEntity]:
+        return self.__fetch_feature_groups()
+
+    def get_data_entity_list(self) -> DataEntityList:
+        return DataEntityList(
+            data_source_oddrn= (ODDRN_BASE).format(account_id=self.__aws_account_id,
+                                                                             region_name=self.__region_name),
+            items=list(self.get_data_entities()),
+        )
 
     def get_transformers(self) -> List[DataEntity]:
         return []
