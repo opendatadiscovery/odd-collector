@@ -4,8 +4,10 @@ from typing import List, Dict, Union, Iterable, Any
 
 import boto3
 from odd_models.models import DataEntity
+from odd_models.models import DataEntityList
 from oddrn_generator.generators import S3Generator
 
+from odd_collector.domain.adapter import AbstractAdapter
 from odd_collector.domain.plugin import S3Plugin
 from odd_collector.domain.paginator_config import PaginatorConfig
 from .mapper.dataset import map_dataset
@@ -13,15 +15,6 @@ from .schema.s3_parquet_schema_retriever import S3ParquetSchemaRetriever
 
 SDK_LIST_OBJECTS_MAX_RESULTS = 1000
 DATA_EXTENSIONS = ['.csv', '.parquet']
-
-
-"""@dataclass
-class PaginatorConfig:
-    op_name: str
-    parameters: Dict[str, Union[str, int]]
-    page_size: int
-    list_fetch_key: str
-"""
 
 def is_data_file(filepath: str) -> bool:
     for ext in DATA_EXTENSIONS:
@@ -31,7 +24,7 @@ def is_data_file(filepath: str) -> bool:
     return False
 
 
-class Adapter:
+class Adapter(AbstractAdapter):
     def __init__(self, config: S3Plugin) -> None:
         self.__s3_client  = boto3.client(
             "s3",
@@ -52,7 +45,7 @@ class Adapter:
                     aws_region=config.aws_region
                 )
 
-
+    """
     def get_datasets(self) -> Iterable[DataEntity]:
         bucket_response = self.__s3_client.list_buckets()
         logging.info(bucket_response)
@@ -74,9 +67,11 @@ class Adapter:
                     file=file,
                     schema=self.__schema_retriever.get_schema(f'{bucket}/{file["Key"]}'),
                     oddrn_gen=self.__oddrn_generator
-                )
-    """           
-    def get_entities(self) -> Iterable[DataEntity]:
+                )"""
+    def get_data_source_oddrn(self) -> str:
+        return self.__oddrn_generator.get_data_source_oddrn()
+
+    def get_data_entities(self) -> Iterable[DataEntity]:
         bucket_response = self.__s3_client.list_buckets()
         logging.info(bucket_response)
         files_dict: Dict[str, List[Dict[str, Any]]] = {
@@ -97,7 +92,11 @@ class Adapter:
                     schema=self.__schema_retriever.get_schema(f'{bucket}/{file["Key"]}'),
                     oddrn_gen=self.__oddrn_generator
                 )
-    """
+    def get_data_entity_list(self) -> DataEntityList:
+        return DataEntityList(
+            data_source_oddrn=self.get_data_source_oddrn(),
+            items=list(self.get_data_entities()),
+        )
 
     def get_transformers(self) -> List[DataEntity]:
         return []

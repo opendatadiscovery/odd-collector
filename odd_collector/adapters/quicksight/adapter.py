@@ -8,6 +8,9 @@ from odd_collector.domain.paginator_config import PaginatorConfig
 import boto3
 from more_itertools import flatten
 from odd_models.models import DataEntity
+from odd_models.models import DataEntityList
+
+from oddrn_generator import QuicksightGenerator
 
 from .mappers.datasets import map_quicksight_dataset
 from .mappers.dashboards import map_quicksight_dashboard
@@ -18,16 +21,6 @@ SDK_DATASET_MAX_RESULTS = 1000
 SDK_DATASET_COL_STATS_MAX_RESULTS = 100
 SDK_DATA_TRANSFORMERS_MAX_RESULTS = 100
 
-"""
-@dataclass
-class PaginatorConfig:
-    op_name: str
-    parameters: Dict[str, Union[str, int]]
-    page_size: int
-    list_fetch_key: str
-    mapper: Optional[Callable] = None
-    mapper_args: Optional[Dict[str, Any]] = None
-"""
 
 class Adapter:
     def __init__(self, config: QuicksightPlugin) -> None:
@@ -42,7 +35,13 @@ class Adapter:
             aws_secret_access_key=config.aws_secret_access_key,
             region_name=config.aws_region,
         )
+        self._oddrn_generator = QuicksightGenerator(
+            cloud_settings={"region": self._region_name , "account": self._account_id}
+        )
 
+    def get_data_source_oddrn(self) -> str:
+        return self._oddrn_generator.get_data_source_oddrn()
+    """
     def get_datasets(self) -> Iterable[DataEntity]:
         result = []
         for i in self.__get_dataset():
@@ -51,6 +50,21 @@ class Adapter:
             except self._quicksight_client.exceptions.InvalidParameterValueException:
                 logging.warning(f'Could not process dataset: {i}')
         return flatten(result)
+    """
+    def get_data_entities(self) -> Iterable[DataEntity]:
+        result = []
+        for i in self.__get_dataset():
+            try:
+                result.append(self.__describe_data_set(i))
+            except self._quicksight_client.exceptions.InvalidParameterValueException:
+                logging.warning(f'Could not process dataset: {i}')
+        return flatten(result)
+
+    def get_data_entity_list(self) -> DataEntityList:
+        return DataEntityList(
+            data_source_oddrn=self.get_data_source_oddrn(),
+            items=list(self.get_data_entities()),
+        )
 
     def get_dashboard(self) -> Iterable[DataEntity]:
         return flatten([self.__describe_dashboard(dashboard_id) for dashboard_id in self.__get_dashboard()])

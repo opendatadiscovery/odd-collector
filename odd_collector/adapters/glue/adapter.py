@@ -3,7 +3,7 @@ import boto3
 from typing import Dict
 from typing import Any
 from typing import Iterable
-
+import logging
 from more_itertools import chunked, flatten
 
 from odd_models.models import DataEntity
@@ -21,18 +21,6 @@ from .mappers.tables import map_glue_table
 SDK_DATASET_MAX_RESULTS = 1000
 SDK_DATASET_COL_STATS_MAX_RESULTS = 100
 SDK_DATA_TRANSFORMERS_MAX_RESULTS = 100
-
-"""
-@dataclass
-class PaginatorConfig():
-    op_name: str
-    parameters: Dict[str, Union[str, int]]
-    page_size: int
-    list_fetch_key: str
-    mapper: Optional[Callable] = None
-    mapper_args: Optional[Dict[str, Any]] = None
-"""
-
 
 class Adapter(AbstractAdapter):
     def __init__(self, config: GluePlugin) -> None:

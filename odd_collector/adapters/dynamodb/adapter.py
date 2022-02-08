@@ -9,6 +9,7 @@ from odd_models.models import (
     DataSetField,
     DataSetFieldType,
 )
+from odd_models.models import DataEntityList
 from oddrn_generator import DynamodbGenerator
 from odd_collector.domain.adapter import AbstractAdapter
 
@@ -19,16 +20,6 @@ from .metadata import MetadataExtractor
 
 SDK_DATASET_MAX_RESULTS = 100
 
-"""
-@dataclass
-class PaginatorConfig:
-    op_name: str
-    page_size: int = SDK_DATASET_MAX_RESULTS
-    payload_key: str = None
-    parameters: Dict[str, Union[str, int]] = field(default_factory=dict)
-    mapper: Callable = None
-    mapper_args: Dict[str, Any] = None
-"""
 
 class Adapter(AbstractAdapter):
     __dynamo_types = {"N": "TYPE_NUMBER", "S": "TYPE_STRING", "B": "TYPE_BINARY"}
@@ -63,6 +54,12 @@ class Adapter(AbstractAdapter):
             self.__map_table_from_response(table) for table in self.__fetch_tables()
         ]
 
+    def get_data_entity_list(self) -> DataEntityList:
+        return DataEntityList(
+            data_source_oddrn=self.get_data_source_oddrn(),
+            items=self.get_data_entities(),
+        )
+
     def get_data_transformers(self) -> List[DataEntity]:
         return []
 
@@ -87,7 +84,7 @@ class Adapter(AbstractAdapter):
             PaginatorConfig(
                 op_name="list_tables",
                 payload_key="TableNames",
-                page_size = SDK_DATASET_MAX_RESULTS
+                page_size=SDK_DATASET_MAX_RESULTS
             )
         )
 
@@ -144,7 +141,7 @@ class Adapter(AbstractAdapter):
         )
 
     def __map_fields_from_attributes(
-        self, raw_attributes: List[Dict[str, Any]]
+            self, raw_attributes: List[Dict[str, Any]]
     ) -> Iterable[DataSetField]:
         return [self.__map_field_from_attribute(a) for a in raw_attributes]
 
