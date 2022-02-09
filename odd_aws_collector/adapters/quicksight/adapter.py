@@ -2,8 +2,8 @@ import logging
 from dataclasses import dataclass
 from typing import Dict, Callable, Union, Any, Iterable, Optional, List
 
-from odd_collector.domain.plugin import QuicksightPlugin
-from odd_collector.domain.paginator_config import PaginatorConfig
+from odd_aws_collector.domain.plugin import QuicksightPlugin
+from odd_aws_collector.domain.paginator_config import PaginatorConfig
 
 import boto3
 from more_itertools import flatten

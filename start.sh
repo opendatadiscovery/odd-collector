@@ -1,1 +1,1 @@
-python -m odd_collector
+python -m odd_aws_collector

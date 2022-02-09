@@ -57,10 +57,10 @@ class AdaptersInitializer:
 
         return package_with_plugin_config
 
-    def __call__(
+    def init_adapters(
         self,
-    ) -> List[AbstractAdapter]:
+    ):
         return [
-            package.adapter.Adapter(plugin_config)
-            for package, plugin_config in self._load_packages()
+            (package.adapter.Adapter(plugin), plugin)
+            for package, plugin in self._load_packages()
         ]

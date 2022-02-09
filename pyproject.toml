@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "odd-collector"
+name = "odd-aws-collector"
 version = "0.1.1"
 description = ""
 authors = ["Ramazan Yapparov <ryapparov@provectus.com>"]

@@ -1,4 +1,4 @@
-from odd_collector.domain.adapter import AbstractAdapter
+from odd_aws_collector.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntityList
 
 
@@ -9,3 +9,6 @@ class Adapter(AbstractAdapter):
 
     def get_data_entity_list(self) -> DataEntityList:
         return DataEntityList(data_source_oddrn="test")
+
+    def get_data_source_oddrn(self) -> str:
+        return "oddrn"

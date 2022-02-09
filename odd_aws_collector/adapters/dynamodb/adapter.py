@@ -11,10 +11,10 @@ from odd_models.models import (
 )
 from odd_models.models import DataEntityList
 from oddrn_generator import DynamodbGenerator
-from odd_collector.domain.adapter import AbstractAdapter
+from odd_aws_collector.domain.adapter import AbstractAdapter
 
-from odd_collector.domain.plugin import DynamoDbPlugin
-from odd_collector.domain.paginator_config import PaginatorConfig
+from odd_aws_collector.domain.plugin import DynamoDbPlugin
+from odd_aws_collector.domain.paginator_config import PaginatorConfig
 
 from .metadata import MetadataExtractor
 

@@ -4,6 +4,9 @@ from typing_extensions import Annotated
 
 
 class Plugin(pydantic.BaseSettings):
+    name: str
+    description: Optional[str] = None
+    namespace: Optional[str] = None
     aws_secret_access_key: str
     aws_access_key_id: str
     aws_region: str

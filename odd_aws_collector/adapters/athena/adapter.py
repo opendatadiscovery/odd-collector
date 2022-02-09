@@ -6,10 +6,10 @@ from more_itertools import flatten
 from odd_models.models import DataEntity
 from odd_models.models import DataEntityList
 from oddrn_generator import AthenaGenerator
-from odd_collector.domain.adapter import AbstractAdapter
+from odd_aws_collector.domain.adapter import AbstractAdapter
 
-from odd_collector.domain.plugin import AthenaPlugin
-from odd_collector.domain.paginator_config import PaginatorConfig
+from odd_aws_collector.domain.plugin import AthenaPlugin
+from odd_aws_collector.domain.paginator_config import PaginatorConfig
 
 from .mappers.tables import map_athena_table
 
