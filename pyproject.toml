@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "odd-aws-collector"
+name = "odd-generic-collector"
 version = "0.1.1"
 description = ""
-authors = ["Ramazan Yapparov <ryapparov@provectus.com>"]
+authors = [""]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -22,6 +22,9 @@ black = "^21.12b0"
 aiohttp = "^3.8.1"
 pyarrow = "^6.0.1"
 numpy = "^1.22.1"
+psycopg2-binary = "^2.9.3"
+clickhouse-driver = "^0.2.3"
+mysql-connector-python = "^8.0.28"
 
 
 [tool.poetry.dev-dependencies]
