@@ -22,7 +22,7 @@ try:
 
     collector = Collector(config_path, adapters_folder_metadata)
 
-    #loop.run_until_complete(collector.register_data_sources())
+    loop.run_until_complete(collector.register_data_sources())
 
     collector.start_polling()
 
