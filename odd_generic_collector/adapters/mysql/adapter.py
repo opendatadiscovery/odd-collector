@@ -38,7 +38,7 @@ class Adapter(AbstractAdapter):
             columns = self.__query(_column_metadata, _column_table, _column_order_by)
             self.__disconnect()
             logging.info(f'Load {len(tables)} Datasets DataEntities from database')
-            return map_tables(self.__oddrn_generator, tables, columns)
+            return map_tables(self.__oddrn_generator, tables, columns, self.__database)
         except Exception:
             logging.error('Failed to load metadata for tables')
             logging.exception(Exception)
@@ -46,6 +46,7 @@ class Adapter(AbstractAdapter):
         return []
 
     def get_data_entity_list(self) -> DataEntityList:
+        print(self.get_data_entities())
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
             items=(self.get_data_entities()),

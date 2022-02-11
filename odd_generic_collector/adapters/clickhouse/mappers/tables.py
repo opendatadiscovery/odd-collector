@@ -1,7 +1,7 @@
 from typing import List
 
 import pytz
-from odd_models.models import DataEntity, DataSet, DataEntityType
+from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup
 from oddrn_generator import ClickHouseGenerator
 
 from . import MetadataNamedtuple, ColumnMetadataNamedtuple, _data_set_metadata_schema_url, \
@@ -12,7 +12,7 @@ from .transformer import extract_transformer_data
 
 
 def map_table(oddrn_generator: ClickHouseGenerator,
-              tables: List[tuple], columns: List[tuple], integration_engines: List[tuple]) -> List[DataEntity]:
+              tables: List[tuple], columns: List[tuple], integration_engines: List[tuple], database: str) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
     column_index: int = 0
 
@@ -60,5 +60,14 @@ def map_table(oddrn_generator: ClickHouseGenerator,
                 column_index += 1
             else:
                 break
+    data_entities.append(DataEntity(
+        oddrn=oddrn_generator.get_oddrn_by_path("databases"),
+        name=database,
+        type=DataEntityType.DATABASE_SERVICE,
+        metadata=[],
+        data_entity_group=DataEntityGroup(
+            entities_list=[de.oddrn for de in data_entities]
+        ),
+    ))
 
     return data_entities

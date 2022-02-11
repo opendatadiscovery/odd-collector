@@ -36,7 +36,7 @@ class Adapter(AbstractAdapter):
             tables = self.__execute(_table_select, params)
             columns = self.__execute(_column_select, params)
             integration_engines = self.__execute(_integration_engines_select, params)
-            return map_table(self.__oddrn_generator, tables, columns, integration_engines)
+            return map_table(self.__oddrn_generator, tables, columns, integration_engines, self.__database)
         except Exception as e:
             logging.error('Failed to load metadata for tables')
             logging.exception(e)
@@ -45,6 +45,7 @@ class Adapter(AbstractAdapter):
         return []
 
     def get_data_entity_list(self) -> DataEntityList:
+        print(self.get_data_entities())
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
             items=(self.get_data_entities()),

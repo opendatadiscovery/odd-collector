@@ -7,7 +7,7 @@ from .domain.collector import Collector
 from os import path
 
 logging.basicConfig(
-    level=logging.INFO, format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+    level=logging.DEBUG, format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
 )
 
 try:
@@ -22,7 +22,7 @@ try:
 
     collector = Collector(config_path, adapters_folder_metadata)
 
-    loop.run_until_complete(collector.register_data_sources())
+    #loop.run_until_complete(collector.register_data_sources())
 
     collector.start_polling()
 

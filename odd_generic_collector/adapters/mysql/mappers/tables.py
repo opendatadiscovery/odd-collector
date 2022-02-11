@@ -1,5 +1,5 @@
 import pytz
-from odd_models.models import DataEntity, DataSet, DataTransformer, DataEntityType
+from odd_models.models import DataEntity, DataSet, DataTransformer, DataEntityType, DataEntityGroup
 from oddrn_generator import MysqlGenerator
 
 from . import (
@@ -13,7 +13,7 @@ from .views import extract_transformer_data
 from typing import List
 
 
-def map_tables(oddrn_generator: MysqlGenerator, tables: List[tuple], columns: List[tuple]) -> List[DataEntity]:
+def map_tables(oddrn_generator: MysqlGenerator, tables: List[tuple], columns: List[tuple], database: str) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
     column_index: int = 0
 
@@ -65,5 +65,14 @@ def map_tables(oddrn_generator: MysqlGenerator, tables: List[tuple], columns: Li
                 column_index += 1
             else:
                 break
+    data_entities.append(DataEntity(
+        oddrn=oddrn_generator.get_oddrn_by_path("databases"),
+        name=database,
+        type=DataEntityType.DATABASE_SERVICE,
+        metadata=[],
+        data_entity_group=DataEntityGroup(
+            entities_list=[de.oddrn for de in data_entities]
+        ),
+    ))
 
     return data_entities
