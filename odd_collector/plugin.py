@@ -1,12 +1,11 @@
-from typing import List, Literal, Optional, Union
+from typing import Literal, Optional, Union
+
 import pydantic
+from odd_collector_sdk.domain.plugin import Plugin
 from typing_extensions import Annotated
 
 
-class Plugin(pydantic.BaseSettings):
-    name: str
-    description: Optional[str] = None
-    namespace: Optional[str] = None
+class Plugins(Plugin):
     host: str
     port: int
     database: str
@@ -14,17 +13,21 @@ class Plugin(pydantic.BaseSettings):
     password: str
 
 
-class PostgreSQLPlugin(Plugin):
+class PostgreSQLPlugin(Plugins):
     type: Literal["postgresql"]
 
 
-class MySQLPlugin(Plugin):
+class MySQLPlugin(Plugins):
     type: Literal["mysql"]
     ssl_disabled: Optional[bool] = False
 
 
-class ClickhousePlugin(Plugin):
+class ClickhousePlugin(Plugins):
     type: Literal["clickhouse"]
+
+
+class RedshiftPlugin(Plugins):
+    type: Literal["redshift"]
 
 
 AvailablePlugin = Annotated[
@@ -32,6 +35,7 @@ AvailablePlugin = Annotated[
         PostgreSQLPlugin,
         MySQLPlugin,
         ClickhousePlugin,
+        RedshiftPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]

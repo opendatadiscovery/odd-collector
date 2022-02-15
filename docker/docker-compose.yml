@@ -4,7 +4,7 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
-    container_name: odd-generic-collector
+    container_name: odd-collector
     restart: always
     environment:
       # FLASK:

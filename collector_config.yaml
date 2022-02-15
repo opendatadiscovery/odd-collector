@@ -2,10 +2,10 @@ default_pulling_interval: 10
 token: ""
 platform_host_url: "http://localhost:8080"
 plugins:
-  - type: 1
-    name: test_clickhouse
-    host: "localhost"
-    port: 8080
-    database: "test"
-    user: "test"
-    password: "test"
+  - type: redshift
+    name: test
+    host: ""
+    port: 0
+    database: ""
+    user: ""
+    password: ""

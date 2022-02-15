@@ -3,12 +3,12 @@ import pydantic
 import yaml
 import sys
 import pytest
-from odd_generic_collector.domain.plugin import MySQLPlugin, ClickhousePlugin
+from odd_collector.domain.plugin import MySQLPlugin, ClickhousePlugin
 
-from odd_generic_collector.domain.collector_config import CollectorConfig
-from odd_generic_collector.domain.collector_config_loader import CollectorConfigLoader
-from odd_generic_collector.domain.adapters_initializer import AdaptersInitializer
-from odd_generic_collector.domain.adapters_folder_meta import AdapterFolderMetadata
+from odd_collector.domain.collector_config import CollectorConfig
+from odd_collector.domain.collector_config_loader import CollectorConfigLoader
+from odd_collector.domain.adapters_initializer import AdaptersInitializer
+from odd_collector.domain.adapters_folder_meta import AdapterFolderMetadata
 
 
 test_folder_path = path.realpath(path.dirname(__file__))

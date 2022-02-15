@@ -7,9 +7,7 @@ from oddrn_generator import MysqlGenerator
 
 from typing import List
 
-from odd_generic_collector.domain.adapter import AbstractAdapter
-from odd_generic_collector.domain.plugin import MySQLPlugin
-
+from odd_collector_sdk.domain.adapter import AbstractAdapter
 from .mappers import _column_metadata, _column_table, _column_order_by, _table_select
 from .mappers.tables import map_tables
 
@@ -18,7 +16,7 @@ class Adapter(AbstractAdapter):
     __connection = None
     __cursor = None
 
-    def __init__(self, config: MySQLPlugin) -> None:
+    def __init__(self, config) -> None:
         self.__host = config.host
         self.__port = config.port
         self.__database = config.database
