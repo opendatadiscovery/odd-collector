@@ -4,7 +4,7 @@ from os import path
 
 from odd_collector_sdk.collector import Collector
 
-from .plugin import AvailablePlugin
+from odd_collector.domain.plugin import AvailablePlugin
 
 logging.basicConfig(
     level=logging.DEBUG, format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
