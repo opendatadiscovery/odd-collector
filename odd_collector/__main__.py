@@ -22,7 +22,7 @@ try:
                           root_package="odd_collector.adapters",
                           plugins_union_type=AvailablePlugin)
 
-    loop.run_until_complete(collector.register_data_sources())
+    #loop.run_until_complete(collector.register_data_sources())
 
     collector.start_polling()
 

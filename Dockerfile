@@ -7,6 +7,8 @@ FROM base AS build
 
 RUN apt-get update && \
     apt-get install -y -q build-essential \
+    python3-dev  \
+    libpq-dev \
     curl
 
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
@@ -21,6 +23,8 @@ RUN poetry install --no-interaction --no-ansi --no-dev -vvv
 FROM base as runtime
 
 RUN useradd --create-home --shell /bin/bash app
+RUN apt-get update && \
+    apt-get install -y libpq-dev
 USER app
 
 # non-interactive env vars https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1833013
@@ -28,6 +32,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN=true
 ENV UCF_FORCE_CONFOLD=1
 ENV PYTHONUNBUFFERED=1
+
+
 
 WORKDIR /app
 COPY . ./
