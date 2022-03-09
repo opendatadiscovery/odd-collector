@@ -71,7 +71,7 @@ class Adapter(AbstractAdapter):
                 
                 metadata = {}
                 for i in collection.list_indexes():
-                    metadata['index.v'+str(i['v'])+'.'+i['name']] = [key for key,_ in i['key'].items()]
+                    metadata['index.v'+str(i['v'])+'.'+i['name']] = str([key for key,_ in i['key'].items()])
 
                 results = collection.find({}).limit(MAX_NUMBER_OF_ITERATION)
                 merged_dict = {}
