@@ -18,7 +18,7 @@ def __map_columns(collector: list, data: dict, oddrn_generator, parent_oddrn: st
         collector.append(column)
         if isinstance(value, dict):
             __map_columns(collector, value, oddrn_generator, column.oddrn)
-        if isinstance(value, list):
+        if isinstance(value, list) and len(value)>0:
              __map_columns(collector, {'Values':value[0]}, oddrn_generator, column.oddrn)
 
 
