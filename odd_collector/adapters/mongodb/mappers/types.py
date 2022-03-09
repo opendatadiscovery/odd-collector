@@ -61,6 +61,8 @@ TYPES_MONGO_TO_ODD: Dict[str, Type] = {
     "bit varying": Type.TYPE_BINARY,  # VARBITOID recheck
     "str": Type.TYPE_STRING,  # VARCHAROID
     "ObjectId": Type.TYPE_STRING,  # VARCHAROID
+    "dict": Type.TYPE_STRUCT,
+    "Object": Type.TYPE_STRUCT,
 
     "list": Type.TYPE_LIST,  # view information_schema.columns recheck
     "USER-DEFINED": Type.TYPE_STRUCT  # view information_schema.columns recheck

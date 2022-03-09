@@ -7,7 +7,7 @@ from .mappers.schemas import map_collection
 from .mongo_generator import MongoGenerator
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 
-
+MAX_NUMBER_OF_ITERATION = 10
 class Adapter(AbstractAdapter):
 
     def __init__(self, config) -> None:
@@ -39,10 +39,12 @@ class Adapter(AbstractAdapter):
         return []
     
     def get_data_entity_list(self) -> DataEntityList:
-        return DataEntityList(
+        res = DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
             items=(self.get_data_entities()),
         )
+        # print(res.json())
+        return res
 
     def retrive_scheams(self) :
         """
@@ -54,23 +56,34 @@ class Adapter(AbstractAdapter):
         try:
             collections = self.__connection.list_collection_names()
             schemas = []
-            max_number_of_iterations = 10
             for collection_name in collections:
-                iterations = 1
                 collection = self.__connection[collection_name]
-                results = collection.find({})
-                schema = {"title": collection_name, "required": [], "properties": {}}
-                for res in results :
-                    if iterations > max_number_of_iterations:
-                        break
-                    for key, value in res.items():
-                        if key not in schema['required']:
-                            schema["required"].append(key)
-                            schema["properties"][key] = {"bsonType": type(value).__name__}
-                    iterations += 1
+                schema = {"title": collection_name, 
+                        "row_number":collection.estimated_document_count()
+                        }
+                try:
+                    creation_date = collection.find({}).sort("_id", 1).limit(1).next()['_id'].generation_time
+                    modification_date = collection.find({}).sort("_id", -1).limit(1).next()['_id'].generation_time
+                except:
+                    logging.warn(f"no _id field of ObjectID type in {collection_name} collection")
+                    creation_date = None
+                    modification_date = None
+                
+                metadata = {}
+                for i in collection.list_indexes():
+                    metadata['index.v'+str(i['v'])+'.'+i['name']] = [key for key,_ in i['key'].items()]
+
+                results = collection.find({}).limit(MAX_NUMBER_OF_ITERATION)
+                merged_dict = {}
+                for i in results:
+                    merged_dict = merged_dict | i
+
+                schema["metadata"]=metadata
+                schema["creation_date"]=creation_date
+                schema["modification_date"]=modification_date
+                schema['data'] = merged_dict
+                
                 schemas.append(schema)
-
-
             return schemas
 
         except Exception as e:
