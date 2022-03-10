@@ -34,6 +34,11 @@ class MongoDBPlugin(Plugins):
     type: Literal["mongodb"]
     protocol: str
 
+class SnowflakePlugin(Plugins):
+    type: Literal["snowflake"]
+    account: str
+    warehouse: str
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -41,6 +46,7 @@ AvailablePlugin = Annotated[
         ClickhousePlugin,
         RedshiftPlugin,
         MongoDBPlugin,
+        SnowflakePlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]

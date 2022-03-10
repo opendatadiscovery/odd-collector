@@ -17,6 +17,7 @@ clickhouse-driver = "^0.2.3"
 mysql-connector-python = "^8.0.28"
 psycopg2 = "^2.9.3"
 pymongo = {extras = ["srv"], version = "^4.0.2"}
+snowflake-connector-python = "^2.4.1"
 
 [tool.poetry.dev-dependencies]
 
