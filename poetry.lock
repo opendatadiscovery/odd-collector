@@ -389,7 +389,7 @@ gssapi = ["gssapi (>=1.6.9)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.1.4"
+version = "0.1.5"
 description = "ODD Collector"
 category = "main"
 optional = false
@@ -404,7 +404,7 @@ pydantic = ">=1.8.2,<2.0.0"
 
 [[package]]
 name = "odd-models"
-version = "1.0.18"
+version = "1.0.19"
 description = "Open Data Discovery Models"
 category = "main"
 optional = false
@@ -762,7 +762,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f50f51a9e0968b1c2d0e36ebc4b0d25e9b8336470e43a76dd257eefbafb7f14e"
+content-hash = "a3f0f298359dd439816d3c6464948df6a372356ce86ea51a9edfd6057389d30b"
 
 [metadata.files]
 aiohttp = [
@@ -1322,12 +1322,12 @@ mysql-connector-python = [
     {file = "mysql_connector_python-8.0.28-py2.py3-none-any.whl", hash = "sha256:c76d771fdce1314b07619efff184ec03f56abef6b4ccdc686d3a995f5b225fec"},
 ]
 odd-collector-sdk = [
-    {file = "odd-collector-sdk-0.1.4.tar.gz", hash = "sha256:7be27afe1c5570afdaf9069b44b34d5a010bb7764e19d7b0f7258b9e7d681a4a"},
-    {file = "odd_collector_sdk-0.1.4-py3-none-any.whl", hash = "sha256:0a5d86d9f32c38afd826b8bbc36d4b55ad1f5e8db5dd24661f8f7012ade9e00a"},
+    {file = "odd-collector-sdk-0.1.5.tar.gz", hash = "sha256:17a4da9f7497454aadaf07a3c349ce907b552c6523086fc90b56139c2be6eb63"},
+    {file = "odd_collector_sdk-0.1.5-py3-none-any.whl", hash = "sha256:400c774616fe8d62306469410ccefa2c0225388459ef1fb7ede70187bf891bb0"},
 ]
 odd-models = [
-    {file = "odd-models-1.0.18.tar.gz", hash = "sha256:5786de30b0a1aa4e8a4d11b67c78566b18a461080566b81c6b9d0d47b70d7375"},
-    {file = "odd_models-1.0.18-py3-none-any.whl", hash = "sha256:5d4dbb32f695ec1ea1f400b3d8ff4cd3ae34745b600ad283688aeb114b73c996"},
+    {file = "odd-models-1.0.19.tar.gz", hash = "sha256:de134fa6d7b2163f3ce6b3d5bac7d564d79bbe8d7dcd5b011f3266ba8f1d7e47"},
+    {file = "odd_models-1.0.19-py3-none-any.whl", hash = "sha256:c50b642009ca7cc1a5f63277bd87751a8ce3e6d2e2410e1ee8bab6f3b4ef1ef5"},
 ]
 oddrn-generator = [
     {file = "oddrn-generator-0.1.22.tar.gz", hash = "sha256:8e65942556b1cbb10fd24ff815741d7bb8f91f04f5e97a8dc3b00b8bd89cda5b"},
