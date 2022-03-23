@@ -39,6 +39,11 @@ class SnowflakePlugin(Plugins):
     account: str
     warehouse: str
 
+class KafkaPlugin(Plugin):
+    type: Literal["kafka"]
+    schema_registry_conf: Optional[dict] = {}
+    broker_conf: dict
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -47,6 +52,7 @@ AvailablePlugin = Annotated[
         RedshiftPlugin,
         MongoDBPlugin,
         SnowflakePlugin,
+        KafkaPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]
