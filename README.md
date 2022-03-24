@@ -54,6 +54,8 @@ PLATFORM_HOST_URL=http://odd-platform:8080
 
 Custom `collector-config.yaml`
 ```yaml
+provider_oddrn: collector
+platform_host_url: "http://localhost:8080"
 default_pulling_interval: 10
 token: ""
 plugins:
