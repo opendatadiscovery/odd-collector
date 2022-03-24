@@ -4,5 +4,5 @@ from typing import Dict, List
 
 
 
-def avro_schema(data: dict, oddrn_generator: KafkaGenerator)->List[DataSetField]:
+def string_data(data: dict, oddrn_generator: KafkaGenerator)->List[DataSetField]:
     pass

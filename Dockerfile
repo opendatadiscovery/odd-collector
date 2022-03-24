@@ -9,7 +9,9 @@ RUN apt-get update && \
     apt-get install -y -q build-essential \
     python3-dev  \
     libpq-dev \
-    curl
+    curl \
+    librdkafka-dev \
+    build-essential
 
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 RUN mv /root/.poetry $POETRY_PATH

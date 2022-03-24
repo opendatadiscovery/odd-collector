@@ -39,7 +39,7 @@ class SnowflakePlugin(Plugins):
     account: str
     warehouse: str
 
-class KafkaPlugin(Plugin):
+class KafkaPlugin(Plugins):
     type: Literal["kafka"]
     schema_registry_conf: Optional[dict] = {}
     broker_conf: dict

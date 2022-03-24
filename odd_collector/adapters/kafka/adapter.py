@@ -4,7 +4,7 @@ from confluent_kafka.admin import AdminClient
 from confluent_kafka import Consumer, KafkaException, TopicPartition
 from odd_models.models import DataEntity, DataEntityList
 from typing import List, Dict
-from .mappers.schemas import map_collection
+from .mappers.schemas import map_topics
 from oddrn_generator import KafkaGenerator
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 import json
@@ -45,8 +45,9 @@ class Adapter(AbstractAdapter):
             schemas = self.retrive_scheams()
             print("*************SCHEMA******************")
             print(schemas)
+            print("*************SCHEMA******************")
 
-            # return map_collection(self.__oddrn_generator, schemas, self.__database)
+            return map_topics(self.__oddrn_generator, schemas, self.broker_conf.get('bootstrap.servers'))
         except Exception as e:
             logging.error('Failed to load metadata for tables')
             logging.exception(e)
@@ -58,7 +59,9 @@ class Adapter(AbstractAdapter):
             data_source_oddrn=self.get_data_source_oddrn(),
             items=(self.get_data_entities()),
         )
+        print("*************DataEntity******************")
         print(res.json())
+        print("*************DataEntity******************")
         return res
 
     def retrive_scheams(self) :
