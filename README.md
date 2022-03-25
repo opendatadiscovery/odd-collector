@@ -20,25 +20,41 @@ Due to Plugin is inherited from `pydantic.BaseSetting`, each field missed in `co
 ## Implemented adapters
 ___
 ### __PostgreSQL__
-```python
-class PostgreSQLPlugin(Plugins):
-    type: Literal["postgresql"]
+```yaml
+type: postgresql
+host: str
+port: int
+database: str
+user: str
+password: str
 ```
 ### __MySQL__
-```python
-class MySQLPlugin(Plugins):
-    type: Literal["mysql"]
-    ssl_disabled: Optional[bool] = False
+```yaml
+type: mysql
+host: str
+port: int
+database: str
+user: str
+password: str
+ssl_disabled: bool
 ```
 ### __ClickHouse__
-```python
-class ClickhousePlugin(Plugins):
-    type: Literal["clickhouse"]
+```yaml
+type: clickhouse
+host: str
+port: int
+database: str
+user: str
+password: str
 ```
 ### __Redshift__
-```python
-class RedshiftPlugin(Plugins):
-    type: Literal["redshift"]
+```yaml
+type: redshift
+host: str
+port: int
+database: str
+user: str
+password: str
 ```
 
 ## Building
