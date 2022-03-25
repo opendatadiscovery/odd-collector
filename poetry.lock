@@ -362,7 +362,7 @@ gssapi = ["gssapi (>=1.6.9)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.1.3"
+version = "0.1.5"
 description = "ODD Collector"
 category = "main"
 optional = false
