@@ -377,7 +377,7 @@ pydantic = ">=1.8.2,<2.0.0"
 
 [[package]]
 name = "odd-models"
-version = "1.0.15"
+version = "1.0.19"
 description = "Open Data Discovery Models"
 category = "main"
 optional = false
