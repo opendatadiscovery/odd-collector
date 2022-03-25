@@ -4,10 +4,12 @@ from confluent_kafka.admin import AdminClient
 from confluent_kafka import Consumer, KafkaException, TopicPartition
 from odd_models.models import DataEntity, DataEntityList
 from typing import List, Dict
-from .mappers.schemas import map_topics
-from oddrn_generator import KafkaGenerator
+from mappers.schemas import map_topics
+from oddrn_generator import Generator
+from kafka_generator import KafkaGenerator, KafkaPathsModel
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 import json
+import requests
 
 FORMAT = '%(asctime)s | %(levelname)s | %(name)s  | %(message)s'
 
@@ -27,10 +29,15 @@ class Adapter(AbstractAdapter):
         if not self.broker_conf.get('bootstrap.servers'):
             logger.error("'bootstrap.servers' is not specified in broker_conf")
             raise "'bootstrap.servers' is not specified in broker_conf"
-        self.__oddrn_generator = KafkaGenerator(host_settings=self.broker_conf.get('bootstrap.servers'))
+        self.__oddrn_generator = KafkaGenerator(host_settings=self.broker_conf.get('bootstrap.servers'), clusters = self.broker_conf.get('bootstrap.servers').replace("/",":") )
         self.admin_client = AdminClient(self.broker_conf)
-        self.schema_client = SchemaRegistryClient(self.schema_registry_conf) if self.schema_registry_conf.get('url') else None
-        self.schema_subjects = self.schema_client.get_subjects() if self.schema_client else None
+        try:
+            self.schema_client = SchemaRegistryClient(self.schema_registry_conf) if self.schema_registry_conf.get('url') else None
+            self.schema_subjects = self.schema_client.get_subjects() if self.schema_client else None
+        except requests.exceptions.ConnectionError as e:
+            logger.warning(f"Unable to connect to schema registry on url '{self.schema_registry_conf.get('url')}', schema will be skipped")
+            self.schema_client = None
+            self.schema_subjects = None
         self.consumer = Consumer(self.broker_conf)
 
     def get_data_source_oddrn(self) -> str:
@@ -42,12 +49,12 @@ class Adapter(AbstractAdapter):
         an odd list of data entities
         """
         try:
-            schemas = self.retrive_scheams()
-            print("*************SCHEMA******************")
-            print(schemas)
-            print("*************SCHEMA******************")
+            topics = self.retrive_scheams()
+            # print("*************SCHEMA******************")
+            # print(topics)
+            # print("*************SCHEMA******************")
 
-            return map_topics(self.__oddrn_generator, schemas, self.broker_conf.get('bootstrap.servers'))
+            return map_topics(self.__oddrn_generator, topics, self.broker_conf.get('bootstrap.servers'))
         except Exception as e:
             logging.error('Failed to load metadata for tables')
             logging.exception(e)
@@ -76,6 +83,7 @@ class Adapter(AbstractAdapter):
                 metadata = {}
                 metadata['partitions'] = len(topic[1].partitions.keys())
                 schema["metadata"]=metadata
+                msg = None
 
                 if self.schema_subjects and f"{topic[0]}-value" in self.schema_subjects:
                     schema['value'] = eval(self.schema_client.get_latest_version(f"{topic[0]}-value").schema.schema_str)
@@ -88,13 +96,13 @@ class Adapter(AbstractAdapter):
                     try:
                         msg = self.consumer.consume(1, timeout=3)[0]
                         if msg is None or msg.value() is None:
-                            logger.error(f"Empty message in topic: {topic[0]}")
+                            logger.warning(f"Empty message in topic: {topic[0]}")
                             continue
                         if msg.error():
-                            logger.error(f"Got error when trying to consume topic: {topic[0]}, error: {msg.error()}")
+                            logger.warning(f"Got error when trying to consume topic: {topic[0]}, error: {msg.error()}")
                             continue
                     except IndexError as e:
-                        logger.error(f"No message found in topic: {topic[0]}")
+                        logger.warning(f"No message found in topic: {topic[0]}")
                         continue
                     try:
                         schema['value'] = {"type":"json"}
@@ -111,15 +119,16 @@ class Adapter(AbstractAdapter):
                 else:
                     logger.info(f"Did not find key schema in schema registry for topic: {topic[0]}, trying to pars as json")
                     try:
-                        msg = self.consumer.consume(1, timeout=3)[0]
+                        if not msg:
+                            msg = self.consumer.consume(1, timeout=3)[0]
                         if msg is None or msg.key() is None:
-                            logger.error(f"Empty message in topic: {topic[0]}")
+                            logger.warning(f"Empty message when checkin key in topic: {topic[0]}")
                             continue
                         if msg.error():
-                            logger.error(f"Got error when trying to consume topic: {topic[0]}, error: {msg.error()}")
+                            logger.warning(f"Got error when when checkin key in topic: {topic[0]}, error: {msg.error()}")
                             continue
                     except IndexError as e:
-                        logger.error(f"No message found in topic: {topic[0]}")
+                        logger.warning(f"No message found in topic: {topic[0]}")
                         continue
                     try:
                         schema['key'] = {"type":"json"}

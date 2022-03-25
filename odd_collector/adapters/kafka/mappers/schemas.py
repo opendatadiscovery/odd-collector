@@ -1,5 +1,5 @@
 from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup, DataSetField
-from oddrn_generator import KafkaGenerator
+from oddrn_generator import Generator
 from typing import Dict, List
 from .avro_schema import avro_schema
 from .json_data import json_data
@@ -18,10 +18,10 @@ SCHEMA_MAPPER = {
 }
 
 
-def map_topics(oddrn_generator: KafkaGenerator, topics: List[Dict], cluster: str) -> List[DataEntity]:
+def map_topics(oddrn_generator: Generator, topics: List[Dict], cluster: str) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
     de_group = DataEntity(
-        oddrn=oddrn_generator.get_oddrn_by_path("clusters"),
+        oddrn=oddrn_generator.get_oddrn_by_path('clusters'),
         name=cluster,
         type=DataEntityType.KAFKA_SERVICE,
         metadata=[]
@@ -32,7 +32,7 @@ def map_topics(oddrn_generator: KafkaGenerator, topics: List[Dict], cluster: str
 
         topic: str = metadata['title']
 
-        oddrn_generator.set_oddrn_paths(**{'clusters': cluster, "topics" : topic})
+        oddrn_generator.set_oddrn_paths(**{"topics" : topic})
 
         data_entity: DataEntity = DataEntity(
             oddrn=oddrn_generator.get_oddrn_by_path("topics"),
@@ -47,14 +47,14 @@ def map_topics(oddrn_generator: KafkaGenerator, topics: List[Dict], cluster: str
         data_entity.dataset = DataSet(
             field_list=[],
             parent_oddrn = de_group.oddrn
-            # TODO add row number
+            # TODO add row number ain mongo
             # rows_number = metadata['row_number']
         )
 
         key_parcer = SCHEMA_MAPPER.get(metadata['key']['type'])
         value_parcer = SCHEMA_MAPPER.get(metadata['value']['type'])
-        key_field_list = key_parcer(metadata,oddrn_generator)
-        value_field_list = value_parcer(metadata,oddrn_generator)
+        key_field_list = key_parcer({'key':metadata['key']},oddrn_generator)
+        value_field_list = value_parcer({'value':metadata['value']},oddrn_generator)
 
         data_entity.dataset.field_list = value_field_list.extend(key_field_list)
         

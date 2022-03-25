@@ -1,8 +1,13 @@
-from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup, DataSetField
-from oddrn_generator import KafkaGenerator
+from oddrn_generator import Generator
 from typing import Dict, List
+from itsdangerous import NoneAlgorithm
+from odd_models.models import DataSetField, DataSetFieldType, Type
+from .types import TYPES_MONGO_TO_ODD
 
 
 
-def avro_schema(data: dict, oddrn_generator: KafkaGenerator)->List[DataSetField]:
-    pass
+def avro_schema(data: dict, oddrn_generator: Generator)->List[DataSetField]:
+    print("*************avro data******************")
+    print(data)
+    print("*************avro data******************")
+
