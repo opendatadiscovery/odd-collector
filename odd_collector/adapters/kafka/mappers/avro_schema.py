@@ -7,7 +7,7 @@ from .types import TYPES_MONGO_TO_ODD
 
 
 def avro_schema(data: dict, oddrn_generator: Generator)->List[DataSetField]:
-    print("*************avro data******************")
+    print("*************avro schema******************")
     print(data)
-    print("*************avro data******************")
+    print("*************avro schema******************")
 

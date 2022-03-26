@@ -7,6 +7,6 @@ from .types import TYPES_MONGO_TO_ODD
 
 
 def json_schema(data: dict, oddrn_generator: Generator)->List[DataSetField]:
-    print("*************avro data******************")
+    print("*************json schema******************")
     print(data)
-    print("*************avro data******************")
+    print("************json schema*******************")
