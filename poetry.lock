@@ -335,7 +335,7 @@ gssapi = ["gssapi (>=1.6.9)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.1.5"
+version = "0.1.6"
 description = "ODD Collector"
 category = "main"
 optional = false
@@ -346,6 +346,7 @@ aiohttp = ">=3.8.1,<4.0.0"
 APScheduler = ">=3.8.1,<4.0.0"
 black = ">=21.12b0,<22.0"
 odd-models = ">=1.0.14,<2.0.0"
+pyaml-env = ">=1.1.5,<2.0.0"
 pydantic = ">=1.8.2,<2.0.0"
 
 [[package]]
@@ -440,6 +441,20 @@ description = "psycopg2 - Python-PostgreSQL Database Adapter"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "pyaml-env"
+version = "1.1.5"
+description = "Provides yaml file parsing with environment variable resolution"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+PyYAML = ">=5,<=6"
+
+[package.extras]
+test = ["pytest"]
 
 [[package]]
 name = "pydantic"
@@ -604,7 +619,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9.1"
-content-hash = "f5941453be445c684bf86a44ba354946eb53fc72bde2cceb0a3054d6de39a457"
+content-hash = "681fc90065d788dd9f89f44e5f663f2fd492bb1bb927d3e558b252bb1beab5f2"
 
 [metadata.files]
 aiohttp = [
@@ -1082,8 +1097,8 @@ mysql-connector-python = [
     {file = "mysql_connector_python-8.0.28-py2.py3-none-any.whl", hash = "sha256:c76d771fdce1314b07619efff184ec03f56abef6b4ccdc686d3a995f5b225fec"},
 ]
 odd-collector-sdk = [
-    {file = "odd-collector-sdk-0.1.5.tar.gz", hash = "sha256:17a4da9f7497454aadaf07a3c349ce907b552c6523086fc90b56139c2be6eb63"},
-    {file = "odd_collector_sdk-0.1.5-py3-none-any.whl", hash = "sha256:400c774616fe8d62306469410ccefa2c0225388459ef1fb7ede70187bf891bb0"},
+    {file = "odd-collector-sdk-0.1.6.tar.gz", hash = "sha256:7f7cd96e3c4e3992d78746aed49b6a57c390012e853cf6a36ec85e9183ddf219"},
+    {file = "odd_collector_sdk-0.1.6-py3-none-any.whl", hash = "sha256:1e80d97077852e52eb595b6dd57223739280b16e209ec4c41656b6a4d870a632"},
 ]
 odd-models = [
     {file = "odd-models-1.0.19.tar.gz", hash = "sha256:de134fa6d7b2163f3ce6b3d5bac7d564d79bbe8d7dcd5b011f3266ba8f1d7e47"},
@@ -1149,6 +1164,10 @@ psycopg2 = [
     {file = "psycopg2-2.9.3-cp39-cp39-win32.whl", hash = "sha256:8cf3878353cc04b053822896bc4922b194792df9df2f1ad8da01fb3043602126"},
     {file = "psycopg2-2.9.3-cp39-cp39-win_amd64.whl", hash = "sha256:06f32425949bd5fe8f625c49f17ebb9784e1e4fe928b7cce72edc36fb68e4c0c"},
     {file = "psycopg2-2.9.3.tar.gz", hash = "sha256:8e841d1bf3434da985cc5ef13e6f75c8981ced601fd70cc6bf33351b91562981"},
+]
+pyaml-env = [
+    {file = "pyaml_env-1.1.5-py3-none-any.whl", hash = "sha256:e0fa9693adb01dae0bb3423ffc1c35c6ab6c973c4e2b24b4dac891b909c2a763"},
+    {file = "pyaml_env-1.1.5.tar.gz", hash = "sha256:84c6330e53e6ce675353b2b1815b3922184b40641ff8c3b5fe4a25770a97adf5"},
 ]
 pydantic = [
     {file = "pydantic-1.8.2-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:05ddfd37c1720c392f4e0d43c484217b7521558302e7069ce8d318438d297739"},
