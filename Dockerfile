@@ -1,4 +1,4 @@
-FROM python:3.8.12-slim-bullseye as base
+FROM python:3.9.12-slim-bullseye as base
 ENV POETRY_PATH=/opt/poetry \
     POETRY_VERSION=1.1.6
 ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
@@ -37,6 +37,6 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 COPY . ./
-COPY --from=build /usr/local/lib/python3.8/site-packages /usr/local/lib/python3.8/site-packages
+COPY --from=build /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 
 ENTRYPOINT ["bash", "start.sh"]

@@ -9,7 +9,7 @@ repository = "https://github.com/opendatadiscovery/odd-collector"
 
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9.1"
 oddrn-generator = "^0.1.22"
 odd-models = "^1.0.15"
 odd-collector-sdk = "^0.1.3"
