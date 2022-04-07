@@ -30,12 +30,17 @@ class RedshiftPlugin(Plugins):
     type: Literal["redshift"]
 
 
+class HivePlugin(Plugins):
+    type: Literal["hive"]
+
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
         MySQLPlugin,
         ClickhousePlugin,
         RedshiftPlugin,
+        HivePlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]
