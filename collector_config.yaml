@@ -1,11 +1,12 @@
+provider_oddrn: collector
 default_pulling_interval: 10
 token: ""
 platform_host_url: "http://localhost:8080"
 plugins:
-  - type: redshift
-    name: test
-    host: ""
-    port: 0
+  - type: postgresql
+    name: test_psql
+    host: "database"
+    port: 5432
     database: ""
     user: ""
     password: ""
