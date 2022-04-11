@@ -15,30 +15,45 @@ class Plugins(Plugin):
     user: str
     password: str
 ```
-Due to Plugin is inherited from `pydantic.BaseSetting`, each field missed in `collector-config.yaml` can be taken from env variables.
 
 ## Implemented adapters
 ___
 ### __PostgreSQL__
-```python
-class PostgreSQLPlugin(Plugins):
-    type: Literal["postgresql"]
+```yaml
+type: postgresql
+host: str
+port: int
+database: str
+user: str
+password: str
 ```
 ### __MySQL__
-```python
-class MySQLPlugin(Plugins):
-    type: Literal["mysql"]
-    ssl_disabled: Optional[bool] = False
+```yaml
+type: mysql
+host: str
+port: int
+database: str
+user: str
+password: str
+ssl_disabled: bool
 ```
 ### __ClickHouse__
-```python
-class ClickhousePlugin(Plugins):
-    type: Literal["clickhouse"]
+```yaml
+type: clickhouse
+host: str
+port: int
+database: str
+user: str
+password: str
 ```
 ### __Redshift__
-```python
-class RedshiftPlugin(Plugins):
-    type: Literal["redshift"]
+```yaml
+type: redshift
+host: str
+port: int
+database: str
+user: str
+password: str
 ```
 
 ## Building
@@ -50,10 +65,18 @@ docker build .
 Custom `.env` file for docker-compose.yaml
 ```
 PLATFORM_HOST_URL=http://odd-platform:8080
+POSTGRES_PASSWORD=postgres_password_secret
 ```
+
+There 3 options how we can pass config field:
+1. Explicitly set it in `collector_config.yaml` file, i.e `database: odd-platform-db`
+2. Use `.env` file, Pydantic will read skipped field from ENV variable
+3. In situation when plugins have same field names, we can  explicitly set ENV variable to `collector_config.yaml`, i.e. `password: !ENV ${POSTGRES_PASSWORD}`
 
 Custom `collector-config.yaml`
 ```yaml
+provider_oddrn: collector
+# platform_host_url: "http://localhost:8080" - We can skip it, it will be takern by pydantic from ENV variables
 default_pulling_interval: 10
 token: ""
 plugins:
@@ -63,7 +86,7 @@ plugins:
     port: 5432
     database: "some_database_name"
     user: "some_user_name"
-    password: "some_password"
+    password: !ENV {POSTGRES_PASSWORD}
   - type: mysql
     name: test_mysql_adapter
     host: "localhost"
@@ -90,6 +113,7 @@ services:
       - collector_config.yaml:/app/collector_config.yaml
     environment:
       - PLATFORM_HOST_URL=${PLATFORM_HOST_URL}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     depends_on:
       - odd-platform
 ```

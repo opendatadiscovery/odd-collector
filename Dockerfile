@@ -1,4 +1,4 @@
-FROM python:3.9-slim-bullseye as base
+FROM python:3.9.12-slim-bullseye as base
 ENV POETRY_PATH=/opt/poetry \
     POETRY_VERSION=1.1.6
 ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
