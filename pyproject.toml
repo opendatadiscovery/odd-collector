@@ -16,6 +16,7 @@ odd-collector-sdk = "^0.1.6"
 clickhouse-driver = "^0.2.3"
 mysql-connector-python = "^8.0.28"
 psycopg2 = "^2.9.3"
+pymongo = {extras = ["srv"], version = "^4.0.2"}
 
 [tool.poetry.dev-dependencies]
 

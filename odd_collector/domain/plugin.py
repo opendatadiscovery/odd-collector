@@ -30,12 +30,17 @@ class RedshiftPlugin(Plugins):
     type: Literal["redshift"]
 
 
+class MongoDBPlugin(Plugins):
+    type: Literal["mongodb"]
+    protocol: str
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
         MySQLPlugin,
         ClickhousePlugin,
         RedshiftPlugin,
+        MongoDBPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]
