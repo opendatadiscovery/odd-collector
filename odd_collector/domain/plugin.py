@@ -34,6 +34,7 @@ class MongoDBPlugin(Plugins):
     type: Literal["mongodb"]
     protocol: str
 
+
 class HivePlugin(Plugins):
     type: Literal["hive"]
 
