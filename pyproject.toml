@@ -19,6 +19,7 @@ hive-metastore-client="^1.0.9"
 more-itertools="^8.6.0"
 lark-parser="^0.11.1"
 psycopg2 = "^2.9.3"
+pymongo = {extras = ["srv"], version = "^4.0.2"}
 
 [tool.poetry.dev-dependencies]
 

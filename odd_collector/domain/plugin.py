@@ -30,6 +30,10 @@ class RedshiftPlugin(Plugins):
     type: Literal["redshift"]
 
 
+class MongoDBPlugin(Plugins):
+    type: Literal["mongodb"]
+    protocol: str
+
 class HivePlugin(Plugins):
     type: Literal["hive"]
 
@@ -40,6 +44,7 @@ AvailablePlugin = Annotated[
         MySQLPlugin,
         ClickhousePlugin,
         RedshiftPlugin,
+        MongoDBPlugin,
         HivePlugin,
     ],
     pydantic.Field(discriminator="type"),
