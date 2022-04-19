@@ -34,6 +34,11 @@ class MongoDBPlugin(Plugins):
     type: Literal["mongodb"]
     protocol: str
 
+
+class HivePlugin(Plugins):
+    type: Literal["hive"]
+
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -41,6 +46,7 @@ AvailablePlugin = Annotated[
         ClickhousePlugin,
         RedshiftPlugin,
         MongoDBPlugin,
+        HivePlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]

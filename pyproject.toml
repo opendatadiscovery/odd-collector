@@ -15,6 +15,9 @@ odd-models = "^1.0.15"
 odd-collector-sdk = "^0.1.6"
 clickhouse-driver = "^0.2.3"
 mysql-connector-python = "^8.0.28"
+hive-metastore-client="^1.0.9"
+more-itertools="^8.6.0"
+lark-parser="^0.11.1"
 psycopg2 = "^2.9.3"
 pymongo = {extras = ["srv"], version = "^4.0.2"}
 
