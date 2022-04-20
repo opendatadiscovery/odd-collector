@@ -1,8 +1,5 @@
 # odd-collector
-Aggregation of adapters for [ODD Platform](https://github.com/opendatadiscovery/odd-platform)
-
-`odd-collector` uses [odd-collector-sdk](https://github.com/opendatadiscovery/odd-collector-sdk).
-
+ODD Collector is a lightweight service which gathers metadata from all your data sources.
 
 ## Domain
 ___
@@ -68,7 +65,7 @@ PLATFORM_HOST_URL=http://odd-platform:8080
 POSTGRES_PASSWORD=postgres_password_secret
 ```
 
-There 3 options how we can pass config field:
+There are 3 options for config field pass:
 1. Explicitly set it in `collector_config.yaml` file, i.e `database: odd-platform-db`
 2. Use `.env` file, Pydantic will read skipped field from ENV variable
 3. In situation when plugins have same field names, we can  explicitly set ENV variable to `collector_config.yaml`, i.e. `password: !ENV ${POSTGRES_PASSWORD}`
