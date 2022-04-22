@@ -1,6 +1,8 @@
 # odd-collector
 ODD Collector is a lightweight service which gathers metadata from all your data sources.
 
+To learn more about collector types and ODD Platform's architecture, [read the documentation](https://docs.opendatadiscovery.org/architecture).
+
 ## Domain
 ___
 Main class for plugins is `Plugins` inherited from `odd-collector-sdk.domain.Plugin`. 
