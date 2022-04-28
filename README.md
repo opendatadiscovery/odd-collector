@@ -54,6 +54,24 @@ database: str
 user: str
 password: str
 ```
+### __Hive__
+```yaml
+type: hive
+host: str
+port: int
+database: str
+user: str
+password: str
+```
+### __Elasticsearch__
+```yaml
+type: elasticsearch
+host: str
+port: int
+database: ""
+user: ""
+password: ""
+```
 
 ## Building
 ```bash
