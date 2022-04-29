@@ -25,7 +25,6 @@ class Adapter(AbstractAdapter):
 
     def get_data_entity_list(self) -> DataEntityList:
         data_entities = self.get_data_entities()
-        logging.info(f"Hive adapter data entities: {data_entities}")
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
             items=data_entities,

@@ -46,7 +46,6 @@ class Adapter(AbstractAdapter):
         return []
 
     def get_data_entity_list(self) -> DataEntityList:
-        logging.info(self.get_data_entities())
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
             items=(self.get_data_entities()),
