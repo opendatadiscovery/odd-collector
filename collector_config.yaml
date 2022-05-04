@@ -1,4 +1,3 @@
-provider_oddrn: collector
 default_pulling_interval: 10
 token: ""
 platform_host_url: "http://localhost:8080"
