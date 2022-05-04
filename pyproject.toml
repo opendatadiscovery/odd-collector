@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector"
-version = "0.1.0"
+version = "0.1.6"
 description = "ODD Collector"
 authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
 homepage = "https://github.com/opendatadiscovery/odd-collector"
@@ -12,7 +12,7 @@ repository = "https://github.com/opendatadiscovery/odd-collector"
 python = "^3.9.1"
 oddrn-generator = "^0.1.23"
 odd-models = "^1.0.15"
-odd-collector-sdk = "^0.1.6"
+odd-collector-sdk = "^0.2.0"
 clickhouse-driver = "^0.2.3"
 mysql-connector-python = "^8.0.28"
 hive-metastore-client="^1.0.9"

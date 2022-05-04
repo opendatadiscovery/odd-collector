@@ -92,8 +92,7 @@ There are 3 options for config field pass:
 
 Custom `collector-config.yaml`
 ```yaml
-provider_oddrn: collector
-# platform_host_url: "http://localhost:8080" - We can skip it, it will be takern by pydantic from ENV variables
+# platform_host_url: "http://localhost:8080" - We can skip it, it will be taken by pydantic from ENV variables
 default_pulling_interval: 10
 token: ""
 plugins:

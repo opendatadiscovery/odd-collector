@@ -418,7 +418,7 @@ gssapi = ["gssapi (>=1.6.9)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.1.6"
+version = "0.2.0"
 description = "ODD Collector"
 category = "main"
 optional = false
@@ -758,7 +758,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9.1"
-content-hash = "8e644e009535e13e6682c719c9c542a7aaeca4f952a1d7ce08b6a45c32753074"
+content-hash = "792c59a79262b4055ba4d77cd9f09f26a1638ab6752816210f782eccf9067c31"
 
 [metadata.files]
 aiohttp = [
@@ -1256,8 +1256,8 @@ mysql-connector-python = [
     {file = "mysql_connector_python-8.0.29-py2.py3-none-any.whl", hash = "sha256:047420715bbb51d3cba78de446c8a6db4666459cd23e168568009c620a3f5b90"},
 ]
 odd-collector-sdk = [
-    {file = "odd-collector-sdk-0.1.6.tar.gz", hash = "sha256:7f7cd96e3c4e3992d78746aed49b6a57c390012e853cf6a36ec85e9183ddf219"},
-    {file = "odd_collector_sdk-0.1.6-py3-none-any.whl", hash = "sha256:1e80d97077852e52eb595b6dd57223739280b16e209ec4c41656b6a4d870a632"},
+    {file = "odd-collector-sdk-0.2.0.tar.gz", hash = "sha256:89606b50ecf2a1e2a482ed7508f2eacdc23ad9ccb7bb614639721e5a03b408d0"},
+    {file = "odd_collector_sdk-0.2.0-py3-none-any.whl", hash = "sha256:609d23e9f6b9f4511c41158ebd89b06edfe18e94b500dc80beed829de035cc25"},
 ]
 odd-models = [
     {file = "odd-models-1.0.20.tar.gz", hash = "sha256:283bcd3bcd19ceccd3991038ca75e7cfab91cf1d8cfe016ffc1a9a92bb0f5844"},
