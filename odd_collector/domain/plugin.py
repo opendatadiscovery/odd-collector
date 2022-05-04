@@ -11,6 +11,10 @@ class Plugins(Plugin):
     database: str
     user: str
     password: str
+    http_auth: str = None
+    use_ssl: bool = None
+    verify_certs: bool = None
+    ca_certs: str = None
 
 
 class PostgreSQLPlugin(Plugins):
@@ -39,6 +43,10 @@ class HivePlugin(Plugins):
     type: Literal["hive"]
 
 
+class ElasticsearchPlugin(Plugins):
+    type: Literal["elasticsearch"]
+
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -47,6 +55,7 @@ AvailablePlugin = Annotated[
         RedshiftPlugin,
         MongoDBPlugin,
         HivePlugin,
+        ElasticsearchPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]
