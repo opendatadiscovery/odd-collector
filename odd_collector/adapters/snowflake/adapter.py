@@ -52,31 +52,21 @@ class Adapter(AbstractAdapter):
         return self.__cursor.fetchall()
 
     def __connect(self):
-        try:
-            self.__connection = connector.connect(
-                user=self.__username,
-                password=self.__password,
-                account=self.__account
-            )
-            self.__cursor = self.__connection.cursor().execute(f"USE DATABASE {self.__database}")
-        except Exception as err:
-            logging.error(err)
-            raise DBException('Database error')
-        return
+        self.__connection = connector.connect(
+            user=self.__username,
+            password=self.__password,
+            account=self.__account
+        )
+        self.__cursor = self.__connection.cursor().execute(f"USE DATABASE {self.__database}")
 
     def __disconnect(self):
         try:
             if self.__cursor:
                 self.__cursor.close()
-        except Exception:
-            pass
+        except Exception as e:
+            logging.exception(e)
         try:
             if self.__connection:
                 self.__connection.close()
-        except Exception:
-            pass
-        return
-
-
-class DBException(Exception):
-    pass
+        except Exception as e:
+            logging.exception(e)

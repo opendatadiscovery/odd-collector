@@ -151,7 +151,7 @@ unicode_backport = ["unicodedata2"]
 
 [[package]]
 name = "click"
-version = "8.1.2"
+version = "8.1.3"
 description = "Composable command line interface toolkit"
 category = "main"
 optional = false
@@ -199,26 +199,29 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "connexion"
-version = "2.7.0"
+version = "2.13.1"
 description = "Connexion - API first applications with OpenAPI/Swagger and Flask"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-clickclick = ">=1.2"
-flask = ">=1.0.4"
-inflection = ">=0.3.1"
-jsonschema = ">=2.5.1"
-openapi-spec-validator = ">=0.2.4"
-PyYAML = ">=5.1"
-requests = ">=2.9.1"
+clickclick = ">=1.2,<21"
+flask = ">=1.0.4,<3"
+inflection = ">=0.3.1,<0.6"
+itsdangerous = ">=0.24"
+jsonschema = ">=2.5.1,<5"
+packaging = ">=20"
+PyYAML = ">=5.1,<7"
+requests = ">=2.9.1,<3"
+werkzeug = ">=1.0,<3"
 
 [package.extras]
-aiohttp = ["aiohttp (>=2.3.10)", "aiohttp-jinja2 (>=0.14.0)"]
-flask = ["flask (>=1.0.4)"]
-swagger-ui = ["swagger-ui-bundle (>=0.0.2)"]
-tests = ["decorator", "pytest", "pytest-cov", "testfixtures", "flask (>=1.0.4)", "swagger-ui-bundle (>=0.0.2)", "aiohttp (>=2.3.10)", "aiohttp-jinja2 (>=0.14.0)", "pytest-aiohttp", "aiohttp-remotes"]
+aiohttp = ["aiohttp (>=2.3.10,<4)", "aiohttp-jinja2 (>=0.14.0,<2)", "MarkupSafe (>=0.23)"]
+docs = ["sphinx-autoapi (==1.8.1)"]
+flask = ["flask (>=1.0.4,<3)", "itsdangerous (>=0.24)"]
+swagger-ui = ["swagger-ui-bundle (>=0.0.2,<0.1)"]
+tests = ["decorator (>=5,<6)", "pytest (>=6,<7)", "pytest-cov (>=2,<3)", "testfixtures (>=6,<7)", "flask (>=1.0.4,<3)", "itsdangerous (>=0.24)", "swagger-ui-bundle (>=0.0.2,<0.1)", "aiohttp (>=2.3.10,<4)", "aiohttp-jinja2 (>=0.14.0,<2)", "MarkupSafe (>=0.23)", "pytest-aiohttp", "aiohttp-remotes"]
 
 [[package]]
 name = "cryptography"
@@ -275,7 +278,7 @@ requests = ["requests (>=2.4.0,<3.0.0)"]
 
 [[package]]
 name = "flask"
-version = "2.1.1"
+version = "2.1.2"
 description = "A simple framework for building complex web applications."
 category = "main"
 optional = false
@@ -365,7 +368,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "jinja2"
-version = "3.1.1"
+version = "3.1.2"
 description = "A very fast and expressive template engine."
 category = "main"
 optional = false
@@ -472,14 +475,14 @@ pydantic = ">=1.8.2,<2.0.0"
 
 [[package]]
 name = "odd-models"
-version = "1.0.20"
+version = "1.0.21"
 description = "Open Data Discovery Models"
 category = "main"
 optional = false
-python-versions = ">=3.6,<4.0"
+python-versions = ">=3.6.1,<4.0.0"
 
 [package.dependencies]
-connexion = "2.7.0"
+connexion = "2.13.1"
 Flask-Compress = "1.10.1"
 pydantic = "1.8.2"
 sqlparse = "0.4.2"
@@ -496,38 +499,6 @@ python-versions = ">=3.7,<4.0"
 pydantic = ">=1.8.2,<2.0.0"
 
 [[package]]
-name = "openapi-schema-validator"
-version = "0.2.3"
-description = "OpenAPI schema validation for Python"
-category = "main"
-optional = false
-python-versions = ">=3.7.0,<4.0.0"
-
-[package.dependencies]
-jsonschema = ">=3.0.0,<5.0.0"
-
-[package.extras]
-rfc3339-validator = ["rfc3339-validator"]
-strict-rfc3339 = ["strict-rfc3339"]
-isodate = ["isodate"]
-
-[[package]]
-name = "openapi-spec-validator"
-version = "0.4.0"
-description = "OpenAPI 2.0 (aka Swagger) and OpenAPI 3.0 spec validator"
-category = "main"
-optional = false
-python-versions = ">=3.7.0,<4.0.0"
-
-[package.dependencies]
-jsonschema = ">=3.2.0,<5.0.0"
-openapi-schema-validator = ">=0.2.0,<0.3.0"
-PyYAML = ">=5.1"
-
-[package.extras]
-requests = ["requests"]
-
-[[package]]
 name = "oscrypto"
 version = "1.3.0"
 description = "TLS (SSL) sockets, key generation, encryption, decryption, signing, verification and KDFs using the OS crypto libraries. Does not require a compiler, and relies on the OS for patching. Works on Windows, OS X and Linux/BSD."
@@ -537,6 +508,17 @@ python-versions = "*"
 
 [package.dependencies]
 asn1crypto = ">=1.5.1"
+
+[[package]]
+name = "packaging"
+version = "21.3"
+description = "Core utilities for Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
 
 [[package]]
 name = "pathspec"
@@ -620,6 +602,14 @@ dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
 
 [[package]]
+name = "pyhumps"
+version = "3.5.3"
+description = "🐫  Convert strings (and dictionary keys) between snake case, camel case and pascal case in Python. Inspired by Humps for Node"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pyjwt"
 version = "2.3.0"
 description = "JSON Web Token implementation in Python"
@@ -632,14 +622,6 @@ crypto = ["cryptography (>=3.3.1)"]
 dev = ["sphinx", "sphinx-rtd-theme", "zope.interface", "cryptography (>=3.3.1)", "pytest (>=6.0.0,<7.0.0)", "coverage[toml] (==5.0.4)", "mypy", "pre-commit"]
 docs = ["sphinx", "sphinx-rtd-theme", "zope.interface"]
 tests = ["pytest (>=6.0.0,<7.0.0)", "coverage[toml] (==5.0.4)"]
-
-[[package]]
-name = "pyhumps"
-version = "3.5.3"
-description = "🐫  Convert strings (and dictionary keys) between snake case, camel case and pascal case in Python. Inspired by Humps for Node"
-category = "main"
-optional = false
-python-versions = "*"
 
 [[package]]
 name = "pymongo"
@@ -676,6 +658,17 @@ six = ">=1.5.2"
 [package.extras]
 docs = ["sphinx", "sphinx-rtd-theme"]
 test = ["flaky", "pretend", "pytest (>=3.0.1)"]
+
+[[package]]
+name = "pyparsing"
+version = "3.0.8"
+description = "pyparsing module - Classes and methods to define and execute parsing grammars"
+category = "main"
+optional = false
+python-versions = ">=3.6.8"
+
+[package.extras]
+diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
 name = "pyrsistent"
@@ -740,7 +733,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "snowflake-connector-python"
-version = "2.7.6"
+version = "2.7.7"
 description = "Snowflake Connector for Python"
 category = "main"
 optional = false
@@ -762,7 +755,7 @@ requests = "<3.0.0"
 
 [package.extras]
 development = ["cython", "coverage", "more-itertools", "numpy (<1.23.0)", "pendulum (!=2.1.1)", "pexpect", "pytest (<6.3.0)", "pytest-cov", "pytest-rerunfailures", "pytest-timeout", "pytest-xdist", "pytzdata"]
-pandas = ["pandas (>=1.0.0,<1.4.0)", "pyarrow (>=6.0.0,<6.1.0)"]
+pandas = ["pandas (>=1.0.0,<1.5.0)", "pyarrow (>=6.0.0,<6.1.0)"]
 secure-local-storage = ["keyring (!=16.1.0,<24.0.0)"]
 
 [[package]]
@@ -844,7 +837,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "werkzeug"
-version = "2.1.1"
+version = "2.1.2"
 description = "The comprehensive WSGI web application library."
 category = "main"
 optional = false
@@ -880,7 +873,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9.1"
-content-hash = "792c59a79262b4055ba4d77cd9f09f26a1638ab6752816210f782eccf9067c31"
+content-hash = "d70ebe5819f6ccc36babf0c1f03a00455d531958dde6108959fb81f356a0d74a"
 
 [metadata.files]
 aiohttp = [
@@ -1106,8 +1099,8 @@ charset-normalizer = [
     {file = "charset_normalizer-2.0.12-py3-none-any.whl", hash = "sha256:6881edbebdb17b39b4eaaa821b438bf6eddffb4468cf344f09f89def34a8b1df"},
 ]
 click = [
-    {file = "click-8.1.2-py3-none-any.whl", hash = "sha256:24e1a4a9ec5bf6299411369b208c1df2188d9eb8d916302fe6bf03faed227f1e"},
-    {file = "click-8.1.2.tar.gz", hash = "sha256:479707fe14d9ec9a0757618b7a100a0ae4c4e236fac5b7f80ca68028141a1a72"},
+    {file = "click-8.1.3-py3-none-any.whl", hash = "sha256:bb4d8133cb15a609f44e8213d9b391b0809795062913b383c62be0ee95b1db48"},
+    {file = "click-8.1.3.tar.gz", hash = "sha256:7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"},
 ]
 clickclick = [
     {file = "clickclick-20.10.2-py2.py3-none-any.whl", hash = "sha256:c8f33e6d9ec83f68416dd2136a7950125bd256ec39ccc9a85c6e280a16be2bb5"},
@@ -1191,8 +1184,8 @@ colorama = [
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 connexion = [
-    {file = "connexion-2.7.0-py2.py3-none-any.whl", hash = "sha256:5439e9659a89c4380d93a07acfbf3380d70be4130574de8881e5f0dfec7ad0e2"},
-    {file = "connexion-2.7.0.tar.gz", hash = "sha256:1ccfac57d4bb7adf4295ba6f5e48f5a1f66057df6a0713417766c9b5235182ee"},
+    {file = "connexion-2.13.1-py2.py3-none-any.whl", hash = "sha256:fb9a8c7a60fdecac45c913c1373948b28d8a55328472e08b5132fba36da36524"},
+    {file = "connexion-2.13.1.tar.gz", hash = "sha256:80b534800b408d184fe6d36e755edefdd657e8f11756b5806d6bcf7213380d0d"},
 ]
 cryptography = [
     {file = "cryptography-36.0.2-cp36-abi3-macosx_10_10_universal2.whl", hash = "sha256:4e2dddd38a5ba733be6a025a1475a9f45e4e41139d1321f412c6b360b19070b6"},
@@ -1223,12 +1216,10 @@ dnspython = [
 elasticsearch = [
     {file = "elasticsearch-7.14.0-py2.py3-none-any.whl", hash = "sha256:084979d21cc2955903ecc215bb40b8180207b2bcb5e52ec0ec7dd6f60affd01e"},
     {file = "elasticsearch-7.14.0.tar.gz", hash = "sha256:f3ab1454e646170bbc6796b8707e4bff125234391d2acc022221e1c0313becb4"},
-    {file = "dnspython-2.2.1-py3-none-any.whl", hash = "sha256:a851e51367fb93e9e1361732c1d60dab63eff98712e503ea7d92e6eccb109b4f"},
-    {file = "dnspython-2.2.1.tar.gz", hash = "sha256:0f7569a4a6ff151958b64304071d370daa3243d15941a7beedf0c9fe5105603e"},
 ]
 flask = [
-    {file = "Flask-2.1.1-py3-none-any.whl", hash = "sha256:8a4cf32d904cf5621db9f0c9fbcd7efabf3003f22a04e4d0ce790c7137ec5264"},
-    {file = "Flask-2.1.1.tar.gz", hash = "sha256:a8c9bd3e558ec99646d177a9739c41df1ded0629480b4c8d2975412f3c9519c8"},
+    {file = "Flask-2.1.2-py3-none-any.whl", hash = "sha256:fad5b446feb0d6db6aec0c3184d16a8c1f6c3e464b511649c8918a9be100b4fe"},
+    {file = "Flask-2.1.2.tar.gz", hash = "sha256:315ded2ddf8a6281567edb27393010fe3406188bafbfe65a3339d5787d89e477"},
 ]
 flask-compress = [
     {file = "Flask-Compress-1.10.1.tar.gz", hash = "sha256:28352387efbbe772cfb307570019f81957a13ff718d994a9125fa705efb73680"},
@@ -1316,8 +1307,8 @@ itsdangerous = [
     {file = "itsdangerous-2.1.2.tar.gz", hash = "sha256:5dbbc68b317e5e42f327f9021763545dc3fc3bfe22e6deb96aaf1fc38874156a"},
 ]
 jinja2 = [
-    {file = "Jinja2-3.1.1-py3-none-any.whl", hash = "sha256:539835f51a74a69f41b848a9645dbdc35b4f20a3b601e2d9a7e22947b15ff119"},
-    {file = "Jinja2-3.1.1.tar.gz", hash = "sha256:640bed4bb501cbd17194b3cace1dc2126f5b619cf068a726b98192a0fde74ae9"},
+    {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
+    {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
 ]
 jsonschema = [
     {file = "jsonschema-4.4.0-py3-none-any.whl", hash = "sha256:77281a1f71684953ee8b3d488371b162419767973789272434bbc3f29d9c8823"},
@@ -1462,24 +1453,20 @@ odd-collector-sdk = [
     {file = "odd_collector_sdk-0.2.0-py3-none-any.whl", hash = "sha256:609d23e9f6b9f4511c41158ebd89b06edfe18e94b500dc80beed829de035cc25"},
 ]
 odd-models = [
-    {file = "odd-models-1.0.20.tar.gz", hash = "sha256:283bcd3bcd19ceccd3991038ca75e7cfab91cf1d8cfe016ffc1a9a92bb0f5844"},
-    {file = "odd_models-1.0.20-py3-none-any.whl", hash = "sha256:570f32e57512680c6f75e70f3c89fd81bf8f77a14d4d3445e0f97ecbd6e71179"},
+    {file = "odd-models-1.0.21.tar.gz", hash = "sha256:53f4346a418234e6701f937338413f9709176de756f2c7c805cbd387722af6d3"},
+    {file = "odd_models-1.0.21-py3-none-any.whl", hash = "sha256:ac0bdd434266cfe03819574e443879462a5787048ed99f6b98faa2e88c933566"},
 ]
 oddrn-generator = [
     {file = "oddrn-generator-0.1.23.tar.gz", hash = "sha256:2863faa9cdff646becd61ab71ebac6835ae072bf0bc41c94e7a192e77d479b23"},
     {file = "oddrn_generator-0.1.23-py3-none-any.whl", hash = "sha256:efd9deb1b879c4e8d23901d474971d97d07390709e72c7b8fdde6c7cfa68f9e6"},
 ]
-openapi-schema-validator = [
-    {file = "openapi-schema-validator-0.2.3.tar.gz", hash = "sha256:2c64907728c3ef78e23711c8840a423f0b241588c9ed929855e4b2d1bb0cf5f2"},
-    {file = "openapi_schema_validator-0.2.3-py3-none-any.whl", hash = "sha256:9bae709212a19222892cabcc60cafd903cbf4b220223f48583afa3c0e3cc6fc4"},
-]
-openapi-spec-validator = [
-    {file = "openapi-spec-validator-0.4.0.tar.gz", hash = "sha256:97f258850afc97b048f7c2653855e0f88fa66ac103c2be5077c7960aca2ad49a"},
-    {file = "openapi_spec_validator-0.4.0-py3-none-any.whl", hash = "sha256:06900ac4d546a1df3642a779da0055be58869c598e3042a2fef067cfd99d04d0"},
-]
 oscrypto = [
     {file = "oscrypto-1.3.0-py2.py3-none-any.whl", hash = "sha256:2b2f1d2d42ec152ca90ccb5682f3e051fb55986e1b170ebde472b133713e7085"},
     {file = "oscrypto-1.3.0.tar.gz", hash = "sha256:6f5fef59cb5b3708321db7cca56aed8ad7e662853351e7991fcf60ec606d47a4"},
+]
+packaging = [
+    {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
+    {file = "packaging-21.3.tar.gz", hash = "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb"},
 ]
 pathspec = [
     {file = "pathspec-0.9.0-py2.py3-none-any.whl", hash = "sha256:7d15c4ddb0b5c802d161efc417ec1a2558ea2653c2e8ad9c19098201dc1c993a"},
@@ -1682,6 +1669,14 @@ pymongo = [
     {file = "pymongo-4.1.1-cp39-cp39-win_amd64.whl", hash = "sha256:f0aea377b9dfc166c8fa05bb158c30ee3d53d73f0ed2fc05ba6c638d9563422f"},
     {file = "pymongo-4.1.1.tar.gz", hash = "sha256:d7b8f25c9b0043cbaf77b8b895814e33e7a3c807a097377c07e1bd49946030d5"},
 ]
+pyopenssl = [
+    {file = "pyOpenSSL-21.0.0-py2.py3-none-any.whl", hash = "sha256:8935bd4920ab9abfebb07c41a4f58296407ed77f04bd1a92914044b848ba1ed6"},
+    {file = "pyOpenSSL-21.0.0.tar.gz", hash = "sha256:5e2d8c5e46d0d865ae933bef5230090bdaf5506281e9eec60fa250ee80600cb3"},
+]
+pyparsing = [
+    {file = "pyparsing-3.0.8-py3-none-any.whl", hash = "sha256:ef7b523f6356f763771559412c0d7134753f037822dad1b16945b7b846f7ad06"},
+    {file = "pyparsing-3.0.8.tar.gz", hash = "sha256:7bf433498c016c4314268d95df76c81b842a4cb2b276fa3312cfb1e1d85f6954"},
+]
 pyrsistent = [
     {file = "pyrsistent-0.18.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:df46c854f490f81210870e509818b729db4488e1f30f2a1ce1698b2295a878d1"},
     {file = "pyrsistent-0.18.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5d45866ececf4a5fff8742c25722da6d4c9e180daa7b405dc0a2a2790d668c26"},
@@ -1757,19 +1752,18 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 snowflake-connector-python = [
-    {file = "snowflake-connector-python-2.7.6.tar.gz", hash = "sha256:331628e0ca02764492b83b5e47703bd857115ae29346b72de32d7fb7c9ec548b"},
-    {file = "snowflake_connector_python-2.7.6-cp310-cp310-macosx_10_14_universal2.whl", hash = "sha256:4aa90cddbc46f8f580ad78cbb9d4741fd66e665d3223f7f907d859554d2025c2"},
-    {file = "snowflake_connector_python-2.7.6-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ea850b2d816263ae63c00ad60f4df7006ddb1854f28aaa5b3688bf0e5e458dca"},
-    {file = "snowflake_connector_python-2.7.6-cp310-cp310-win_amd64.whl", hash = "sha256:5f3faa237f22d8305c8e48d8b5110c4015485b2cfa683e176fa89eafe57f6a8e"},
-    {file = "snowflake_connector_python-2.7.6-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:74f55a0d25a53378994939b43a2a55105f12b1b92c8b7cb863b490c9a4243147"},
-    {file = "snowflake_connector_python-2.7.6-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:781473bd60388ce651ad094288f231bcae7fa5cd447e64d12577736cb37b8c96"},
-    {file = "snowflake_connector_python-2.7.6-cp37-cp37m-win_amd64.whl", hash = "sha256:8cfce34bbb910a396b230768658ac65578f28073b62cc9c85289ebbd217e839d"},
-    {file = "snowflake_connector_python-2.7.6-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:e180d285e93d5e3fe2b7b4958212d4964d45f1eca94f03dedc4e569bcc550bfd"},
-    {file = "snowflake_connector_python-2.7.6-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f59ed0c3223548a25aca9bcacf2c5cde04ad5e15366f0cf9e7b20dc34554b1cf"},
-    {file = "snowflake_connector_python-2.7.6-cp38-cp38-win_amd64.whl", hash = "sha256:8c82eda884967ef00d1b7aa59c925c83368f886bfa447c8fa2a81dced03dea70"},
-    {file = "snowflake_connector_python-2.7.6-cp39-cp39-macosx_10_14_universal2.whl", hash = "sha256:22437ee26baaa83cabcebbe9fbc9c95b36bdca441db61822588a622e32bcbecd"},
-    {file = "snowflake_connector_python-2.7.6-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8dbaf2dfed6c7ba4fd90c9f0ec604f86a2e070e4219c182f79f44ca225749c18"},
-    {file = "snowflake_connector_python-2.7.6-cp39-cp39-win_amd64.whl", hash = "sha256:d94eea3047c6cf6d5e4bb8a4b9f961f77f87e25671e7cb6257c0459419a9b194"},
+    {file = "snowflake-connector-python-2.7.7.tar.gz", hash = "sha256:3992ff0a51d8f326ad474009572a2606aec08c1c10c26e5ff549e67652fc205c"},
+    {file = "snowflake_connector_python-2.7.7-cp310-cp310-macosx_10_14_universal2.whl", hash = "sha256:50cc26f84ec916668fbaa7714a7161403ed55b007bd3ed7ddcc9cd95390923f0"},
+    {file = "snowflake_connector_python-2.7.7-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2031f5aab578b6f2266970649e8bd60ed132c347a8c915097256d3d4d390ce06"},
+    {file = "snowflake_connector_python-2.7.7-cp310-cp310-win_amd64.whl", hash = "sha256:727b3295a2cacabef87e5fa226151ddbfcfb4d11b42de7f8a9ff6840dd6c98e6"},
+    {file = "snowflake_connector_python-2.7.7-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:dfaf5d7731688932ba00a3fb47e944c453801e2a986431a28d4f9b89e0a8118f"},
+    {file = "snowflake_connector_python-2.7.7-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2a990f8af17ab5545ffdf754be829fb7c6ebdcea646fb96260dddd97cfa6d251"},
+    {file = "snowflake_connector_python-2.7.7-cp37-cp37m-win_amd64.whl", hash = "sha256:a7f3b4b3798749c60b66e23d97d0a4f92de714c8780bb2e3d33be4d188250782"},
+    {file = "snowflake_connector_python-2.7.7-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:635c0fe12f0d423f46abe79b379bbf06d6c9cbe695cafea0ab53b9eb17470546"},
+    {file = "snowflake_connector_python-2.7.7-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fb5bd1e7a9a0f92c30395555cf7d2b81845e922ad22eeee22210ef4c2b1adcf7"},
+    {file = "snowflake_connector_python-2.7.7-cp38-cp38-win_amd64.whl", hash = "sha256:d461ad72d400ec3cdac1e3ecc98b2c86cd22a90be2d980725684bfdda2ff6e6d"},
+    {file = "snowflake_connector_python-2.7.7-cp39-cp39-macosx_10_14_universal2.whl", hash = "sha256:a4d4ac287358489ef8165c003b02e01a4a9d7b4ea0da3e196cf059430c1bd065"},
+    {file = "snowflake_connector_python-2.7.7-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:89e5ebaac94633f11d798cfcfdc0d2ba9ca45d2426c44125311a4e179f950fd9"},
 ]
 sqlparse = [
     {file = "sqlparse-0.4.2-py3-none-any.whl", hash = "sha256:48719e356bb8b42991bdbb1e8b83223757b93789c00910a616a071910ca4a64d"},
@@ -1799,8 +1793,8 @@ urllib3 = [
     {file = "urllib3-1.26.9.tar.gz", hash = "sha256:aabaf16477806a5e1dd19aa41f8c2b7950dd3c746362d7e3223dbe6de6ac448e"},
 ]
 werkzeug = [
-    {file = "Werkzeug-2.1.1-py3-none-any.whl", hash = "sha256:3c5493ece8268fecdcdc9c0b112211acd006354723b280d643ec732b6d4063d6"},
-    {file = "Werkzeug-2.1.1.tar.gz", hash = "sha256:f8e89a20aeabbe8a893c24a461d3ee5dad2123b05cc6abd73ceed01d39c3ae74"},
+    {file = "Werkzeug-2.1.2-py3-none-any.whl", hash = "sha256:72a4b735692dd3135217911cbeaa1be5fa3f62bffb8745c5215420a03dc55255"},
+    {file = "Werkzeug-2.1.2.tar.gz", hash = "sha256:1ce08e8093ed67d638d63879fd1ba3735817f7a80de3674d293f5984f25fb6e6"},
 ]
 yarl = [
     {file = "yarl-1.7.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:f2a8508f7350512434e41065684076f640ecce176d262a7d54f0da41d99c5a95"},
