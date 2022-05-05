@@ -1,8 +1,7 @@
 # odd-collector
-Aggregation of adapters for [ODD Platform](https://github.com/opendatadiscovery/odd-platform)
+ODD Collector is a lightweight service which gathers metadata from all your data sources.
 
-`odd-collector` uses [odd-collector-sdk](https://github.com/opendatadiscovery/odd-collector-sdk).
-
+To learn more about collector types and ODD Platform's architecture, [read the documentation](https://docs.opendatadiscovery.org/architecture).
 
 ## Domain
 ___
@@ -55,6 +54,24 @@ database: str
 user: str
 password: str
 ```
+### __Hive__
+```yaml
+type: hive
+host: str
+port: int
+database: str
+user: str
+password: str
+```
+### __Elasticsearch__
+```yaml
+type: elasticsearch
+host: str
+port: int
+database: ""
+user: ""
+password: ""
+```
 
 ## Building
 ```bash
@@ -68,15 +85,14 @@ PLATFORM_HOST_URL=http://odd-platform:8080
 POSTGRES_PASSWORD=postgres_password_secret
 ```
 
-There 3 options how we can pass config field:
+There are 3 options for config field pass:
 1. Explicitly set it in `collector_config.yaml` file, i.e `database: odd-platform-db`
 2. Use `.env` file, Pydantic will read skipped field from ENV variable
 3. In situation when plugins have same field names, we can  explicitly set ENV variable to `collector_config.yaml`, i.e. `password: !ENV ${POSTGRES_PASSWORD}`
 
 Custom `collector-config.yaml`
 ```yaml
-provider_oddrn: collector
-# platform_host_url: "http://localhost:8080" - We can skip it, it will be takern by pydantic from ENV variables
+# platform_host_url: "http://localhost:8080" - We can skip it, it will be taken by pydantic from ENV variables
 default_pulling_interval: 10
 token: ""
 plugins:
