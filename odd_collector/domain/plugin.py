@@ -39,6 +39,12 @@ class MongoDBPlugin(Plugins):
     protocol: str
 
 
+class SnowflakePlugin(Plugins):
+    type: Literal["snowflake"]
+    account: str
+    warehouse: str
+
+      
 class HivePlugin(Plugins):
     type: Literal["hive"]
 
@@ -54,6 +60,7 @@ AvailablePlugin = Annotated[
         ClickhousePlugin,
         RedshiftPlugin,
         MongoDBPlugin,
+        SnowflakePlugin,
         HivePlugin,
         ElasticsearchPlugin,
     ],
