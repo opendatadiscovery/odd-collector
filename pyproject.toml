@@ -22,6 +22,7 @@ psycopg2 = "^2.9.3"
 pymongo = {extras = ["srv"], version = "^4.0.2"}
 elasticsearch = "7.14.0"
 pyhumps = "^3.0.2"
+cassandra-driver = "^3.25.0"
 
 [tool.poetry.dev-dependencies]
 

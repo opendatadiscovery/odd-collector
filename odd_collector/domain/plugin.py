@@ -47,15 +47,20 @@ class ElasticsearchPlugin(Plugins):
     type: Literal["elasticsearch"]
 
 
+class CassandraPlugin(Plugins):
+    type: Literal["cassandra"]
+
+
 AvailablePlugin = Annotated[
     Union[
-        PostgreSQLPlugin,
-        MySQLPlugin,
-        ClickhousePlugin,
-        RedshiftPlugin,
-        MongoDBPlugin,
-        HivePlugin,
-        ElasticsearchPlugin,
+        # PostgreSQLPlugin,
+        # MySQLPlugin,
+        # ClickhousePlugin,
+        # RedshiftPlugin,
+        # MongoDBPlugin,
+        # HivePlugin,
+        # ElasticsearchPlugin,
+        CassandraPlugin
     ],
     pydantic.Field(discriminator="type"),
 ]
