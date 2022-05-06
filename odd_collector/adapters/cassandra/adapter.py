@@ -20,13 +20,14 @@ class Adapter(AbstractAdapter):
     __session = None
 
     def __init__(self, config):
-        self.__host = config.host.split()
+        self.__host = config.host
         self.__port = config.port
         self.__keyspace = config.database
         self.__username = config.user
         self.__password = config.password
+        self.__contact_points = config.contact_points
         # self.__execution_profile = config['execution_profile'] TODO To be added.
-        self.__oddrn_generator = CassandraGenerator(host_settings=f"{self.__host[0]}", keyspaces=self.__keyspace)
+        self.__oddrn_generator = CassandraGenerator(host_settings=f"{self.__host}", keyspaces=self.__keyspace)
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
@@ -72,7 +73,7 @@ class Adapter(AbstractAdapter):
         try:
             profile = ExecutionProfile(row_factory=tuple_factory)
             auth_provider = PlainTextAuthProvider(username=self.__username, password=self.__password)
-            self.__cluster = Cluster(contact_points=self.__host, port=self.__port,
+            self.__cluster = Cluster(contact_points=self.__contact_points, port=self.__port,
                                      execution_profiles={EXEC_PROFILE_DEFAULT: profile}, auth_provider=auth_provider)
             self.__session = self.__cluster.connect(self.__keyspace)
 

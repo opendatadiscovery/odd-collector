@@ -53,13 +53,13 @@ class CassandraPlugin(Plugins):
 
 AvailablePlugin = Annotated[
     Union[
-        # PostgreSQLPlugin,
-        # MySQLPlugin,
-        # ClickhousePlugin,
-        # RedshiftPlugin,
-        # MongoDBPlugin,
-        # HivePlugin,
-        # ElasticsearchPlugin,
+        PostgreSQLPlugin,
+        MySQLPlugin,
+        ClickhousePlugin,
+        RedshiftPlugin,
+        MongoDBPlugin,
+        HivePlugin,
+        ElasticsearchPlugin,
         CassandraPlugin
     ],
     pydantic.Field(discriminator="type"),
