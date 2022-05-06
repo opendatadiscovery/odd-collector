@@ -53,6 +53,11 @@ class ElasticsearchPlugin(Plugins):
     type: Literal["elasticsearch"]
 
 
+class CassandraPlugin(Plugins):
+    type: Literal["cassandra"]
+    contact_points: list = []
+
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -63,6 +68,7 @@ AvailablePlugin = Annotated[
         SnowflakePlugin,
         HivePlugin,
         ElasticsearchPlugin,
+        CassandraPlugin
     ],
     pydantic.Field(discriminator="type"),
 ]
