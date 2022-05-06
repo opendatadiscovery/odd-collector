@@ -1,9 +1,11 @@
+from collections import defaultdict
+
 from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup
 
 from typing import List, Dict, Tuple, Any, Union
 
 from . import (
-    TableMetadataNamedtuple, ColumnMetadataNamedtuple, _data_set_metadata_schema_url, _data_set_metadata_excluded_keys
+    TableMetadata, ColumnMetadata, _data_set_metadata_schema_url, _data_set_metadata_excluded_keys
 )
 from .columns import map_column
 from .metadata import get_metadata_extension
@@ -13,7 +15,7 @@ from ..cassandra_generator import CassandraGenerator
 from cassandra.util import OrderedMapSerializedKey, SortedSet
 
 
-def get_table_name_to_columns(columns: List[ColumnMetadataNamedtuple]) -> Dict[str, List[ColumnMetadataNamedtuple]]:
+def get_table_name_to_columns(columns: List[ColumnMetadata]) -> Dict[str, List[ColumnMetadata]]:
     """
     A method to transform the format of the columns from tuple to a dictionary where the key is the table name, and the
     value is a list of the columns associated with the said table name.
@@ -21,17 +23,15 @@ def get_table_name_to_columns(columns: List[ColumnMetadataNamedtuple]) -> Dict[s
     :return: a dictionary where the key is the table name, and the value is a list of the columns associated with the
     said table name.
     """
-    table_name_to_columns = {}
+    table_name_to_columns = defaultdict(list)
 
     for column in columns:
-        if table_name_to_columns.get(column.table_name) is None:
-            table_name_to_columns[column.table_name] = []
         table_name_to_columns[column.table_name].append(column)
     
     return table_name_to_columns
 
 
-def get_dataset(table_columns: List[ColumnMetadataNamedtuple], oddrn_generator: CassandraGenerator) -> DataSet:
+def get_dataset(table_columns: List[ColumnMetadata], oddrn_generator: CassandraGenerator) -> DataSet:
     """
     A method to create a dataset of a particular table given a list of its columns and the database's generator.
     :param table_columns: a list of the table's columns.
@@ -39,18 +39,14 @@ def get_dataset(table_columns: List[ColumnMetadataNamedtuple], oddrn_generator: 
     :return: a DataSet of the table.
     """
     dataset = DataSet(
-        field_list=[]
+        field_list=[map_column(column, oddrn_generator, None) for column in table_columns]
     )
-    for column in table_columns:
-        dataset.field_list.append(
-            map_column(column, oddrn_generator, None)
-        )
     return dataset
 
 
 def get_data_entity(
-        metadata: TableMetadataNamedtuple, oddrn_generator: CassandraGenerator, keyspace: str,
-        table_columns: List[ColumnMetadataNamedtuple]
+        metadata: TableMetadata, oddrn_generator: CassandraGenerator, keyspace: str,
+        table_columns: List[ColumnMetadata]
 ) -> DataEntity:
     """
     A method to get the data entity of a particular table. It generates the necessary information like the table's data
@@ -115,10 +111,10 @@ def map_tables(oddrn_generator: CassandraGenerator, tables: List[Tuple], columns
     tables = [filter_data(table) for table in tables]
     columns = [filter_data(column) for column in columns]
 
-    tables = [TableMetadataNamedtuple(*table) for table in tables]
-    columns = [ColumnMetadataNamedtuple(*column) for column in columns]
+    tables = [TableMetadata(*table) for table in tables]
+    columns = [ColumnMetadata(*column) for column in columns]
 
-    table_name_to_columns: Dict[str, List[ColumnMetadataNamedtuple]] = get_table_name_to_columns(columns)
+    table_name_to_columns: Dict[str, List[ColumnMetadata]] = get_table_name_to_columns(columns)
     
     for table in tables:
         table_columns = table_name_to_columns.get(table.table_name, [])

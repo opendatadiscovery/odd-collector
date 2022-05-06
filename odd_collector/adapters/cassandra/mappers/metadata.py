@@ -15,7 +15,7 @@ def get_metadata_extension(schema_url: str, named_tuple: NamedTuple, excluded_ke
     """
     if named_tuple is not None and len(named_tuple) > 0:
         metadata: dict = named_tuple._asdict()
-        if excluded_keys is not None:
+        if excluded_keys:
             for key in excluded_keys:
                 metadata.pop(key)
         metadata_wo_none: dict = {key: value for key, value in metadata.items() if value is not None}

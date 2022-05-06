@@ -3,7 +3,7 @@ from typing import Union
 from odd_models.models import DataSetField, DataSetFieldType, Type
 
 from . import (
-    ColumnMetadataNamedtuple, _data_set_field_metadata_excluded_keys,
+    ColumnMetadata, _data_set_field_metadata_excluded_keys,
     _data_set_field_metadata_schema_url
 )
 
@@ -14,7 +14,7 @@ from ..cassandra_generator import CassandraGenerator
 
 
 def map_column(
-        column_metadata: ColumnMetadataNamedtuple, oddrn_generator: CassandraGenerator, owner: Union[str, None]
+        column_metadata: ColumnMetadata, oddrn_generator: CassandraGenerator, owner: Union[str, None]
 ) -> DataSetField:
     """
     A method to map a column to a dataset field. It extracts the necessary information and generates the required

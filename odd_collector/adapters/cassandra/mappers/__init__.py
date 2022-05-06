@@ -32,5 +32,5 @@ _column_select: str = '''
     WHERE keyspace_name = %(keyspace)s;
 '''
 
-TableMetadataNamedtuple = namedtuple('MetadataNamedtuple', _table_metadata)
-ColumnMetadataNamedtuple = namedtuple('ColumnMetadataNamedtuple', _column_metadata)
+TableMetadata = namedtuple('MetadataNamedtuple', _table_metadata)
+ColumnMetadata = namedtuple('ColumnMetadataNamedtuple', _column_metadata)

@@ -20,7 +20,7 @@ class Adapter(AbstractAdapter):
     __session = None
 
     def __init__(self, config):
-        self.__host = [elem for elem in config.host.split()]
+        self.__host = config.host.split()
         self.__port = config.port
         self.__keyspace = config.database
         self.__username = config.user
@@ -63,10 +63,7 @@ class Adapter(AbstractAdapter):
         :param params: the parameters necessary for the query to execute.
         :return: the results of executing the query.
         """
-        if params is None:
-            params = dict()
-        records = self.__session.execute(query, params)
-        return records
+        return self.__session.execute(query, params or dict())
 
     def __connect(self):
         """
