@@ -25,7 +25,7 @@ class Adapter(AbstractAdapter):
         self.__keyspace = config.database
         self.__username = config.user
         self.__password = config.password
-        self.__contact_points = config.contact_points
+        self.__contact_points = config.contact_points or [config.host]
         # self.__execution_profile = config['execution_profile'] TODO To be added.
         self.__oddrn_generator = CassandraGenerator(host_settings=f"{self.__host}", keyspaces=self.__keyspace)
 

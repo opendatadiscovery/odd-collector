@@ -49,6 +49,7 @@ class ElasticsearchPlugin(Plugins):
 
 class CassandraPlugin(Plugins):
     type: Literal["cassandra"]
+    contact_points: list = []
 
 
 AvailablePlugin = Annotated[
