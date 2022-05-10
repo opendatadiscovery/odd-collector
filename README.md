@@ -72,6 +72,16 @@ database: ""
 user: ""
 password: ""
 ```
+### __Feast__
+```yaml
+type: feast
+host: str
+port: int
+database: ""
+user: ""
+password: ""
+repo_path: str
+```
 
 ## Building
 ```bash
