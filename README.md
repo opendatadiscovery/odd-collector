@@ -112,7 +112,7 @@ plugins:
     port: 5432
     database: "some_database_name"
     user: "some_user_name"
-    password: !ENV {POSTGRES_PASSWORD}
+    password: !ENV ${POSTGRES_PASSWORD}
   - type: mysql
     name: test_mysql_adapter
     host: "localhost"
