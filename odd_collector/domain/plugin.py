@@ -11,10 +11,6 @@ class Plugins(Plugin):
     database: str
     user: str
     password: str
-    http_auth: str = None
-    use_ssl: bool = None
-    verify_certs: bool = None
-    ca_certs: str = None
 
 
 class PostgreSQLPlugin(Plugins):
@@ -51,6 +47,15 @@ class HivePlugin(Plugins):
 
 class ElasticsearchPlugin(Plugins):
     type: Literal["elasticsearch"]
+    http_auth: str = None
+    use_ssl: bool = None
+    verify_certs: bool = None
+    ca_certs: str = None
+
+
+class FeastPlugin(Plugins):
+    type: Literal["feast"]
+    repo_path: str
 
 
 class CassandraPlugin(Plugins):
@@ -68,6 +73,7 @@ AvailablePlugin = Annotated[
         SnowflakePlugin,
         HivePlugin,
         ElasticsearchPlugin,
+        FeastPlugin,
         CassandraPlugin
     ],
     pydantic.Field(discriminator="type"),
