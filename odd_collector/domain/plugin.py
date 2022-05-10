@@ -58,6 +58,11 @@ class FeastPlugin(Plugins):
     repo_path: str
 
 
+class CassandraPlugin(Plugins):
+    type: Literal["cassandra"]
+    contact_points: list = []
+
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -69,6 +74,7 @@ AvailablePlugin = Annotated[
         HivePlugin,
         ElasticsearchPlugin,
         FeastPlugin,
+        CassandraPlugin
     ],
     pydantic.Field(discriminator="type"),
 ]
