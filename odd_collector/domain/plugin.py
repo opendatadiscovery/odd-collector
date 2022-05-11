@@ -5,48 +5,53 @@ from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from typing_extensions import Annotated
 
 
-class HostPortPlugin(BasePlugin):
+class WithHost(BasePlugin):
     host: str
-    port: int
+
+
+class WithPort(BasePlugin):
+    port: str
+
+
+class DatabasePlugin(WithHost, WithPort):
     database: str
     user: str
     password: str
 
 
-#  TODO: clear inheritance
-class PostgreSQLPlugin(HostPortPlugin):
+class PostgreSQLPlugin(DatabasePlugin):
     type: Literal["postgresql"]
 
 
-class MySQLPlugin(HostPortPlugin):
+class MySQLPlugin(DatabasePlugin):
     type: Literal["mysql"]
     ssl_disabled: Optional[bool] = False
 
 
-class ClickhousePlugin(HostPortPlugin):
+class ClickhousePlugin(DatabasePlugin):
     type: Literal["clickhouse"]
 
 
-class RedshiftPlugin(HostPortPlugin):
+class RedshiftPlugin(DatabasePlugin):
     type: Literal["redshift"]
 
 
-class MongoDBPlugin(HostPortPlugin):
+class MongoDBPlugin(DatabasePlugin):
     type: Literal["mongodb"]
     protocol: str
 
 
-class SnowflakePlugin(HostPortPlugin):
+class SnowflakePlugin(DatabasePlugin):
     type: Literal["snowflake"]
     account: str
     warehouse: str
 
 
-class HivePlugin(HostPortPlugin):
+class HivePlugin(WithHost, WithPort):
     type: Literal["hive"]
 
 
-class ElasticsearchPlugin(HostPortPlugin):
+class ElasticsearchPlugin(WithHost, WithPort):
     type: Literal["elasticsearch"]
     http_auth: str = None
     use_ssl: bool = None
@@ -54,18 +59,17 @@ class ElasticsearchPlugin(HostPortPlugin):
     ca_certs: str = None
 
 
-class FeastPlugin(HostPortPlugin):
+class FeastPlugin(WithHost):
     type: Literal["feast"]
     repo_path: str
 
 
-class CassandraPlugin(HostPortPlugin):
+class CassandraPlugin(DatabasePlugin):
     type: Literal["cassandra"]
     contact_points: list = []
 
 
-class KubeflowPlugin(BasePlugin):
-    host: str
+class KubeflowPlugin(WithHost):
     namespace: str
     session_cookie0: Optional[str]
     session_cookie1: Optional[str]

@@ -1,12 +1,19 @@
 from typing import Any, Dict
-from odd_models.models import (BooleanFieldStat, DateTimeFieldStat, NumberFieldStat,
-                               StringFieldStat, BinaryFieldStat)
+from odd_models.models import (
+    BooleanFieldStat,
+    DateTimeFieldStat,
+    NumberFieldStat,
+    StringFieldStat,
+    BinaryFieldStat,
+)
 
 DEFAULT_VALUE = -1
 
 
 def _mapper_numeric(stats_data: Dict[str, Any]):
-    columns_stat_type = stats_data.longStats or stats_data.doubleStats or stats_data.dateStats
+    columns_stat_type = (
+        stats_data.longStats or stats_data.doubleStats or stats_data.dateStats
+    )
     return {
         "low_value": _digit_checker(columns_stat_type.lowValue, float),
         "high_value": _digit_checker(columns_stat_type.highValue, float),

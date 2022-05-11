@@ -52,64 +52,57 @@
 # https://docs.aws.amazon.com/redshift/latest/dg/c_unsupported-postgresql-datatypes.html
 from odd_models.models import Type, DataEntityType
 from typing import Dict
+
 TYPES_SQL_TO_ODD: Dict[str, Type] = {
-
-    'smallint': Type.TYPE_INTEGER,
-    'integer': Type.TYPE_INTEGER,
-    'bigint': Type.TYPE_INTEGER,
-    'decimal': Type.TYPE_NUMBER,
-    'real': Type.TYPE_NUMBER,
-    'double precision': Type.TYPE_NUMBER,
-    'boolean': Type.TYPE_BOOLEAN,
-    'char': Type.TYPE_CHAR,
-    'varchar': Type.TYPE_STRING,
-    'date': Type.TYPE_DATETIME,
-    'timestamp': Type.TYPE_DATETIME,
-    'timestamptz': Type.TYPE_DATETIME,
-    'geometry': Type.TYPE_BINARY,
-    'hllsketch': Type.TYPE_BINARY,
-    'time': Type.TYPE_TIME,
-    'timetz': Type.TYPE_TIME,
-
-    'bit': Type.TYPE_BINARY,  # BITOID recheck
+    "smallint": Type.TYPE_INTEGER,
+    "integer": Type.TYPE_INTEGER,
+    "bigint": Type.TYPE_INTEGER,
+    "decimal": Type.TYPE_NUMBER,
+    "real": Type.TYPE_NUMBER,
+    "double precision": Type.TYPE_NUMBER,
+    "boolean": Type.TYPE_BOOLEAN,
+    "char": Type.TYPE_CHAR,
+    "varchar": Type.TYPE_STRING,
+    "date": Type.TYPE_DATETIME,
+    "timestamp": Type.TYPE_DATETIME,
+    "timestamptz": Type.TYPE_DATETIME,
+    "geometry": Type.TYPE_BINARY,
+    "hllsketch": Type.TYPE_BINARY,
+    "time": Type.TYPE_TIME,
+    "timetz": Type.TYPE_TIME,
+    "bit": Type.TYPE_BINARY,  # BITOID recheck
     # 'boolean': Type.TYPE_BOOLEAN,  # BOOLOID
-    'character': Type.TYPE_CHAR,  # BPCHAROID recheck
-
+    "character": Type.TYPE_CHAR,  # BPCHAROID recheck
     # 'real': Type.TYPE_NUMBER,  # FLOAT4OID
     # 'double precision': Type.TYPE_NUMBER,  # FLOAT8OID
     # 'smallint': Type.TYPE_INTEGER,  # INT2OID
     # 'integer': Type.TYPE_INTEGER,  # INT4OID
     # 'bigint': Type.TYPE_NUMBER,  # INT8OID recheck
-    'numeric': Type.TYPE_NUMBER,  # NUMERICOID
-
-    'interval': Type.TYPE_DURATION,  # INTERVALOID recheck
+    "numeric": Type.TYPE_NUMBER,  # NUMERICOID
+    "interval": Type.TYPE_DURATION,  # INTERVALOID recheck
     # 'time': Type.TYPE_TIME,  # TIMEOID, TIMETZOID
-    'time without time zone': Type.TYPE_TIME,  # TIMEOID
-    'time with time zone': Type.TYPE_TIME,  # TIMETZOID
+    "time without time zone": Type.TYPE_TIME,  # TIMEOID
+    "time with time zone": Type.TYPE_TIME,  # TIMETZOID
     # 'timestamp': Type.TYPE_DATETIME,  # TIMESTAMPOID, TIMESTAMPTZOID
-    'timestamp without time zone': Type.TYPE_DATETIME,  # TIMESTAMPOID
-    'timestamp with time zone': Type.TYPE_DATETIME,  # TIMESTAMPTZOID
-
-    'bit varying': Type.TYPE_BINARY,  # VARBITOID recheck
-    'character varying': Type.TYPE_STRING,  # VARCHAROID
-
-    'ARRAY': Type.TYPE_LIST,  # view information_schema.columns recheck
-    'USER-DEFINED': Type.TYPE_STRUCT,  # view information_schema.columns recheck
+    "timestamp without time zone": Type.TYPE_DATETIME,  # TIMESTAMPOID
+    "timestamp with time zone": Type.TYPE_DATETIME,  # TIMESTAMPTZOID
+    "bit varying": Type.TYPE_BINARY,  # VARBITOID recheck
+    "character varying": Type.TYPE_STRING,  # VARCHAROID
+    "ARRAY": Type.TYPE_LIST,  # view information_schema.columns recheck
+    "USER-DEFINED": Type.TYPE_STRUCT,  # view information_schema.columns recheck
 }
 
 # views, base tables, external tables, and shared tables
 # TABLE, VIEW, MATERIALIZED VIEW, or " " empty string that represents no information.
 TABLE_TYPES_SQL_TO_ODD: Dict[str, DataEntityType] = {
-    'BASE TABLE': DataEntityType.TABLE,
-    'EXTERNAL TABLE': DataEntityType.TABLE,
-    'SHARED TABLE': DataEntityType.TABLE,
-    'VIEW': DataEntityType.VIEW,
-    'MATERIALIZED VIEW': DataEntityType.VIEW,
-    'EXTERNAL VIEW': DataEntityType.VIEW,
-    'EXTERNAL MATERIALIZED VIEW': DataEntityType.VIEW,
-
+    "BASE TABLE": DataEntityType.TABLE,
+    "EXTERNAL TABLE": DataEntityType.TABLE,
+    "SHARED TABLE": DataEntityType.TABLE,
+    "VIEW": DataEntityType.VIEW,
+    "MATERIALIZED VIEW": DataEntityType.VIEW,
+    "EXTERNAL VIEW": DataEntityType.VIEW,
+    "EXTERNAL MATERIALIZED VIEW": DataEntityType.VIEW,
     # '': 'DATASET_UNKNOWN'
-
     # 'LOCAL TEMPORARY': Type.DATASET_TABLE,
     # 'BASE TABLE': Type.DATASET_TABLE,
     # 'EXTERNAL TABLE': Type.DATASET_EXTERNAL_TABLE,

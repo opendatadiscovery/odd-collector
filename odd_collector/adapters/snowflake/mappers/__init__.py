@@ -1,18 +1,31 @@
 from collections import namedtuple
 
-_METADATA_SCHEMA_URL_PREFIX: str = \
-    'https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/' \
-    'extensions/snowflake.json#/definitions/Snowflake'
+_METADATA_SCHEMA_URL_PREFIX: str = (
+    "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"
+    "extensions/snowflake.json#/definitions/Snowflake"
+)
 
-_data_set_metadata_schema_url: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetExtension'
-_data_set_field_metadata_schema_url: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetFieldExtension'
+_data_set_metadata_schema_url: str = _METADATA_SCHEMA_URL_PREFIX + "DataSetExtension"
+_data_set_field_metadata_schema_url: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetFieldExtension"
+)
 
-_data_set_metadata_excluded_keys: set = {'table_catalog', 'table_schema', 'table_name', 'table_type',
-                                         'table_owner', 'row_count', 'comment', 'last_altered', 'created'}
+_data_set_metadata_excluded_keys: set = {
+    "table_catalog",
+    "table_schema",
+    "table_name",
+    "table_type",
+    "table_owner",
+    "row_count",
+    "comment",
+    "last_altered",
+    "created",
+}
 
-_table_metadata: str = \
-    'table_catalog, table_schema, table_name, table_owner, table_type, is_transient, clustering_key, ' \
-    'row_count, bytes, retention_time, created, last_altered, auto_clustering_on, comment, view_definition, is_secure'
+_table_metadata: str = (
+    "table_catalog, table_schema, table_name, table_owner, table_type, is_transient, clustering_key, "
+    "row_count, bytes, retention_time, created, last_altered, auto_clustering_on, comment, view_definition, is_secure"
+)
 
 _tables_select = """
 SELECT
@@ -40,13 +53,23 @@ WHERE t.TABLE_SCHEMA != 'INFORMATION_SCHEMA'
 ORDER BY t.TABLE_CATALOG, t.TABLE_SCHEMA, t.TABLE_NAME;
 """
 
-_column_metadata: str = 'table_catalog, table_schema, table_name, column_name, ordinal_position, column_default, ' \
-                        'is_nullable, data_type, character_maximum_length, character_octet_length, numeric_precision, ' \
-                        'numeric_precision_radix, numeric_scale, collation_name, is_identity, identity_generation, ' \
-                        'identity_start, identity_increment, identity_cycle, comment'
+_column_metadata: str = (
+    "table_catalog, table_schema, table_name, column_name, ordinal_position, column_default, "
+    "is_nullable, data_type, character_maximum_length, character_octet_length, numeric_precision, "
+    "numeric_precision_radix, numeric_scale, collation_name, is_identity, identity_generation, "
+    "identity_start, identity_increment, identity_cycle, comment"
+)
 
-_data_set_field_metadata_excluded_keys: set = {'table_catalog', 'table_schema', 'table_name', 'column_name',
-                                               'column_default', 'is_nullable', 'data_type', 'comment'}
+_data_set_field_metadata_excluded_keys: set = {
+    "table_catalog",
+    "table_schema",
+    "table_name",
+    "column_name",
+    "column_default",
+    "is_nullable",
+    "data_type",
+    "comment",
+}
 
 _columns_select = """
 SELECT
@@ -78,6 +101,5 @@ WHERE c.TABLE_SCHEMA != 'INFORMATION_SCHEMA'
 ORDER BY c.TABLE_CATALOG, c.TABLE_SCHEMA, c.TABLE_NAME, c.ORDINAL_POSITION
 """
 
-MetadataNamedtuple = namedtuple('MetadataNamedtuple', _table_metadata)
-ColumnMetadataNamedtuple = namedtuple('ColumnMetadataNamedtuple', _column_metadata)
-
+MetadataNamedtuple = namedtuple("MetadataNamedtuple", _table_metadata)
+ColumnMetadataNamedtuple = namedtuple("ColumnMetadataNamedtuple", _column_metadata)

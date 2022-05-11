@@ -8,8 +8,10 @@ from oddrn_generator import MysqlGenerator
 import logging
 
 
-def extract_transformer_data(sql: str, oddrn_generator: MysqlGenerator) -> DataTransformer:
-    sql_parser = SqlParser(sql.replace("(", '').replace(")", ""))
+def extract_transformer_data(
+    sql: str, oddrn_generator: MysqlGenerator
+) -> DataTransformer:
+    sql_parser = SqlParser(sql.replace("(", "").replace(")", ""))
 
     try:
         inputs, outputs = sql_parser.get_response()
@@ -30,5 +32,7 @@ def get_oddrn_list(tables, oddrn_generator: MysqlGenerator) -> List[str]:
     for table in tables:
         source = table.split(".")
         table_name = source[1] if len(source) > 1 else source[0]
-        response.append(oddrn_generator.get_oddrn_by_path("tables", table_name.replace('`', '')))
+        response.append(
+            oddrn_generator.get_oddrn_by_path("tables", table_name.replace("`", ""))
+        )
     return response

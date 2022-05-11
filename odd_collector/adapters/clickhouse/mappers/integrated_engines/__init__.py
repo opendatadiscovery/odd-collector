@@ -8,8 +8,9 @@ ENGINE_PARSER_MAP: Dict[str, Type[BaseEngineParser]] = {
 }
 
 
-def parse_from_intergated_engine(source_table: str,
-                                 intgr_engine_dict: Dict[str, IntgrEngineNamedtuple]) -> Optional[List[str]]:
+def parse_from_intergated_engine(
+    source_table: str, intgr_engine_dict: Dict[str, IntgrEngineNamedtuple]
+) -> Optional[List[str]]:
     engine = intgr_engine_dict.get(source_table)
     if not engine:
         return

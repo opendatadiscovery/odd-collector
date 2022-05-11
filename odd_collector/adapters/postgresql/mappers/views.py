@@ -8,11 +8,13 @@ from oddrn_generator import PostgresqlGenerator
 import logging
 
 
-def extract_transformer_data(sql: str, oddrn_generator: PostgresqlGenerator) -> DataTransformer:
+def extract_transformer_data(
+    sql: str, oddrn_generator: PostgresqlGenerator
+) -> DataTransformer:
     if sql is None:
         return DataTransformer(sql=sql, inputs=[], outputs=[])
-        
-    sql_parser = SqlParser(sql.replace("(", '').replace(")", ""))
+
+    sql_parser = SqlParser(sql.replace("(", "").replace(")", ""))
 
     try:
         inputs, outputs = sql_parser.get_response()
@@ -23,7 +25,7 @@ def extract_transformer_data(sql: str, oddrn_generator: PostgresqlGenerator) -> 
     return DataTransformer(
         inputs=get_oddrn_list(inputs, oddrn_generator),
         outputs=get_oddrn_list(outputs, oddrn_generator),
-        sql=sql
+        sql=sql,
     )
 
 
