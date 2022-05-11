@@ -1,9 +1,9 @@
 import logging
 from odd_models.models import DataEntity, DataTransformer
 from typing import Any, Iterable, List, Dict
-from mappers.oddrn import generate_pipeline_oddrn, generate_input_oddrn
 from odd_models.models import MetadataExtension
 
+from .oddrn import generate_pipeline_oddrn, generate_input_oddrn
 from oddrn_generator import KubeflowGenerator
 
 

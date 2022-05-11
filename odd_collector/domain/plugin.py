@@ -69,7 +69,9 @@ class CassandraPlugin(DatabasePlugin):
     contact_points: list = []
 
 
-class KubeflowPlugin(WithHost):
+class KubeflowPlugin(BasePlugin):
+    type: Literal["kubeflow"]
+    host: str
     namespace: str
     session_cookie0: Optional[str]
     session_cookie1: Optional[str]

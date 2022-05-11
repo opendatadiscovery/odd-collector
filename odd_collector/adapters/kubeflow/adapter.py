@@ -6,12 +6,12 @@ from odd_models.models import DataEntity
 from oddrn_generator import KubeflowGenerator
 
 from odd_collector.domain.plugin import KubeflowPlugin
-from api import ApiGetter
+from .api import ApiGetter
 from .mappers.pipelines import map_pipelines
 from .mappers.runs import map_runs
 
 
-class KubeflowAdapter(AbstractAdapter):
+class Adapter(AbstractAdapter):
     def __init__(self, config: KubeflowPlugin) -> None:
         self.__host = config.host
         self.__namespace = config.namespace

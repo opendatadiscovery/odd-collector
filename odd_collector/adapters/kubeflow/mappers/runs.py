@@ -1,9 +1,11 @@
 import logging
 from typing import Any, Iterable, List, Dict
-from mappers.oddrn import generate_experiment_oddrn, generate_run_oddrn
 
 from odd_models.models import DataEntity, DataTransformerRun, MetadataExtension
 from oddrn_generator import KubeflowGenerator
+
+from .oddrn import generate_experiment_oddrn, generate_run_oddrn
+
 
 KUBEFLOW_STORAGE_STATE = {
     "Error": "ABORTED",
