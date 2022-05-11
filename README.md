@@ -83,6 +83,14 @@ password: ""
 repo_path: str
 ```
 
+### __Kubeflow__
+```yaml
+  host: str
+  namespace: str
+  session_cookie0: Optional[str]
+  session_cookie1: Optional[str]
+```
+
 ## Building
 ```bash
 docker build .
