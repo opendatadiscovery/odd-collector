@@ -3,8 +3,9 @@ from typing import NamedTuple, Union
 from odd_models.models import MetadataExtension
 
 
-def get_metadata_extension(schema_url: str, named_tuple: NamedTuple, excluded_keys: set = None) \
-        -> Union[MetadataExtension, None]:
+def get_metadata_extension(
+    schema_url: str, named_tuple: NamedTuple, excluded_keys: set = None
+) -> Union[MetadataExtension, None]:
     """
     A method to generate the MetadataExtension of named tuple, excluding un-needed keys and the keys whose values are
     Nones.
@@ -18,6 +19,7 @@ def get_metadata_extension(schema_url: str, named_tuple: NamedTuple, excluded_ke
         if excluded_keys:
             for key in excluded_keys:
                 metadata.pop(key)
-        metadata_wo_none: dict = {key: value for key, value in metadata.items() if value is not None}
+        metadata_wo_none: dict = {
+            key: value for key, value in metadata.items() if value is not None
+        }
         return MetadataExtension(schema_url=schema_url, metadata=metadata_wo_none)
-

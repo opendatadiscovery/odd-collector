@@ -10,7 +10,6 @@ from .mappers.datasets import FeatureViewMapper
 
 
 class Adapter(AbstractAdapter):
-
     def __init__(self, config) -> None:
         self.__feature_store = FeatureStore(repo_path=config.repo_path)
         self.__oddrn_generator = FeastGenerator(host_settings=config.host)
@@ -27,10 +26,7 @@ class Adapter(AbstractAdapter):
         )
 
     def __get_entities(self) -> Dict[str, Entity]:
-        entities_dict = {}
-        for entity in self.__feature_store.list_entities():
-            entities_dict[entity.name] = entity
-        return entities_dict
+        return {entity.name: entity for entity in self.__feature_store.list_entities()}
 
     def get_feature_services(self):
         return self.__feature_store.list_feature_services()
@@ -40,6 +36,7 @@ class Adapter(AbstractAdapter):
             FeatureViewMapper(
                 raw_feature_view,
                 raw_entities_data_dict=self.__get_entities(),
-                oddrn_generator=self.__oddrn_generator
-            ).get_feature_view() for raw_feature_view in self.__feature_store.list_feature_views()
+                oddrn_generator=self.__oddrn_generator,
+            ).get_feature_view()
+            for raw_feature_view in self.__feature_store.list_feature_views()
         ]

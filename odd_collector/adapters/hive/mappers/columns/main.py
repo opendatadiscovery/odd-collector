@@ -7,7 +7,9 @@ from .hive_field_type_transformer import HiveFieldTypeTransformer
 
 
 hive_field_type_transformer = HiveFieldTypeTransformer()
-parser = Lark.open("hive_field_type_grammar.lark", rel_to=__file__, parser="lalr", start="type")
+parser = Lark.open(
+    "hive_field_type_grammar.lark", rel_to=__file__, parser="lalr", start="type"
+)
 
 TYPES_HIVE_TO_ODD = {
     "int": "TYPE_INTEGER",
@@ -32,7 +34,9 @@ TYPES_HIVE_TO_ODD = {
 }
 
 
-def map_column_stats(unmapped_column_stats: List[Dict[str, Any]]) -> Iterable[Tuple[str, Dict[str, Any]]]:
+def map_column_stats(
+    unmapped_column_stats: List[Dict[str, Any]]
+) -> Iterable[Tuple[str, Dict[str, Any]]]:
     """
     :return: [('airline_name', {
                          'string_stats': {
@@ -42,8 +46,10 @@ def map_column_stats(unmapped_column_stats: List[Dict[str, Any]]) -> Iterable[Tu
                                         'unique_count': 24)
                                         }}), (...), ]
     """
-    return [__map_column_stat(raw_column_stat.statsObj)
-            for raw_column_stat in unmapped_column_stats]
+    return [
+        __map_column_stat(raw_column_stat.statsObj)
+        for raw_column_stat in unmapped_column_stats
+    ]
 
 
 def __map_column_stat(raw_column_stat: Dict[str, Any]) -> (str, Dict[str, Any]):
@@ -56,9 +62,7 @@ def __map_column_stat(raw_column_stat: Dict[str, Any]) -> (str, Dict[str, Any]):
         column_type_value = re.sub(r"\([^)]*\)", "", column_type)
         statistics_data = FIELD_TYPE_SCHEMA[column_type_value]
         mapper_fn = statistics_data["mapper"]
-        result = column_name, {
-            statistics_data["field_name"]: mapper_fn(stats_data)
-        }
+        result = column_name, {statistics_data["field_name"]: mapper_fn(stats_data)}
         return result
     except Exception as e:
         logging.warning(f"Hive adapter column statistic error: {e}")
@@ -81,13 +85,21 @@ def map_column(c_name, c_type, table_oddrn: str, stats=None) -> List[Dict[str, A
             type_parsed=type_parsed,
         )
     except (LarkError, KeyError) as e:
-        logging.warning(f"Hive adapter column '{c_name}' (Table oddrn: {table_oddrn}) failed: {e}")
+        logging.warning(
+            f"Hive adapter column '{c_name}' (Table oddrn: {table_oddrn}) failed: {e}"
+        )
         return []
 
 
-def __map_column(table_oddrn: str, parent_oddrn: str = None, column_name: str = None,
-                 stats: Dict[str, Any] = None, type_parsed: Dict[str, Any] = None,
-                 is_key: bool = None, is_value: bool = None) -> List[Dict[str, Any]]:
+def __map_column(
+    table_oddrn: str,
+    parent_oddrn: str = None,
+    column_name: str = None,
+    stats: Dict[str, Any] = None,
+    type_parsed: Dict[str, Any] = None,
+    is_key: bool = None,
+    is_value: bool = None,
+) -> List[Dict[str, Any]]:
     try:
         result = []
         hive_type = type_parsed["type"]

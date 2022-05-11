@@ -1,3 +1,4 @@
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 # odd-collector
 ODD Collector is a lightweight service which gathers metadata from all your data sources.
 
@@ -81,6 +82,14 @@ database: ""
 user: ""
 password: ""
 repo_path: str
+```
+
+### __Kubeflow__
+```yaml
+  host: str
+  namespace: str
+  session_cookie0: Optional[str]
+  session_cookie1: Optional[str]
 ```
 
 ## Building

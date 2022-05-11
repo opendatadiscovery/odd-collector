@@ -18,7 +18,9 @@ class Adapter(AbstractAdapter):
     def __init__(self, config) -> None:
         self.__host = config.host
         self.__port = config.port
-        self.__oddrn_generator = HiveGenerator(host_settings=f"{self.__host}", databases=config.database)
+        self.__oddrn_generator = HiveGenerator(
+            host_settings=f"{self.__host}", databases=config.database
+        )
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
@@ -44,7 +46,8 @@ class Adapter(AbstractAdapter):
             self.__disconnect()
             logging.info(
                 f"Hive adapter loaded {len(tables_list)} DataEntity(s) from database"
-                f" in {perf_counter() - start} seconds")
+                f" in {perf_counter() - start} seconds"
+            )
             return tables_list
         except Exception as e:
             logging.warning(f"Hive adapter no datasets found: {e}")
@@ -53,8 +56,13 @@ class Adapter(AbstractAdapter):
     def __get_tables(self, db: str) -> List[DataEntity]:
         tables_list = self.__cursor.get_all_tables(db)
         if tables_list:
-            aggregated_table_stats = [self.__cursor.get_table(db, table) for table in tables_list]
-            output = [self.__process_table_raw_data(table_stats) for table_stats in aggregated_table_stats]
+            aggregated_table_stats = [
+                self.__cursor.get_table(db, table) for table in tables_list
+            ]
+            output = [
+                self.__process_table_raw_data(table_stats)
+                for table_stats in aggregated_table_stats
+            ]
             return output
         else:
             return []
@@ -67,23 +75,27 @@ class Adapter(AbstractAdapter):
         return result
 
     def __get_columns_stats(self, table_stats, columns: Dict) -> List:
-        if table_stats.parameters.get('COLUMN_STATS_ACCURATE', None):
+        if table_stats.parameters.get("COLUMN_STATS_ACCURATE", None):
             stats = []
             for column_name in columns.keys():
                 try:
-                    result = self.__cursor.get_table_column_statistics(table_stats.dbName,
-                                                                       table_stats.tableName,
-                                                                       column_name)
+                    result = self.__cursor.get_table_column_statistics(
+                        table_stats.dbName, table_stats.tableName, column_name
+                    )
                 except Exception as e:
-                    logging.warning(f"Hive adapter can't retrieve statistics for '{column_name}' in '{table_stats.tableName}'. "
-                                    f"Generated an exception: {e}. "
-                                    f"May be the type: array, struct, map, union")
+                    logging.warning(
+                        f"Hive adapter can't retrieve statistics for '{column_name}' in '{table_stats.tableName}'. "
+                        f"Generated an exception: {e}. "
+                        f"May be the type: array, struct, map, union"
+                    )
                 else:
                     stats.append(result)
             return stats
         else:
-            logging.info(f"Hive adapter table statistics for '{table_stats.tableName}' is not available. "
-                         f"Stats has not been gathered. ")
+            logging.info(
+                f"Hive adapter table statistics for '{table_stats.tableName}' is not available. "
+                f"Stats has not been gathered. "
+            )
             return []
 
     def __connect(self):

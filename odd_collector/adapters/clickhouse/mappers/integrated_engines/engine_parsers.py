@@ -31,7 +31,10 @@ class KafkaEngineParser(BaseEngineParser):
         if not (kafka_broker_list and kafka_topic_list):
             return []
         kafka_oddrn_gen = KafkaGenerator(host_settings=kafka_broker_list)
-        return [kafka_oddrn_gen.get_oddrn_by_path("topics", topic) for topic in kafka_topic_list.split(',')]
+        return [
+            kafka_oddrn_gen.get_oddrn_by_path("topics", topic)
+            for topic in kafka_topic_list.split(",")
+        ]
 
     def _get_kafka_settings(self, sql, pattern) -> Optional[str]:
         m = re.search(f"{pattern} = '(.+?)'", sql)

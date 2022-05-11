@@ -27,7 +27,9 @@ class Adapter(AbstractAdapter):
         self.__password = config.password
         self.__contact_points = config.contact_points or [config.host]
         # self.__execution_profile = config['execution_profile'] TODO To be added.
-        self.__oddrn_generator = CassandraGenerator(host_settings=f"{self.__host}", keyspaces=self.__keyspace)
+        self.__oddrn_generator = CassandraGenerator(
+            host_settings=f"{self.__host}", keyspaces=self.__keyspace
+        )
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
@@ -42,13 +44,13 @@ class Adapter(AbstractAdapter):
         try:
             self.__connect()
 
-            tables = self.__execute(_table_select, {'keyspace': self.__keyspace})
-            columns = self.__execute(_column_select, {'keyspace': self.__keyspace})
+            tables = self.__execute(_table_select, {"keyspace": self.__keyspace})
+            columns = self.__execute(_column_select, {"keyspace": self.__keyspace})
 
             return map_tables(self.__oddrn_generator, tables, columns, self.__keyspace)
 
         except Exception as e:
-            logging.error('Failed to load metadata for tables')
+            logging.error("Failed to load metadata for tables")
             logging.exception(e)
 
     def get_data_entity_list(self) -> DataEntityList:
@@ -72,9 +74,15 @@ class Adapter(AbstractAdapter):
         """
         try:
             profile = ExecutionProfile(row_factory=tuple_factory)
-            auth_provider = PlainTextAuthProvider(username=self.__username, password=self.__password)
-            self.__cluster = Cluster(contact_points=self.__contact_points, port=self.__port,
-                                     execution_profiles={EXEC_PROFILE_DEFAULT: profile}, auth_provider=auth_provider)
+            auth_provider = PlainTextAuthProvider(
+                username=self.__username, password=self.__password
+            )
+            self.__cluster = Cluster(
+                contact_points=self.__contact_points,
+                port=self.__port,
+                execution_profiles={EXEC_PROFILE_DEFAULT: profile},
+                auth_provider=auth_provider,
+            )
             self.__session = self.__cluster.connect(self.__keyspace)
 
         except cassandra.DriverException as err:

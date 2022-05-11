@@ -12,11 +12,11 @@ class MongoPathsModel(BasePathsModel):
 
     class Config:
         dependencies_map = {
-            'databases': ('databases',),
-            'collections': ('databases', 'collections'),
-            'columns': ('databases', 'collections', 'columns')
+            "databases": ("databases",),
+            "collections": ("databases", "collections"),
+            "columns": ("databases", "collections", "columns"),
         }
-        data_source_path = 'databases'
+        data_source_path = "databases"
 
 
 class MongoGenerator(Generator):

@@ -12,11 +12,11 @@ class Adapter(AbstractAdapter):
     __cursor = None
 
     def __init__(self, config):
-        self.__warehouse = config.warehouse
         self.__database = config.database
-        self.__username = config.user
+        self.__user = config.user
         self.__password = config.password
         self.__account = config.account
+        self.__warehouse = config.warehouse
         self.__oddrn_generator = SnowflakeGenerator(
             host_settings=f"{self.__account}.snowflakecomputing.com",
             warehouses=self.__warehouse,
@@ -41,7 +41,7 @@ class Adapter(AbstractAdapter):
 
             return map_table(self.__oddrn_generator, tables, columns)
         except Exception as e:
-            logging.error('Failed to load metadata for tables')
+            logging.error("Failed to load metadata for tables")
             logging.exception(e)
         finally:
             self.__disconnect()
@@ -53,11 +53,11 @@ class Adapter(AbstractAdapter):
 
     def __connect(self):
         self.__connection = connector.connect(
-            user=self.__username,
-            password=self.__password,
-            account=self.__account
+            user=self.__user, password=self.__password, account=self.__account
         )
-        self.__cursor = self.__connection.cursor().execute(f"USE DATABASE {self.__database}")
+        self.__cursor = self.__connection.cursor().execute(
+            f"USE DATABASE {self.__database}"
+        )
 
     def __disconnect(self):
         try:

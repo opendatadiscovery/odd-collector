@@ -1,51 +1,57 @@
 from typing import Literal, Optional, Union
 
 import pydantic
-from odd_collector_sdk.domain.plugin import Plugin
+from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from typing_extensions import Annotated
 
 
-class Plugins(Plugin):
+class WithHost(BasePlugin):
     host: str
-    port: int
+
+
+class WithPort(BasePlugin):
+    port: str
+
+
+class DatabasePlugin(WithHost, WithPort):
     database: str
     user: str
     password: str
 
 
-class PostgreSQLPlugin(Plugins):
+class PostgreSQLPlugin(DatabasePlugin):
     type: Literal["postgresql"]
 
 
-class MySQLPlugin(Plugins):
+class MySQLPlugin(DatabasePlugin):
     type: Literal["mysql"]
     ssl_disabled: Optional[bool] = False
 
 
-class ClickhousePlugin(Plugins):
+class ClickhousePlugin(DatabasePlugin):
     type: Literal["clickhouse"]
 
 
-class RedshiftPlugin(Plugins):
+class RedshiftPlugin(DatabasePlugin):
     type: Literal["redshift"]
 
 
-class MongoDBPlugin(Plugins):
+class MongoDBPlugin(DatabasePlugin):
     type: Literal["mongodb"]
     protocol: str
 
 
-class SnowflakePlugin(Plugins):
+class SnowflakePlugin(DatabasePlugin):
     type: Literal["snowflake"]
     account: str
     warehouse: str
 
-      
-class HivePlugin(Plugins):
+
+class HivePlugin(WithHost, WithPort):
     type: Literal["hive"]
 
 
-class ElasticsearchPlugin(Plugins):
+class ElasticsearchPlugin(WithHost, WithPort):
     type: Literal["elasticsearch"]
     http_auth: str = None
     use_ssl: bool = None
@@ -53,14 +59,22 @@ class ElasticsearchPlugin(Plugins):
     ca_certs: str = None
 
 
-class FeastPlugin(Plugins):
+class FeastPlugin(WithHost):
     type: Literal["feast"]
     repo_path: str
 
 
-class CassandraPlugin(Plugins):
+class CassandraPlugin(DatabasePlugin):
     type: Literal["cassandra"]
     contact_points: list = []
+
+
+class KubeflowPlugin(BasePlugin):
+    type: Literal["kubeflow"]
+    host: str
+    namespace: str
+    session_cookie0: Optional[str]
+    session_cookie1: Optional[str]
 
 
 AvailablePlugin = Annotated[
@@ -74,7 +88,8 @@ AvailablePlugin = Annotated[
         HivePlugin,
         ElasticsearchPlugin,
         FeastPlugin,
-        CassandraPlugin
+        CassandraPlugin,
+        KubeflowPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]
