@@ -91,6 +91,15 @@ repo_path: str
   session_cookie1: Optional[str]
 ```
 
+### __Tarantool__
+```yaml
+  type: tarantool
+  host: str
+  port: int
+  user: ""
+  password: ""
+```
+
 ## Building
 ```bash
 docker build .

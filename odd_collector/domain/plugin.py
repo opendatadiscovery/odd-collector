@@ -14,7 +14,7 @@ class WithPort(BasePlugin):
 
 
 class DatabasePlugin(WithHost, WithPort):
-    database: str
+    database: Optional[str]
     user: str
     password: str
 
@@ -77,6 +77,10 @@ class KubeflowPlugin(BasePlugin):
     session_cookie1: Optional[str]
 
 
+class TarantoolPlugin(DatabasePlugin):
+    type: Literal["tarantool"]
+
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -90,6 +94,7 @@ AvailablePlugin = Annotated[
         FeastPlugin,
         CassandraPlugin,
         KubeflowPlugin,
+        TarantoolPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]
