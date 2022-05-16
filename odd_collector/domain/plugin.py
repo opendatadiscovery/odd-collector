@@ -85,6 +85,14 @@ class Neo4jPlugin(DatabasePlugin):
     type: Literal["neo4j"]
 
 
+class TableauPlugin(BasePlugin):
+    type: Literal["tableau"]
+    server: str
+    site: str
+    user: str
+    password: str
+
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -100,6 +108,7 @@ AvailablePlugin = Annotated[
         KubeflowPlugin,
         TarantoolPlugin,
         Neo4jPlugin,
+        TableauPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]

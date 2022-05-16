@@ -28,6 +28,8 @@ cassandra-driver = "^3.25.0"
 kfp = "^1.8.12"
 tarantool = "^0.8.0"
 neo4j = "^4.3.7"
+tableauserverclient = "^0.18.0"
+pytz = "^2022.1"
 
 [tool.poetry.dev-dependencies]
 

@@ -9,9 +9,3 @@ plugins:
     database: ""
     user: ""
     password: ""
-  # - type: tarantool
-  #   name: tarantool
-  #   host: localhost
-  #   port: 3301
-  #   user: odd_adapter
-  #   password: odd_adapter_password
