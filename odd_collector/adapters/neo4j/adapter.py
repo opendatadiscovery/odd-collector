@@ -14,7 +14,6 @@ _find_all_nodes_relations: str = 'MATCH (n)-[r]-() RETURN distinct labels(n), ty
 
 
 class Adapter(AbstractAdapter):
-    __connection = None
 
     def __init__(self, config) -> None:
         self.__host = config.host
@@ -34,33 +33,28 @@ class Adapter(AbstractAdapter):
         return self.__oddrn_generator.get_data_source_oddrn()
 
     def get_datasets(self) -> List[DataEntity]:
-        try:
-            self.__connect()
+        with self.__connect() as connect:
+            try:
+                nodes = self.__execute(connect, _find_all_nodes)
 
-            nodes = self.__execute(_find_all_nodes)
+                relations = self.__execute(connect, _find_all_nodes_relations)
 
-            relations = self.__execute(_find_all_nodes_relations)
+                logging.debug(f'Load {len(nodes)} nodes and {len(relations)} relations from Neo4j database')
 
-            logging.debug(f'Load {len(nodes)} nodes and {len(relations)} relations from Neo4j database')
-
-            return map_nodes(self.__oddrn_generator, nodes, relations)
-        except Exception as e:
-            logging.error('Failed to load metadata for tables')
-            logging.exception(e)
-        finally:
-            self.__disconnect()
+                return map_nodes(self.__oddrn_generator, nodes, relations)
+            except Exception as e:
+                logging.error('Failed to load metadata for tables')
+                logging.exception(e)
         return []
 
-    def __query(self, tx, cyp: str) -> list:
+    @staticmethod
+    def __query(tx, cyp: str) -> list:
         return tx.run(cyp).values()
 
-    def __execute(self, cyp: str) -> list:
-        with self.__connection.session() as session:
+    def __execute(self, connection, cyp: str) -> list:
+        with connection.session() as session:
             return session.read_transaction(self.__query, cyp)
 
     def __connect(self):
-        self.__connection = GraphDatabase.driver(f"bolt://{self.__host}:{self.__port}", auth=(self.__user, self.__password), encrypted=False)
+        return GraphDatabase.driver(f"bolt://{self.__host}:{self.__port}", auth=(self.__user, self.__password), encrypted=False)
 
-    def __disconnect(self):
-        if self.__connection:
-            self.__connection.close()
