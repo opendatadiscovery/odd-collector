@@ -5,8 +5,8 @@ from oddrn_generator import Neo4jGenerator
 from collections import namedtuple
 
 from . import (
-    NodeMetadataNamedtuple, RelationMetadataNamedtuple, _data_set_metadata_schema_url, _data_set_metadata_excluded_keys,
-    FieldMetadataNamedtuple
+    NodeMetadata, RelationMetadata, _data_set_metadata_schema_url, _data_set_metadata_excluded_keys,
+    FieldMetadata
 )
 
 from .metadata import append_metadata_extension
@@ -18,9 +18,9 @@ def map_nodes(oddrn_generator: Neo4jGenerator, nodes: list, relations: list) -> 
 
     nodes_map: Dict[str, List[NamedTuple]] = {}
 
-    _group_by_labels(nodes_map, NodeMetadataNamedtuple, nodes)
+    _group_by_labels(nodes_map, NodeMetadata, nodes)
 
-    _group_by_labels(nodes_map, RelationMetadataNamedtuple, relations)
+    _group_by_labels(nodes_map, RelationMetadata, relations)
 
     for node_name in nodes_map:
         # DataEntity
@@ -44,7 +44,7 @@ def map_nodes(oddrn_generator: Neo4jGenerator, nodes: list, relations: list) -> 
                                       _data_set_metadata_excluded_keys)
 
         for field in [(field_name, 'string') for field_name in fields]:
-            meta: FieldMetadataNamedtuple = FieldMetadataNamedtuple(*field)
+            meta: FieldMetadata = FieldMetadata(*field)
             data_entity.dataset.field_list.append(map_field(meta, oddrn_generator, data_entity.owner))
 
         data_entities.append(data_entity)

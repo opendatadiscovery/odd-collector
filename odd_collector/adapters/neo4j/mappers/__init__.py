@@ -19,8 +19,8 @@ _relation_metadata: str = \
 _field_metadata: str = \
     'field_name, data_type'
 
-NodeMetadataNamedtuple = namedtuple('NodeMetadataNamedtuple', _node_metadata)
+NodeMetadata = namedtuple('NodeMetadata', _node_metadata)
 
-RelationMetadataNamedtuple = namedtuple('RelationMetadataNamedtuple', _relation_metadata)
+RelationMetadata = namedtuple('RelationMetadata', _relation_metadata)
 
-FieldMetadataNamedtuple = namedtuple('FieldMetadataNamedtuple', _field_metadata)
+FieldMetadata = namedtuple('FieldMetadata', _field_metadata)

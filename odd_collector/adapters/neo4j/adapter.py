@@ -6,8 +6,11 @@ from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import Neo4jGenerator
 
-from . import _find_all_nodes, _find_all_nodes_relations
 from .mappers.nodes import map_nodes
+
+_find_all_nodes: str = 'MATCH (n) return distinct labels(n) as labels, count(*), keys(n) order by labels'
+
+_find_all_nodes_relations: str = 'MATCH (n)-[r]-() RETURN distinct labels(n), type(r), count(*)'
 
 
 class Adapter(AbstractAdapter):
@@ -38,14 +41,13 @@ class Adapter(AbstractAdapter):
 
             relations = self.__execute(_find_all_nodes_relations)
 
-            self.__disconnect()
-
-            logging.info(f'Load {len(nodes)} nodes and {len(relations)} relations from Neo4j database')
+            logging.debug(f'Load {len(nodes)} nodes and {len(relations)} relations from Neo4j database')
 
             return map_nodes(self.__oddrn_generator, nodes, relations)
         except Exception as e:
             logging.error('Failed to load metadata for tables')
             logging.exception(e)
+        finally:
             self.__disconnect()
         return []
 

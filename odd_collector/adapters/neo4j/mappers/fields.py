@@ -1,12 +1,12 @@
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import Neo4jGenerator
 
-from . import FieldMetadataNamedtuple
+from . import FieldMetadata
 from .metadata import convert_bytes_to_str
 from .types import TYPES_SQL_TO_ODD
 
 
-def map_field(field: FieldMetadataNamedtuple, oddrn_generator: Neo4jGenerator, owner: str) -> DataSetField:
+def map_field(field: FieldMetadata, oddrn_generator: Neo4jGenerator, owner: str) -> DataSetField:
     name: str = field.field_name
     data_type: str = convert_bytes_to_str(field.data_type)
     dsf: DataSetField = DataSetField(
