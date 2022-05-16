@@ -81,6 +81,14 @@ class TarantoolPlugin(DatabasePlugin):
     type: Literal["tarantool"]
 
 
+class TableauPlugin(BasePlugin):
+    type: Literal["tableau"]
+    server: str
+    site: str
+    user: str
+    password: str
+
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -95,6 +103,7 @@ AvailablePlugin = Annotated[
         CassandraPlugin,
         KubeflowPlugin,
         TarantoolPlugin,
+        TableauPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]

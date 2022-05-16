@@ -4,23 +4,12 @@ ODD Collector is a lightweight service which gathers metadata from all your data
 
 To learn more about collector types and ODD Platform's architecture, [read the documentation](https://docs.opendatadiscovery.org/architecture).
 
-## Domain
-___
-Main class for plugins is `Plugins` inherited from `odd-collector-sdk.domain.Plugin`. 
-```python
-class Plugins(Plugin):
-    host: str
-    port: int
-    database: str
-    user: str
-    password: str
-```
-
 ## Implemented adapters
 ___
 ### __PostgreSQL__
 ```yaml
 type: postgresql
+name: postgresql
 host: str
 port: int
 database: str
@@ -30,6 +19,7 @@ password: str
 ### __MySQL__
 ```yaml
 type: mysql
+name: mysql
 host: str
 port: int
 database: str
@@ -40,6 +30,7 @@ ssl_disabled: bool
 ### __ClickHouse__
 ```yaml
 type: clickhouse
+name: clickhouse
 host: str
 port: int
 database: str
@@ -49,6 +40,7 @@ password: str
 ### __Redshift__
 ```yaml
 type: redshift
+name: redshift
 host: str
 port: int
 database: str
@@ -58,6 +50,7 @@ password: str
 ### __Hive__
 ```yaml
 type: hive
+name: hive
 host: str
 port: int
 database: str
@@ -67,6 +60,7 @@ password: str
 ### __Elasticsearch__
 ```yaml
 type: elasticsearch
+name: elasticsearch
 host: str
 port: int
 database: ""
@@ -76,6 +70,7 @@ password: ""
 ### __Feast__
 ```yaml
 type: feast
+name: feast
 host: str
 port: int
 database: ""
@@ -86,6 +81,8 @@ repo_path: str
 
 ### __Kubeflow__
 ```yaml
+  type: kubeflow
+  name: kubeflow
   host: str
   namespace: str
   session_cookie0: Optional[str]
@@ -95,11 +92,23 @@ repo_path: str
 ### __Tarantool__
 ```yaml
   type: tarantool
+  name: tarantool
   host: str
   port: int
   user: ""
   password: ""
 ```
+
+### __Tableau__
+```yaml
+    type: tableau
+    name: tableau
+    server: str
+    site: str
+    user: str
+    password: str
+```
+
 
 ## Building
 ```bash
