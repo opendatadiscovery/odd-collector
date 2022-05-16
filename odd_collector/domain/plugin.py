@@ -81,6 +81,10 @@ class TarantoolPlugin(DatabasePlugin):
     type: Literal["tarantool"]
 
 
+class Neo4jPlugin(DatabasePlugin):
+    type: Literal["neo4j"]
+
+
 class TableauPlugin(BasePlugin):
     type: Literal["tableau"]
     server: str
@@ -103,6 +107,7 @@ AvailablePlugin = Annotated[
         CassandraPlugin,
         KubeflowPlugin,
         TarantoolPlugin,
+        Neo4jPlugin,
         TableauPlugin,
     ],
     pydantic.Field(discriminator="type"),
