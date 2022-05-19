@@ -4,9 +4,20 @@ ODD Collector is a lightweight service which gathers metadata from all your data
 
 To learn more about collector types and ODD Platform's architecture, [read the documentation](https://docs.opendatadiscovery.org/architecture).
 
+
 ## Implemented adapters
-___
-### __PostgreSQL__
+ - [PostgresSQL](#postgressql) 
+ - [MySQL](#mysql)
+ - [ClickHouse](#clickhouse) 
+ - [Redshift](#redshift) 
+ - [Hive](#hive) 
+ - [Elasticsearch](#elasticsearch) 
+ - [Feast](#feast) 
+ - [Kubeflow](#kubeflow)
+ - [Tarantool](#tarantool)
+ - [Tableau](#tableau)
+ - [Neo4j](#neo4j)
+### __PostgresSQL__
 ```yaml
 type: postgresql
 name: postgresql
@@ -109,6 +120,16 @@ repo_path: str
     password: str
 ```
 
+### __Neo4j__
+```yaml
+    type: neo4j
+    host: str
+    port: int
+    database: str
+    user: str
+    password: str
+
+```
 
 ## Building
 ```bash
