@@ -93,6 +93,14 @@ class TableauPlugin(BasePlugin):
     password: str
 
 
+class KinesisPlugin(BasePlugin):
+    type: Literal["kinesis"]
+    region_name: str
+    account_id: str
+    aws_access_key_id: str
+    aws_secret_access_key: str
+
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -109,6 +117,7 @@ AvailablePlugin = Annotated[
         TarantoolPlugin,
         Neo4jPlugin,
         TableauPlugin,
+        KinesisPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]

@@ -30,6 +30,7 @@ tarantool = "^0.8.0"
 neo4j = "^4.3.7"
 tableauserverclient = "^0.18.0"
 pytz = "^2022.1"
+boto3 = "^1.18.44"
 
 [tool.poetry.dev-dependencies]
 
