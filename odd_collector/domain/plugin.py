@@ -64,6 +64,11 @@ class FeastPlugin(WithHost):
     repo_path: str
 
 
+class DbtPlugin(WithHost):
+    type: Literal["dbt"]
+    odd_catalog_url: str
+
+
 class CassandraPlugin(DatabasePlugin):
     type: Literal["cassandra"]
     contact_points: list = []
@@ -93,14 +98,6 @@ class TableauPlugin(BasePlugin):
     password: str
 
 
-class KinesisPlugin(BasePlugin):
-    type: Literal["kinesis"]
-    region_name: str
-    account_id: str
-    aws_access_key_id: str
-    aws_secret_access_key: str
-
-
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -112,12 +109,12 @@ AvailablePlugin = Annotated[
         HivePlugin,
         ElasticsearchPlugin,
         FeastPlugin,
+        DbtPlugin,
         CassandraPlugin,
         KubeflowPlugin,
         TarantoolPlugin,
         Neo4jPlugin,
         TableauPlugin,
-        KinesisPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]
