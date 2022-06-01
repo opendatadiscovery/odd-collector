@@ -10,7 +10,6 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 - [Config example](#config-example)
 
 ## Implemented adapters
-___
  - [Cassandra](#cassandra)
  - [ClickHouse](#clickhouse)
  - [Dbt](#dbt)
@@ -184,13 +183,11 @@ password: ""
 ```
 
 ## Building
-___
 ```bash
 docker build .
 ```
 
 ## Config example
-___
 Custom `.env` file for docker-compose.yaml
 ```
 PLATFORM_HOST_URL=http://odd-platform:8080
