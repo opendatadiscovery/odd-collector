@@ -64,6 +64,11 @@ class FeastPlugin(WithHost):
     repo_path: str
 
 
+class DbtPlugin(WithHost):
+    type: Literal["dbt"]
+    odd_catalog_url: str
+
+
 class CassandraPlugin(DatabasePlugin):
     type: Literal["cassandra"]
     contact_points: list = []
@@ -104,6 +109,7 @@ AvailablePlugin = Annotated[
         HivePlugin,
         ElasticsearchPlugin,
         FeastPlugin,
+        DbtPlugin,
         CassandraPlugin,
         KubeflowPlugin,
         TarantoolPlugin,
