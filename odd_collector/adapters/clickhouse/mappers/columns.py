@@ -60,8 +60,8 @@ def _get_column_type(data_type: str):
         data_type = "Array"
     elif data_type.startswith("Enum8"):
         data_type = "Enum8"
-    elif re.search("SimpleAggregateFunction\(\w+,\s(\w+)\)", data_type):
-        data_type = re.search("SimpleAggregateFunction\(\w+,\s(\w+)\)", data_type).group(1)
+    elif (type := re.search("SimpleAggregateFunction\(\w+,\s(\w+)\)", data_type)):
+        data_type = type.group(1)
 
     logging.debug(f"Data type after parsing: {data_type}")
     return TYPES_SQL_TO_ODD.get(data_type, Type.TYPE_UNKNOWN)
