@@ -11,8 +11,6 @@ repository = "https://github.com/opendatadiscovery/odd-collector"
 [tool.poetry.dependencies]
 python = "^3.9.1"
 oddrn-generator = "^0.1.23"
-odd-models = "^1.0.15"
-odd-collector-sdk = "^0.2.0"
 clickhouse-driver = "^0.2.3"
 mysql-connector-python = "^8.0.28"
 hive-metastore-client="^1.0.9"
@@ -23,13 +21,14 @@ pymongo = {extras = ["srv"], version = "^4.0.2"}
 snowflake-connector-python = "^2.4.1"
 elasticsearch = "7.14.0"
 pyhumps = "^3.0.2"
-feast = "0.12.0"
+feast = "0.21.2"
 cassandra-driver = "^3.25.0"
 kfp = "^1.8.12"
 tarantool = "^0.8.0"
 neo4j = "^4.3.7"
 tableauserverclient = "^0.18.0"
 pytz = "^2022.1"
+odd-collector-sdk = "^0.2.4"
 
 [tool.poetry.dev-dependencies]
 
