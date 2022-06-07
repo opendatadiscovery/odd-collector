@@ -29,6 +29,7 @@ neo4j = "^4.3.7"
 tableauserverclient = "0.19.0"
 pytz = "^2022.1"
 odd-collector-sdk = "^0.2.4"
+pyodbc = "^4.0.32"
 
 [tool.poetry.dev-dependencies]
 
