@@ -1,31 +1,60 @@
 from collections import namedtuple
 
-_METADATA_SCHEMA_URL_PREFIX: str = \
-    'https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/' \
-    'extensions/redshift.json#/definitions/Redshift'
+_METADATA_SCHEMA_URL_PREFIX: str = (
+    "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"
+    "extensions/redshift.json#/definitions/Redshift"
+)
 
-_data_set_metadata_schema_url: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetExtensionBase'
-_data_set_metadata_schema_url_all: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetExtensionAll'
-_data_set_metadata_schema_url_redshift: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetExtensionRedshift'
-_data_set_metadata_schema_url_external: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetExtensionExternal'
-_data_set_metadata_schema_url_info: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetExtension'
+_data_set_metadata_schema_url: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetExtensionBase"
+)
+_data_set_metadata_schema_url_all: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetExtensionAll"
+)
+_data_set_metadata_schema_url_redshift: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetExtensionRedshift"
+)
+_data_set_metadata_schema_url_external: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetExtensionExternal"
+)
+_data_set_metadata_schema_url_info: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetExtension"
+)
 
-_data_set_field_metadata_schema_url: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetFieldExtensionBase'
-_data_set_field_metadata_schema_url_redshift: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetFieldExtension'
-_data_set_field_metadata_schema_url_external: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetFieldExtensionExternal'
+_data_set_field_metadata_schema_url: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetFieldExtensionBase"
+)
+_data_set_field_metadata_schema_url_redshift: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetFieldExtension"
+)
+_data_set_field_metadata_schema_url_external: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetFieldExtensionExternal"
+)
 
-_data_set_metadata_schema_url_function: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetExtensionFunction'
-_data_set_metadata_schema_url_call: str = _METADATA_SCHEMA_URL_PREFIX + 'DataSetExtensionCall'
+_data_set_metadata_schema_url_function: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetExtensionFunction"
+)
+_data_set_metadata_schema_url_call: str = (
+    _METADATA_SCHEMA_URL_PREFIX + "DataSetExtensionCall"
+)
 
-_data_set_metadata_excluded_keys_info: set = {'database', 'schema', 'table'}
+_data_set_metadata_excluded_keys_info: set = {"database", "schema", "table"}
 
-_data_set_field_metadata_excluded_keys_redshift: set = {'database_name', 'schema_name', 'table_name', 'column_name',
-                                                        'data_type', 'column_default', 'is_nullable', 'remarks'}
+_data_set_field_metadata_excluded_keys_redshift: set = {
+    "database_name",
+    "schema_name",
+    "table_name",
+    "column_name",
+    "data_type",
+    "column_default",
+    "is_nullable",
+    "remarks",
+}
 
 # Metadata Tables
 MetadataNamedtuple = namedtuple(
-    typename='MetadataNamedtuple',
-    field_names='table_catalog, table_schema, table_name, table_type, remarks'
+    typename="MetadataNamedtuple",
+    field_names="table_catalog, table_schema, table_name, table_type, remarks",
 )
 MetadataNamedtuple_QUERY = """
 select 
@@ -43,8 +72,8 @@ order by
 
 # Metadata Tables All
 MetadataNamedtupleAll = namedtuple(
-    typename='MetadataNamedtupleAll',
-    field_names='database_name, schema_name, table_name, table_type, table_owner, table_creation_time, view_ddl'
+    typename="MetadataNamedtupleAll",
+    field_names="database_name, schema_name, table_name, table_type, table_owner, table_creation_time, view_ddl",
 )
 MetadataNamedtupleAll_QUERY = """
 select 
@@ -72,8 +101,8 @@ order by
 
 # Metadata Tables Redshift
 MetadataNamedtupleRedshift = namedtuple(
-    typename='MetadataNamedtupleRedshift',
-    field_names='database_name, schema_name, table_name, table_type, table_acl, remarks'
+    typename="MetadataNamedtupleRedshift",
+    field_names="database_name, schema_name, table_name, table_type, table_acl, remarks",
 )
 MetadataNamedtupleRedshift_QUERY = f"""
 select 
@@ -90,9 +119,9 @@ order by
 
 # Metadata Tables External
 MetadataNamedtupleExternal = namedtuple(
-    typename='MetadataNamedtupleExternal',
-    field_names='databasename, schemaname, tablename, location, input_format, output_format, '
-                'serialization_lib, serde_parameters, compressed, parameters, tabletype'
+    typename="MetadataNamedtupleExternal",
+    field_names="databasename, schemaname, tablename, location, input_format, output_format, "
+    "serialization_lib, serde_parameters, compressed, parameters, tabletype",
 )
 MetadataNamedtupleExternal_QUERY = """
 select 
@@ -112,10 +141,10 @@ order by
 
 # Metadata Tables Info
 MetadataNamedtupleInfo = namedtuple(
-    typename='MetadataNamedtupleInfo',
-    field_names='database, schema, table_id, table, encoded, diststyle, sortkey1, max_varchar, sortkey1_enc, '
-                'sortkey_num, size, pct_used, empty, unsorted, stats_off, tbl_rows, skew_sortkey1, skew_rows, '
-                'estimated_visible_rows, risk_event, vacuum_sort_benefit'
+    typename="MetadataNamedtupleInfo",
+    field_names="database, schema, table_id, table, encoded, diststyle, sortkey1, max_varchar, sortkey1_enc, "
+    "sortkey_num, size, pct_used, empty, unsorted, stats_off, tbl_rows, skew_sortkey1, skew_rows, "
+    "estimated_visible_rows, risk_event, vacuum_sort_benefit",
 )
 MetadataNamedtupleInfo_QUERY = """
 select 
@@ -134,9 +163,9 @@ order by
 
 # Metadata Columns
 ColumnMetadataNamedtuple = namedtuple(
-    typename='ColumnMetadataNamedtuple',
-    field_names='database_name, schema_name, table_name, column_name, ordinal_position, column_default, '
-                'is_nullable, data_type, character_maximum_length, numeric_precision, numeric_scale, remarks'
+    typename="ColumnMetadataNamedtuple",
+    field_names="database_name, schema_name, table_name, column_name, ordinal_position, column_default, "
+    "is_nullable, data_type, character_maximum_length, numeric_precision, numeric_scale, remarks",
 )
 ColumnMetadataNamedtuple_QUERY = """
 select 
@@ -160,9 +189,9 @@ order by
 
 # Metadata Columns Redshift
 ColumnMetadataNamedtupleRedshift = namedtuple(
-    typename='ColumnMetadataNamedtupleRedshift',
-    field_names='database_name, schema_name, table_name, column_name, ordinal_position, data_type, column_default, '
-                'is_nullable, encoding, distkey, sortkey, column_acl, remarks'
+    typename="ColumnMetadataNamedtupleRedshift",
+    field_names="database_name, schema_name, table_name, column_name, ordinal_position, data_type, column_default, "
+    "is_nullable, encoding, distkey, sortkey, column_acl, remarks",
 )
 ColumnMetadataNamedtupleRedshift_QUERY = """
 select 
@@ -181,8 +210,8 @@ order by
 
 # Metadata Columns External
 ColumnMetadataNamedtupleExternal = namedtuple(
-    typename='ColumnMetadataNamedtupleExternal',
-    field_names='databasename, schemaname, tablename, columnname, external_type, columnnum, part_key, is_nullable'
+    typename="ColumnMetadataNamedtupleExternal",
+    field_names="databasename, schemaname, tablename, columnname, external_type, columnnum, part_key, is_nullable",
 )
 ColumnMetadataNamedtupleExternal_QUERY = """
 select 

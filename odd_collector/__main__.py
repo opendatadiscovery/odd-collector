@@ -18,9 +18,11 @@ try:
     config_path = path.join(cur_dirname, "../collector_config.yaml")
     adapters_path = path.join(cur_dirname, "adapters")
 
-    collector = Collector(config_path=config_path,
-                          root_package="odd_collector.adapters",
-                          plugins_union_type=AvailablePlugin)
+    collector = Collector(
+        config_path=config_path,
+        root_package="odd_collector.adapters",
+        plugins_union_type=AvailablePlugin,
+    )
 
     loop.run_until_complete(collector.register_data_sources())
 

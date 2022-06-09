@@ -36,18 +36,15 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "json": Type.TYPE_STRING,
     "jsonb": Type.TYPE_STRING,
     "tsvector": Type.TYPE_STRING,
-
     "bit": Type.TYPE_BINARY,  # BITOID recheck
     "boolean": Type.TYPE_BOOLEAN,  # BOOLOID
     "character": Type.TYPE_CHAR,  # BPCHAROID recheck
-
     "real": Type.TYPE_NUMBER,  # FLOAT4OID
     "double precision": Type.TYPE_NUMBER,  # FLOAT8OID
     "smallint": Type.TYPE_INTEGER,  # INT2OID
     "integer": Type.TYPE_INTEGER,  # INT4OID
     "bigint": Type.TYPE_INTEGER,  # INT8OID recheck
     "numeric": Type.TYPE_NUMBER,  # NUMERICOID
-
     "interval": Type.TYPE_DURATION,  # INTERVALOID recheck
     "time": Type.TYPE_TIME,  # TIMEOID, TIMETZOID
     "time without time zone": Type.TYPE_TIME,  # TIMEOID
@@ -55,17 +52,15 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "timestamp": Type.TYPE_DATETIME,  # TIMESTAMPOID, TIMESTAMPTZOID
     "timestamp without time zone": Type.TYPE_DATETIME,  # TIMESTAMPOID
     "timestamp with time zone": Type.TYPE_DATETIME,  # TIMESTAMPTZOID
-
     "bit varying": Type.TYPE_BINARY,  # VARBITOID recheck
     "character varying": Type.TYPE_STRING,  # VARCHAROID
-
     "ARRAY": Type.TYPE_LIST,  # view information_schema.columns recheck
-    "USER-DEFINED": Type.TYPE_STRUCT  # view information_schema.columns recheck
+    "USER-DEFINED": Type.TYPE_STRUCT,  # view information_schema.columns recheck
 }
 
 TABLE_TYPES_SQL_TO_ODD: Dict[str, DataEntityType] = {
-    'BASE TABLE': DataEntityType.TABLE,
+    "BASE TABLE": DataEntityType.TABLE,
     # 'FOREIGN': DataEntityType.DATASET_TABLE,
     # 'LOCAL TEMPORARY': DataEntityType.DATASET_TABLE,
-    'VIEW': DataEntityType.VIEW,
+    "VIEW": DataEntityType.VIEW,
 }

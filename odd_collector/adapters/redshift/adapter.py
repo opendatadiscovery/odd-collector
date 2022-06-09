@@ -5,10 +5,14 @@ from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import RedshiftGenerator
 
 from .mappers import (
-    MetadataNamedtuple_QUERY, MetadataNamedtupleAll_QUERY, MetadataNamedtupleRedshift_QUERY,
-    MetadataNamedtupleExternal_QUERY, MetadataNamedtupleInfo_QUERY,
-    ColumnMetadataNamedtuple_QUERY, ColumnMetadataNamedtupleRedshift_QUERY,
-    ColumnMetadataNamedtupleExternal_QUERY
+    MetadataNamedtuple_QUERY,
+    MetadataNamedtupleAll_QUERY,
+    MetadataNamedtupleRedshift_QUERY,
+    MetadataNamedtupleExternal_QUERY,
+    MetadataNamedtupleInfo_QUERY,
+    ColumnMetadataNamedtuple_QUERY,
+    ColumnMetadataNamedtupleRedshift_QUERY,
+    ColumnMetadataNamedtupleExternal_QUERY,
 )
 from .mappers.metadata import MetadataTables, MetadataColumns
 from .mappers.tables import map_table
@@ -31,7 +35,9 @@ class Adapter(AbstractAdapter):
         self.__password = config.password
 
         self._data_source = f"postgresql://{self.__user}:{self.__password}@{self.__host}:{self.__port}/{self.__database}?connect_timeout=10"
-        self.__oddrn_generator = RedshiftGenerator(host_settings=f"{self.__host}", databases=self.__database)
+        self.__oddrn_generator = RedshiftGenerator(
+            host_settings=f"{self.__host}", databases=self.__database
+        )
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
@@ -45,19 +51,23 @@ class Adapter(AbstractAdapter):
                 self.__execute(MetadataNamedtupleAll_QUERY),
                 self.__execute(MetadataNamedtupleRedshift_QUERY),
                 self.__execute(MetadataNamedtupleExternal_QUERY),
-                self.__execute(MetadataNamedtupleInfo_QUERY))
+                self.__execute(MetadataNamedtupleInfo_QUERY),
+            )
 
             mcolumns: MetadataColumns = MetadataColumns(
                 self.__execute(ColumnMetadataNamedtuple_QUERY),
                 self.__execute(ColumnMetadataNamedtupleRedshift_QUERY),
-                self.__execute(ColumnMetadataNamedtupleExternal_QUERY))
+                self.__execute(ColumnMetadataNamedtupleExternal_QUERY),
+            )
 
             self.__disconnect()
-            logging.info(f'Load {len(mtables.items)} Datasets DataEntities from database')
+            logging.info(
+                f"Load {len(mtables.items)} Datasets DataEntities from database"
+            )
 
             return map_table(self.__oddrn_generator, mtables, mcolumns, self.__database)
         except Exception as e:
-            logging.error('Failed to load metadata for tables')
+            logging.error("Failed to load metadata for tables")
             logging.exception(e)
             self.__disconnect()
         return []
@@ -79,7 +89,7 @@ class Adapter(AbstractAdapter):
             self.__cursor = self.__connection.cursor()
         except psycopg2.Error as err:
             logging.error(err)
-            raise DBException('Database error')
+            raise DBException("Database error")
         return
 
     def __disconnect(self):

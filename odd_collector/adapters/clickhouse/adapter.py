@@ -22,7 +22,9 @@ class Adapter(AbstractAdapter):
         self.__database = config.database
         self.__user = config.user
         self.__password = config.password
-        self.__oddrn_generator = ClickHouseGenerator(host_settings=f"{self.__host}", databases=self.__database)
+        self.__oddrn_generator = ClickHouseGenerator(
+            host_settings=f"{self.__host}", databases=self.__database
+        )
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
@@ -30,22 +32,25 @@ class Adapter(AbstractAdapter):
     def get_data_entities(self) -> List[DataEntity]:
         try:
             self.__connect()
-            params = {
-                "database": self.__database
-            }
+            params = {"database": self.__database}
             tables = self.__execute(_table_select, params)
             columns = self.__execute(_column_select, params)
             integration_engines = self.__execute(_integration_engines_select, params)
-            return map_table(self.__oddrn_generator, tables, columns, integration_engines, self.__database)
+            return map_table(
+                self.__oddrn_generator,
+                tables,
+                columns,
+                integration_engines,
+                self.__database,
+            )
         except Exception as e:
-            logging.error('Failed to load metadata for tables')
+            logging.error("Failed to load metadata for tables")
             logging.exception(e)
         finally:
             self.__disconnect()
         return []
 
     def get_data_entity_list(self) -> DataEntityList:
-        print(self.get_data_entities())
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
             items=(self.get_data_entities()),
@@ -63,14 +68,14 @@ class Adapter(AbstractAdapter):
                 user=self.__user,
                 password=self.__password,
                 host=self.__host,
-                port=self.__port
+                port=self.__port,
             )
 
             self.__cursor = self.__connection.cursor()
 
         except Exception as err:
             logging.error(err)
-            raise DBException('Database error')
+            raise DBException("Database error")
 
     def __disconnect(self):
         self.__close_cursor()
