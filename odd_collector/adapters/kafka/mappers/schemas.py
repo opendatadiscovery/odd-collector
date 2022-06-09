@@ -1,24 +1,29 @@
-from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup, DataSetField
+from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup, DataSetField, DataSetFieldType
 from oddrn_generator import Generator
 from typing import Dict, List
 from .avro_schema import avro_schema
-from .json_data import json_data
 from .json_schema import json_schema
-from .string_data import string_data
+from confluent_kafka.schema_registry import SchemaRegistryClient
+from odd_models.models import Type
 
 
 SCHEMA_FILE_URL = "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/" \
                   "main/specification/extensions/kafka.json"
-        
+
+
+def return_empty(data: dict, oddrn_generator: Generator, schema_client: SchemaRegistryClient)->List[DataSetField]:
+    return []
+    
 SCHEMA_MAPPER = {
-    'string':string_data,
     'record':avro_schema,
     'object':json_schema,
-    'json'  :json_data
+    'non-registry'  : return_empty
 }
 
+def dict_to_user(obj, ctx):
+    return obj
 
-def map_topics(oddrn_generator: Generator, topics: List[Dict], cluster: str) -> List[DataEntity]:
+def map_topics(oddrn_generator: Generator, topics: List[Dict], cluster: str, schema_client: SchemaRegistryClient) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
     de_group = DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path('clusters'),
@@ -31,6 +36,9 @@ def map_topics(oddrn_generator: Generator, topics: List[Dict], cluster: str) -> 
         data_entity_type = DataEntityType.KAFKA_TOPIC
 
         topic: str = metadata['title']
+
+        if topic in ['_schemas', '__consumer_offsets']:
+            continue
 
         oddrn_generator.set_oddrn_paths(**{"topics" : topic})
 
@@ -50,13 +58,11 @@ def map_topics(oddrn_generator: Generator, topics: List[Dict], cluster: str) -> 
             # TODO add row number ain mongo
             # rows_number = metadata['row_number']
         )
-
-        key_parcer = SCHEMA_MAPPER.get(metadata['key']['type'])
         value_parcer = SCHEMA_MAPPER.get(metadata['value']['type'])
-        key_field_list = key_parcer({'key':metadata['key']},oddrn_generator)
-        value_field_list = value_parcer({'value':metadata['value']},oddrn_generator)
+        
+        value_field_list = value_parcer(metadata['value'], oddrn_generator, schema_client)
 
-        data_entity.dataset.field_list = value_field_list.extend(key_field_list)
+        data_entity.dataset.field_list = value_field_list
         
         data_entities.append(data_entity)
 

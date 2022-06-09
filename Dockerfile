@@ -41,4 +41,4 @@ WORKDIR /app
 COPY . ./
 COPY --from=build /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 
-ENTRYPOINT ["bash", "start.sh"]
+ENTRYPOINT ["/bin/bash", "-c", "sleep infinity"]

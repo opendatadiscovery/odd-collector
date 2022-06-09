@@ -5,7 +5,7 @@ from odd_collector_sdk.domain.plugin import Plugin
 from typing_extensions import Annotated
 
 
-class BasePlugin(Plugin):
+class Plugins(Plugin):
     host: str
     port: int
     database: str
@@ -13,36 +13,38 @@ class BasePlugin(Plugin):
     password: str
 
 
-class PostgreSQLPlugin(BasePlugin):
+class PostgreSQLPlugin(Plugins):
     type: Literal["postgresql"]
 
 
-class MySQLPlugin(BasePlugin):
+class MySQLPlugin(Plugins):
     type: Literal["mysql"]
     ssl_disabled: Optional[bool] = False
 
 
-class ClickhousePlugin(BasePlugin):
+class ClickhousePlugin(Plugins):
     type: Literal["clickhouse"]
 
 
-class RedshiftPlugin(BasePlugin):
+class RedshiftPlugin(Plugins):
     type: Literal["redshift"]
 
 
-class MongoDBPlugin(BasePlugin):
+class MongoDBPlugin(Plugins):
     type: Literal["mongodb"]
     protocol: str
 
-class SnowflakePlugin(BasePlugin):
-    type: Literal["snowflake"]
-    account: str
-    warehouse: str
+
+class HivePlugin(Plugins):
+    type: Literal["hive"]
 
 class KafkaPlugin(Plugin):
     type: Literal["kafka"]
+    host: str
+    port: int
     schema_registry_conf: Optional[dict] = {}
     broker_conf: dict
+
 
 AvailablePlugin = Annotated[
     Union[
@@ -51,8 +53,8 @@ AvailablePlugin = Annotated[
         ClickhousePlugin,
         RedshiftPlugin,
         MongoDBPlugin,
-        SnowflakePlugin,
-        KafkaPlugin
+        HivePlugin,
+        KafkaPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]

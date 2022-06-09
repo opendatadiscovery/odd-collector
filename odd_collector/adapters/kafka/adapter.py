@@ -4,9 +4,8 @@ from confluent_kafka.admin import AdminClient
 from confluent_kafka import Consumer, KafkaException, TopicPartition
 from odd_models.models import DataEntity, DataEntityList
 from typing import List, Dict
-from mappers.schemas import map_topics
-from oddrn_generator import Generator
-from kafka_generator import KafkaGenerator, KafkaPathsModel
+from .mappers.schemas import map_topics
+from .kafka_generator import KafkaGenerator
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 import json
 import requests
@@ -23,6 +22,8 @@ class Adapter(AbstractAdapter):
     def __init__(self, config) -> None:
         self.schema_registry_conf = config.schema_registry_conf
         self.broker_conf = config.broker_conf
+        print(config.broker_conf)
+        print(config.schema_registry_conf)
         if not self.broker_conf.get("group.id"):
             self.broker_conf["group.id"] = "odd_collector" 
             logger.warning("setting group.id to odd_collector")
@@ -33,7 +34,6 @@ class Adapter(AbstractAdapter):
         self.admin_client = AdminClient(self.broker_conf)
         try:
             self.schema_client = SchemaRegistryClient(self.schema_registry_conf) if self.schema_registry_conf.get('url') else None
-            self.schema_subjects = self.schema_client.get_subjects() if self.schema_client else None
         except requests.exceptions.ConnectionError as e:
             logger.warning(f"Unable to connect to schema registry on url '{self.schema_registry_conf.get('url')}', schema will be skipped")
             self.schema_client = None
@@ -41,6 +41,7 @@ class Adapter(AbstractAdapter):
         self.consumer = Consumer(self.broker_conf)
 
     def get_data_source_oddrn(self) -> str:
+        print(self.__oddrn_generator.get_data_source_oddrn())
         return self.__oddrn_generator.get_data_source_oddrn()
 
     def get_data_entities(self) -> List[DataEntity]:
@@ -49,12 +50,14 @@ class Adapter(AbstractAdapter):
         an odd list of data entities
         """
         try:
-            topics = self.retrive_scheams()
+            self.schema_subjects = self.schema_client.get_subjects() if self.schema_client else None
+
+            topics = self.retrieve_schemas()
             # print("*************SCHEMA******************")
-            # print(topics)
+            print(topics)
             # print("*************SCHEMA******************")
 
-            return map_topics(self.__oddrn_generator, topics, self.broker_conf.get('bootstrap.servers'))
+            return map_topics(self.__oddrn_generator, topics, self.broker_conf.get('bootstrap.servers'), self.schema_client)
         except Exception as e:
             logging.error('Failed to load metadata for tables')
             logging.exception(e)
@@ -71,11 +74,11 @@ class Adapter(AbstractAdapter):
         print("*************DataEntity******************")
         return res
 
-    def retrive_scheams(self) :
+    def retrieve_schemas(self):
 
         try:
             topics = self.admin_client.list_topics()
-
+            
             schemas = []
             for topic in topics.topics.items():
                 schema = {"title": topic[0]  #TODO add row number, creation and modification date  like in mongo if possible 
@@ -89,55 +92,15 @@ class Adapter(AbstractAdapter):
                     schema['value'] = eval(self.schema_client.get_latest_version(f"{topic[0]}-value").schema.schema_str)
                     logger.info(f"Found schema in schema registry for topic: {topic[0]}")
                 else:
-                    logger.info(f"Did not find schema in schema registry for topic: {topic[0]}, trying to pars as json")
-                    partition = TopicPartition(topic[0],max(topic[1].partitions.keys()) )
-                    offset = self.consumer.offsets_for_times([partition])
-                    self.consumer.assign(offset)
-                    try:
-                        msg = self.consumer.consume(1, timeout=3)[0]
-                        if msg is None or msg.value() is None:
-                            logger.warning(f"Empty message in topic: {topic[0]}")
-                            continue
-                        if msg.error():
-                            logger.warning(f"Got error when trying to consume topic: {topic[0]}, error: {msg.error()}")
-                            continue
-                    except IndexError as e:
-                        logger.warning(f"No message found in topic: {topic[0]}")
-                        continue
-                    try:
-                        schema['value'] = {"type":"json"}
-                        schema['value']['data'] = json.loads(msg.value().decode())
-                        logger.info(f"Message is json for topic {topic[0]}")
-                    except json.JSONDecodeError as e:
-                        logger.warning("Failed to parse message as json will default to string for topic: {}")
-                        schema['value'] = {"type":"string"}
-                        schema['value']['data'] = {'value':'string'}
-
+                    schema['value'] = {"type":"non-registry"}
+                    schema['value']['data'] = None
+                
                 if self.schema_subjects and f"{topic[0]}-key" in self.schema_subjects:
                     schema['key'] = eval(self.schema_client.get_latest_version(f"{topic[0]}-key").schema.schema_str)
                     logger.info(f"Found  key schema in schema registry for topic: {topic[0]}")
                 else:
-                    logger.info(f"Did not find key schema in schema registry for topic: {topic[0]}, trying to pars as json")
-                    try:
-                        if not msg:
-                            msg = self.consumer.consume(1, timeout=3)[0]
-                        if msg is None or msg.key() is None:
-                            logger.warning(f"Empty message when checkin key in topic: {topic[0]}")
-                            continue
-                        if msg.error():
-                            logger.warning(f"Got error when when checkin key in topic: {topic[0]}, error: {msg.error()}")
-                            continue
-                    except IndexError as e:
-                        logger.warning(f"No message found in topic: {topic[0]}")
-                        continue
-                    try:
-                        schema['key'] = {"type":"json"}
-                        schema['key']['data'] = json.loads(msg.key().decode())
-                        logger.info(f"Message key is json for topic {topic[0]}")
-                    except json.JSONDecodeError as e:
-                        logger.warning("Failed to parse key as json will default to string for topic: {}")
-                        schema['key'] = {"type":"string"}
-                        schema['key']['data'] = {'key':'string'}
+                    schema['key'] = {"type":"non-registry"}
+                    schema['key']['data'] = None
                 
                 schemas.append(schema)
             return schemas
