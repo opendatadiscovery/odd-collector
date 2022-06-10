@@ -22,8 +22,8 @@ class Adapter(AbstractAdapter):
     def __init__(self, config) -> None:
         self.schema_registry_conf = config.schema_registry_conf
         self.broker_conf = config.broker_conf
-        print(config.broker_conf)
-        print(config.schema_registry_conf)
+        logging.debug(config.broker_conf)
+        logging.debug(config.schema_registry_conf)
         if not self.broker_conf.get("group.id"):
             self.broker_conf["group.id"] = "odd_collector" 
             logger.warning("setting group.id to odd_collector")
@@ -41,7 +41,7 @@ class Adapter(AbstractAdapter):
         self.consumer = Consumer(self.broker_conf)
 
     def get_data_source_oddrn(self) -> str:
-        print(self.__oddrn_generator.get_data_source_oddrn())
+        logging.debug(self.__oddrn_generator.get_data_source_oddrn())
         return self.__oddrn_generator.get_data_source_oddrn()
 
     def get_data_entities(self) -> List[DataEntity]:
@@ -53,9 +53,9 @@ class Adapter(AbstractAdapter):
             self.schema_subjects = self.schema_client.get_subjects() if self.schema_client else None
 
             topics = self.retrieve_schemas()
-            # print("*************SCHEMA******************")
-            print(topics)
-            # print("*************SCHEMA******************")
+            # logging.debug("*************SCHEMA******************")
+            logging.debug(topics)
+            # logging.debug("*************SCHEMA******************")
 
             return map_topics(self.__oddrn_generator, topics, self.broker_conf.get('bootstrap.servers'), self.schema_client)
         except Exception as e:
@@ -69,9 +69,9 @@ class Adapter(AbstractAdapter):
             data_source_oddrn=self.get_data_source_oddrn(),
             items=(self.get_data_entities()),
         )
-        print("*************DataEntity******************")
-        print(res.json())
-        print("*************DataEntity******************")
+        logging.debug("*************DataEntity******************")
+        logging.debug(res.json())
+        logging.debug("*************DataEntity******************")
         return res
 
     def retrieve_schemas(self):
@@ -106,7 +106,7 @@ class Adapter(AbstractAdapter):
             return schemas
 
         except Exception as e:
-            print("something wrong with the schemas!")
+            logging.debug("something wrong with the schemas!")
 
 
 
