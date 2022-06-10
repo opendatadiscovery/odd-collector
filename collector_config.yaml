@@ -1,6 +1,6 @@
 provider_oddrn: collector
 default_pulling_interval: 10
-token: "AACLieplmVnlxN50mDXsHZ2Wy0oCFxjR7b5m67eZ"
+token: ""
 platform_host_url: "http://localhost:8016"
 plugins:
   - type: kafka
