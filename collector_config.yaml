@@ -3,12 +3,10 @@ default_pulling_interval: 10
 token: ""
 platform_host_url: "http://localhost:8016"
 plugins:
-  - type: kafka
-    name: test_kafka
-    host: "localhost"
-    port: 8099
-    schema_registry_conf:
-      url: "http://schemaregistry:8085"
-    broker_conf:
-      group.id: "hello world"
-      bootstrap.servers: "kafka:9092"
+  - type: postgresql
+    name: test_psql
+    host: "database"
+    port: 5432
+    database: ""
+    user: ""
+    password: ""
