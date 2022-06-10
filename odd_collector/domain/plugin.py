@@ -28,6 +28,11 @@ class MySQLPlugin(DatabasePlugin):
     ssl_disabled: Optional[bool] = False
 
 
+class MSSQLPlugin(DatabasePlugin):
+    type: Literal["mssql"]
+    driver: str
+
+
 class ClickhousePlugin(DatabasePlugin):
     type: Literal["clickhouse"]
 
@@ -102,6 +107,7 @@ AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
         MySQLPlugin,
+        MSSQLPlugin,
         ClickhousePlugin,
         RedshiftPlugin,
         MongoDBPlugin,
