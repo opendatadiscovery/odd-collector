@@ -131,7 +131,7 @@ database: str
 user: str
 password: str
 ```
-### __PostgresSQL__
+### __PostgreSQL__
 ```yaml
 type: postgresql
 name: postgresql
