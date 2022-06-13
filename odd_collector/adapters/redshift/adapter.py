@@ -33,6 +33,7 @@ class Adapter(AbstractAdapter):
         self.__database = config.database
         self.__user = config.user
         self.__password = config.password
+        self.__schemas = config.schemas
 
         self._data_source = f"postgresql://{self.__user}:{self.__password}@{self.__host}:{self.__port}/{self.__database}?connect_timeout=10"
         self.__oddrn_generator = RedshiftGenerator(
@@ -65,7 +66,7 @@ class Adapter(AbstractAdapter):
                 f"Load {len(mtables.items)} Datasets DataEntities from database"
             )
 
-            return map_table(self.__oddrn_generator, mtables, mcolumns, self.__database)
+            return map_table(self.__oddrn_generator, mtables, mcolumns, self.__database, self.__schemas)
         except Exception as e:
             logging.error("Failed to load metadata for tables")
             logging.exception(e)
