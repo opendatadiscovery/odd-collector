@@ -20,11 +20,13 @@ def map_table(
     mtables: MetadataTables,
     mcolumns: MetadataColumns,
     database: str,
+    schemas: List[str]
 ) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
     column_index: int = 0
 
     for mtable in mtables.items:
+        if mtable.schema_name not in schemas: continue
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
             mtable.base.table_type, DataEntityType.UNKNOWN
         )
