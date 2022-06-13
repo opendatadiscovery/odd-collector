@@ -39,6 +39,7 @@ class ClickhousePlugin(DatabasePlugin):
 
 class RedshiftPlugin(DatabasePlugin):
     type: Literal["redshift"]
+    schemas: list = []
 
 
 class MongoDBPlugin(DatabasePlugin):
