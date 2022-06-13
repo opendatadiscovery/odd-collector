@@ -20,7 +20,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
  - [MongoDb](#mongodb)
  - [MySQL](#mysql)
  - [Neo4j](#neo4j)
- - [PostgresSQL](#postgressql) 
+ - [PostgreSQL](#postgresql) 
  - [Redshift](#redshift) 
  - [Snowflake](#snowflake)
  - [Tarantool](#tarantool)
