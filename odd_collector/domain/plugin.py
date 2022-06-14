@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Union
+from typing import Literal, Optional, Union, List
 
 import pydantic
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
@@ -39,7 +39,7 @@ class ClickhousePlugin(DatabasePlugin):
 
 class RedshiftPlugin(DatabasePlugin):
     type: Literal["redshift"]
-    schemas: list = []
+    schemas: List[str] = []
 
 
 class MongoDBPlugin(DatabasePlugin):
