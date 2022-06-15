@@ -10,7 +10,9 @@ RUN apt-get update && \
     python3-dev  \
     libpq-dev \
     curl \
-    librdkafka-dev
+    librdkafka-dev \
+    unixodbc \
+    unixodbc-dev
 
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 RUN mv /root/.poetry $POETRY_PATH
