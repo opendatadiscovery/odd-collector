@@ -40,38 +40,6 @@ _table_metadata: str = (
     "update_time, check_time, table_collation, checksum, create_options, table_comment, view_definition"
 )
 
-_table_select = """
-select t.table_catalog,
-       t.table_schema,
-       t.table_name,
-       t.table_type,
-       t.engine,
-       t.version,
-       t.row_format,
-       t.table_rows,
-       t.avg_row_length,
-       t.data_length,
-       t.max_data_length,
-       t.index_length,
-       t.data_free,
-       t.auto_increment,
-       t.create_time,
-       t.update_time,
-       t.check_time,
-       t.table_collation,
-       t.checksum,
-       t.create_options,
-       t.table_comment,
-       v.view_definition
-from information_schema.tables t
-         left join information_schema.views v
-                   on t.TABLE_CATALOG = v.TABLE_CATALOG and
-                      t.TABLE_SCHEMA = v.TABLE_SCHEMA and
-                      t.TABLE_NAME = v.TABLE_NAME
-where t.table_schema not in ('information_schema', 'mysql', 'performance_schema', 'sys')
-order by t.table_catalog, t.table_schema, t.table_name
-"""
-
 _column_metadata: str = (
     "table_catalog, table_schema, table_name, column_name, ordinal_position, column_default, is_nullable, "
     "data_type, character_maximum_length, character_octet_length, numeric_precision, numeric_scale, "

@@ -8,7 +8,7 @@ from oddrn_generator import MysqlGenerator
 from typing import List
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
-from .mappers import _column_metadata, _column_table, _column_order_by, _table_select
+from .mappers import _column_metadata, _column_table, _column_order_by
 from .mappers.tables import map_tables
 
 
@@ -34,7 +34,7 @@ class Adapter(AbstractAdapter):
         try:
             self.__connect()
 
-            tables = self.__execute(_table_select)
+            tables = self.__execute(self.__generate_table_metadata_query())
             columns = self.__query(_column_metadata, _column_table, _column_order_by)
             self.__disconnect()
             logging.info(f"Load {len(tables)} Datasets DataEntities from database")
@@ -95,6 +95,39 @@ class Adapter(AbstractAdapter):
         except Exception:
             pass
         return
+
+    def __generate_table_metadata_query(self):
+        return f"""
+        select t.table_catalog,
+               t.table_schema,
+               t.table_name,
+               t.table_type,
+               t.engine,
+               t.version,
+               t.row_format,
+               t.table_rows,
+               t.avg_row_length,
+               t.data_length,
+               t.max_data_length,
+               t.index_length,
+               t.data_free,
+               t.auto_increment,
+               t.create_time,
+               t.update_time,
+               t.check_time,
+               t.table_collation,
+               t.checksum,
+               t.create_options,
+               t.table_comment,
+               v.view_definition
+        from information_schema.tables t
+                 left join information_schema.views v
+                           on t.TABLE_CATALOG = v.TABLE_CATALOG and
+                              t.TABLE_SCHEMA = v.TABLE_SCHEMA and
+                              t.TABLE_NAME = v.TABLE_NAME
+        where t.table_schema = '{self.__database}'
+        order by t.table_catalog, t.table_schema, t.table_name
+        """
 
 
 class DBException(Exception):

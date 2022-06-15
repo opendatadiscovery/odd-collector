@@ -45,7 +45,7 @@ class MongoDBPlugin(DatabasePlugin):
     type: Literal["mongodb"]
     protocol: str
 
-class KafkaPlugin(Plugin):
+class KafkaPlugin(BasePlugin):
     type: Literal["kafka"]
     host: str
     port: int
