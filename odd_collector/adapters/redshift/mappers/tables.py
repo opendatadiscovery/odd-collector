@@ -26,7 +26,8 @@ def map_table(
     column_index: int = 0
 
     for mtable in mtables.items:
-        if mtable.schema_name not in schemas and len(schemas): continue
+        if mtable.schema_name not in schemas and len(schemas): 
+            continue
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
             mtable.base.table_type, DataEntityType.UNKNOWN
         )
