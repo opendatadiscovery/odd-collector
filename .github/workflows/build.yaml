@@ -14,6 +14,7 @@ env:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    name: Run black as linter
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
@@ -23,6 +24,7 @@ jobs:
           version: "22.3.0"
   build:
     runs-on: ubuntu-latest
+    name: Build docker image
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
