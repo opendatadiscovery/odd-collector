@@ -12,11 +12,11 @@ class KafkaPathsModel(BasePathsModel):
 
     class Config:
         dependencies_map = {
-            'clusters': ('clusters',),
-            'topics': ('clusters', 'topics'),
-            'columns': ('clusters', 'topics', 'columns')
+            "clusters": ("clusters",),
+            "topics": ("clusters", "topics"),
+            "columns": ("clusters", "topics", "columns"),
         }
-        data_source_path = 'clusters'
+        data_source_path = "clusters"
 
 
 class KafkaGenerator(Generator):

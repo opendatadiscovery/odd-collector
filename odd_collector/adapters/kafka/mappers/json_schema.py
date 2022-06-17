@@ -6,30 +6,39 @@ from typing import Dict, Any, List, Union
 from confluent_kafka.schema_registry import RegisteredSchema, SchemaRegistryClient
 import json
 
-def __extract_referenced_nodes(ref_subject: Union[RegisteredSchema, Dict[str, Any]], schema_client: SchemaRegistryClient) -> List[Dict[str, Any]]:
-        nodes = []
-        references = ref_subject.get('references', []) \
-            if isinstance(ref_subject, dict) \
-            else ref_subject.schema.references
 
-        for reference in references:
-            rs = schema_client.get_version(reference['name'], reference['version'])
+def __extract_referenced_nodes(
+    ref_subject: Union[RegisteredSchema, Dict[str, Any]],
+    schema_client: SchemaRegistryClient,
+) -> List[Dict[str, Any]]:
+    nodes = []
+    references = (
+        ref_subject.get("references", [])
+        if isinstance(ref_subject, dict)
+        else ref_subject.schema.references
+    )
 
-            if len(rs.schema.references) > 0:
-                nodes.extend(__extract_referenced_nodes(rs, schema_client))
+    for reference in references:
+        rs = schema_client.get_version(reference["name"], reference["version"])
 
-            nodes.append(json.loads(rs.schema.schema_str))
+        if len(rs.schema.references) > 0:
+            nodes.extend(__extract_referenced_nodes(rs, schema_client))
 
-        return nodes
+        nodes.append(json.loads(rs.schema.schema_str))
 
-def json_schema(data: dict, oddrn_generator: Generator, schema_client: SchemaRegistryClient)->List[DataSetField]:
+    return nodes
+
+
+def json_schema(
+    data: dict, oddrn_generator: Generator, schema_client: SchemaRegistryClient
+) -> List[DataSetField]:
 
     references: List[Dict[str, Any]] = __extract_referenced_nodes(data, schema_client)
     if references:
-        print(f"Found {len(references)} referenced schemas in {data['name']}: {references}")
+        print(
+            f"Found {len(references)} referenced schemas in {data['name']}: {references}"
+        )
 
     return create_mapper(
-                        oddrn_generator=oddrn_generator,
-                        schema_type=data.get('schemaType', 'JSON')
-                    ).map_schema(data, references)
-
+        oddrn_generator=oddrn_generator, schema_type=data.get("schemaType", "JSON")
+    ).map_schema(data, references)
