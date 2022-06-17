@@ -7,6 +7,7 @@ from .columns import map_column
 from .metadata import (
     _append_metadata_extension,
     MetadataTables,
+    MetadataTable,
     MetadataColumns,
     MetadataColumn,
 )
@@ -17,17 +18,14 @@ from typing import List
 
 def map_table(
     oddrn_generator: RedshiftGenerator,
-    mtables: MetadataTables,
+    mtables: List[MetadataTable],
     mcolumns: MetadataColumns,
     database: str,
-    schemas: List[str]
 ) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
     column_index: int = 0
 
-    for mtable in mtables.items:
-        if mtable.schema_name not in schemas and len(schemas): 
-            continue
+    for mtable in mtables:
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
             mtable.base.table_type, DataEntityType.UNKNOWN
         )
