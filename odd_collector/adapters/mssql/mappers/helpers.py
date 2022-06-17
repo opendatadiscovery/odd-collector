@@ -1,5 +1,3 @@
-
-
 def __convert_bytes_to_str(value: bytes or None) -> str or None:
     return value if type(value) is not bytes else value.decode("utf-8")
 

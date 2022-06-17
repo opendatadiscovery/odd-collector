@@ -36,8 +36,6 @@ ENV DEBCONF_NONINTERACTIVE_SEEN=true
 ENV UCF_FORCE_CONFOLD=1
 ENV PYTHONUNBUFFERED=1
 
-
-
 WORKDIR /app
 COPY . ./
 COPY --from=build /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages

@@ -12,5 +12,7 @@ class AbstractParser(ABC):
         super().__init__()
 
     @abstractmethod
-    def map_schema(self, schema: RawSchema, references: List[RawSchema] = None) -> List[Field]:
+    def map_schema(
+        self, schema: RawSchema, references: List[RawSchema] = None
+    ) -> List[Field]:
         raise NotImplementedError
