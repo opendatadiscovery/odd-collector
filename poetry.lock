@@ -1247,6 +1247,14 @@ srv = ["dnspython (>=1.16.0,<3.0.0)"]
 zstd = ["zstandard"]
 
 [[package]]
+name = "pyodbc"
+version = "4.0.32"
+description = "DB API Module for ODBC"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pyopenssl"
 version = "22.0.0"
 description = "Python wrapper module around the OpenSSL library"
@@ -1745,7 +1753,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9.1"
-content-hash = "3b4b6f2a896280e362eb4819b8b3b44fb7fbb6837e40e2f7a19e376b7d7fe96f"
+content-hash = "7514d338a1c42824e275ec91072c3d9d4f13a5c977fef86a217ffdca5a3a3d2a"
 
 [metadata.files]
 absl-py = [
@@ -3064,6 +3072,22 @@ pymongo = [
     {file = "pymongo-4.1.1-cp39-cp39-win32.whl", hash = "sha256:3139c9ddee379c22a9109a0b3bf4cdb64597db2bbd3909f7a2825b47226977a4"},
     {file = "pymongo-4.1.1-cp39-cp39-win_amd64.whl", hash = "sha256:f0aea377b9dfc166c8fa05bb158c30ee3d53d73f0ed2fc05ba6c638d9563422f"},
     {file = "pymongo-4.1.1.tar.gz", hash = "sha256:d7b8f25c9b0043cbaf77b8b895814e33e7a3c807a097377c07e1bd49946030d5"},
+]
+pyodbc = [
+    {file = "pyodbc-4.0.32-cp27-cp27m-win32.whl", hash = "sha256:2152ce6d5131d769ff5839aa762e12d844c95e9ec4bb2f666e8cd9dfa1ae2240"},
+    {file = "pyodbc-4.0.32-cp27-cp27m-win_amd64.whl", hash = "sha256:56ec4974096d40d6c62a228799122dbc2ade6c4045cc5d31860212a32cae95b1"},
+    {file = "pyodbc-4.0.32-cp310-cp310-win_amd64.whl", hash = "sha256:b6d24b99face3a2d055b0dc7345083be2b70d02e7b45861a9afb7c21e0f5db13"},
+    {file = "pyodbc-4.0.32-cp36-cp36m-win32.whl", hash = "sha256:699c080b1c1f7b4afc368b3521fd1161f46a10223443692a249cb01d90949b31"},
+    {file = "pyodbc-4.0.32-cp36-cp36m-win_amd64.whl", hash = "sha256:0d4e14adb149cae45da37fa87aa297055156dae6e89ca3c75493d3d62d78e543"},
+    {file = "pyodbc-4.0.32-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:6c1e1c1fe747b0f6419e8df0b5c43161e7437dbf72f93f9fcfb9b7358fad3e12"},
+    {file = "pyodbc-4.0.32-cp37-cp37m-win32.whl", hash = "sha256:bbc07517f339e019ee9f1fe679c4241251d11ca2124567616f67d62e73c29fc0"},
+    {file = "pyodbc-4.0.32-cp37-cp37m-win_amd64.whl", hash = "sha256:e81ebf9cab80a6eaba7922dea02036e9f8a507a7b818856b8008a02d6fc0d2ab"},
+    {file = "pyodbc-4.0.32-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:0e4178e9b93329bbba17555882008e36a114179d06033b813a13b254dcd755d0"},
+    {file = "pyodbc-4.0.32-cp38-cp38-win32.whl", hash = "sha256:c066f032e69fd71e9fadb3a380dfe8ecd1728b40a2bf38f76054d284f8523b29"},
+    {file = "pyodbc-4.0.32-cp38-cp38-win_amd64.whl", hash = "sha256:736acad1b264ddb7313058dfe37265b0c5160c1c2a9d1ffd391347c025eb5dd1"},
+    {file = "pyodbc-4.0.32-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:339d8aa633b0c65be5149c3378c7e3b5bead94dc8bb023a715b416bd047a008e"},
+    {file = "pyodbc-4.0.32-cp39-cp39-win_amd64.whl", hash = "sha256:cda790bdc25bfad12d4fb9ba93368275802f7f9ecfa4c9c65e982d3a7fc35f2e"},
+    {file = "pyodbc-4.0.32.tar.gz", hash = "sha256:9be5f0c3590655e1968488410fe3528bb8023d527e7ccec1f663d64245071a6b"},
 ]
 pyopenssl = [
     {file = "pyOpenSSL-22.0.0-py2.py3-none-any.whl", hash = "sha256:ea252b38c87425b64116f808355e8da644ef9b07e429398bfece610f893ee2e0"},
