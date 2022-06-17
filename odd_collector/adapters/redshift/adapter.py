@@ -40,7 +40,7 @@ class Adapter(AbstractAdapter):
             host_settings=f"{self.__host}", databases=self.__database
         )
 
-        logging.info(f"Redshift schemas to parse: {self.__schemas}")
+        logging.debug(f"Redshift schemas to parse: {self.__schemas}")
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
