@@ -6,7 +6,9 @@ from odd_models.utils import SqlParser
 from oddrn_generator import MssqlGenerator
 
 
-def extract_transformer_data(sql: str, oddrn_generator: MssqlGenerator) -> DataTransformer:
+def extract_transformer_data(
+    sql: str, oddrn_generator: MssqlGenerator
+) -> DataTransformer:
     sql_parser = SqlParser(sql)
     inputs, outputs = sql_parser.get_response()
     return DataTransformer(

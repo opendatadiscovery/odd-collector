@@ -45,12 +45,14 @@ class MongoDBPlugin(DatabasePlugin):
     type: Literal["mongodb"]
     protocol: str
 
+
 class KafkaPlugin(BasePlugin):
     type: Literal["kafka"]
     host: str
     port: int
     schema_registry_conf: Optional[dict] = {}
     broker_conf: dict
+
 
 class SnowflakePlugin(DatabasePlugin):
     type: Literal["snowflake"]
@@ -127,7 +129,7 @@ AvailablePlugin = Annotated[
         KubeflowPlugin,
         TarantoolPlugin,
         Neo4jPlugin,
-        TableauPlugin
+        TableauPlugin,
     ],
     pydantic.Field(discriminator="type"),
 ]

@@ -18,9 +18,13 @@ class Adapter(AbstractAdapter):
         # https://github.com/mkleehammer/pyodbc/wiki/Install
         # https://github.com/mkleehammer/pyodbc/wiki/Connecting-to-SQL-Server-from-Linux
         # cat /etc/odbcinst.ini
-        self.__data_source: str = f"DRIVER={config.driver};SERVER={config.host};DATABASE={config.database};" \
-                                  f"UID={config.user};PWD={config.password}"
-        self.__oddrn_generator = MssqlGenerator(host_settings=f"{config.host}", databases=config.database)
+        self.__data_source: str = (
+            f"DRIVER={config.driver};SERVER={config.host};DATABASE={config.database};"
+            f"UID={config.user};PWD={config.password}"
+        )
+        self.__oddrn_generator = MssqlGenerator(
+            host_settings=f"{config.host}", databases=config.database
+        )
 
     def get_data_entity_list(self) -> DataEntityList:
         return DataEntityList(
