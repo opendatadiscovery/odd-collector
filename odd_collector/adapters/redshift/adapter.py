@@ -68,9 +68,13 @@ class Adapter(AbstractAdapter):
                 f"Load {len(mtables.items)} Datasets DataEntities from database"
             )
 
-            selected_tables: List[MetadataTable] = self.__get_tables_for_parsing(mtables)
+            selected_tables: List[MetadataTable] = self.__get_tables_for_parsing(
+                mtables
+            )
 
-            return map_table(self.__oddrn_generator, selected_tables, mcolumns, self.__database)
+            return map_table(
+                self.__oddrn_generator, selected_tables, mcolumns, self.__database
+            )
         except Exception as e:
             logging.error("Failed to load metadata for tables")
             logging.exception(e)
