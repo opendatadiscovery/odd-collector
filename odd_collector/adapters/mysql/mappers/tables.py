@@ -1,4 +1,3 @@
-from curses import meta
 import pytz
 from odd_models.models import (
     DataEntity,
