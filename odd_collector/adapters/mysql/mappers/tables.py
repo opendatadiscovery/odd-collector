@@ -81,9 +81,7 @@ def map_tables(
         for column in column_metadata:
             if column.table_name == table_name and column.table_schema == database:
                 data_entity.dataset.field_list.append(
-                    map_column(
-                        column, oddrn_generator, data_entity.owner, oddrn_path
-                    )
+                    map_column(column, oddrn_generator, data_entity.owner, oddrn_path)
                 )
 
     data_entities.append(
