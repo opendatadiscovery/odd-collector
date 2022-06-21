@@ -1,8 +1,8 @@
+from curses import meta
 import pytz
 from odd_models.models import (
     DataEntity,
     DataSet,
-    DataTransformer,
     DataEntityType,
     DataEntityGroup,
 )
@@ -29,7 +29,8 @@ def map_tables(
     database: str,
 ) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
-    column_index: int = 0
+
+    column_metadata = [ColumnMetadataNamedtuple(*c) for c in columns]
 
     for table in tables:
         metadata: MetadataNamedtuple = MetadataNamedtuple(*table)
@@ -78,22 +79,14 @@ def map_tables(
                 metadata.view_definition, oddrn_generator
             )
 
-        # DatasetField
-        while column_index < len(columns):
-            column: tuple = columns[column_index]
-            column_metadata: ColumnMetadataNamedtuple = ColumnMetadataNamedtuple(
-                *column
-            )
-
-            if column_metadata.table_name == table_name:
+        for column in column_metadata:
+            if column.table_name == table_name and column.table_schema == database:
                 data_entity.dataset.field_list.append(
                     map_column(
-                        column_metadata, oddrn_generator, data_entity.owner, oddrn_path
+                        column, oddrn_generator, data_entity.owner, oddrn_path
                     )
                 )
-                column_index += 1
-            else:
-                break
+
     data_entities.append(
         DataEntity(
             oddrn=oddrn_generator.get_oddrn_by_path("databases"),
