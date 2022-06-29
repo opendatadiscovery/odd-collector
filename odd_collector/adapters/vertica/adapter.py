@@ -9,8 +9,8 @@ from .vertica_generator import VerticaGenerator
 class Adapter(AbstractAdapter):
     def __init__(self, config) -> None:
         self.__oddrn_generator = VerticaGenerator(
-            host_settings=config.host,
-            databases=config.database)
+            host_settings=config.host, databases=config.database
+        )
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()

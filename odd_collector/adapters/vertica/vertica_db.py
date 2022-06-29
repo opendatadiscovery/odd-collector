@@ -3,14 +3,13 @@ import vertica_python
 
 
 class VerticaDB:
-
     def __init__(self, config):
         self.__connection_info = {
-            'host': config.host,
-            'port': config.port,
-            'user': config.user,
-            'password': config.password,
-            'database': config.database
+            "host": config.host,
+            "port": config.port,
+            "user": config.user,
+            "password": config.password,
+            "database": config.database,
         }
 
     def __get_connection(self):
