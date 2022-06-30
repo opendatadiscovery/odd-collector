@@ -1,0 +1,49 @@
+# This file is expected to be copied to odd-platform/docker and started from there to aid odbc adapter development
+version: "3.8"
+services:
+  database:
+    image: postgres:13.2-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+    ports:
+      - 5432:5432
+
+  odd-platform:
+    image: ghcr.io/opendatadiscovery/odd-platform:latest
+    restart: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/${POSTGRES_DATABASE}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      - database
+    ports:
+      - 8080:8080
+
+  sample_mssql:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      - SA_PASSWORD=Password0
+      - ACCEPT_EULA=Y
+    ports:
+      - 1433:1433
+      - 1434:1434
+
+  odd-collector:
+    depends_on:
+      - odd-platform
+      - sample_mssql
+    build:
+      context: ../../odd-collector/
+      dockerfile: Dockerfile
+    container_name: odd-collector
+    restart: always
+    environment:
+      - FLASK_ENVIRONMENT=${FLASK_ENVIRONMENT}
+    volumes:
+      # assuming this file is situated in odd-platform/docker and odd-collector is in sibling directory of odd-platform
+      - ../../odd-collector/collector_config.yaml:/app/collector_config.yaml
+
