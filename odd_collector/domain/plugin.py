@@ -23,6 +23,11 @@ class PostgreSQLPlugin(DatabasePlugin):
     type: Literal["postgresql"]
 
 
+class OdbcPlugin(DatabasePlugin):
+    type: Literal["odbc"]
+    driver: str = "{ODBC Driver 17s for SQL Server}"
+
+
 class MySQLPlugin(DatabasePlugin):
     type: Literal["mysql"]
     ssl_disabled: Optional[bool] = False
@@ -102,6 +107,7 @@ AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
         MySQLPlugin,
+        OdbcPlugin,
         ClickhousePlugin,
         RedshiftPlugin,
         MongoDBPlugin,
