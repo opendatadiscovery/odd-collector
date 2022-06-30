@@ -1,13 +1,9 @@
 from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup
 from oddrn_generator import PostgresqlGenerator
 
-from . import (
-    MetadataNamedtuple,
-    ColumnMetadataNamedtuple,
-    _data_set_metadata_schema_url,
-    _data_set_metadata_excluded_keys,
-)
+
 from .columns import map_column
+from .config import TableMetadata, ColumnMetadata, _data_set_metadata_schema_url, _data_set_metadata_excluded_keys
 from .metadata import append_metadata_extension
 from .types import TABLE_TYPES_SQL_TO_ODD
 from .views import extract_transformer_data
@@ -25,7 +21,7 @@ def map_table(
     column_index: int = 0
 
     for table in tables:
-        metadata: MetadataNamedtuple = MetadataNamedtuple(*table)
+        metadata: TableMetadata = TableMetadata(*table)
 
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
             metadata.table_type, DataEntityType.UNKNOWN
@@ -73,7 +69,7 @@ def map_table(
         # DatasetField
         while column_index < len(columns):
             column: tuple = columns[column_index]
-            column_metadata: ColumnMetadataNamedtuple = ColumnMetadataNamedtuple(
+            column_metadata: ColumnMetadata = ColumnMetadata(
                 *column
             )
 
