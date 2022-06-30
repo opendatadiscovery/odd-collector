@@ -1,6 +1,6 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 # odd-collector
-ODD Collector is a lightweight service which gathers metadata from all your data sources.
+ODD Collector is a lightweight service that gathers metadata from all your data sources.
 
 To learn more about collector types and ODD Platform's architecture, [read the documentation](https://docs.opendatadiscovery.org/architecture).
 
@@ -25,6 +25,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
  - [Snowflake](#snowflake)
  - [Tarantool](#tarantool)
  - [Tableau](#tableau)
+ - [ODBC/MS SQL](#odbc)
 
 ### __Cassandra__
 ```yaml
@@ -181,6 +182,32 @@ port: int
 user: ""
 password: ""
 ```
+
+### __ODBC__
+```yaml
+  - type: odbc
+    name: my_odbc
+    host: sample_mssql
+    port: 1433
+    database: msdb
+    driver: "{ODBC Driver 17 for SQL Server}"
+    user: "sa"
+    password: "Password0"
+```
+See also detailed [README.md](odd_collector/adapters/odbc/README.md) for environment setup recommendations.
+
+## Class diagram of adapter class hierarchy
+This may help you to understand which fields you need for each adapter in `collector_config.yaml` and also may be helpful for a new adapter developer.
+![Adapter domain class hierarchy](adapter_domain_classes.png)
+
+PlantUML code for above diagram: [domain_classes.plantuml](domain_classes.plantuml)
+
+To regenerate picture, you have 2 options:
+1. Having PlantUML installed locally, do
+```shell
+java -jar plantuml.jar domain_classes.plantuml
+```
+2. Use PyCharm or other IDE's PlantUML plugin
 
 ## Building
 ```bash
