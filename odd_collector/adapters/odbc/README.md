@@ -4,6 +4,18 @@
 
 Assuming you have `odd-platform` pulled to a sibling directory to the `odd-collector`:
 
+0. Configure `collector_config.yaml`:
+```yaml
+  - type: odbc
+    name: my_odbc
+    host: sample_mssql
+    port: 1433
+    database: msdb
+    driver: "{ODBC Driver 17 for SQL Server}"
+    user: "sa"
+    password: "Password0"
+```
+(`msdb` database is the one present in MS SQL by default)
 1. Copy `docker/testodbc.yaml` to `../odd-platform/docker`
 2. Start the ODD platform:
 ```shell
