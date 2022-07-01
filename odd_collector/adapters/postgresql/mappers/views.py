@@ -17,8 +17,8 @@ def extract_transformer_data(
 
     try:
         inputs, outputs = sql_parser.get_response()
-    except Exception as e:
-        logging.error(f"Couldn't parse inputs and outputs from {sql}")
+    except Exception:
+        logging.error(f"Couldn't parse inputs and outputs from {sql}", exc_info=True)
         return DataTransformer(sql=sql, inputs=[], outputs=[])
 
     return DataTransformer(

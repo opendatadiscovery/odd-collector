@@ -34,9 +34,8 @@ class Adapter(AbstractAdapter):
                 columns = self.__postgresql_cursor.execute(_column_select)
 
             return map_table(self.__oddrn_generator, tables, columns, self.__database)
-        except Exception as e:
-            logging.error("Failed to load metadata for tables")
-            logging.exception(e)
+        except Exception:
+            logging.error("Failed to load metadata for tables", exc_info=True)
         return []
 
     def get_data_entity_list(self) -> DataEntityList:
