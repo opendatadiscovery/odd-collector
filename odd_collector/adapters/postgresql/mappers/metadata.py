@@ -1,5 +1,5 @@
-from typing import NamedTuple, List
-from dataclasses import dataclass
+from dataclasses import dataclass, astuple, asdict
+from typing import List
 
 from odd_models.models import MetadataExtension
 
@@ -7,11 +7,11 @@ from odd_models.models import MetadataExtension
 def append_metadata_extension(
     metadata_list: List[MetadataExtension],
     schema_url: str,
-    dataclass: dataclass,
+    metadata_dataclass: dataclass,
     excluded_keys: set = None,
 ):
-    if dataclass is not None and len(named_tuple) > 0:
-        metadata: dict = named_tuple._asdict()
+    if metadata_dataclass is not None and len(astuple(metadata_dataclass)) > 0:
+        metadata: dict = asdict(metadata_dataclass)
         if excluded_keys is not None:
             for key in excluded_keys:
                 metadata.pop(key)
