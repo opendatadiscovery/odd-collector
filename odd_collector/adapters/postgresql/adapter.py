@@ -62,10 +62,7 @@ class PostgreSQLConnector(AbstractConnector):
                 self.__cursor.close()
             if self.__connection:
                 self.__connection.close()
-        except psycopg2.OperationalError as err:
-            logging.error(f'Error in disconnecting from database = {err}')
-            raise DBException("Database error. Troubles with disconnecting")
-        except psycopg2.InternalError as err:
+        except (psycopg2.OperationalError, psycopg2.InternalError) as err:
             logging.error(f'Error in disconnecting from database = {err}')
             raise DBException("Database error. Troubles with disconnecting")
 
