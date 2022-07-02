@@ -5,6 +5,9 @@ from typing import List
 
 class VerticaDB:
     def __init__(self, config):
+        self.__connection = None
+        self.__cursor = None
+
         self.__connection_info = {
             "host": config.host,
             "port": config.port,
@@ -13,17 +16,17 @@ class VerticaDB:
             "database": config.database,
         }
 
-    def _connect(self):
+    def connect(self):
         try:
             self.__connection = vertica_python.connect(**self.__connection_info)
             self.__cursor = self.__connection.cursor()
         except Exception as e:
             logging.error(f"Vertica connection error: {e}")
 
-    def _query(self, columns: str, table: str, order_by: str) -> List[tuple]:
-        return self._execute(f"select {columns} from {table} order by {order_by}")
+    def query(self, columns: str, table: str, order_by: str) -> List[tuple]:
+        return self.execute(f"select {columns} from {table} order by {order_by}")
 
-    def _execute(self, query: str) -> List[tuple]:
+    def execute(self, query: str) -> List[tuple]:
         self.__cursor.execute(query)
         return self.__cursor.fetchall()
 
