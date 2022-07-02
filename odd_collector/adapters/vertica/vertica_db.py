@@ -1,5 +1,6 @@
 import logging
 import vertica_python
+from typing import List
 
 
 class VerticaDB:
@@ -19,11 +20,11 @@ class VerticaDB:
         except Exception as e:
             logging.error(f"Vertica connection error: {e}")
 
-    def __query(self):
-        pass
+    def __query(self, columns: str, table: str, order_by: str) -> List[tuple]:
+        return self.__execute(f"select {columns} from {table} order by {order_by}")
 
-    def __execute(self):
-        pass
+    def __execute(self, query: str) -> List[tuple]:
+        self.__cursor.execute(query)
+        return self.__cursor.fetchall()
 
-    def __exit__(self):
-        pass
+
