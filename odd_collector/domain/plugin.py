@@ -45,7 +45,7 @@ class MongoDBPlugin(DatabasePlugin):
     type: Literal["mongodb"]
     protocol: str
 
-class KafkaPlugin(Plugin):
+class KafkaPlugin(DatabasePlugin):
     type: Literal["kafka"]
     host: str
     port: int
@@ -109,6 +109,10 @@ class TableauPlugin(BasePlugin):
     password: str
 
 
+class VerticaPlugin(DatabasePlugin):
+    type: Literal["vertica"]
+
+
 AvailablePlugin = Annotated[
     Union[
         PostgreSQLPlugin,
@@ -127,7 +131,8 @@ AvailablePlugin = Annotated[
         KubeflowPlugin,
         TarantoolPlugin,
         Neo4jPlugin,
-        TableauPlugin
+        TableauPlugin,
+        VerticaPlugin
     ],
     pydantic.Field(discriminator="type"),
 ]
