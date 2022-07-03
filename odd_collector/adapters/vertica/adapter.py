@@ -24,7 +24,7 @@ class Adapter(AbstractAdapter):
 
     def get_data_entities(self) -> List[DataEntity]:
         try:
-            self.__db.connect()
+            self.__db.connect() # TODO use context manager 
 
             metadata_query = f"""            
                 SELECT 
