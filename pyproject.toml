@@ -14,7 +14,6 @@ oddrn-generator = "^0.1.23"
 clickhouse-driver = "^0.2.3"
 mysql-connector-python = "^8.0.28"
 hive-metastore-client="^1.0.9"
-more-itertools="^8.6.0"
 lark-parser="^0.11.1"
 psycopg2 = "^2.9.3"
 pymongo = {extras = ["srv"], version = "^4.0.2"}
@@ -31,7 +30,8 @@ neo4j = "^4.3.7"
 tableauserverclient = "0.19.0"
 pytz = "^2022.1"
 odd-collector-sdk = "^0.2.4"
-pyodbc = "^4.0.32"
+#pyodbc = "^4.0.31"
+vertica-python = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 

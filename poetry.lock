@@ -948,6 +948,22 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 
+[[package]]
+name = "pyodbc"
+version = "4.0.31"
+description = "pyodbc"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
+name = "vertica-python"
+version = "1.1.0"
+description = "vertica-python"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
 [package.dependencies]
 pytz = "*"
 
@@ -2529,10 +2545,10 @@ mmh3 = [
     {file = "mmh3-3.0.0-cp39-cp39-win_amd64.whl", hash = "sha256:bd870aedd9189eff1cf4e1687869b56c7e9461ee869789139c3e704009e5c227"},
     {file = "mmh3-3.0.0.tar.gz", hash = "sha256:d1ec578c09a07d3518ec9be540b87546397fa3455de73c166fcce51eaa5c41c5"},
 ]
-more-itertools = [
-    {file = "more-itertools-8.13.0.tar.gz", hash = "sha256:a42901a0a5b169d925f6f217cd5a190e32ef54360905b9c39ee7db5313bfec0f"},
-    {file = "more_itertools-8.13.0-py3-none-any.whl", hash = "sha256:c5122bffc5f104d37c1626b8615b511f3427aa5389b94d61e5ef8236bfbc3ddb"},
-]
+#more-itertools = [
+#    {file = "more-itertools-8.13.0.tar.gz", hash = "sha256:a42901a0a5b169d925f6f217cd5a190e32ef54360905b9c39ee7db5313bfec0f"},
+#    {file = "more_itertools-8.13.0-py3-none-any.whl", hash = "sha256:c5122bffc5f104d37c1626b8615b511f3427aa5389b94d61e5ef8236bfbc3ddb"},
+#]
 msgpack = [
     {file = "msgpack-1.0.4-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:4ab251d229d10498e9a2f3b1e68ef64cb393394ec477e3370c457f9430ce9250"},
     {file = "msgpack-1.0.4-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:112b0f93202d7c0fef0b7810d465fde23c746a2d482e1e2de2aafd2ce1492c88"},
@@ -2678,6 +2694,14 @@ mysql-connector-python = [
 ]
 neo4j = [
     {file = "neo4j-4.4.4.tar.gz", hash = "sha256:4f8982028021f9fc5e3e3605e6368302d6a97ea75a48666ae49fcc974113a3c8"},
+]
+
+pyodbc = [
+    {file = "pyodbc-4.0.32.tar.gz", hash = "sha256:9be5f0c3590655e1968488410fe3528bb8023d527e7ccec1f663d64245071a6b"},
+]
+
+vertica-python = [
+    {file = "vertica-python-1.1.0.tar.gz", hash = "sha256:5dc708379966ad14cd0262b9d9778c059cee34ec52bd714aec238b87995a7036"},
 ]
 numpy = [
     {file = "numpy-1.21.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:38e8648f9449a549a7dfe8d8755a5979b45b3538520d1e735637ef28e8c2dc50"},
