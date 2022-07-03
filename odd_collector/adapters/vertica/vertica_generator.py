@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import  Field
+from pydantic import Field
 
 from oddrn_generator.generators import Generator
 from oddrn_generator.path_models import BasePathsModel

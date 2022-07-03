@@ -29,5 +29,3 @@ class VerticaDB:
     def execute(self, query: str) -> List[tuple]:
         self.__cursor.execute(query)
         return self.__cursor.fetchall()
-
-
