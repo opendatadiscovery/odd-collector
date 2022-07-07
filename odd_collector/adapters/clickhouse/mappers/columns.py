@@ -33,6 +33,8 @@ def map_column(
         ),
         default_value=mcolumn.default_kind,
         description="",
+        is_primary_key=bool(mcolumn.is_in_primary_key),
+        is_sort_key=bool(mcolumn.is_in_sorting_key),
         is_key=False,
         is_value=False,
     )
