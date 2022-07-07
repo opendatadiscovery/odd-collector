@@ -26,7 +26,9 @@ class Adapter(AbstractAdapter):
             tables = self.__mysql_repository.get_tables()
             columns = self.__mysql_repository.get_columns()
             logging.info(f"Load {len(tables)} Datasets DataEntities from database")
-            return map_tables(self.__oddrn_generator, tables, columns, self.__config.database)
+            return map_tables(
+                self.__oddrn_generator, tables, columns, self.__config.database
+            )
         except Exception:
             logging.error("Failed to load metadata for tables")
             logging.exception(Exception)

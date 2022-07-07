@@ -11,7 +11,6 @@ from typing import List
 
 
 class MysqlRepository(MysqlRepositoryBase):
-
     def __init__(self, config):
         self.__host = config.host
         self.__port = config.port
@@ -25,7 +24,9 @@ class MysqlRepository(MysqlRepositoryBase):
         return tables
 
     def get_columns(self):
-        columns = self.__query(ColumnMetadata.get_str_fields(), _column_table, _column_order_by)
+        columns = self.__query(
+            ColumnMetadata.get_str_fields(), _column_table, _column_order_by
+        )
         return columns
 
     def __query(self, columns: str, table: str, order_by: str) -> List[tuple]:
@@ -39,7 +40,7 @@ class MysqlRepository(MysqlRepositoryBase):
                 "database": self.__database,
                 "user": self.__user,
                 "password": self.__password,
-                "ssl_disabled": self.__ssl_disabled
+                "ssl_disabled": self.__ssl_disabled,
             }
             with mysql.connector.connect(**mysql_conn_params) as mysql_conn:
                 with mysql_conn.cursor() as mysql_cur:
