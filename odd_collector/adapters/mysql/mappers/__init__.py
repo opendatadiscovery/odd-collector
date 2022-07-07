@@ -1,4 +1,4 @@
-from collections import namedtuple
+from typing import Any, NamedTuple
 
 _METADATA_SCHEMA_URL_PREFIX: str = (
     "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"
@@ -34,23 +34,62 @@ _data_set_field_metadata_excluded_keys: set = {
     "column_comment",
 }
 
-_table_metadata: str = (
-    "table_catalog, table_schema, table_name, table_type, engine, version, row_format, table_rows, "
-    "avg_row_length, data_length, max_data_length, index_length, data_free, auto_increment, create_time, "
-    "update_time, check_time, table_collation, checksum, create_options, table_comment, view_definition"
-)
-
-_column_metadata: str = (
-    "table_catalog, table_schema, table_name, column_name, ordinal_position, column_default, is_nullable, "
-    "data_type, character_maximum_length, character_octet_length, numeric_precision, numeric_scale, "
-    "datetime_precision, character_set_name, collation_name, column_type, column_key, extra, privileges, "
-    "column_comment, generation_expression"
-)  # , srs_id'  # srs_id column is not included in MariaDB (MySQL only)
 _column_table: str = (
     "information_schema.columns "
     "where table_schema not in ('information_schema', 'mysql', 'performance_schema', 'sys')"
 )
 _column_order_by: str = "table_catalog, table_schema, table_name, ordinal_position"
 
-MetadataNamedtuple = namedtuple("MetadataNamedtuple", _table_metadata)
-ColumnMetadataNamedtuple = namedtuple("ColumnMetadataNamedtuple", _column_metadata)
+
+class MetadataNamedtuple(NamedTuple):
+    table_catalog: Any
+    table_schema: Any
+    table_name: Any
+    table_type: Any
+    engine: Any
+    version: Any
+    row_format: Any
+    table_rows: Any
+    avg_row_length: Any
+    data_length: Any
+    max_data_length: Any
+    index_length: Any
+    data_free: Any
+    auto_increment: Any
+    create_time: Any
+    update_time: Any
+    check_time: Any
+    table_collation: Any
+    checksum: Any
+    create_options: Any
+    table_comment: Any
+    view_definition: Any
+
+
+class ColumnMetadataNamedtuple(NamedTuple):
+    # , srs_id'  # srs_id column is not included in MariaDB (MySQL only)
+    table_catalog: Any
+    table_schema: Any
+    table_name: Any
+    column_name: Any
+    ordinal_position: Any
+    column_default: Any
+    is_nullable: Any
+    data_type: Any
+    character_maximum_length: Any
+    character_octet_length: Any
+    numeric_precision: Any
+    numeric_scale: Any
+    datetime_precision: Any
+    character_set_name: Any
+    collation_name: Any
+    column_type: Any
+    column_key: Any
+    extra: Any
+    privileges: Any
+    column_comment: Any
+    generation_expression: Any
+
+    @classmethod
+    def get_str_fields(cls):
+        return ", ".join(cls._fields)
