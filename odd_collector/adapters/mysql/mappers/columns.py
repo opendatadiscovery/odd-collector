@@ -2,16 +2,16 @@ from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import MysqlGenerator
 
 from . import (
-    ColumnMetadataNamedtuple,
     _data_set_field_metadata_schema_url,
     _data_set_field_metadata_excluded_keys,
 )
+from .models import ColumnMetadata
 from .metadata import append_metadata_extension, convert_bytes_to_str
 from .types import TYPES_SQL_TO_ODD
 
 
 def map_column(
-    column_metadata: ColumnMetadataNamedtuple,
+    column_metadata: ColumnMetadata,
     oddrn_generator: MysqlGenerator,
     owner: str,
     oddrn_path: str,

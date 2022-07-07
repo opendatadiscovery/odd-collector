@@ -5,7 +5,7 @@ from mysql.connector import errorcode
 
 from .mysql_repository_base import MysqlRepositoryBase
 from .mappers import _column_table, _column_order_by
-from .mappers import ColumnMetadataNamedtuple
+from .mappers.models import ColumnMetadata
 
 from typing import List
 
@@ -25,7 +25,7 @@ class MysqlRepository(MysqlRepositoryBase):
         return tables
 
     def get_columns(self):
-        columns = self.__query(ColumnMetadataNamedtuple.get_str_fields(), _column_table, _column_order_by)
+        columns = self.__query(ColumnMetadata.get_str_fields(), _column_table, _column_order_by)
         return columns
 
     def __query(self, columns: str, table: str, order_by: str) -> List[tuple]:
