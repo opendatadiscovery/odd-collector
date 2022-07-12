@@ -14,7 +14,7 @@ from .mappers import (
     ColumnMetadataNamedtupleRedshift_QUERY,
     ColumnMetadataNamedtupleExternal_QUERY,
 )
-from .mappers.metadata import MetadataTables, MetadataColumns
+from .mappers.metadata import MetadataTables, MetadataColumns, MetadataTable
 from .mappers.tables import map_table
 
 
@@ -33,11 +33,14 @@ class Adapter(AbstractAdapter):
         self.__database = config.database
         self.__user = config.user
         self.__password = config.password
+        self.__schemas = config.schemas
 
         self._data_source = f"postgresql://{self.__user}:{self.__password}@{self.__host}:{self.__port}/{self.__database}?connect_timeout=10"
         self.__oddrn_generator = RedshiftGenerator(
             host_settings=f"{self.__host}", databases=self.__database
         )
+
+        logging.debug(f"Redshift schemas to parse: {self.__schemas}")
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
@@ -65,7 +68,13 @@ class Adapter(AbstractAdapter):
                 f"Load {len(mtables.items)} Datasets DataEntities from database"
             )
 
-            return map_table(self.__oddrn_generator, mtables, mcolumns, self.__database)
+            selected_tables: List[MetadataTable] = self.__get_tables_for_parsing(
+                mtables
+            )
+
+            return map_table(
+                self.__oddrn_generator, selected_tables, mcolumns, self.__database
+            )
         except Exception as e:
             logging.error("Failed to load metadata for tables")
             logging.exception(e)
@@ -77,6 +86,16 @@ class Adapter(AbstractAdapter):
             data_source_oddrn=self.get_data_source_oddrn(),
             items=self.get_data_entities(),
         )
+
+    def __get_tables_for_parsing(self, mtables: MetadataTables) -> List[MetadataTable]:
+        if len(self.__schemas):
+            selected_tables: List[MetadataTable] = [
+                table for table in mtables.items if table.schema_name in self.__schemas
+            ]
+        else:
+            selected_tables: List[MetadataTable] = mtables.items
+
+        return selected_tables
 
     def __execute(self, query: str) -> List[tuple]:
         self.__cursor.execute(query)
