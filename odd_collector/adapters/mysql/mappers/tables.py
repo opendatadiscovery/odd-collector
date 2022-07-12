@@ -8,11 +8,10 @@ from odd_models.models import (
 from oddrn_generator import MysqlGenerator
 
 from . import (
-    MetadataNamedtuple,
-    ColumnMetadataNamedtuple,
     _data_set_metadata_schema_url,
     _data_set_metadata_excluded_keys,
 )
+from .models import TableMetadata, ColumnMetadata
 from .columns import map_column
 from .metadata import append_metadata_extension
 from .types import TABLE_TYPES_SQL_TO_ODD
@@ -29,10 +28,10 @@ def map_tables(
 ) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
 
-    column_metadata = [ColumnMetadataNamedtuple(*c) for c in columns]
+    column_metadata = [ColumnMetadata(*c) for c in columns]
 
     for table in tables:
-        metadata: MetadataNamedtuple = MetadataNamedtuple(*table)
+        metadata: TableMetadata = TableMetadata(*table)
         table_name: str = metadata.table_name
 
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
