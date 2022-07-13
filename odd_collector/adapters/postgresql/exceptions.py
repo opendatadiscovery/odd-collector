@@ -5,3 +5,7 @@ class DbPostgreSQLException(Exception):
 
 class TablePostgreSQLException(Exception):
     pass
+
+
+class MappingException(Exception):
+    pass
