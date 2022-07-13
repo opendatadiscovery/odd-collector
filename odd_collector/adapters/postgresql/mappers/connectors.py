@@ -42,7 +42,6 @@ class PostgreSQLConnector(AbstractConnector):
                 port=self.__port,
             )
             self.__cursor = self.__connection.cursor()
-
         except psycopg2.Error:
             logging.error(f'Error in __connect method', exc_info=True)
             raise DbPostgreSQLException("Database error. Troubles with connecting")

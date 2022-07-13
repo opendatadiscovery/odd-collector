@@ -32,7 +32,7 @@ class PostgreSQLRepository(AbstractRepository):
     def __execute(self, query: Union[str, sql.Composed]) -> List[tuple]:
         with self.__postgres_connector.connection() as cursor:
             cursor.execute(query)
-        return cursor.fetchall()
+            return cursor.fetchall()
 
     @property
     def table_metadata_query(self):
