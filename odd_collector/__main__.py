@@ -4,7 +4,7 @@ from os import path
 
 from odd_collector_sdk.collector import Collector
 
-from odd_collector.domain.plugin import AvailablePlugin, PostgreSQLPlugin
+from odd_collector.domain.plugin import AvailablePlugin
 
 logging.basicConfig(
     level=logging.DEBUG, format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
@@ -25,7 +25,7 @@ try:
         plugins_union_type=AvailablePlugin,
     )
 
-    #loop.run_until_complete(collector.register_data_sources())
+    loop.run_until_complete(collector.register_data_sources())
 
     collector.start_polling()
 
