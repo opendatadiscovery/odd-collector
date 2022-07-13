@@ -1,17 +1,19 @@
-from dataclasses import dataclass, astuple, asdict
-from typing import List
+from dataclasses import astuple, asdict
+from typing import List, Union
 
 from odd_models.models import MetadataExtension
+
+from odd_collector.adapters.postgresql.config import ColumnMetadata, TableMetadata
 
 
 def append_metadata_extension(
     metadata_list: List[MetadataExtension],
     schema_url: str,
-    metadata_dataclass: dataclass,
+    metadata: Union[ColumnMetadata, TableMetadata],
     excluded_keys: set = None,
 ):
-    if metadata_dataclass is not None and len(astuple(metadata_dataclass)) > 0:
-        metadata: dict = asdict(metadata_dataclass)
+    if metadata is not None and len(astuple(metadata)) > 0:
+        metadata: dict = asdict(metadata)
         if excluded_keys is not None:
             for key in excluded_keys:
                 metadata.pop(key)
