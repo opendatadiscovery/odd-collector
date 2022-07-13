@@ -1,24 +1,20 @@
 
 import logging
-
 from typing import List
-
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import PostgresqlGenerator
 
-
-from .mappers.config import _table_select, _column_select
-from .mappers.connectors import PostgreSQLConnector
 from .mappers.tables import map_table
+from .repository import PostgreSQLRepository
 
 
 class Adapter(AbstractAdapter):
 
     def __init__(self, config) -> None:
         self.__database = config.database
-        self.__postgresql_cursor = PostgreSQLConnector(config)
+        self.__posergresql_repository = PostgreSQLRepository(config)
         self.__oddrn_generator = PostgresqlGenerator(
             host_settings=f"{config.host}", databases=self.__database
         )
@@ -28,10 +24,8 @@ class Adapter(AbstractAdapter):
 
     def get_data_entities(self) -> List[DataEntity]:
         try:
-
-            with self.__postgresql_cursor.connection():
-                tables = self.__postgresql_cursor.execute(_table_select)
-                columns = self.__postgresql_cursor.execute(_column_select)
+            tables = self.__posergresql_repository.get_tables()
+            columns = self.__posergresql_repository.get_columns()
 
             return map_table(self.__oddrn_generator, tables, columns, self.__database)
         except Exception:

@@ -3,7 +3,7 @@ from oddrn_generator import PostgresqlGenerator
 
 
 from .columns import map_column
-from .config import TableMetadata, ColumnMetadata, _data_set_metadata_schema_url, _data_set_metadata_excluded_keys
+from odd_collector.adapters.postgresql.config import TableMetadata, ColumnMetadata, _data_set_metadata_schema_url, _data_set_metadata_excluded_keys
 from .metadata import append_metadata_extension
 from .types import TABLE_TYPES_SQL_TO_ODD
 from .views import extract_transformer_data

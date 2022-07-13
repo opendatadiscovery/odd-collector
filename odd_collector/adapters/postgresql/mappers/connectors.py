@@ -6,7 +6,7 @@ from typing import List, Union
 import psycopg2
 from psycopg2 import sql
 
-from odd_collector.adapters.postgresql.mappers.exceptions import DbPostgreSQLException
+from odd_collector.adapters.postgresql.exceptions import DbPostgreSQLException
 
 
 class AbstractConnector(ABC):  # TODO: Create one abstract connector for all adapters
@@ -31,11 +31,6 @@ class PostgreSQLConnector(AbstractConnector):
         self.__connect()
         yield self.__cursor
         self.__disconnect()
-
-    def execute(self, query: Union[str, sql.Composed]) -> List[tuple]:
-        self.__cursor.execute(query)
-        records = self.__cursor.fetchall()
-        return records
 
     def __connect(self):
         try:
