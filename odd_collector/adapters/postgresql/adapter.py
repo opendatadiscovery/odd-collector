@@ -1,4 +1,3 @@
-
 import logging
 from typing import List
 
@@ -11,7 +10,6 @@ from .repository import PostgreSQLRepository
 
 
 class Adapter(AbstractAdapter):
-
     def __init__(self, config) -> None:
         self.__database = config.database
         self.__posergresql_repository = PostgreSQLRepository(config)
@@ -37,5 +35,3 @@ class Adapter(AbstractAdapter):
             data_source_oddrn=self.get_data_source_oddrn(),
             items=(self.get_data_entities()),
         )
-
-

@@ -5,7 +5,12 @@ from oddrn_generator import PostgresqlGenerator
 
 
 from .columns import map_column
-from odd_collector.adapters.postgresql.config import TableMetadata, ColumnMetadata, _data_set_metadata_schema_url, _data_set_metadata_excluded_keys
+from odd_collector.adapters.postgresql.config import (
+    TableMetadata,
+    ColumnMetadata,
+    _data_set_metadata_schema_url,
+    _data_set_metadata_excluded_keys,
+)
 from .metadata import append_metadata_extension
 from .types import TABLE_TYPES_SQL_TO_ODD
 from .views import extract_transformer_data
@@ -31,7 +36,9 @@ def map_table(
             data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
                 metadata.table_type, DataEntityType.UNKNOWN
             )
-            oddrn_path = "views" if data_entity_type == DataEntityType.VIEW else "tables"
+            oddrn_path = (
+                "views" if data_entity_type == DataEntityType.VIEW else "tables"
+            )
 
             table_schema: str = metadata.table_schema
             table_name: str = metadata.table_name
@@ -40,7 +47,7 @@ def map_table(
                 **{"schemas": table_schema, oddrn_path: table_name}
             )
 
-        # DataEntity
+            # DataEntity
             data_entity: DataEntity = DataEntity(
                 oddrn=oddrn_generator.get_oddrn_by_path(oddrn_path),
                 name=table_name,
@@ -65,18 +72,16 @@ def map_table(
                 field_list=[],
             )
 
-        # DataTransformer
+            # DataTransformer
             if data_entity_type == DataEntityType.VIEW:
                 data_entity.data_transformer = extract_transformer_data(
                     metadata.view_definition, oddrn_generator
                 )
 
-        # DatasetField
+            # DatasetField
             while column_index < len(columns):
                 column: tuple = columns[column_index]
-                column_metadata: ColumnMetadata = ColumnMetadata(
-                    *column
-                )
+                column_metadata: ColumnMetadata = ColumnMetadata(*column)
 
                 if (
                     column_metadata.table_schema == table_schema
@@ -84,14 +89,17 @@ def map_table(
                 ):
                     data_entity.dataset.field_list.append(
                         map_column(
-                            column_metadata, oddrn_generator, data_entity.owner, oddrn_path
+                            column_metadata,
+                            oddrn_generator,
+                            data_entity.owner,
+                            oddrn_path,
                         )
                     )
                     column_index += 1
                 else:
                     break
         except Exception as err:
-            logging.error('Error in map_table', exc_info=True)
+            logging.error("Error in map_table", exc_info=True)
             raise MappingException(err)
 
     data_entities.append(

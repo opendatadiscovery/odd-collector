@@ -59,5 +59,7 @@ _column_metadata: str = (
 )
 
 
-TableMetadata = make_dataclass("MetadataNamedtuple", _table_metadata.split(', '))
-ColumnMetadata = make_dataclass("ColumnMetadataNamedtuple", _column_metadata.split(', '))
+TableMetadata = make_dataclass("MetadataNamedtuple", _table_metadata.split(", "))
+ColumnMetadata = make_dataclass(
+    "ColumnMetadataNamedtuple", _column_metadata.split(", ")
+)

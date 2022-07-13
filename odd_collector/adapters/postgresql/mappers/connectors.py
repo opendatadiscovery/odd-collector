@@ -1,10 +1,8 @@
 import contextlib
 import logging
 from abc import ABC, abstractmethod
-from typing import List, Union
 
 import psycopg2
-from psycopg2 import sql
 
 from odd_collector.adapters.postgresql.exceptions import DbPostgreSQLException
 
@@ -43,7 +41,7 @@ class PostgreSQLConnector(AbstractConnector):
             )
             self.__cursor = self.__connection.cursor()
         except psycopg2.Error:
-            logging.error(f'Error in __connect method', exc_info=True)
+            logging.error(f"Error in __connect method", exc_info=True)
             raise DbPostgreSQLException("Database error. Troubles with connecting")
 
     def __disconnect(self) -> None:
@@ -53,5 +51,5 @@ class PostgreSQLConnector(AbstractConnector):
             if self.__connection:
                 self.__connection.close()
         except (psycopg2.OperationalError, psycopg2.InternalError):
-            logging.error(f'Error in disconnecting from database', exc_info=True)
+            logging.error(f"Error in disconnecting from database", exc_info=True)
             raise DbPostgreSQLException("Database error. Troubles with disconnecting")

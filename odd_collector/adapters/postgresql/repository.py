@@ -7,7 +7,6 @@ from odd_collector.adapters.postgresql.mappers.connectors import PostgreSQLConne
 
 
 class AbstractRepository(ABC):
-
     @abstractmethod
     def get_tables(self):
         pass
@@ -128,6 +127,3 @@ where c.relkind in ('r', 'v')
   and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
 order by n.nspname, c.relname, a.attnum
 """
-
-
-
