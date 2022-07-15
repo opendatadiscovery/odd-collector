@@ -3,7 +3,10 @@ from typing import List, Union
 
 from odd_models.models import MetadataExtension
 
-from odd_collector.adapters.postgresql.config import ColumnMetadata, TableMetadata
+from odd_collector.adapters.postgresql.mappers.models import (
+    ColumnMetadata,
+    TableMetadata,
+)
 
 
 def append_metadata_extension(

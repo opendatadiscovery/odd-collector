@@ -3,7 +3,7 @@ from typing import Union, List
 
 from psycopg2 import sql
 
-from odd_collector.adapters.postgresql.mappers.connectors import PostgreSQLConnector
+from odd_collector.adapters.postgresql.connectors import PostgreSQLConnector
 
 
 class AbstractRepository(ABC):
