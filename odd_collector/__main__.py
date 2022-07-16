@@ -1,27 +1,29 @@
 import asyncio
 import logging
-from os import path
+import os
 
 from odd_collector_sdk.collector import Collector
 
-from odd_collector.domain.plugin import AvailablePlugin
+from odd_collector.domain.plugin import PLUGIN_FACTORY
 
 logging.basicConfig(
-    level=logging.DEBUG, format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+    level=os.getenv("LOGLEVEL", "INFO"),
+    format="[%(asctime)s] %(levelname)s in %(name)s: %(message)s",
 )
+logger = logging.getLogger("odd-collector")
 
 
 try:
     loop = asyncio.get_event_loop()
 
-    cur_dirname = path.dirname(path.realpath(__file__))
-    config_path = path.join(cur_dirname, "../collector_config.yaml")
-    adapters_path = path.join(cur_dirname, "adapters")
+    cur_dirname = os.path.dirname(os.path.realpath(__file__))
+    config_path = os.path.join(cur_dirname, "../collector_config.yaml")
+    adapters_path = os.path.join(cur_dirname, "adapters")
 
     collector = Collector(
         config_path=config_path,
         root_package="odd_collector.adapters",
-        plugins_union_type=AvailablePlugin,
+        plugin_factory=PLUGIN_FACTORY,
     )
 
     loop.run_until_complete(collector.register_data_sources())
@@ -29,7 +31,6 @@ try:
     collector.start_polling()
 
     asyncio.get_event_loop().run_forever()
-
 except Exception as e:
-    logging.error(e, exc_info=True)
+    logger.error(e, exc_info=True)
     asyncio.get_event_loop().stop()

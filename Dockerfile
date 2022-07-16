@@ -12,7 +12,8 @@ RUN apt-get update && \
     curl \
     librdkafka-dev \
     unixodbc \
-    unixodbc-dev
+    unixodbc-dev \
+    openssl
 
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 RUN mv /root/.poetry $POETRY_PATH

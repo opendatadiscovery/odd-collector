@@ -1,0 +1,13 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: elasticsearch
+    name: elasticsearch_adapter
+    description: "" # Optional string
+    host: host
+    port: 0000
+    http_auth: ""     # Optional string, default None
+    use_ssl: ""       # Optional boolean, default None
+    verify_certs: ""  # Optional boolean, default None
+    ca_certs: ""      # Optional string, default None

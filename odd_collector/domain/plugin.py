@@ -1,8 +1,7 @@
-from typing import Literal, Optional, Union
+from typing import Literal, Optional
 
-import pydantic
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
-from typing_extensions import Annotated
+from odd_collector_sdk.types import PluginFactory
 
 
 class WithHost(BasePlugin):
@@ -62,6 +61,7 @@ class SnowflakePlugin(DatabasePlugin):
 
 class HivePlugin(WithHost, WithPort):
     type: Literal["hive"]
+    database: str
 
 
 class ElasticsearchPlugin(WithHost, WithPort):
@@ -111,25 +111,22 @@ class TableauPlugin(BasePlugin):
     password: str
 
 
-AvailablePlugin = Annotated[
-    Union[
-        PostgreSQLPlugin,
-        MySQLPlugin,
-        MSSQLPlugin,
-        ClickhousePlugin,
-        RedshiftPlugin,
-        MongoDBPlugin,
-        KafkaPlugin,
-        SnowflakePlugin,
-        HivePlugin,
-        ElasticsearchPlugin,
-        FeastPlugin,
-        DbtPlugin,
-        CassandraPlugin,
-        KubeflowPlugin,
-        TarantoolPlugin,
-        Neo4jPlugin,
-        TableauPlugin,
-    ],
-    pydantic.Field(discriminator="type"),
-]
+PLUGIN_FACTORY: PluginFactory = {
+    "postgresql": PostgreSQLPlugin,
+    "mysql": MySQLPlugin,
+    "mssql": MSSQLPlugin,
+    "clickhouse": ClickhousePlugin,
+    "redshift": RedshiftPlugin,
+    "mongodb": MongoDBPlugin,
+    "kafka": KafkaPlugin,
+    "snowflake": SnowflakePlugin,
+    "hive": HivePlugin,
+    "elasticsearch": ElasticsearchPlugin,
+    "feast": FeastPlugin,
+    "dbt": DbtPlugin,
+    "cassandra": CassandraPlugin,
+    "kubeflow": KubeflowPlugin,
+    "tarantool": TarantoolPlugin,
+    "neo4j": Neo4jPlugin,
+    "tableau": TableauPlugin,
+}

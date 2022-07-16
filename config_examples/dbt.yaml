@@ -1,0 +1,9 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: dbt
+    name: dbt_adapter
+    description: "" # Optional string
+    host: host
+    odd_catalog_url: odd_catalog_url
