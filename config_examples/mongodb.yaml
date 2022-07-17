@@ -1,0 +1,13 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: mongodb
+    name: mongodb_adapter
+    description: "" # Optional string
+    database: database_name
+    host: host
+    port: 0000
+    user: user
+    password: password
+    protocol: protocol

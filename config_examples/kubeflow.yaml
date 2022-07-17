@@ -1,0 +1,11 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: kubeflow
+    name: kubeflow_adapter
+    description: "" # Optional string
+    host: host
+    namespace: namespace
+    session_cookie0: "" # Optional string
+    session_cookie1: "" # Optional string
