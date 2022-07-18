@@ -1,0 +1,11 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: tableau
+    name: tableau_adapter
+    description: "" # Optional string
+    server: server_url # Used for generator and connection to TableauServer
+    site: site
+    user: user
+    password: password

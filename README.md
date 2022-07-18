@@ -5,203 +5,87 @@ ODD Collector is a lightweight service which gathers metadata from all your data
 To learn more about collector types and ODD Platform's architecture, [read the documentation](https://docs.opendatadiscovery.org/architecture).
 
 ## Preview:
-- [Implemented adapters](#implemented-adapters)
-- [How to build](#building)
-- [Config example](#config-example)
+ - [Implemented adapters](#implemented-adapters)
+ - [Building](#building)
+ - [M1 building issue](#m1-building-issue)
+ - [Docker compose example](#docker-compose-example)
 
 ## Implemented adapters
- - [Cassandra](#cassandra)
- - [ClickHouse](#clickhouse)
- - [Dbt](#dbt)
- - [Elasticsearch](#elasticsearch) 
- - [Feast](#feast)
- - [Hive](#hive)
- - [Kubeflow](#kubeflow)
- - [MongoDb](#mongodb)
- - [MySQL](#mysql)
- - [Neo4j](#neo4j)
- - [PostgreSQL](#postgresql) 
- - [Redshift](#redshift) 
- - [Snowflake](#snowflake)
- - [Tarantool](#tarantool)
- - [Tableau](#tableau)
+| Service       | Config example                               |
+| ------------- | -------------------------------------------- |
+| Cassandra     | [config](config_examples/cassandra.yaml)     |
+| ClickHouse    | [config](config_examples/clickhouse.yaml)    |
+| Dbt           | [config](config_examples/dbt.yaml)           |
+| Elasticsearch | [config](config_examples/elasticsearch.yaml) |
+| Feast         | [config](config_examples/feast.yaml)         |
+| Hive          | [config](config_examples/hive.yaml)          |
+| Kafka         | [config](config_examples/kafka.yaml)         |
+| Kubeflow      | [config](config_examples/kubeflow.yaml)      |
+| MongoDB       | [config](config_examples/mongodb.yaml)       |
+| MSSql         | [config](config_examples/mssql.yaml)         |
+| MySql         | [config](config_examples/mysql.yaml)         |
+| Neo4j         | [config](config_examples/neo4j.yaml)         |
+| PostgreSQL    | [config](config_examples/postgresql.yaml)    |
+| Redshift      | [config](config_examples/redshift.yaml)      |
+| Snowflake     | [config](config_examples/snowflake.yaml)     |
+| Tableau       | [config](config_examples/tableau.yaml)       |
+| Tarantool     | [config](config_examples/tarantool.yaml)     |
 
-### __Cassandra__
-```yaml
-type: cassandra
-name: cassandra
-host: str
-port: int
-database: str
-user: str
-password: str
-contact_points: str[]
-```
-
-### __ClickHouse__
-```yaml
-type: clickhouse
-name: clickhouse
-host: str
-port: int
-database: str
-user: str
-password: str
-```
-
-### __Dbt__
-```yaml
-type: dbt
-name: dbt
-host: str
-odd_catalog_url: str
-```
-
-### __Elasticsearch__
-```yaml
-type: elasticsearch
-name: elasticsearch
-host: str
-port: int
-database: ""
-user: ""
-password: ""
-```
-
-### __Feast__
-```yaml
-type: feast
-name: feast
-host: str
-port: int
-database: ""
-user: ""
-password: ""
-repo_path: str
-```
-
-### __Hive__
-```yaml
-type: hive
-name: hive
-host: str
-port: int
-database: str
-user: str
-password: str
-```
-
-### __Kubeflow__
-```yaml
-type: kubeflow
-name: kubeflow
-host: str
-namespace: str
-session_cookie0: Optional[str]
-session_cookie1: Optional[str]
-```
-### __MongoDB__
-```yaml
-type: mongodb
-name: mongodb
-host: str
-port: int
-database: str
-user: str
-password: str
-protocol: str
-```
-### __MySQL__
-```yaml
-type: mysql
-name: mysql
-host: str
-port: int
-database: str
-user: str
-password: str
-ssl_disabled: bool
-```
-### __Neo4j__
-```yaml
-type: neo4j
-host: str
-port: int
-database: str
-user: str
-password: str
-```
-### __PostgreSQL__
-```yaml
-type: postgresql
-name: postgresql
-host: str
-port: int
-database: str
-user: str
-password: str
-```
-### __Redshift__
-```yaml
-type: redshift
-name: redshift
-host: str
-port: int
-database: str
-user: str
-password: str
-```
-### __Snowflake__
-```yaml
-type: snowflake
-name: snowflake
-host: str
-port: int
-database: str
-user: str
-password: str
-account: str
-warehouse: str
-```
-### __Tableau__
-```yaml
-type: tableau
-name: tableau
-server: str
-site: str
-user: str
-password: str
-```
-### __Tarantool__
-```yaml
-type: tarantool
-name: tarantool
-host: str
-port: int
-user: ""
-password: ""
-```
 
 ## Building
 ```bash
 docker build .
 ```
 
-## Config example
+## M1 building issue
+
+**libraries** `pyodbc` , `confluent-kafka` and `grpcio`   have problem during installing and building project on Mac M1.
+
+- https://github.com/mkleehammer/pyodbc/issues/846
+- https://github.com/confluentinc/confluent-kafka-python/issues/1190
+- https://github.com/grpc/grpc/issues/25082
+
+Possible solutions
+
+```bash
+# NOTE: be aware of versions
+# NOTE: easiest way is to add all export statements to your .bashrc/.zshrc file
+
+# pyodbc dependencies
+brew install unixodbc freetds openssl
+
+export LDFLAGS="-L/opt/homebrew/lib  -L/opt/homebrew/Cellar/unixodbc/2.3.11/include -L/opt/homebrew/opt/freetds/lib -L/opt/homebrew/opt/openssl@3/lib"
+export CFLAGS="-I/opt/homebrew/Cellar/unixodbc/2.3.11/include -I/opt/homebrew/opt/freetds/include"
+export CPPFLAGS="-I/opt/homebrew/include -I/opt/homebrew/Cellar/unixodbc/2.3.11/include -I/opt/homebrew/opt/openssl@3/include"
+
+# cunfluent-kafka
+brew install librdkafka
+
+export C_INCLUDE_PATH=/opt/homebrew/Cellar/librdkafka/1.9.0/include
+export LIBRARY_PATH=/opt/homebrew/Cellar/librdkafka/1.9.0/lib
+export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
+
+# grpcio
+export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
+export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1
+```
+
+## Docker compose example
 Custom `.env` file for docker-compose.yaml
 ```
+LOGLEVEL=DEBUG
 PLATFORM_HOST_URL=http://odd-platform:8080
 POSTGRES_PASSWORD=postgres_password_secret
 ```
 
 There are 3 options for config field pass:
 1. Explicitly set it in `collector_config.yaml` file, i.e `database: odd-platform-db`
-2. Use `.env` file, Pydantic will read skipped field from ENV variable
+2. Use `.env` file or ENV variables
 3. In situation when plugins have same field names, we can  explicitly set ENV variable to `collector_config.yaml`, i.e. `password: !ENV ${POSTGRES_PASSWORD}`
 
 Custom `collector-config.yaml`
 ```yaml
-# platform_host_url: "http://localhost:8080" - We can skip it, it will be taken by pydantic from ENV variables
+platform_host_url: http://localhost:8080
 default_pulling_interval: 10
 token: ""
 plugins:
@@ -232,7 +116,7 @@ services:
     ...
   
   odd-collector:
-    image: 'image_name'
+    image: ghcr.io/opendatadiscovery/odd-collector:latest
     restart: always
     volumes:
       - collector_config.yaml:/app/collector_config.yaml

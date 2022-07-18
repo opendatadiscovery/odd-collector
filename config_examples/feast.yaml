@@ -1,0 +1,9 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: feast
+    name: feast_adapter
+    description: "" # Optional string
+    host: host
+    repo_path: repo_path

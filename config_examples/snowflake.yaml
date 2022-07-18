@@ -1,0 +1,13 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: snowflake
+    name: snowflake_adapter
+    database: database
+    host: host
+    port: 0000
+    user: user
+    password: password
+    account: account
+    warehouse: warehouse
