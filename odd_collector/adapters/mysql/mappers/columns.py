@@ -34,6 +34,7 @@ def map_column(
         ),
         default_value=convert_bytes_to_str(column_metadata.column_default),
         description=description or None,
+        is_primary_key=bool(column_metadata.column_key),
     )
 
     append_metadata_extension(
