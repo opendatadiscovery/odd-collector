@@ -1,7 +1,7 @@
 from odd_models.models import DataEntity, DataSet, MetadataExtension, DataEntityType
 from oddrn_generator import OdbcGenerator
 
-from . import _data_set_metadata_schema_url, MetadataNamedtuple, ColumnMetadataNamedtuple
+from . import _data_set_metadata_schema_url, Metadata, ColumnMetadata
 from .columns import map_column
 from .types import TABLE_TYPES_SQL_TO_ODD
 
@@ -11,7 +11,7 @@ def map_table(oddrn_generator: OdbcGenerator, tables: list[tuple], columns: list
     column_index: int = 0
 
     for table in tables:
-        metadata: MetadataNamedtuple = MetadataNamedtuple(*table)
+        metadata: Metadata = Metadata(*table)
 
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(metadata.table_type, DataEntityType.UNKNOWN)
         oddrn_path = "views" if data_entity_type == DataEntityType.VIEW else "tables"
@@ -42,10 +42,11 @@ def map_table(oddrn_generator: OdbcGenerator, tables: list[tuple], columns: list
 
         while column_index < len(columns):
             column: tuple = columns[column_index]
-            column_metadata: ColumnMetadataNamedtuple = ColumnMetadataNamedtuple(*column)
+            column_metadata: ColumnMetadata = ColumnMetadata(*column)
 
             if column_metadata.table_schem == table_schema and column_metadata.table_name == table_name:
-                data_entity.dataset.field_list.append(map_column(column_metadata, oddrn_generator, data_entity.owner, oddrn_path))
+                data_entity.dataset.field_list.append(
+                    map_column(column_metadata, oddrn_generator, data_entity.owner, oddrn_path))
                 column_index += 1
             else:
                 break
