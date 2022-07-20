@@ -3,14 +3,10 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 import pytz
-from odd_models.models import DataEntity, DataConsumer, DataEntityType
+from odd_models.models import DataConsumer, DataEntity, DataEntityType
 from oddrn_generator import TableauGenerator
 
-from . import (
-    TABLEAU_DATETIME_FORMAT,
-    DATA_CONSUMER_SCHEMA,
-    DATA_CONSUMER_EXCLUDED_KEYS,
-)
+from . import DATA_CONSUMER_EXCLUDED_KEYS, DATA_CONSUMER_SCHEMA, TABLEAU_DATETIME_FORMAT
 from .metadata import extract_metadata
 
 
@@ -71,7 +67,7 @@ def _map_datasource_fields_to_oddrns(
     for field in datasource_fields:
         for table in field["upstreamTables"]:
             oddrn_gen.set_oddrn_paths(
-                databases=table.get("database", {}).get("name", "unknown_table"),
+                databases=table.get("database", {}).get("id", "unknown_table"),
                 schemas=table.get("schema") or "unknown_schema",
                 tables=table.get("name"),
             )

@@ -1,15 +1,12 @@
-import logging
-
-
+from odd_collector.domain.plugin import TableauPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
-from odd_collector.domain.plugin import TableauPlugin
 from oddrn_generator import TableauGenerator
 
-
+from .client import TableauClient
+from .logger import logger
 from .mappers.sheets import map_sheet
 from .mappers.tables import map_table
-from .client import TableauClient
 
 
 class Adapter(AbstractAdapter):
@@ -38,5 +35,5 @@ class Adapter(AbstractAdapter):
 
             return [*m_tables, *m_sheets]
         except Exception as e:
-            logging.exception("Error during gettin datasets")
+            logger.exception(f"Error during getting datasets, {e}")
             return []
