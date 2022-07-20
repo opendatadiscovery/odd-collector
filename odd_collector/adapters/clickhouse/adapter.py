@@ -7,24 +7,26 @@ from oddrn_generator import ClickHouseGenerator
 
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
+from .clickhouse_repository import ClickHouseRepository
 
 from .mappers import _table_select, _column_select, _integration_engines_select
 from .mappers.tables import map_table
 
 
 class Adapter(AbstractAdapter):
-    __connection = None
-    __cursor = None
 
     def __init__(self, config) -> None:
-        self.__host = config.host
-        self.__port = config.port
-        self.__database = config.database
-        self.__user = config.user
-        self.__password = config.password
+        self.__config = config
+        self.clickhouse_repository = ClickHouseRepository(config)
         self.__oddrn_generator = ClickHouseGenerator(
             host_settings=f"{self.__host}", databases=self.__database
         )
+
+        # self.__host = config.host
+        # self.__port = config.port
+        # self.__database = config.database
+        # self.__user = config.user
+        # self.__password = config.password
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
