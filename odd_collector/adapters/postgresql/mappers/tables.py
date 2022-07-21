@@ -1,36 +1,41 @@
 import logging
-
-from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup
-from oddrn_generator import PostgresqlGenerator
-
-
-from .columns import map_column
-from odd_collector.adapters.postgresql.config import (
-    _data_set_metadata_schema_url,
-    _data_set_metadata_excluded_keys,
-)
-from .metadata import append_metadata_extension
-from .models import TableMetadata, ColumnMetadata
-from .types import TABLE_TYPES_SQL_TO_ODD
-from .views import extract_transformer_data
-
 from typing import List
 
+from odd_collector.adapters.postgresql.config import (
+    _data_set_metadata_excluded_keys,
+    _data_set_metadata_schema_url,
+)
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
+from oddrn_generator import PostgresqlGenerator
+
 from ..exceptions import MappingException
+from .columns import map_column
+from .metadata import append_metadata_extension
+from .models import ColumnMetadata, PrimaryKey, TableMetadata
+from .types import TABLE_TYPES_SQL_TO_ODD
+from .views import extract_transformer_data
 
 
 def map_table(
     oddrn_generator: PostgresqlGenerator,
     tables: List[tuple],
     columns: List[tuple],
+    primary_keys: List[tuple],
     database: str,
 ) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
     column_index: int = 0
 
+    primary_keys: List[PrimaryKey] = [PrimaryKey(*pk) for pk in primary_keys]
+
     for table in tables:
         try:
             metadata: TableMetadata = TableMetadata(*table)
+            primary_key_columns = [
+                pk.column_name
+                for pk in primary_keys
+                if pk.table_name == metadata.table_name
+            ]
 
             data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
                 metadata.table_type, DataEntityType.UNKNOWN
@@ -81,17 +86,19 @@ def map_table(
             while column_index < len(columns):
                 column: tuple = columns[column_index]
                 column_metadata: ColumnMetadata = ColumnMetadata(*column)
-
                 if (
                     column_metadata.table_schema == table_schema
                     and column_metadata.table_name == table_name
                 ):
+                    is_pk = column_metadata.column_name in primary_key_columns
+
                     data_entity.dataset.field_list.append(
                         map_column(
                             column_metadata,
                             oddrn_generator,
                             data_entity.owner,
                             oddrn_path,
+                            is_pk,
                         )
                     )
                     column_index += 1
@@ -99,7 +106,7 @@ def map_table(
                     break
         except Exception as err:
             logging.error("Error in map_table", exc_info=True)
-            raise MappingException(err)
+            raise MappingException(err) from err
 
     data_entities.append(
         DataEntity(

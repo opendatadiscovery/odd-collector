@@ -1,10 +1,10 @@
+from odd_collector.adapters.postgresql.config import (
+    _data_set_field_metadata_excluded_keys,
+    _data_set_field_metadata_schema_url,
+)
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import PostgresqlGenerator
 
-from odd_collector.adapters.postgresql.config import (
-    _data_set_field_metadata_schema_url,
-    _data_set_field_metadata_excluded_keys,
-)
 from .metadata import append_metadata_extension
 from .models import ColumnMetadata
 from .types import TYPES_SQL_TO_ODD
@@ -15,6 +15,7 @@ def map_column(
     oddrn_generator: PostgresqlGenerator,
     owner: str,
     parent_oddrn_path: str,
+    is_primary: bool = False,
 ) -> DataSetField:
     name: str = column_metadata.column_name
     data_type: str = column_metadata.data_type
@@ -26,6 +27,7 @@ def map_column(
         name=name,
         owner=owner,
         metadata=[],
+        is_primary_key=is_primary,
         type=DataSetFieldType(
             type=TYPES_SQL_TO_ODD.get(data_type, Type.TYPE_UNKNOWN),
             logical_type=column_metadata.data_type,
