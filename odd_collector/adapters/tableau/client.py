@@ -1,26 +1,22 @@
-import contextlib
-from pprint import pprint
 from typing import Any
 from urllib.parse import urlparse
+
+import tableauserverclient as TSC
+from odd_collector.adapters.tableau.logger import logger
 from odd_collector.domain.plugin import TableauPlugin
 
-import tableauserverclient
-import logging
-
-from .query import TABLE_QUERY, SHEET_QUERY
+from .query import SHEET_QUERY, TABLE_QUERY
 
 
 class TableauClient:
-    __connection = None
-
     def __init__(self, config: TableauPlugin) -> None:
-        self.__server = config.server
-        self.__site = config.site
-        self.__user = config.user
-        self.__password = config.password
+        self.__config = config
+
+        self.__auth = self.__get_auth(config)
+        self.__server = TSC.Server(config.server, use_server_version=True)
 
     def get_server_host(self):
-        return urlparse(self.__server).netloc
+        return urlparse(self.__config.server).netloc
 
     def get_tables(self) -> Any:
         return self.__query(TABLE_QUERY)["databaseTables"]
@@ -29,37 +25,25 @@ class TableauClient:
         return self.__query(SHEET_QUERY)["sheets"]
 
     def __query(self, query: str) -> any:
-        try:
-            self.__connect()
-            response = self.__connection.metadata.query(query)
-            return response["data"]
-        except Exception as e:
-            logging.error("Failed to load metadata")
-            logging.exception(e)
-            return []
-        finally:
-            self.__disconnect()
+        with self.__server.auth.sign_in(self.__auth):
+            try:
+                response = self.__server.metadata.query(query)
+                return response["data"]
+            except Exception as e:
+                logger.exception(f"Error during query, {e}")
+                return []
 
-    # ContextManager?
-    def __connect(self):
-        try:
-            self.__connection = tableauserverclient.Server(self.__server)
-            self.__connection.version = "3.15"
-            tableau_auth = tableauserverclient.TableauAuth(
-                self.__user, self.__password, self.__site
+    @staticmethod
+    def __get_auth(config: TableauPlugin) -> None:
+        if config.token_value and config.token_name:
+            return TSC.PersonalAccessTokenAuth(
+                config.token_name,
+                config.token_value.get_secret_value(),
+                config.site,
             )
-            self.__connection.auth.sign_in(tableau_auth)
-        except Exception as e:
-            logging.error("Database error")
-            logging.exception(e)
-            raise DBException("Database error") from e
-        return
-
-    def __disconnect(self):
-        with contextlib.suppress(Exception):
-            self.__connection.auth.sign_out()
-        return
-
-
-class DBException(Exception):
-    pass
+        else:
+            return TSC.TableauAuth(
+                config.user,
+                config.password.get_secret_value(),
+                config.site,
+            )

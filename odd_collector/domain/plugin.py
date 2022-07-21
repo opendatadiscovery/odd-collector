@@ -2,6 +2,7 @@ from typing import Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
+from pydantic import SecretStr
 
 
 class WithHost(BasePlugin):
@@ -107,8 +108,10 @@ class TableauPlugin(BasePlugin):
     type: Literal["tableau"]
     server: str
     site: str
-    user: str
-    password: str
+    user: Optional[str]
+    password: Optional[SecretStr]
+    token_name: Optional[str]
+    token_value: Optional[SecretStr]
 
 
 PLUGIN_FACTORY: PluginFactory = {
