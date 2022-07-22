@@ -48,7 +48,7 @@ def __map_column(
             is_nullable=column_metadata["bsonType"] != "partition_key",
             logical_type=column_metadata["bsonType"],
         ),
-        is_primary_key = column_metadata["title"] == '_id',
+        is_primary_key=column_metadata["title"] == "_id",
     )
 
     return dsf
