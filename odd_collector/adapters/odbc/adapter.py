@@ -57,7 +57,6 @@ class Adapter(AbstractAdapter):
                 columns.sort(key=lambda row: "[{}].[{}].[{}].[{:>9}]".format(row[0], row[1], row[2], row[16]))
 
                 entities = map_table(self.__oddrn_generator, tables, columns)
-                # print(f"Entities: {entities}")
                 return entities
         except Exception as e:
             logging.error("Failed to load metadata for tables")
@@ -68,7 +67,6 @@ class Adapter(AbstractAdapter):
     # replace
     def __connect(self):
         print(f"Connecting __data_source: {self.__data_source}")
-        # raise Exception(f"Connecting __data_source: {self.__data_source} ...")
         try:
             self.__connection = pyodbc.connect(self.__data_source)
             self.__cursor = self.__connection.cursor()
