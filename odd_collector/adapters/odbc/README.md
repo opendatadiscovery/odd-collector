@@ -45,11 +45,9 @@ in http://localhost:8080/search
 If you've changed the code of an adapter, then to have it make effect, you will have to:
 ```shell
 cd ../odd-platform/docker
-docker-compose -f testodbc.yaml down
-docker-compose -f testodbc.yaml build
-docker-compose -f testodbc.yaml up -d
+docker-compose -f testodbc.yaml up -d --build odd-collector
 ```
-(and do not forget to generate a new token, stick it to `collector_config.yaml` and restart `odd-collector`)
+(If you restarted whole compose file, then generate a new token, stick it to `collector_config.yaml` and restart `odd-collector`)
 
 ### Using non-SA MS SQL user for testing/development
 If you want to, you'll have to create 'normal' user in MS SQL.
