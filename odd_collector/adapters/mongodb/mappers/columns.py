@@ -1,4 +1,3 @@
-from itsdangerous import NoneAlgorithm
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from typing import List
 from .types import TYPES_MONGO_TO_ODD
@@ -46,6 +45,7 @@ def __map_column(
             is_nullable=column_metadata["bsonType"] != "partition_key",
             logical_type=column_metadata["bsonType"],
         ),
+        is_primary_key=column_metadata["title"] == "_id",
     )
 
     return dsf
