@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List, Optional
 from urllib.parse import urlparse
 
 import tableauserverclient as TSC
@@ -18,20 +18,24 @@ class TableauClient:
     def get_server_host(self):
         return urlparse(self.__config.server).netloc
 
-    def get_tables(self) -> Any:
-        return self.__query(TABLE_QUERY)["databaseTables"]
+    def get_tables(self) -> List[Any]:
+        try:
+            return self.__query(TABLE_QUERY)["databaseTables"]
+        except Exception as e:
+            logger.error(e)
+            return []
 
-    def get_sheets(self) -> Any:
-        return self.__query(SHEET_QUERY)["sheets"]
+    def get_sheets(self) -> List[Any]:
+        try:
+            return self.__query(SHEET_QUERY)["sheets"]
+        except Exception as e:
+            logger.error(e)
+            return []
 
-    def __query(self, query: str) -> any:
+    def __query(self, query: str) -> Optional[object]:
         with self.__server.auth.sign_in(self.__auth):
-            try:
-                response = self.__server.metadata.query(query)
-                return response["data"]
-            except Exception as e:
-                logger.exception(f"Error during query, {e}")
-                return []
+            response = self.__server.metadata.query(query, abort_on_error=True)
+            return response["data"]
 
     @staticmethod
     def __get_auth(config: TableauPlugin) -> None:
