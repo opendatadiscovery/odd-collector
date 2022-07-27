@@ -23,7 +23,9 @@ class MongoRepository(MongoRepositoryBase):
         collection, the schema returned is dictionary contains the
         combination of all the types used across the first N document.
         """
-        with MongoClient(f"{self.__protocol}://{self.__user}:{self.__password}@{self.__host}") as mongo_client:
+        with MongoClient(
+            f"{self.__protocol}://{self.__user}:{self.__password}@{self.__host}"
+        ) as mongo_client:
             connection = mongo_client[self.__database]
             collections = connection.list_collection_names()
             schemas = []
