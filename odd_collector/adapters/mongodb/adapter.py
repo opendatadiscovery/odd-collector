@@ -1,6 +1,7 @@
 import logging
 from odd_models.models import DataEntity, DataEntityList
 from typing import List
+from .db_exception import DBException
 from .mappers.schemas import map_collection
 from .mongo_generator import MongoGenerator
 from odd_collector_sdk.domain.adapter import AbstractAdapter
@@ -27,6 +28,8 @@ class Adapter(AbstractAdapter):
         try:
             schemas = self.__mongo_repository.retrieve_schemas()
             return map_collection(self.__oddrn_generator, schemas, self.__database)
+        except DBException as db_e:
+            logging.error("Failed retrieve data from Database")
         except Exception as e:
             logging.error("Failed to load metadata for tables")
             logging.exception(e)
