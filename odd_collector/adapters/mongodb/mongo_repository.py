@@ -3,7 +3,7 @@ import pymongo
 
 from pymongo import MongoClient
 
-from .db_exception import DBException
+from .exceptions import DBException
 from .mongo_repository_base import MongoRepositoryBase
 
 MAX_NUMBER_OF_ITERATION = 10
@@ -26,7 +26,7 @@ class MongoRepository(MongoRepositoryBase):
         """
         try:
             with MongoClient(
-                    f"{self.__protocol}://{self.__user}:{self.__password}@{self.__host}"
+                f"{self.__protocol}://{self.__user}:{self.__password}@{self.__host}"
             ) as mongo_client:
                 connection = mongo_client[self.__database]
                 collections = connection.list_collection_names()

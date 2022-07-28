@@ -1,7 +1,7 @@
 import logging
 from odd_models.models import DataEntity, DataEntityList
 from typing import List
-from .db_exception import DBException
+from .exceptions import DBException
 from .mappers.schemas import map_collection
 from oddrn_generator import MongoGenerator
 from odd_collector_sdk.domain.adapter import AbstractAdapter
