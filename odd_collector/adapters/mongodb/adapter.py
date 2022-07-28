@@ -3,7 +3,7 @@ from odd_models.models import DataEntity, DataEntityList
 from typing import List
 from .db_exception import DBException
 from .mappers.schemas import map_collection
-from .mongo_generator import MongoGenerator
+from oddrn_generator import MongoGenerator
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 
 from .mongo_repository import MongoRepository
