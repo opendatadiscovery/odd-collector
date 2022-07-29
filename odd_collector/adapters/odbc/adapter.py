@@ -1,11 +1,7 @@
 import logging
 
-import pyodbc
 from oddrn_generator import OdbcGenerator
-from pyodbc import Connection, Cursor
 
-from .connection import connect_odbc
-from .exception import DBException
 from .mappers.tables import map_table
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntityList, DataEntity
