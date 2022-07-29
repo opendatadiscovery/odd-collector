@@ -1,6 +1,7 @@
 from copy import deepcopy
 from typing import List
 
+from odd_collector.adapters.mssql.logger import logger
 from odd_models.models import DataTransformer
 from odd_models.utils import SqlParser
 from oddrn_generator import MssqlGenerator
@@ -10,7 +11,15 @@ def extract_transformer_data(
     sql: str, oddrn_generator: MssqlGenerator
 ) -> DataTransformer:
     sql_parser = SqlParser(sql)
-    inputs, outputs = sql_parser.get_response()
+
+    inputs, outputs = [], []
+
+    try:
+        inputs, outputs = sql_parser.get_response()
+    except Exception as e:
+        logger.error(f"Couldn't parse SQL statement for view \n", exc_info=True)
+        logger.debug(sql)
+
     return DataTransformer(
         inputs=get_oddrn_list(inputs, oddrn_generator),
         outputs=get_oddrn_list(outputs, oddrn_generator),
