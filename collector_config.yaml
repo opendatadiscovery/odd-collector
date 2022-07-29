@@ -1,11 +1,10 @@
 default_pulling_interval: 10
-token: ""
+token: "5Z7JUeaUjibVr7lCLPaAZ3AcSuDHgIxTTgSNU4Xw"
 platform_host_url: "http://localhost:8080"
 plugins:
-  - type: postgresql
-    name: test_psql
-    host: "database"
-    port: 5432
-    database: ""
-    user: ""
-    password: ""
+  - type: tableau
+    name: Tableau
+    server: 
+    site: 
+    user: 
+    password:

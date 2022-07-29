@@ -6,8 +6,6 @@ from oddrn_generator import TableauGenerator
 from .client import TableauClient
 from .logger import logger
 from .mappers.sheets import map_sheet
-from .mappers.tables import map_table
-
 
 class Adapter(AbstractAdapter):
     def __init__(self, config: TableauPlugin) -> None:
@@ -21,19 +19,33 @@ class Adapter(AbstractAdapter):
         return self.__oddrn_generator.get_data_source_oddrn()
 
     def get_data_entity_list(self) -> DataEntityList:
-        return DataEntityList(
-            data_source_oddrn=self.get_data_source_oddrn(), items=self.__get_datasets()
-        )
+        sheets = self.client.get_sheets()
 
-    def __get_datasets(self) -> list[DataEntity]:
-        try:
-            tables = self.client.get_tables()
-            sheets = self.client.get_sheets()
+        res = {}
 
-            m_tables = map_table(self.__oddrn_generator, tables)
-            m_sheets = map_sheet(self.__oddrn_generator, sheets)
+        luids = set()
+        for sheet in sheets:
+            for field in sheet['datasourceFields']:
+                for table in field['upstreamTables']:
+                    luids.add(table['database']['luid'])
 
-            return [*m_tables, *m_sheets]
-        except Exception as e:
-            logger.exception(f"Error during getting datasets, {e}")
-            return []
+        databases = {dbs['luid']:dbs for dbs in self.client.get_databases_by_luid(luids)}
+        
+        for sheet in sheets:
+            for field in sheet['datasourceFields']:
+                for table in field['upstreamTables']:
+                    database_luid = table['database']['luid']
+                    database = databases[database_luid]
+
+                    if database_luid not in res:
+                        res[database_luid] = {
+                            'table_name': table['name'],
+                            'schema': table['schema'],
+                            'database_name': database['name'],
+                            'database_connection_type': database['connection_type'],
+                            'database_host_name': database['host_name']
+                        }
+
+        sheets = map_sheet(self.__oddrn_generator, sheets, res)
+
+        return DataEntityList(data_source_oddrn=self.get_data_source_oddrn(), items=sheets)

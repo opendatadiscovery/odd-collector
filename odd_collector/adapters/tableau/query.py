@@ -1,46 +1,6 @@
-TABLE_QUERY = """
-{
-databaseTables {
-    id
-    vizportalId  
-    luid 
-    name 
-    isEmbedded
-    schema
-    fullName 
-    connectionType 
-    description 
-    contact {
-        id 
-        name 
-    } 
-    isCertified 
-    certificationNote 
-    certifier {
-        id 
-        name 
-    } 
-
-    database {
-        id 
-        name 
-    }
-
-    columns {
-        id 
-        vizportalId 
-        luid 
-        name 
-        description 
-        remoteType 
-    }
-}
-}
-"""
-
 SHEET_QUERY = """
 {
-    sheets{
+    sheets {
         id 
         name 
         luid 
@@ -50,7 +10,7 @@ SHEET_QUERY = """
         updatedAt 
         index 
 
-        workbook{
+        workbook {
             id 
             name 
             luid 
@@ -70,14 +30,13 @@ SHEET_QUERY = """
             updatedAt 
         }
 
-        datasourceFields{
-            upstreamTables{
+        datasourceFields {
+            upstreamTables {
                 id
                 name
                 schema 
-                database{
-                    id
-                    name
+                database {
+                    luid
                 }
             }
         }
