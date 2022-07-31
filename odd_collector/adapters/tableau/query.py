@@ -1,8 +1,11 @@
+import os
+sheet_name = os.environ['SHEET_NAME'].strip()
+
 SHEET_QUERY = """
 {
-    sheets {
+    sheets(filter: {name: "%s"}) {
         id 
-        name 
+        name
         luid 
             
         path 
@@ -42,4 +45,4 @@ SHEET_QUERY = """
         }
     }
 }
-"""
+""".replace("%s", sheet_name)

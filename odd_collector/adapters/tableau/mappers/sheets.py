@@ -53,6 +53,8 @@ def map_sheet(
             ),
         )
 
+        print(sheet)
+
         data_entities.append(data_entity)
     return data_entities
 
