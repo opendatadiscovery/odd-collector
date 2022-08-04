@@ -13,7 +13,7 @@ from .mappers import (
     ColumnMetadataNamedtuple_QUERY,
     ColumnMetadataNamedtupleRedshift_QUERY,
     ColumnMetadataNamedtupleExternal_QUERY,
-    PrimaryKeys_Query
+    PrimaryKeys_Query,
 )
 from .mappers.metadata import MetadataTables, MetadataColumns
 from .mappers.tables import map_table

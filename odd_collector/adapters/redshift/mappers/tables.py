@@ -40,9 +40,7 @@ def map_table(
         )
 
         primary_key_columns = [
-            pk.column_name
-            for pk in primary_keys
-            if pk.table_name == mtable.table_name
+            pk.column_name for pk in primary_keys if pk.table_name == mtable.table_name
         ]
 
         # DataEntity
@@ -102,7 +100,9 @@ def map_table(
                 and mcolumn.table_name == mtable.table_name
             ):
                 data_entity.dataset.field_list.append(
-                    map_column(mcolumn, oddrn_generator, data_entity.owner, oddrn_path, is_pk)
+                    map_column(
+                        mcolumn, oddrn_generator, data_entity.owner, oddrn_path, is_pk
+                    )
                 )
                 column_index += 1
             else:
