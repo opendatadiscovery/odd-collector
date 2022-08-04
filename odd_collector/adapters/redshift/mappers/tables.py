@@ -14,8 +14,6 @@ from .types import TABLE_TYPES_SQL_TO_ODD
 from .views import extract_transformer_data
 from typing import List
 
-from ...postgresql.mappers.models import PrimaryKey
-
 
 def map_table(
     oddrn_generator: RedshiftGenerator,
@@ -27,7 +25,9 @@ def map_table(
     data_entities: List[DataEntity] = []
     column_index: int = 0
 
-    primary_keys: List[PrimaryKey] = [PrimaryKey(*pk) for pk in primary_keys]
+    primary_keys: List[dict] = [
+        {"table_name": pk[0], "column_name": pk[1]} for pk in primary_keys
+    ]
 
     for mtable in mtables.items:
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
@@ -40,7 +40,9 @@ def map_table(
         )
 
         primary_key_columns = [
-            pk.column_name for pk in primary_keys if pk.table_name == mtable.table_name
+            pk.get("column_name")
+            for pk in primary_keys
+            if pk.get("table_name") == mtable.table_name
         ]
 
         # DataEntity
