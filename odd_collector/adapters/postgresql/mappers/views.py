@@ -1,11 +1,10 @@
+import logging
 from copy import deepcopy
-from typing import List, Dict
+from typing import List
 
 from odd_models.models import DataTransformer
 from odd_models.utils import SqlParser
 from oddrn_generator import PostgresqlGenerator
-
-import logging
 
 
 def extract_transformer_data(
@@ -18,8 +17,8 @@ def extract_transformer_data(
 
     try:
         inputs, outputs = sql_parser.get_response()
-    except Exception as e:
-        logging.error(f"Couldn't parse inputs and outputs from {sql}")
+    except Exception:
+        logging.error(f"Couldn't parse inputs and outputs from {sql}", exc_info=True)
         return DataTransformer(sql=sql, inputs=[], outputs=[])
 
     return DataTransformer(

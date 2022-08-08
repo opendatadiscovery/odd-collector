@@ -1,8 +1,8 @@
-from typing import Literal, Optional, Union
+from typing import Literal, Optional
 
-import pydantic
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
-from typing_extensions import Annotated
+from odd_collector_sdk.types import PluginFactory
+from pydantic import SecretStr
 
 
 class WithHost(BasePlugin):
@@ -33,6 +33,11 @@ class MySQLPlugin(DatabasePlugin):
     ssl_disabled: Optional[bool] = False
 
 
+class MSSQLPlugin(DatabasePlugin):
+    type: Literal["mssql"]
+    driver: str
+
+
 class ClickhousePlugin(DatabasePlugin):
     type: Literal["clickhouse"]
 
@@ -46,6 +51,14 @@ class MongoDBPlugin(DatabasePlugin):
     protocol: str
 
 
+class KafkaPlugin(BasePlugin):
+    type: Literal["kafka"]
+    host: str
+    port: int
+    schema_registry_conf: Optional[dict] = {}
+    broker_conf: dict
+
+
 class SnowflakePlugin(DatabasePlugin):
     type: Literal["snowflake"]
     account: str
@@ -54,6 +67,7 @@ class SnowflakePlugin(DatabasePlugin):
 
 class HivePlugin(WithHost, WithPort):
     type: Literal["hive"]
+    database: str
 
 
 class ElasticsearchPlugin(WithHost, WithPort):
@@ -99,28 +113,29 @@ class TableauPlugin(BasePlugin):
     type: Literal["tableau"]
     server: str
     site: str
-    user: str
-    password: str
+    user: Optional[str]
+    password: Optional[SecretStr]
+    token_name: Optional[str]
+    token_value: Optional[SecretStr]
 
 
-AvailablePlugin = Annotated[
-    Union[
-        PostgreSQLPlugin,
-        MySQLPlugin,
-        OdbcPlugin,
-        ClickhousePlugin,
-        RedshiftPlugin,
-        MongoDBPlugin,
-        SnowflakePlugin,
-        HivePlugin,
-        ElasticsearchPlugin,
-        FeastPlugin,
-        DbtPlugin,
-        CassandraPlugin,
-        KubeflowPlugin,
-        TarantoolPlugin,
-        Neo4jPlugin,
-        TableauPlugin,
-    ],
-    pydantic.Field(discriminator="type"),
-]
+PLUGIN_FACTORY: PluginFactory = {
+    "postgresql": PostgreSQLPlugin,
+    "mysql": MySQLPlugin,
+    "mssql": MSSQLPlugin,
+    "clickhouse": ClickhousePlugin,
+    "redshift": RedshiftPlugin,
+    "mongodb": MongoDBPlugin,
+    "kafka": KafkaPlugin,
+    "snowflake": SnowflakePlugin,
+    "hive": HivePlugin,
+    "elasticsearch": ElasticsearchPlugin,
+    "feast": FeastPlugin,
+    "dbt": DbtPlugin,
+    "cassandra": CassandraPlugin,
+    "kubeflow": KubeflowPlugin,
+    "tarantool": TarantoolPlugin,
+    "neo4j": Neo4jPlugin,
+    "tableau": TableauPlugin,
+    "odbc": OdbcPlugin,
+}

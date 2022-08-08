@@ -11,6 +11,8 @@ import logging
 def extract_transformer_data(
     sql: str, oddrn_generator: MysqlGenerator
 ) -> DataTransformer:
+    if type(sql) == bytes:
+        sql = sql.decode("utf-8")
     sql_parser = SqlParser(sql.replace("(", "").replace(")", ""))
 
     try:

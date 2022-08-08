@@ -33,6 +33,8 @@ def map_column(
         ),
         default_value=mcolumn.default_kind,
         description="",
+        is_primary_key=mcolumn.is_in_primary_key,
+        is_sort_key=mcolumn.is_in_sorting_key,
         is_key=False,
         is_value=False,
     )
@@ -60,7 +62,7 @@ def _get_column_type(data_type: str):
         data_type = "Array"
     elif data_type.startswith("Enum8"):
         data_type = "Enum8"
-    elif (type := re.search("SimpleAggregateFunction\(\w+,\s(\w+)\)", data_type)):
+    elif type := re.search("SimpleAggregateFunction\(\w+,\s(\w+)\)", data_type):
         data_type = type.group(1)
 
     logging.debug(f"Data type after parsing: {data_type}")

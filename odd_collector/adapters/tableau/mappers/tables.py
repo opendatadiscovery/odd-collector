@@ -1,8 +1,9 @@
 from typing import List
-from odd_models.models import DataEntity, DataSet, DataEntityType
+
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import TableauGenerator
 
-from . import DATA_SET_SCHEMA, DATA_SET_EXCLUDED_KEYS
+from . import DATA_SET_EXCLUDED_KEYS, DATA_SET_SCHEMA
 from .columns import map_column
 from .metadata import extract_metadata
 
@@ -14,12 +15,10 @@ def map_table(
 
     for table in tables:
         oddrn_generator.set_oddrn_paths(
-            databases=table.get("database", dict()).get("name", ""),
+            databases=table.get("database", dict()).get("id", ""),
             schemas=table.get("schema") or "unknown_schema",
             tables=table.get("name"),
         )
-
-        print(oddrn_generator.get_oddrn_by_path("tables"))
 
         owner = contact["name"] if (contact := table["contact"]) else None
 

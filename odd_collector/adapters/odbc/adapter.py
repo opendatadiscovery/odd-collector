@@ -1,22 +1,23 @@
 import logging
 
+from odd_collector.domain.plugin import OdbcPlugin
+from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import OdbcGenerator
 
 from .mappers.tables import map_table
-from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntityList, DataEntity
-
 from .odbc_repository import OdbcRepository
 
 
 class Adapter(AbstractAdapter):
-
-    def __init__(self, config) -> None:
+    def __init__(self, config: OdbcPlugin) -> None:
         # https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15
         # https://github.com/mkleehammer/pyodbc/wiki/Install
         # https://github.com/mkleehammer/pyodbc/wiki/Connecting-to-SQL-Server-from-Linux
         # cat /etc/odbcinst.ini
-        self.__oddrn_generator = OdbcGenerator(host_settings=f"{config.host}", databases=config.database)
+        self.__oddrn_generator = OdbcGenerator(
+            host_settings=f"{config.host}", databases=config.database
+        )
         self.__odbc_repository = OdbcRepository(config)
 
     def get_data_source_oddrn(self) -> str:

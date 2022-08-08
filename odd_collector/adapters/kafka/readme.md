@@ -1,0 +1,2 @@
+Kafka collector uses the avro and json parsers (located in .parser folder). 
+Kafka key also may have the schema, however, only the value schema is parsed by now. We support only schemas that satisfy format of Confluent schema registry. 

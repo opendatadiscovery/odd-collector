@@ -1,0 +1,44 @@
+name: ODD Collector PR build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [ 'opened', 'edited', 'reopened', 'synchronize' ]
+  push:
+    branches:
+      - "main"
+
+env:
+  IMAGE_NAME: ${{ github.event.repository.name }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Run black as linter
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
+        with:
+          options: "--check --verbose"
+          src: "./odd_collector"
+          version: "22.3.0"
+  build:
+    runs-on: ubuntu-latest
+    name: Build docker image
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.IMAGE_NAME }}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

@@ -1,0 +1,13 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: cassandra
+    name: cassandra_adapter
+    description: "" # Optional string
+    host: host
+    port: 0000
+    database: database # Optional
+    user: user
+    password: password
+    contact_points: []

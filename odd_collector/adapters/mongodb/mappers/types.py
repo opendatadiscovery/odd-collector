@@ -1,31 +1,33 @@
-# https://www.postgresql.org/docs/current/datatype.html
-# The following types (or spellings thereof) are specified by SQL:
-# bigint, bit, bit varying, boolean, char, character varying, character, varchar,
-# date, double precision, integer, interval, numeric, decimal, real, smallint,
-# time (with or without time zone), timestamp (with or without time zone), xml.
-#
-# See for development:
-# view information_schema.columns, routine pg_catalog.format_type
-# source https://github.com postgres/postgres src/backend/utils/adt/format_type.c
-# https://github.com/postgres/postgres/blob/ca3b37487be333a1d241dab1bbdd17a211a88f43/src/backend/utils/adt/format_type.c
-#
-# Constant          Non Typmod                      Typmod              Exception
-# BITOID            'bit'                           'bit'               +
-# BOOLOID           'boolean'
-# BPCHAROID         'character'                     'character'         +
-# FLOAT4OID         'real'
-# FLOAT8OID         'double precision'
-# INT2OID           'smallint'
-# INT4OID           'integer'
-# INT8OID           'bigint'
-# NUMERICOID        'numeric'                       'numeric'
-# INTERVALOID       'interval'                      'interval'
-# TIMEOID           'time without time zone'        'time'
-# TIMETZOID         'time with time zone'           'time'
-# TIMESTAMPOID      'timestamp without time zone'   'timestamp'
-# TIMESTAMPTZOID    'timestamp with time zone'      'timestamp'
-# VARBITOID         'bit varying'                   'bit varying'
-# VARCHAROID        'character varying'             'character varying'
+# source https://pymongo.readthedocs.io/en/stable/api/bson/index.html
+
+"""
+BSON (Binary JSON) encoding and decoding.
+
+The mapping from Python types to BSON types is as follows:
+
+=======================================  =============  ===================
+Python Type                              BSON Type      Supported Direction
+=======================================  =============  ===================
+None                                     null           both
+bool                                     boolean        both
+int [#int]_                              int32 / int64  py -> bson
+`bson.int64.Int64`                       int64          both
+float                                    number (real)  both
+str                                      string         both
+list                                     array          both
+dict / `SON`                             object         both
+datetime.datetime [#dt]_ [#dt2]_         date           both
+`bson.regex.Regex`                       regex          both
+compiled re [#re]_                       regex          py -> bson
+`bson.binary.Binary`                     binary         both
+`bson.objectid.ObjectId`                 oid            both
+`bson.dbref.DBRef`                       dbref          both
+None                                     undefined      bson -> py
+`bson.code.Code`                         code           both
+str                                      symbol         bson -> py
+bytes [#bytes]_                          binary         both
+=======================================  =============  ===================
+"""
 
 from odd_models.models import Type, DataEntityType
 from typing import Dict
@@ -37,12 +39,16 @@ TYPES_MONGO_TO_ODD: Dict[str, Type] = {
     "jsonb": Type.TYPE_STRING,
     "tsvector": Type.TYPE_STRING,
     "bit": Type.TYPE_BINARY,  # BITOID recheck
+    "Binary": Type.TYPE_BINARY,
+    "bytes": Type.TYPE_BINARY,
     "bool": Type.TYPE_BOOLEAN,  # BOOLOID
     "char": Type.TYPE_CHAR,  # BPCHAROID recheck
     "real": Type.TYPE_NUMBER,  # FLOAT4OID
     "double precision": Type.TYPE_NUMBER,  # FLOAT8OID
+    "float": Type.TYPE_NUMBER,
     "smallint": Type.TYPE_INTEGER,  # INT2OID
     "int": Type.TYPE_INTEGER,  # INT4OID
+    "Int64": Type.TYPE_INTEGER,
     "bigint": Type.TYPE_INTEGER,  # INT8OID recheck
     "numeric": Type.TYPE_NUMBER,  # NUMERICOID
     "interval": Type.TYPE_DURATION,  # INTERVALOID recheck
@@ -59,4 +65,8 @@ TYPES_MONGO_TO_ODD: Dict[str, Type] = {
     "Object": Type.TYPE_STRUCT,
     "list": Type.TYPE_LIST,  # view information_schema.columns recheck
     "USER-DEFINED": Type.TYPE_STRUCT,  # view information_schema.columns recheck
+    "Regex": Type.TYPE_UNKNOWN,
+    "DBRef": Type.TYPE_UNKNOWN,
+    "None": Type.TYPE_UNKNOWN,
+    "Code": Type.TYPE_UNKNOWN,
 }

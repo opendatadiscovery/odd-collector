@@ -10,7 +10,11 @@ RUN apt-get update && \
     apt-get install -y -q build-essential \
     python3-dev  \
     libpq-dev \
-    curl
+    curl \
+    librdkafka-dev \
+    unixodbc \
+    unixodbc-dev \
+    openssl
 
 # For pyodbc
 RUN curl -s -o microsoft.asc https://packages.microsoft.com/keys/microsoft.asc \
@@ -57,4 +61,4 @@ WORKDIR /app
 COPY . ./
 COPY --from=build /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 
-ENTRYPOINT ["bash", "start.sh"]
+ENTRYPOINT ["/bin/bash", "start.sh"]
