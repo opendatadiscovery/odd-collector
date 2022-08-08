@@ -6,7 +6,7 @@ from .exception import DBException
 
 @contextmanager
 def logging_exception(exc_msg):
-    """ Wrap any code block with this context manager to catch exceptions occurring in it and log them"""
+    """Wrap any code block with this context manager to catch exceptions occurring in it and log them"""
     try:
         yield None
     except Exception:
