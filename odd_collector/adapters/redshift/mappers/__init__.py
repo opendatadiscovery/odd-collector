@@ -227,7 +227,7 @@ order by
 """
 
 # Primary Keys Query
-PrimaryKeys_Query = """
+PrimaryKeys_QUERY = """
 select 
     kcu.table_name,
 	kcu.column_name

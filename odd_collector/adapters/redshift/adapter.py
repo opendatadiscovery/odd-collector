@@ -13,7 +13,7 @@ from .mappers import (
     ColumnMetadataNamedtuple_QUERY,
     ColumnMetadataNamedtupleRedshift_QUERY,
     ColumnMetadataNamedtupleExternal_QUERY,
-    PrimaryKeys_Query,
+    PrimaryKeys_QUERY,
 )
 from .mappers.metadata import MetadataTables, MetadataColumns
 from .mappers.tables import map_table
@@ -61,7 +61,7 @@ class Adapter(AbstractAdapter):
                 self.__execute(ColumnMetadataNamedtupleExternal_QUERY),
             )
 
-            primary_keys = self.__execute(PrimaryKeys_Query)
+            primary_keys = self.__execute(PrimaryKeys_QUERY)
 
             self.__disconnect()
             logging.info(
