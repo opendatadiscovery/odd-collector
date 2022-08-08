@@ -46,7 +46,7 @@ class ClickHouseRepository(ClickHouseRepositoryBase):
             return {
                 "tables": tables,
                 "columns": columns,
-                "integration_engines": integration_engines
+                "integration_engines": integration_engines,
             }
 
 

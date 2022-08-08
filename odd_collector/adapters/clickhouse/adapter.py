@@ -12,13 +12,11 @@ from exception import ClickHouseException
 
 
 class Adapter(AbstractAdapter):
-
     def __init__(self, config) -> None:
         self.__config = config
         self.clickhouse_repository = ClickHouseRepository(config)
         self.__oddrn_generator = ClickHouseGenerator(
-            host_settings=f"{self.__config.host}",
-            databases=self.__config.database
+            host_settings=f"{self.__config.host}", databases=self.__config.database
         )
 
     def get_data_source_oddrn(self) -> str:
