@@ -51,6 +51,8 @@ class TableauClient:
                     res.append(self.__database_cache[luid])
 
                 database: TSC.DatabaseItem = self.__server.databases.get_by_id(luid)
+                from pprint import pprint
+                pprint(vars(database))
 
                 dikt = {
                     'luid': luid,

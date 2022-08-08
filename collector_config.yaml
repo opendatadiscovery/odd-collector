@@ -1,10 +1,10 @@
 default_pulling_interval: 10
-token: "5Z7JUeaUjibVr7lCLPaAZ3AcSuDHgIxTTgSNU4Xw"
+token: ""
 platform_host_url: "http://localhost:8080"
 plugins:
   - type: tableau
     name: Tableau
-    server: 
-    site: 
-    user: 
+    server:
+    site:
+    user:
     password:
