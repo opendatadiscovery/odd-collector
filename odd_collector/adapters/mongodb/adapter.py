@@ -31,8 +31,7 @@ class Adapter(AbstractAdapter):
         except DBException as db_e:
             logging.error("Failed retrieve data from Database")
         except Exception as e:
-            logging.error("Failed to load metadata for tables")
-            logging.exception(e)
+            logging.error("Failed to load metadata for tables", exc_info=True)
         return []
 
     def get_data_entity_list(self) -> DataEntityList:
