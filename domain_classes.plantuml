@@ -1,0 +1,149 @@
+@startuml
+
+namespace odd_collector_sdk.domain.plugin {
+abstract class pydantic.BaseSettings
+pydantic.BaseSettings <|- Plugin
+abstract class Plugin {
+name: str
+description: Optional[str]
+namespace: Optional[str]
+}
+}
+
+namespace odd_collector.domain.plugin {
+
+class TableauPlugin{
+type: Literal["tableau"]
+server: str
+site: str
+user: str
+password: str
+}
+odd_collector_sdk.domain.plugin.Plugin <|-- TableauPlugin
+
+class KubeflowPlugin {
+type: Literal["kubeflow"]
+host: str
+namespace: str
+session_cookie0: Optional[str]
+session_cookie1: Optional[str]
+}
+odd_collector_sdk.domain.plugin.Plugin <|-- KubeflowPlugin
+
+abstract class WithHost {
+host: str
+}
+odd_collector_sdk.domain.plugin.Plugin <|-- WithHost
+
+abstract class WithPort {
+port: str
+}
+odd_collector_sdk.domain.plugin.Plugin <|-- WithPort
+
+
+abstract class DatabasePlugin {
+database: Optional[str]
+user: str
+password: str
+}
+WithPort <|-- DatabasePlugin
+WithHost <|-- DatabasePlugin
+
+
+class PostgreSQLPlugin {
+type: Literal["postgresql"]
+}
+DatabasePlugin <|-- PostgreSQLPlugin
+
+class MysqlDatabase {
+type: Literal["mysql"]
+}
+DatabasePlugin <|-- MysqlDatabase
+
+class OdbcDatabase {
+type: Literal["odbc"]
+driver: str = "ODBC Driver 17s for SQL Server"
+}
+DatabasePlugin <|-- OdbcDatabase
+
+class ClickhousePlugin {
+type: Literal["clickhouse"]
+}
+DatabasePlugin <|-- ClickhousePlugin
+
+class RedshiftPlugin {
+type: Literal["redshift"]
+}
+DatabasePlugin <|-- RedshiftPlugin
+
+class MongoDBPlugin{
+type: Literal["mongodb"]
+protocol: str
+}
+DatabasePlugin <|-- MongoDBPlugin
+
+class SnowflakePlugin{
+type: Literal["snowflake"]
+account: str
+warehouse: str
+}
+DatabasePlugin <|-- SnowflakePlugin
+
+class CassandraPlugin{
+type: Literal["cassandra"]
+contact_points: list = []
+}
+DatabasePlugin <|-- CassandraPlugin
+
+class TarantoolPlugin {
+type: Literal["tarantool"]
+}
+DatabasePlugin <|-- TarantoolPlugin
+
+class Neo4jPlugin{
+type: Literal["neo4j"]
+}
+DatabasePlugin <|-- Neo4jPlugin
+
+
+TarantoolPlugin -[hidden]> PostgreSQLPlugin
+
+class ElasticsearchPlugin{
+type: Literal["elasticsearch"]
+http_auth: str
+use_ssl: bool
+verify_certs: bool
+ca_certs: str
+}
+WithHost <|-- ElasticsearchPlugin
+WithPort <|-- ElasticsearchPlugin
+
+class HivePlugin{
+type: Literal["hive"]
+}
+WithHost <|-- HivePlugin
+WithPort <|-- HivePlugin
+
+class FeastPlugin{
+type: Literal["feast"]
+repo_path: str
+}
+WithHost <|-- FeastPlugin
+
+class DbtPlugin{
+type: Literal["dbt"]
+odd_catalog_url: str
+}
+WithHost <|-- DbtPlugin
+}
+@enduml
+
+
+
+
+
+
+
+
+
+

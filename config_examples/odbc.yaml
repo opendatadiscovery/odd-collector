@@ -1,0 +1,13 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: odbc
+    name: odbc_adapter
+    description: "" # Optional string
+    database: database
+    user: user
+    password: password
+    host: host
+    port: 0000
+    driver: "{ODBC Driver 17s for SQL Server}"
