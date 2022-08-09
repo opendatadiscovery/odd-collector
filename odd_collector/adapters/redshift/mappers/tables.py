@@ -19,10 +19,15 @@ def map_table(
     oddrn_generator: RedshiftGenerator,
     mtables: MetadataTables,
     mcolumns: MetadataColumns,
+    primary_keys: List[tuple],
     database: str,
 ) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
     column_index: int = 0
+
+    primary_keys: List[dict] = [
+        {"table_name": pk[0], "column_name": pk[1]} for pk in primary_keys
+    ]
 
     for mtable in mtables.items:
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
@@ -33,6 +38,12 @@ def map_table(
         oddrn_generator.set_oddrn_paths(
             **{"schemas": mtable.schema_name, oddrn_path: mtable.table_name}
         )
+
+        primary_key_columns = [
+            pk.get("column_name")
+            for pk in primary_keys
+            if pk.get("table_name") == mtable.table_name
+        ]
 
         # DataEntity
         data_entity: DataEntity = DataEntity(
@@ -85,13 +96,15 @@ def map_table(
         # DatasetField
         while column_index < len(mcolumns.items):  # exclude right only rows
             mcolumn: MetadataColumn = mcolumns.items[column_index]
-
+            is_pk = mcolumn.base.column_name in primary_key_columns
             if (
                 mcolumn.schema_name == mtable.schema_name
                 and mcolumn.table_name == mtable.table_name
             ):
                 data_entity.dataset.field_list.append(
-                    map_column(mcolumn, oddrn_generator, data_entity.owner, oddrn_path)
+                    map_column(
+                        mcolumn, oddrn_generator, data_entity.owner, oddrn_path, is_pk
+                    )
                 )
                 column_index += 1
             else:

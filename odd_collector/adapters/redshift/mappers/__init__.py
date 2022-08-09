@@ -225,3 +225,19 @@ where
 order by 
     schemaname, tablename, columnnum
 """
+
+# Primary Keys Query
+PrimaryKeys_QUERY = """
+select 
+    kcu.table_name,
+	kcu.column_name
+from information_schema.table_constraints tco
+join information_schema.key_column_usage kcu 
+    on kcu.constraint_name = tco.constraint_name
+    and kcu.constraint_schema = tco.constraint_schema
+    and kcu.constraint_name = tco.constraint_name
+where tco.constraint_type = 'PRIMARY KEY'
+order by tco.constraint_schema,
+         tco.constraint_name,
+         kcu.ordinal_position;
+"""
