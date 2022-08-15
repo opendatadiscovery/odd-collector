@@ -1,86 +1,156 @@
-from typing import Any, Dict, List, Optional, Tuple
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Union
 from urllib.parse import urlparse
 
 import tableauserverclient as TSC
-from odd_collector.adapters.tableau.logger import logger
+from funcy import lmap
+from odd_collector_sdk.errors import DataSourceAuthorizationError, DataSourceError
+from tableauserverclient import PersonalAccessTokenAuth, TableauAuth
+
 from odd_collector.domain.plugin import TableauPlugin
 
-from .query import SHEET_QUERY
+from .domain.column import Column
+from .domain.sheet import Sheet
+from .domain.table import Table, databases_to_tables
 
-import json
+sheets_query = """
+    {
+        sheets {
+            id
+            name
+            createdAt
+            updatedAt
+            workbook {
+                name
+                owner {
+                    name
+                }
+            }
+            upstreamFields {
+                id
+                name
+                upstreamTables {
+                    id
+                    name
+                }
+            }
+        }
+    }
+"""
+databases_query = """
+{
+databases {
+    id
+    name
+    connectionType
+    downstreamOwners {
+        name
+    }
+    tables {
+        id
+        schema
+        name
+        description
+    }
+  }
+}
+"""
+tables_columns_query = """
+query GetTablesColumns($ids: [ID]){
+    tables(filter: {idWithin: $ids}) {
+        id
+        columns {
+            id
+            name
+            remoteType
+            isNullable
+            description
+        }
+    }
+}
+"""
 
-class TableauClient:
+
+class TableauBaseClient(ABC):
+    @abstractmethod
+    def get_server_host(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_sheets(self) -> List[Sheet]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_tables(self) -> List[Table]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_tables_columns(self, tables_ids: List[str]) -> Dict[str, Table]:
+        raise NotImplementedError
+
+
+class TableauClient(TableauBaseClient):
     def __init__(self, config: TableauPlugin) -> None:
         self.__config = config
-
         self.__auth = self.__get_auth(config)
-        self.__server = TSC.Server(config.server, use_server_version=True)
-        self.__database_cache = {}
+        self.server = TSC.Server(config.server, use_server_version=True)
 
     def get_server_host(self):
         return urlparse(self.__config.server).netloc
 
-    def get_sheets(self) -> List[Any]:
-        try:
-            return self.__query(SHEET_QUERY)["sheets"]
-        except Exception as e:
-            logger.error(e)
-            return []
-    
-    def get_database_by_luid(self, luid) -> Dict[str, str]:
-        if luid in self.__database_cache:
-            return self.__database_cache[luid]
+    def get_sheets(self) -> List[Sheet]:
+        sheets_response = self.__query(query=sheets_query, root_key="sheets")
 
-        with self.__server.auth.sign_in(self.__auth):
-            database: TSC.DatabaseItem = self.__server.databases.get_by_id(luid)
+        return [Sheet.from_response(response) for response in sheets_response]
 
-        dikt = {
-            'name': database.name,
-            'connection_type': database.connection_type,
-            'host_name': database.host_name
+    def get_tables(self) -> List[Table]:
+        databases_response = self.__query(query=databases_query, root_key="databases")
+        return databases_to_tables(databases_response)
+
+    def get_tables_columns(self, table_ids: List[str]) -> Dict[str, List[Column]]:
+        response: List = self.__query(
+            query=tables_columns_query,
+            variables={"ids": table_ids},
+            root_key="tables",
+        )
+
+        return {
+            table.get("id"): lmap(Column.from_response, table.get("columns"))
+            for table in response
         }
 
-        self.__database_cache[luid] = dikt
-        return dikt
-
-    def get_databases_by_luid(self, luids) -> List[Dict[str, str]]:
-        res = []
-        with self.__server.auth.sign_in(self.__auth):
-            for luid in luids:
-                if luid in self.__database_cache:
-                    res.append(self.__database_cache[luid])
-
-                database: TSC.DatabaseItem = self.__server.databases.get_by_id(luid)
-                from pprint import pprint
-                pprint(vars(database))
-
-                dikt = {
-                    'luid': luid,
-                    'name': database.name,
-                    'connection_type': database.connection_type,
-                    'host_name': database.host_name
-                }
-
-                self.__database_cache[luid] = dikt
-                res.append(dikt)
-        return res
-
-    def __query(self, query: str) -> Optional[object]:
-        with self.__server.auth.sign_in(self.__auth):
-            response = self.__server.metadata.query(query, abort_on_error=True)
-            return response["data"]
+    def __query(
+        self, query: str, variables: object = None, root_key: str = None
+    ) -> Any:
+        with self.server.auth.sign_in(self.__auth):
+            try:
+                response = self.server.metadata.query(
+                    query, variables, abort_on_error=True
+                )
+                if root_key:
+                    return response["data"][root_key]
+                return response["data"]
+            except Exception as e:
+                raise DataSourceError(
+                    f"Couldn't get data for: {root_key} with vars: {variables}"
+                ) from e
 
     @staticmethod
-    def __get_auth(config: TableauPlugin) -> None:
-        if config.token_value and config.token_name:
-            return TSC.PersonalAccessTokenAuth(
-                config.token_name,
-                config.token_value.get_secret_value(),
-                config.site,
-            )
-        else:
-            return TSC.TableauAuth(
-                config.user,
-                config.password.get_secret_value(),
-                config.site,
-            )
+    def __get_auth(
+        config: TableauPlugin,
+    ) -> Union[PersonalAccessTokenAuth, TableauAuth]:
+        try:
+            if config.token_value and config.token_name:
+                return TSC.PersonalAccessTokenAuth(
+                    config.token_name,
+                    config.token_value.get_secret_value(),
+                    config.site,
+                )
+            else:
+                return TSC.TableauAuth(
+                    config.user,
+                    config.password.get_secret_value(),
+                    config.site,
+                )
+        except Exception as e:
+            raise DataSourceAuthorizationError("Couldn't connect to Tablue") from e

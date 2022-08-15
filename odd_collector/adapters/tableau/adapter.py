@@ -1,15 +1,23 @@
-from odd_collector.domain.plugin import TableauPlugin
+from typing import Dict, List, Type
+
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import TableauGenerator
 
-from .client import TableauClient
-from .logger import logger
+from odd_collector.domain.plugin import TableauPlugin
+
+from .client import TableauBaseClient, TableauClient
+from .domain.table import EmbeddedTable, Table
 from .mappers.sheets import map_sheet
+from .mappers.tables import map_table
+
 
 class Adapter(AbstractAdapter):
-    def __init__(self, config: TableauPlugin) -> None:
-        self.client = TableauClient(config)
+    def __init__(
+        self, config: TableauPlugin, client: Type[TableauBaseClient] = None
+    ) -> None:
+        client = client or TableauClient
+        self.client = client(config)
 
         self.__oddrn_generator = TableauGenerator(
             host_settings=self.client.get_server_host(), sites=config.site
@@ -19,33 +27,43 @@ class Adapter(AbstractAdapter):
         return self.__oddrn_generator.get_data_source_oddrn()
 
     def get_data_entity_list(self) -> DataEntityList:
-        sheets = self.client.get_sheets()
+        sheets = self._get_sheets()
+        tables = self._get_tables()
 
-        res = {}
+        tables_data_entities_by_id: Dict[str, DataEntity] = {
+            table_id: map_table(self.__oddrn_generator, table)
+            for table_id, table in tables.items()
+        }
+        tables_data_entities = tables_data_entities_by_id.values()
 
-        luids = set()
+        sheets_data_entities = []
         for sheet in sheets:
-            for field in sheet['datasourceFields']:
-                for table in field['upstreamTables']:
-                    luids.add(table['database']['luid'])
+            sheet_tables = [
+                tables_data_entities_by_id[table_id] for table_id in sheet.tables_id
+            ]
+            data_entity = map_sheet(self.__oddrn_generator, sheet, sheet_tables)
+            sheets_data_entities.append(data_entity)
 
-        databases = {dbs['luid']:dbs for dbs in self.client.get_databases_by_luid(luids)}
-        
-        for sheet in sheets:
-            for field in sheet['datasourceFields']:
-                for table in field['upstreamTables']:
-                    database_luid = table['database']['luid']
-                    database = databases[database_luid]
+        return DataEntityList(
+            data_source_oddrn=self.get_data_source_oddrn(),
+            items=[*tables_data_entities, *sheets_data_entities],
+        )
 
-                    if database_luid not in res:
-                        res[database_luid] = {
-                            'table_name': table['name'],
-                            'schema': table['schema'],
-                            'database_name': database['name'],
-                            'database_connection_type': database['connection_type'],
-                            'database_host_name': database['host_name']
-                        }
+    def _get_tables(self) -> Dict[str, Table]:
+        tables: List[Table] = self.client.get_tables()
+        tables_by_id: Dict[str, Table] = {table.id: table for table in tables}
 
-        sheets = map_sheet(self.__oddrn_generator, sheets, res)
+        ids = tables_ids_to_load(tables)
+        tables_columns = self.client.get_tables_columns(ids)
 
-        return DataEntityList(data_source_oddrn=self.get_data_source_oddrn(), items=sheets)
+        for table_id, columns in tables_columns.items():
+            tables_by_id[table_id].columns = columns
+
+        return tables_by_id
+
+    def _get_sheets(self):
+        return self.client.get_sheets()
+
+
+def tables_ids_to_load(tables: List[Table]):
+    return [table.id for table in tables if isinstance(table, EmbeddedTable)]
