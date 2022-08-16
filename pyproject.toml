@@ -29,10 +29,16 @@ neo4j = "4.3.7"
 tableauserverclient = "0.19.0"
 pytz = "^2022.1"
 pyodbc = "4.0.32"
-odd-collector-sdk = "0.3.1"
 confluent-kafka = "1.9.0"
+funcy = "^1.17"
+pytest = "^7.1.2"
+odd-collector-sdk = "0.3.2"
+
+[tool.isort]
+profile = "black"
 
 [tool.poetry.dev-dependencies]
+isort = "^5.10.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
