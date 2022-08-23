@@ -30,6 +30,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | Snowflake     | [config](config_examples/snowflake.yaml)     |
 | Tableau       | [config](config_examples/tableau.yaml)       |
 | Tarantool     | [config](config_examples/tarantool.yaml)     |
+| Cube          | [config](config_examples/cubejs.yaml)        |
 
 
 ## Building
