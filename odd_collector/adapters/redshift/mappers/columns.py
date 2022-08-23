@@ -14,6 +14,7 @@ def map_column(
     oddrn_generator: RedshiftGenerator,
     owner: str,
     parent_oddrn_path,
+    is_primary: bool = False,
 ) -> DataSetField:
     name: str = mcolumn.base.column_name
 
@@ -32,6 +33,8 @@ def map_column(
         ),
         default_value=mcolumn.base.column_default,
         description=mcolumn.base.remarks,
+        is_primary_key=is_primary,
+        is_sort_key=bool(mcolumn.redshift.sortkey),
     )
     _append_metadata_extension(
         dsf.metadata,

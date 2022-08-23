@@ -13,6 +13,7 @@ from .mappers import (
     ColumnMetadataNamedtuple_QUERY,
     ColumnMetadataNamedtupleRedshift_QUERY,
     ColumnMetadataNamedtupleExternal_QUERY,
+    PrimaryKeys_QUERY,
 )
 from .mappers.metadata import MetadataTables, MetadataColumns
 from .mappers.tables import map_table
@@ -60,12 +61,16 @@ class Adapter(AbstractAdapter):
                 self.__execute(ColumnMetadataNamedtupleExternal_QUERY),
             )
 
+            primary_keys = self.__execute(PrimaryKeys_QUERY)
+
             self.__disconnect()
             logging.info(
                 f"Load {len(mtables.items)} Datasets DataEntities from database"
             )
 
-            return map_table(self.__oddrn_generator, mtables, mcolumns, self.__database)
+            return map_table(
+                self.__oddrn_generator, mtables, mcolumns, primary_keys, self.__database
+            )
         except Exception as e:
             logging.error("Failed to load metadata for tables")
             logging.exception(e)

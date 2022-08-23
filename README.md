@@ -1,11 +1,12 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 # odd-collector
-ODD Collector is a lightweight service which gathers metadata from all your data sources.
+ODD Collector is a lightweight service that gathers metadata from all your data sources.
 
 To learn more about collector types and ODD Platform's architecture, [read the documentation](https://docs.opendatadiscovery.org/architecture).
 
 ## Preview:
  - [Implemented adapters](#implemented-adapters)
+ - [Class diagramm](#class-diagram-of-adapter-class-hierarchy)
  - [Building](#building)
  - [M1 building issue](#m1-building-issue)
  - [Docker compose example](#docker-compose-example)
@@ -30,7 +31,22 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | Snowflake     | [config](config_examples/snowflake.yaml)     |
 | Tableau       | [config](config_examples/tableau.yaml)       |
 | Tarantool     | [config](config_examples/tarantool.yaml)     |
+| ODBC          | [config](config_examples/odbc.yaml), [README.md](odd_collector/adapters/odbc/README.md) |
 | Cube          | [config](config_examples/cubejs.yaml)        |
+
+
+## Class diagram of adapter class hierarchy
+This may help you to understand which fields you need for each adapter in `collector_config.yaml` and also may be helpful for a new adapter developer.
+![Adapter domain class hierarchy](adapter_domain_classes.png)
+
+PlantUML code for above diagram: [domain_classes.plantuml](domain_classes.plantuml)
+
+To regenerate picture, you have 2 options:
+1. Having PlantUML installed locally, do
+```shell
+java -jar plantuml.jar domain_classes.plantuml
+```
+2. Use PyCharm or other IDE's PlantUML plugin
 
 
 ## Building
@@ -47,7 +63,6 @@ docker build .
 - https://github.com/grpc/grpc/issues/25082
 
 Possible solutions
-
 ```bash
 # NOTE: be aware of versions
 # NOTE: easiest way is to add all export statements to your .bashrc/.zshrc file
