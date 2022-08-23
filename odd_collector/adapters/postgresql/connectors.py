@@ -3,6 +3,7 @@ import logging
 from abc import ABC, abstractmethod
 
 import psycopg2
+
 from odd_collector.adapters.postgresql.exceptions import DbPostgreSQLException
 
 
@@ -40,7 +41,7 @@ class PostgreSQLConnector(AbstractConnector):
             )
             self.__cursor = self.__connection.cursor()
         except psycopg2.Error as e:
-            logging.error("Error in __connect method", exc_info=True)
+            logging.debug("Error in __connect method", exc_info=True)
             raise DbPostgreSQLException(
                 "Database error. Troubles with connecting"
             ) from e

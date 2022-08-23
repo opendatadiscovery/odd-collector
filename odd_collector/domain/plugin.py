@@ -2,7 +2,13 @@ from typing import Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
-from pydantic import SecretStr
+from pydantic import SecretStr, validator
+
+from odd_collector.domain.predefined_data_source import PredefinedDatasourceParams
+
+
+class WithPredefinedDataSource:
+    predefined_datasource: PredefinedDatasourceParams
 
 
 class WithHost(BasePlugin):
@@ -119,6 +125,21 @@ class TableauPlugin(BasePlugin):
     token_value: Optional[SecretStr]
 
 
+class CubeJSPlugin(BasePlugin):
+    type: Literal["cubejs"]
+    host: str
+    dev_mode: bool = False
+    token: Optional[SecretStr]
+    predefined_datasource: PredefinedDatasourceParams
+
+    @validator("token")
+    def validate_token(cls, value: Optional[SecretStr], values):
+        if values.get("dev_mode") == False and value is None:
+            raise ValueError("Token must be set in production mode")
+
+        return value
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -137,5 +158,6 @@ PLUGIN_FACTORY: PluginFactory = {
     "tarantool": TarantoolPlugin,
     "neo4j": Neo4jPlugin,
     "tableau": TableauPlugin,
+    "cubejs": CubeJSPlugin,
     "odbc": OdbcPlugin,
 }
