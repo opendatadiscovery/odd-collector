@@ -24,7 +24,7 @@ _data_set_metadata_excluded_keys: set = {
     "description",
     "owner_name",
     "table_rows",
-    "columns"
+    "columns",
 }
 
 
@@ -36,7 +36,7 @@ _data_set_field_metadata_excluded_keys: set = {
     "is_nullable",
     "data_type",
     "description",
-    "is_primary_key"
+    "is_primary_key",
 }
 
 
@@ -59,8 +59,5 @@ def map_metadata(metadata: Union[Column, Table]) -> MetadataExtension:
         if key not in excluded_keys and value is not None:
             metadata_to_add[key] = value
 
-    md_extension = MetadataExtension(
-        schema_url=schema_url,
-        metadata=metadata_to_add
-    )
+    md_extension = MetadataExtension(schema_url=schema_url, metadata=metadata_to_add)
     return md_extension

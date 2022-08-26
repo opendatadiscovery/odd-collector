@@ -7,15 +7,15 @@ from ..mapper.metadata import map_metadata
 from ..mapper.types import TYPES_SQL_TO_ODD
 
 
-def map_column(oddrn_generator: VerticaGenerator, column: Column, owner: str) -> DataSetField:
+def map_column(
+    oddrn_generator: VerticaGenerator, column: Column, owner: str
+) -> DataSetField:
     try:
         name: str = column.column_name
         data_type: str = column.data_type
 
         dsf: DataSetField = DataSetField(
-            oddrn=oddrn_generator.get_oddrn_by_path(
-                f"tables_columns", name
-            ),
+            oddrn=oddrn_generator.get_oddrn_by_path(f"tables_columns", name),
             name=name,
             owner=owner,
             metadata=[map_metadata(column)],

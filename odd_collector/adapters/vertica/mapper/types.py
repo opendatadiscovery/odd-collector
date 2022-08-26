@@ -14,13 +14,10 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "long varbinary": Type.TYPE_BINARY,
     "bytea": Type.TYPE_BINARY,
     "raw": Type.TYPE_BINARY,
-
     "boolean": Type.TYPE_BOOLEAN,
-
     "char": Type.TYPE_STRING,
     "varchar": Type.TYPE_STRING,
     "long varchar": Type.TYPE_STRING,
-
     "date": Type.TYPE_DATETIME,
     "time": Type.TYPE_DATETIME,
     "datetime": Type.TYPE_DATETIME,
@@ -31,12 +28,10 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "interval": Type.TYPE_DATETIME,
     "interval day to second": Type.TYPE_DATETIME,
     "interval year to month": Type.TYPE_DATETIME,
-
     "double precision": Type.TYPE_NUMBER,
     "float": Type.TYPE_NUMBER,
     "float8": Type.TYPE_NUMBER,
     "real": Type.TYPE_NUMBER,
-
     "integer": Type.TYPE_INTEGER,
     "int": Type.TYPE_INTEGER,
     "bigint": Type.TYPE_INTEGER,
@@ -49,13 +44,10 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "money": Type.TYPE_INTEGER,
     "geometry": Type.TYPE_UNKNOWN,
     "geography": Type.TYPE_UNKNOWN,
-
     "uuid": Type.TYPE_STRING,
-
 }
 
 TABLE_TYPES_SQL_TO_ODD: Dict[str, DataEntityType] = {
     "TABLE": DataEntityType.TABLE,
     "VIEW": DataEntityType.VIEW,
 }
-

@@ -20,11 +20,11 @@ class VerticaConnector:
     def execute(self, query: str) -> List[tuple]:
         try:
             with vertica_python.connect(
-                    host=self.host,
-                    port=self.port,
-                    user=self.user,
-                    passwrod=self.password,
-                    database=self.database,
+                host=self.host,
+                port=self.port,
+                user=self.user,
+                passwrod=self.password,
+                database=self.database,
             ) as conn:
                 with conn.cursor() as curs:
                     records = curs.execute(query).fetchall()

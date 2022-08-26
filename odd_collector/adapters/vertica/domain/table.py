@@ -17,7 +17,7 @@ class Table:
         is_system_table: bool,
         view_definition: str,
         is_system_view: bool,
-        columns: List[Column] = None
+        columns: List[Column] = None,
     ):
         self.table_schema = table_schema
         self.table_name = table_name

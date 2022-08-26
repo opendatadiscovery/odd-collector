@@ -1,7 +1,12 @@
 from typing import List, Dict, Tuple, Any
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntityList, DataEntity, DataEntityType, DataEntityGroup
+from odd_models.models import (
+    DataEntityList,
+    DataEntity,
+    DataEntityType,
+    DataEntityGroup,
+)
 
 # TODO ask about logger
 from .logger import logger
@@ -34,19 +39,18 @@ class Adapter(AbstractAdapter):
             data_entities.append(data_entity)
 
         db_entity = DataEntity(
-                oddrn=self.__oddrn_generator.get_oddrn_by_path("databases"),
-                name=self.__database,
-                type=DataEntityType.DATABASE_SERVICE,
-                metadata=[],
-                data_entity_group=DataEntityGroup(
-                    entities_list=[de.oddrn for de in data_entities]
-                ),
-            )
+            oddrn=self.__oddrn_generator.get_oddrn_by_path("databases"),
+            name=self.__database,
+            type=DataEntityType.DATABASE_SERVICE,
+            metadata=[],
+            data_entity_group=DataEntityGroup(
+                entities_list=[de.oddrn for de in data_entities]
+            ),
+        )
         data_entities.append(db_entity)
 
         return DataEntityList(
-            data_source_oddrn=self.get_data_source_oddrn(),
-            items=data_entities
+            data_source_oddrn=self.get_data_source_oddrn(), items=data_entities
         )
 
     def _get_tables(self) -> List[Table]:
@@ -64,4 +68,3 @@ class Adapter(AbstractAdapter):
                 column_dict[column_dict_key] = []
             column_dict[column_dict_key].append(column)
         return column_dict
-

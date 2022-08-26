@@ -24,7 +24,7 @@ def map_table(oddrn_generator: VerticaGenerator, table: Table) -> DataEntity:
             owner=table.owner_name,
             description=table.description,
             metadata=[map_metadata(table)],
-            dataset=create_dataset(oddrn_generator, table)
+            dataset=create_dataset(oddrn_generator, table),
         )
 
         if data_entity_type == DataEntityType.VIEW:
@@ -38,10 +38,13 @@ def map_table(oddrn_generator: VerticaGenerator, table: Table) -> DataEntity:
 
 def create_dataset(oddrn_generator, table: Table):
     parent_oddrn = oddrn_generator.get_oddrn_by_path("tables")
-    columns = [map_column(oddrn_generator, column, table.owner_name) for column in table.columns]
+    columns = [
+        map_column(oddrn_generator, column, table.owner_name)
+        for column in table.columns
+    ]
 
     return DataSet(
         parent_oddrn=parent_oddrn,
         field_list=columns,
-        rows_number=int(table.table_rows) if table.table_rows is not None else None
+        rows_number=int(table.table_rows) if table.table_rows is not None else None,
     )
