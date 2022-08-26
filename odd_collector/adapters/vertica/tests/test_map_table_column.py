@@ -7,18 +7,24 @@ from odd_collector.adapters.vertica.domain.table import Table
 from odd_collector.adapters.vertica.mapper.columns import map_column
 from odd_collector.adapters.vertica.mapper.tables import map_table
 from odd_collector.adapters.vertica.mapper.types import TYPES_SQL_TO_ODD
-from odd_collector.adapters.vertica.tests.test_vertica_adapter import VerticaTestRepository
+from odd_collector.adapters.vertica.tests.test_vertica_adapter import (
+    VerticaTestRepository,
+)
 
 
 @pytest.fixture()
 def generator():
-    return VerticaGenerator(host_settings='localhost', databases='VMart')
+    return VerticaGenerator(host_settings="localhost", databases="VMart")
 
 
 def test_mapping_table(generator):
     table_response = VerticaTestRepository._table_response[1]
     table = Table(*table_response)
-    columns = [Column(*r) for r in VerticaTestRepository._column_response if r[1] == table.table_name]
+    columns = [
+        Column(*r)
+        for r in VerticaTestRepository._column_response
+        if r[1] == table.table_name
+    ]
     table.columns = columns
     data_entity = map_table(generator, table)
 
@@ -45,7 +51,10 @@ def test_mapping_column(generator):
     map_table(generator, table)
     data_entity = map_column(generator, column, table.owner_name)
 
-    assert data_entity.oddrn == f"//vertica/host/localhost/databases/VMart/schemas/{column.table_schema}/tables/{column.table_name}/columns/{column.column_name}"
+    assert (
+        data_entity.oddrn
+        == f"//vertica/host/localhost/databases/VMart/schemas/{column.table_schema}/tables/{column.table_name}/columns/{column.column_name}"
+    )
     assert data_entity.name == column_response[4]
     assert data_entity.owner == table.owner_name
     assert data_entity.is_primary_key == column_response[6]

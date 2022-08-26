@@ -2,12 +2,14 @@ import pytest
 from oddrn_generator import VerticaGenerator
 
 from odd_collector.adapters.vertica.domain.table import Table
-from odd_collector.adapters.vertica.tests.test_vertica_adapter import VerticaTestRepository
+from odd_collector.adapters.vertica.tests.test_vertica_adapter import (
+    VerticaTestRepository,
+)
 
 
 @pytest.fixture()
 def generator():
-    return VerticaGenerator(host_settings='localhost', databases='VMart')
+    return VerticaGenerator(host_settings="localhost", databases="VMart")
 
 
 def test_parse_table(generator):
@@ -25,7 +27,10 @@ def test_parse_table(generator):
     assert table.is_system_table == table_response[9]
     assert table.view_definition == table_response[10]
     assert table.is_system_view == table_response[11]
-    assert table.get_oddrn(generator) == "//vertica/host/localhost/databases/VMart/schemas/public/tables/product_dimension"
+    assert (
+        table.get_oddrn(generator)
+        == "//vertica/host/localhost/databases/VMart/schemas/public/tables/product_dimension"
+    )
 
 
 def test_parse_view_oddrn_generation(generator):
@@ -43,5 +48,7 @@ def test_parse_view_oddrn_generation(generator):
     assert table.is_system_table == table_response[9]
     assert table.view_definition == table_response[10]
     assert table.is_system_view == table_response[11]
-    assert table.get_oddrn(generator) == "//vertica/host/localhost/databases/VMart/schemas/public/views/test_view"
-
+    assert (
+        table.get_oddrn(generator)
+        == "//vertica/host/localhost/databases/VMart/schemas/public/views/test_view"
+    )

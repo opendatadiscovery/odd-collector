@@ -1,7 +1,9 @@
 import pytest
 
 from odd_collector.adapters.vertica.domain.column import Column
-from odd_collector.adapters.vertica.tests.test_vertica_adapter import VerticaTestRepository
+from odd_collector.adapters.vertica.tests.test_vertica_adapter import (
+    VerticaTestRepository,
+)
 
 
 def test_parse_column():
