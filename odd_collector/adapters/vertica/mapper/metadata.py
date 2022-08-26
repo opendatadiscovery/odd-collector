@@ -1,12 +1,9 @@
-from typing import Any, Dict, List, Set, Union
+from typing import Union
 
-from funcy import omit, select_values
 from odd_models.models import MetadataExtension
 
-from odd_collector.adapters.tableau.logger import logger
-
-from odd_collector.adapters.vertica.domain.table import Table
-from odd_collector.adapters.vertica.domain.table import Column
+from ..domain.table import Table
+from ..domain.table import Column
 
 _METADATA_SCHEMA_URL_PREFIX: str = (
     "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"

@@ -1,9 +1,9 @@
 from typing import List
 
-from odd_collector.adapters.vertica.domain.column import Column
-from odd_collector.adapters.vertica.domain.table import databases_to_tables, Table
-from odd_collector.adapters.vertica.vertica_connector import VerticaConnector
-from odd_collector.adapters.vertica.vertica_repository_base import VerticaRepositoryBase
+from .domain.column import Column
+from .domain.table import Table
+from .vertica_connector import VerticaConnector
+from .vertica_repository_base import VerticaRepositoryBase
 
 
 class VerticaRepository(VerticaRepositoryBase):
@@ -12,7 +12,7 @@ class VerticaRepository(VerticaRepositoryBase):
 
     def get_tables(self) -> List[Table]:
         response = self.__execute(self.table_metadata_query)
-        tables = databases_to_tables(response)
+        tables = [Table(*table) for table in response]
         return tables
 
     def get_columns(self) -> List[Column]:

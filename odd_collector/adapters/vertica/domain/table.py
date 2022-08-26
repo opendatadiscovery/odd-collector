@@ -1,5 +1,5 @@
 from typing import Any, List, Optional
-from odd_collector.adapters.vertica.domain.column import Column
+from .column import Column
 
 
 class Table:
@@ -30,19 +30,18 @@ class Table:
         self.is_temp_table = is_temp_table
         self.is_system_table = is_system_table
         self.view_definition = view_definition or None
-        self.is_system_view = is_system_view or None
+        self.is_system_view = is_system_view
         self.columns = columns or []
 
     def get_oddrn(self, oddrn_generator):
+        oddrn_path = "tables"
+        if self.table_type == "VIEW":
+            oddrn_path = "views"
         oddrn_generator.set_oddrn_paths(
-            schemas=self.table_schema,
-            oddrn_path=self.table_name,
+            **{
+                "schemas": self.table_schema,
+                oddrn_path: self.table_name,
+            }
         )
-        return oddrn_generator.get_oddrn_by_path("tables")
 
-
-def databases_to_tables(databases_response: List[Any]) -> List[Table]:
-    tables = []
-    for table in databases_response:
-        tables.append(Table(*table))
-    return tables
+        return oddrn_generator.get_oddrn_by_path(oddrn_path)

@@ -5,11 +5,11 @@ from odd_models.models import DataEntityList, DataEntity, DataEntityType, DataEn
 
 # TODO ask about logger
 from .logger import logger
-from odd_collector.adapters.vertica.mapper.tables import map_table
 from oddrn_generator import VerticaGenerator
-from odd_collector.adapters.vertica.vertica_repository import VerticaRepository
-from odd_collector.adapters.vertica.domain.table import Table, databases_to_tables
-from odd_collector.adapters.vertica.domain.column import Column
+from .vertica_repository import VerticaRepository
+from .mapper.tables import map_table
+from .domain.table import Table
+from .domain.column import Column
 
 
 class Adapter(AbstractAdapter):
@@ -30,7 +30,8 @@ class Adapter(AbstractAdapter):
         data_entities = []
         for table in tables:
             table.columns = columns.get((table.table_schema, table.table_name), [])
-            data_entities.append(map_table(self.__oddrn_generator, table))
+            data_entity = map_table(self.__oddrn_generator, table)
+            data_entities.append(data_entity)
 
         db_entity = DataEntity(
                 oddrn=self.__oddrn_generator.get_oddrn_by_path("databases"),

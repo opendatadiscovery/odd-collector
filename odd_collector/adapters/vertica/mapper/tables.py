@@ -1,8 +1,8 @@
 from odd_collector_sdk.errors import MappingDataError
 from oddrn_generator import VerticaGenerator
 
-from odd_collector.adapters.vertica.domain.table import Table
-from odd_collector.adapters.vertica.mapper.types import TABLE_TYPES_SQL_TO_ODD
+from ..domain.table import Table
+from ..mapper.types import TABLE_TYPES_SQL_TO_ODD
 from odd_models.models import DataEntity, DataEntityType, DataEntityGroup, DataSet
 
 from .columns import map_column
@@ -15,15 +15,10 @@ def map_table(oddrn_generator: VerticaGenerator, table: Table) -> DataEntity:
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
             table.table_type, DataEntityType.UNKNOWN
         )
-        oddrn_path = (
-            "views" if data_entity_type == DataEntityType.VIEW else "tables"
-        )
-        oddrn_generator.set_oddrn_paths(
-            **{"schemas": table.table_schema, oddrn_path: table.table_name}
-        )
 
         data_entity: DataEntity = DataEntity(
-            oddrn=oddrn_generator.get_oddrn_by_path(oddrn_path),
+            # oddrn=oddrn_generator.get_oddrn_by_path(oddrn_path),
+            oddrn=table.get_oddrn(oddrn_generator),
             name=table.table_name,
             type=data_entity_type,
             owner=table.owner_name,

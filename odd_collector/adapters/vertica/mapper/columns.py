@@ -2,9 +2,9 @@ from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import VerticaGenerator
 
-from odd_collector.adapters.vertica.domain.column import Column
-from odd_collector.adapters.vertica.mapper.metadata import map_metadata
-from odd_collector.adapters.vertica.mapper.types import TYPES_SQL_TO_ODD
+from ..domain.column import Column
+from ..mapper.metadata import map_metadata
+from ..mapper.types import TYPES_SQL_TO_ODD
 
 
 def map_column(oddrn_generator: VerticaGenerator, column: Column, owner: str) -> DataSetField:

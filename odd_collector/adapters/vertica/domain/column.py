@@ -44,7 +44,3 @@ class Column:
         self.is_identity = is_identity
         self.is_primary_key_enabled = is_primary_key_enabled
         self.description = description
-
-    @staticmethod
-    def from_response(response):
-        return Column(*response)
