@@ -1,16 +1,18 @@
-from copy import deepcopy
 from datetime import datetime
-from typing import Any, Dict, List
+from functools import partial
+from typing import List, Optional
 
 import pytz
+from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataConsumer, DataEntity, DataEntityType
 from oddrn_generator import TableauGenerator
 
+from ..domain.sheet import Sheet
 from . import DATA_CONSUMER_EXCLUDED_KEYS, DATA_CONSUMER_SCHEMA, TABLEAU_DATETIME_FORMAT
 from .metadata import extract_metadata
 
 
-def __map_date(date: str = None) -> str:
+def __map_date(date: str = None) -> Optional[str]:
     if not date:
         return None
 
@@ -21,56 +23,43 @@ def __map_date(date: str = None) -> str:
     )
 
 
-def map_sheet(
-    oddrn_generator: TableauGenerator, sheets: list[dict]
-) -> list[DataEntity]:
-    data_entities: list[DataEntity] = []
+extract_metadata = partial(
+    extract_metadata,
+    schema_url=DATA_CONSUMER_SCHEMA,
+    excluded_key=DATA_CONSUMER_EXCLUDED_KEYS,
+)
 
-    for sheet in sheets:
-        oddrn_generator.set_oddrn_paths(
-            workbooks=sheet["workbook"]["name"], sheets=sheet["name"]
-        )
 
-        created_at = __map_date(sheet["createdAt"])
-        updated_at = __map_date(sheet["updatedAt"]) or created_at
+def map_sheet(oddrn_generator, sheet: Sheet, tables: List[DataEntity]) -> DataEntity:
+    """
+    Args:
+        oddrn_generator: Generator
+        sheet: Sheet
+        tables: list of mapped to DataEntity tables sheet depends on
 
-        data_entity: DataEntity = DataEntity(
+    Returns:
+        DataEntity
+    """
+    try:
+        oddrn_generator.set_oddrn_paths(workbooks=sheet.workbook, sheets=sheet.name)
+
+        return DataEntity(
             oddrn=oddrn_generator.get_oddrn_by_path("sheets"),
-            name=sheet["name"],
-            owner=sheet["workbook"].get("owner", {}).get("name"),
-            metadata=extract_metadata(
-                DATA_CONSUMER_SCHEMA,
-                sheet,
-                DATA_CONSUMER_EXCLUDED_KEYS,
-            ),
-            created_at=created_at,
-            updated_at=updated_at,
+            name=sheet.name,
+            owner=sheet.owner,
+            metadata=extract_metadata(metadata={}),
+            created_at=__map_date(sheet.created),
+            updated_at=__map_date(sheet.updated),
             type=DataEntityType.DASHBOARD,
-            data_consumer=DataConsumer(
-                inputs=_map_datasource_fields_to_oddrns(
-                    oddrn_generator, sheet.get("datasourceFields", {})
-                ),
-                outputs=[],
-            ),
+            data_consumer=DataConsumer(inputs=[de.oddrn for de in tables]),
         )
+    except Exception as e:
+        raise MappingDataError(f"Mapping sheet {sheet.name} failed") from e
 
-        data_entities.append(data_entity)
-    return data_entities
 
-
-def _map_datasource_fields_to_oddrns(
-    oddrn_generator: TableauGenerator, datasource_fields: Dict[str, Any]
-) -> List[str]:
-    oddrn_gen = deepcopy(oddrn_generator)  # do not change previous oddrn ?????
-    inputs_oddrns: set = set()
-
-    for field in datasource_fields:
-        for table in field["upstreamTables"]:
-            oddrn_gen.set_oddrn_paths(
-                databases=table.get("database", {}).get("id", "unknown_table"),
-                schemas=table.get("schema") or "unknown_schema",
-                tables=table.get("name"),
-            )
-            inputs_oddrns.add(oddrn_gen.get_oddrn_by_path("tables"))
-
-    return list(inputs_oddrns)
+def map_sheets(
+    oddrn_generator: TableauGenerator,
+    sheets: List[Sheet],
+    tables: List[DataEntity],
+) -> List[DataEntity]:
+    return [map_sheet(oddrn_generator, sheet, tables) for sheet in sheets]
