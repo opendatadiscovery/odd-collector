@@ -1,0 +1,12 @@
+default_pulling_interval: 10
+token: ""
+platform_host_url: http://localhost:8080
+plugins:
+  - type: vertica
+    name: vertica_adapter
+    description: "" # Optional string
+    database: database_name
+    host: host
+    port: 5433
+    user: user
+    password: password
