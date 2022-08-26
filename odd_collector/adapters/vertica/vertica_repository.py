@@ -21,9 +21,7 @@ class VerticaRepository(VerticaRepositoryBase):
         return columns
 
     def __execute(self, query: str) -> List[tuple]:
-        # TODO: choose one of the method
-        # return self.__vertica_connector.execute(query)
-        return self.__vertica_connector.execute_new(query)
+        return self.__vertica_connector.execute(query)
 
     @property
     def column_metadata_query(self):
