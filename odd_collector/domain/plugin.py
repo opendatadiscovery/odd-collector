@@ -119,6 +119,10 @@ class TableauPlugin(BasePlugin):
     token_value: Optional[SecretStr]
 
 
+class VerticaPlugin(DatabasePlugin):
+    type: Literal["vertica"]
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -138,4 +142,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "neo4j": Neo4jPlugin,
     "tableau": TableauPlugin,
     "odbc": OdbcPlugin,
+    "vertica": VerticaPlugin,
 }
