@@ -1,20 +1,40 @@
 default_pulling_interval: 10
-token: ""
+token: "ubJK5xaIhWPO4rzQewtJR6qyOXkK8iYj86jbqk9i"
 platform_host_url: http://localhost:8080
 plugins:
-  - type: postgresql
-    name: postgresql_adapter
-    database: computer
-    host: localhost
-    port: 5432
-    user: postgres
-    password: ""
-  - type: cubejs
-    name: cubejs
-    host: http://localhost:4000
-    token: ""
-    dev_mode: true
-    predefined_datasource:
-      type: "postgres"
-      host: localhost
-      database: computer
+#  - type: mysql
+#    name: mysql_adapter
+#    description: "" # Optional string
+#    database: sample_db
+#    host: localhost
+#    port: 3306
+#    user: user
+#    password: password
+#    ssl_disabled: False # Optional, default: False
+  - type: tableau
+    name: tableau_adapter
+    description: "" # Optional string
+    server: https://dub01.online.tableau.com/
+    site: provectustrialonly
+    user: ulukashou@provectus.com
+    password: Lj3J:+e_ba@58M. # Optional string
+    token_name:  # Optional string, used for connection to TableauServer with 2FA
+    token_value:  # Optional string, used for connection to TableauServer with 2FA
+
+
+#  - type: postgresql
+#    name: new_another_name
+#    database: computer
+#    host: localhost
+#    port: 5432
+#    user: postgres
+#    password: ""
+#  - type: cubejs
+#    name: cubejs
+#    host: http://localhost:4000
+#    token: ""
+#    dev_mode: true
+#    predefined_datasource:
+#      type: "postgres"
+#      host: localhost
+#      database: computer
