@@ -11,16 +11,21 @@ plugins:
 #    user: user
 #    password: password
 #    ssl_disabled: False # Optional, default: False
-  - type: tableau
-    name: tableau_adapter
-    description: "" # Optional string
-    server: https://dub01.online.tableau.com/
-    site: provectustrialonly
-    user: ulukashou@provectus.com
-    password: Lj3J:+e_ba@58M. # Optional string
-    token_name:  # Optional string, used for connection to TableauServer with 2FA
-    token_value:  # Optional string, used for connection to TableauServer with 2FA
+#  - type: tableau
+#    name: tableau_adapter
+#    description: "" # Optional string
+#    server: https://dub01.online.tableau.com/
+#    site: provectustrialonly
+#    user: ulukashou@provectus.com
+#    password: Lj3J:+e_ba@58M. # Optional string
+#    token_name:  # Optional string, used for connection to TableauServer with 2FA
+#    token_value:  # Optional string, used for connection to TableauServer with 2FA
 
+  - type: superset
+    name: superset_adapter
+    server: http://localhost:8088/
+    username: admin
+    password: admin
 
 #  - type: postgresql
 #    name: new_another_name
