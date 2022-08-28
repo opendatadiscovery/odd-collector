@@ -140,6 +140,13 @@ class CubeJSPlugin(BasePlugin):
         return value
 
 
+class SupersetPlugin(BasePlugin):
+    type: Literal["superset"]
+    server: str
+    username: str
+    password: str
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -160,4 +167,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "tableau": TableauPlugin,
     "cubejs": CubeJSPlugin,
     "odbc": OdbcPlugin,
+    "superset": SupersetPlugin
 }
