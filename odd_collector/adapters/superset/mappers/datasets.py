@@ -17,12 +17,15 @@ def create_dataset(oddrn_generator, dataset: Dataset):
 
 
 def map_table(oddrn_generator: SupersetGenerator, dataset: Dataset) -> DataEntity:
-    # TODO: Now table model doesn't have metadata field, need to add it
+    if dataset.kind == 'virtual':
+        _type = DataEntityType.VIEW
+    else:
+        _type = DataEntityType.TABLE
     try:
         return DataEntity(
             oddrn=dataset.get_oddrn(oddrn_generator),
             name=dataset.name,
-            type=DataEntityType.TABLE,
+            type=_type,
             dataset=create_dataset(oddrn_generator, dataset),
         )
     except Exception as e:

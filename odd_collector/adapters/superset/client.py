@@ -37,7 +37,8 @@ class SupersetClient:
         return [Dataset(id=dataset.get('id'),
                         name=dataset.get('table_name'),
                         db_id=dataset.get('database').get('id'),
-                        db_name=dataset.get('database').get('database_name')
+                        db_name=dataset.get('database').get('database_name'),
+                        kind=dataset.get('kind')
                         ) for dataset in decoded]
 
     def _get_dataset_columns(self, dataset_id: int) -> List[Column]:

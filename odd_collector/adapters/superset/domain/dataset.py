@@ -9,12 +9,14 @@ class Dataset:
             name: str,
             db_id: str,
             db_name: str,
+            kind: str,
             columns: List[Column] = None,
     ):
         self.id = id
         self.name = name
         self.database_name = db_name
         self.database_id = db_id
+        self.kind = kind
         self.columns = columns or []
 
     def get_oddrn(self, oddrn_generator):
