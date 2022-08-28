@@ -6,9 +6,9 @@ from .columns import map_column
 from ..domain.dataset import Dataset
 
 
-def create_dataset(oddrn_generator, table: Dataset):
+def create_dataset(oddrn_generator, dataset: Dataset):
     parent_oddrn = oddrn_generator.get_oddrn_by_path("datasets")
-    columns = [map_column(oddrn_generator, column) for column in table.columns]
+    columns = [map_column(oddrn_generator, column) for column in dataset.columns]
 
     return DataSet(
         parent_oddrn=parent_oddrn,

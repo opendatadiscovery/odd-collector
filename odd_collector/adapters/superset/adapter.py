@@ -6,6 +6,7 @@ from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
 from .domain.dataset import Dataset
 from odd_collector.domain.plugin import SupersetPlugin
 from .mappers.datasets import map_table
+from .mappers.databases import create_databases_entities
 
 
 class Adapter(AbstractAdapter):
@@ -40,8 +41,9 @@ class Adapter(AbstractAdapter):
         }
 
         datasets_data_entities = datasets_data_entities_by_id.values()
+        databases_entities = create_databases_entities(self.__oddrn_generator, list(datasets.values()))
 
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=[*datasets_data_entities],
+            items=[*datasets_data_entities, *databases_entities],
         )
