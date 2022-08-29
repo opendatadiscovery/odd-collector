@@ -87,9 +87,17 @@ class SupersetClient:
         charts = self._get_charts()
         unique_dashboard_ids_names: Dict[int, str] = {}
         for chart in charts:
-            print(chart.dashboards_ids_names)
             unique_dashboard_ids_names.update(chart.dashboards_ids_names)
-        return unique_dashboard_ids_names
+        dashboards: List[Dashboard] = []
+        for dashboard_id, dashboard_name in unique_dashboard_ids_names.items():
+            dashboard = Dashboard(id=dashboard_id,
+                                  name=dashboard_name,
+                                  datasets_ids=set([chart.dataset_id for chart in charts if
+                                                    dashboard_id in chart.dashboards_ids_names.keys()])
+                                  )
+            dashboards.append(dashboard)
+
+        return dashboards
 
     def _get_dataset_columns(self, dataset_id: int) -> List[Column]:
         resp = self.__query('GET', f'dataset/{dataset_id}', headers=self.__build_headers())

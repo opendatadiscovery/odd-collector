@@ -7,6 +7,7 @@ class SupersetPathsModel(BasePathsModel):
     databases: Optional[str]
     datasets: Optional[str]
     columns: Optional[str]
+    dashboards: Optional[str]
 
     class Config:
         dependencies_map = {
@@ -15,6 +16,7 @@ class SupersetPathsModel(BasePathsModel):
             ),
             "datasets": ("databases", "datasets"),
             "columns": ("databases", "datasets", "columns"),
+            "dashboards": ("dashboards", )
         }
         # data_source_path = "databases"
 
