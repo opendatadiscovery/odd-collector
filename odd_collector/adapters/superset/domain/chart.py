@@ -3,7 +3,7 @@ from typing import Dict
 
 class Chart:
     def __init__(self,
-                 id: str,
+                 id: int,
                  dataset_id: int,
                  dashboards_ids_names: Dict[int, str]
 

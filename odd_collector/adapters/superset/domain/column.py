@@ -1,7 +1,7 @@
 class Column:
     def __init__(
             self,
-            id: str,
+            id: int,
             name: str,
             remote_type: str = None,
     ):

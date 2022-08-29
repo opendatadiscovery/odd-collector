@@ -5,7 +5,7 @@ from odd_collector.adapters.superset.domain.column import Column
 class Dataset:
     def __init__(
             self,
-            id: str,
+            id: int,
             name: str,
             db_id: str,
             db_name: str,
