@@ -8,8 +8,7 @@ from odd_models.models import (
     DataEntityGroup,
 )
 
-# TODO ask about logger
-from .logger import logger
+
 from oddrn_generator import VerticaGenerator
 from .vertica_repository import VerticaRepository
 from .mapper.tables import map_table

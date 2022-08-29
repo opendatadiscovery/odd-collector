@@ -1,14 +1,12 @@
 from typing import List
 
 import vertica_python
+from odd_collector_sdk.errors import DataSourceError
 
 from .logger import logger
-from .exceptions import DbVerticaSQLException
 
 
 class VerticaConnector:
-    __connection = None
-    __cursor = None
 
     def __init__(self, config) -> None:
         self.host = config.host
@@ -30,7 +28,7 @@ class VerticaConnector:
                     records = curs.execute(query).fetchall()
                     return records
         except vertica_python.Error as err:
-            logger.error("Error during retrieving data from Database", exc_info=True)
-            raise DbVerticaSQLException(
+            logger.error("Error during retrieving data from Database")
+            raise DataSourceError(
                 "Database error. Troubles with connecting"
             ) from err

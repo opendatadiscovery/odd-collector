@@ -17,7 +17,6 @@ def map_table(oddrn_generator: VerticaGenerator, table: Table) -> DataEntity:
         )
 
         data_entity: DataEntity = DataEntity(
-            # oddrn=oddrn_generator.get_oddrn_by_path(oddrn_path),
             oddrn=table.get_oddrn(oddrn_generator),
             name=table.table_name,
             type=data_entity_type,
