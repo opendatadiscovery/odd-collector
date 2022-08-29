@@ -7,7 +7,6 @@ from .logger import logger
 
 
 class VerticaConnector:
-
     def __init__(self, config) -> None:
         self.host = config.host
         self.port = config.port
@@ -29,6 +28,4 @@ class VerticaConnector:
                     return records
         except vertica_python.Error as err:
             logger.error("Error during retrieving data from Database")
-            raise DataSourceError(
-                "Database error. Troubles with connecting"
-            ) from err
+            raise DataSourceError("Database error. Troubles with connecting") from err
