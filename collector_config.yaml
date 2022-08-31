@@ -13,6 +13,6 @@ plugins:
     host: http://localhost:4000
     token: <CUBEJS_TOKEN>
     predefined_datasource:
-      type: "clickhoust"
+      type: clickhouse
       host: localhost
       database: helloworld
