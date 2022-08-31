@@ -46,6 +46,7 @@ class MSSQLPlugin(DatabasePlugin):
 
 class ClickhousePlugin(DatabasePlugin):
     type: Literal["clickhouse"]
+    port: Optional[int]
 
 
 class RedshiftPlugin(DatabasePlugin):
