@@ -22,20 +22,20 @@ class Adapter(AbstractAdapter):
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
 
-    def _get_datasets(self) -> Dict[str, Dataset]:
+    async def _get_datasets(self) -> Dict[str, Dataset]:
         dsets = self.client.get_datasets()
         datasets_by_id: Dict[str, Dataset] = {dataset.id: dataset for dataset in dsets}
         dsets_ids = [dset.id for dset in dsets]
-        datasets_columns = self.client.get_datasets_columns(dsets_ids)
+        datasets_columns = await self.client.get_datasets_columns(dsets_ids)
 
         for dataset_id, columns in datasets_columns.items():
             datasets_by_id[dataset_id].columns = columns
 
         return datasets_by_id
 
-    def get_data_entity_list(self) -> DataEntityList:
-        dashboards = self.client.get_dashboards()
-        datasets = self._get_datasets()
+    async def get_data_entity_list(self) -> DataEntityList:
+        dashboards = await self.client.get_dashboards()
+        datasets = await self._get_datasets()
 
         datasets_data_entities_by_id: Dict[str, DataEntity] = {
             dataset_id: map_table(self.__oddrn_generator, dataset)

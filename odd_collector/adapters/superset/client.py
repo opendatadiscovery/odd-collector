@@ -1,4 +1,4 @@
-from typing import List, Dict, Union, Any
+from typing import List, Dict, Union, Any, NamedTuple, Optional
 from urllib.parse import urlparse
 from .domain.column import Column
 from .domain.chart import Chart
@@ -8,6 +8,14 @@ from .domain.dataset import Dataset
 import json
 
 import requests
+import asyncio
+import aiohttp
+
+
+class RequestArgs(NamedTuple):
+    url: str
+    params: Optional[Dict[Any, Any]]
+    headers: Optional[Dict[Any, Any]]
 
 
 class SupersetClient:
@@ -23,6 +31,19 @@ class SupersetClient:
         }
         r = self.__query('POST', 'security/login', payload)
         return json.loads(r.content)['access_token']
+
+    @staticmethod
+    async def __fetch_async_response(session, request_args: RequestArgs):
+        async with session.get(url=request_args.url, params=request_args.params, headers=request_args.headers) \
+                as response:
+            return await response.json()
+
+    async def __fetch_all_async_responses(self, request_args_list: List[RequestArgs]) -> tuple:
+        async with aiohttp.ClientSession() as session:
+            return await asyncio.gather(
+                *[self.__fetch_async_response(session, request_args=request_args)
+                  for request_args in request_args_list],
+                return_exceptions=True)
 
     def __build_headers(self) -> Dict[str, str]:
         return {'Authorization': 'Bearer ' + self.__get_access_token()}
@@ -48,11 +69,12 @@ class SupersetClient:
                         kind=dataset.get('kind')
                         ) for dataset in dataset_nodes]
 
-    def _get_dashboards_ids_names_by_chart_id(self, chart_id: int) -> Dict[int, str]:
-        resp = self.__query('GET', f'chart/{chart_id}', headers=self.__build_headers())
-        decoded = json.loads(resp.content)['result']
-        dashboards_node: List[Dict[str, str]] = decoded.get('dashboards')
-        return {dashboard['id']: dashboard['dashboard_title'] for dashboard in dashboards_node}
+    async def __get_dashboard_nodes_by_chart_ids(self, chart_ids: List[int]):
+        headers = self.__build_headers()
+        urls = [self.__base_url + f'chart/{chart_id}' for chart_id in chart_ids]
+        dashboard_nodes = self.__fetch_all_async_responses(
+            [RequestArgs(url, None, headers) for url in urls])
+        return await dashboard_nodes
 
     def _get_nodes_list_with_pagination(self, endpoint: str, columns: List[str] = None) -> List[Any]:
         default_page_size = 100
@@ -75,16 +97,24 @@ class SupersetClient:
             pg += 1
         return nodes_list
 
-    def _get_charts(self) -> List[Chart]:
+    async def _get_charts(self) -> List[Chart]:
         chart_nodes = self._get_nodes_list_with_pagination('chart', ["datasource_id", "id"])
+        chart_ids = [chart_node.get('id') for chart_node in chart_nodes]
+        chart_nodes_with_dashboards = await self.__get_dashboard_nodes_by_chart_ids(chart_ids)
+        nodes_with_chart_ids: Dict[int, Dict[int, str]] = {}
+        for chart_node in chart_nodes_with_dashboards:
+            nodes_with_chart_ids.update({chart_node.get("id"):
+                                             {dashboard_node['id']: dashboard_node['dashboard_title']
+                                              for dashboard_node in chart_node['result']['dashboards']}})
+
         return [Chart(id=chart_node.get('id'),
                       dataset_id=chart_node.get('datasource_id'),
-                      dashboards_ids_names=self._get_dashboards_ids_names_by_chart_id(chart_node.get('id'))
+                      dashboards_ids_names=nodes_with_chart_ids.get(chart_node.get('id'))
 
                       ) for chart_node in chart_nodes]
 
-    def get_dashboards(self) -> List[Dashboard]:
-        charts = self._get_charts()
+    async def get_dashboards(self) -> List[Dashboard]:
+        charts = await self._get_charts()
         unique_dashboard_ids_names: Dict[int, str] = {}
         for chart in charts:
             unique_dashboard_ids_names.update(chart.dashboards_ids_names)
@@ -99,16 +129,20 @@ class SupersetClient:
 
         return dashboards
 
-    def _get_dataset_columns(self, dataset_id: int) -> List[Column]:
-        resp = self.__query('GET', f'dataset/{dataset_id}', headers=self.__build_headers())
-        decoded = json.loads(resp.content)['result']['columns']
-        return [Column(id=column.get('id'),
-                       name=column.get('column_name'),
-                       remote_type=column.get('type')
-                       ) for column in decoded]
+    async def __get_datasets_columns_nodes(self, datasets_ids: List[int]):
+        headers = self.__build_headers()
+        urls = [self.__base_url + f'dataset/{dataset_id}' for dataset_id in datasets_ids]
+        datasets_columns_nodes = self.__fetch_all_async_responses(
+            [RequestArgs(url, None, headers) for url in urls])
+        return await datasets_columns_nodes
 
-    def get_datasets_columns(self, datasets_ids: List[int]) -> Dict[int, List[Column]]:
+    async def get_datasets_columns(self, datasets_ids: List[int]) -> Dict[int, List[Column]]:
         datasets_columns: Dict[int, List[Column]] = {}
-        for dataset_id in datasets_ids:
-            datasets_columns.update({dataset_id: self._get_dataset_columns(dataset_id)})
+        nodes = await self.__get_datasets_columns_nodes(datasets_ids)
+        for dataset_node in nodes:
+            result = dataset_node['result']
+            datasets_columns.update({result['id']: [Column(id=column.get('id'),
+                                                           name=column.get('column_name'),
+                                                           remote_type=column.get('type')
+                                                           ) for column in result['columns']]})
         return datasets_columns
