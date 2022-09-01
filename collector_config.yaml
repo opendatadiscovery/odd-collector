@@ -17,7 +17,7 @@ plugins:
 #    server: https://dub01.online.tableau.com/
 #    site: provectustrialonly
 #    user: ulukashou@provectus.com
-#    password: Lj3J:+e_ba@58M. # Optional string
+#    password: . # Optional string
 #    token_name:  # Optional string, used for connection to TableauServer with 2FA
 #    token_value:  # Optional string, used for connection to TableauServer with 2FA
 
