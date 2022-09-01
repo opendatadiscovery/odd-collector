@@ -114,7 +114,10 @@ class SupersetClient:
                       ) for chart_node in chart_nodes]
 
     async def get_dashboards(self) -> List[Dashboard]:
-        charts = await self._get_charts()
+        return self._extract_dashboards_from_charts(await self._get_charts())
+
+    @staticmethod
+    def _extract_dashboards_from_charts(charts: List[Chart]) -> List[Dashboard]:
         unique_dashboard_ids_names: Dict[int, str] = {}
         for chart in charts:
             unique_dashboard_ids_names.update(chart.dashboards_ids_names)
