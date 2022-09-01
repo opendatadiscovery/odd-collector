@@ -10,7 +10,7 @@ def create_databases_entities(oddrn_generator: SupersetGenerator, datasets: List
     for database_id, database_name in databases_ids_names.items():
         databases_entities.append(
             DataEntity(
-                oddrn=oddrn_generator.get_oddrn_by_path("databases"),
+                oddrn=oddrn_generator.get_oddrn_by_path("databases", database_name),
                 name=database_name,
                 type=DataEntityType.DATABASE_SERVICE,
                 metadata=[],
