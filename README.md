@@ -12,28 +12,29 @@ To learn more about collector types and ODD Platform's architecture, [read the d
  - [Docker compose example](#docker-compose-example)
 
 ## Implemented adapters
-| Service       | Config example                               |
-| ------------- | -------------------------------------------- |
-| Cassandra     | [config](config_examples/cassandra.yaml)     |
-| ClickHouse    | [config](config_examples/clickhouse.yaml)    |
-| Dbt           | [config](config_examples/dbt.yaml)           |
-| Elasticsearch | [config](config_examples/elasticsearch.yaml) |
-| Feast         | [config](config_examples/feast.yaml)         |
-| Hive          | [config](config_examples/hive.yaml)          |
-| Kafka         | [config](config_examples/kafka.yaml)         |
-| Kubeflow      | [config](config_examples/kubeflow.yaml)      |
-| MongoDB       | [config](config_examples/mongodb.yaml)       |
-| MSSql         | [config](config_examples/mssql.yaml)         |
-| MySql         | [config](config_examples/mysql.yaml)         |
-| Neo4j         | [config](config_examples/neo4j.yaml)         |
-| PostgreSQL    | [config](config_examples/postgresql.yaml)    |
-| Redshift      | [config](config_examples/redshift.yaml)      |
-| Snowflake     | [config](config_examples/snowflake.yaml)     |
-| Tableau       | [config](config_examples/tableau.yaml)       |
-| Tarantool     | [config](config_examples/tarantool.yaml)     |
-| Vertica       | [config](config_examples/vertica.yaml)       |
+| Service       | Config example                                                                          |
+|---------------|-----------------------------------------------------------------------------------------|
+| Cassandra     | [config](config_examples/cassandra.yaml)                                                |
+| ClickHouse    | [config](config_examples/clickhouse.yaml)                                               |
+| Dbt           | [config](config_examples/dbt.yaml)                                                      |
+| Elasticsearch | [config](config_examples/elasticsearch.yaml)                                            |
+| Feast         | [config](config_examples/feast.yaml)                                                    |
+| Hive          | [config](config_examples/hive.yaml)                                                     |
+| Kafka         | [config](config_examples/kafka.yaml)                                                    |
+| Kubeflow      | [config](config_examples/kubeflow.yaml)                                                 |
+| MongoDB       | [config](config_examples/mongodb.yaml)                                                  |
+| MSSql         | [config](config_examples/mssql.yaml)                                                    |
+| MySql         | [config](config_examples/mysql.yaml)                                                    |
+| Neo4j         | [config](config_examples/neo4j.yaml)                                                    |
+| PostgreSQL    | [config](config_examples/postgresql.yaml)                                               |
+| Redshift      | [config](config_examples/redshift.yaml)                                                 |
+| Snowflake     | [config](config_examples/snowflake.yaml)                                                |
+| Superset      | [config](config_examples/superset.yaml)                                                 |
+| Tableau       | [config](config_examples/tableau.yaml)                                                  |
+| Tarantool     | [config](config_examples/tarantool.yaml)                                                |
+| Vertica       | [config](config_examples/vertica.yaml)                                                  |
 | ODBC          | [config](config_examples/odbc.yaml), [README.md](odd_collector/adapters/odbc/README.md) |
-| Cube          | [config](config_examples/cubejs.yaml)        |
+| Cube          | [config](config_examples/cubejs.yaml)                                                   |
 
 
 ## Class diagram of adapter class hierarchy
