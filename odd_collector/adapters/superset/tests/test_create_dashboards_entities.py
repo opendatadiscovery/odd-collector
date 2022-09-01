@@ -1,6 +1,8 @@
 import pytest
 from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
-from odd_collector.adapters.superset.mappers.dashboards import create_dashboards_entities
+from odd_collector.adapters.superset.mappers.dashboards import (
+    create_dashboards_entities,
+)
 from odd_collector.adapters.superset.domain.dataset import Dataset
 from odd_collector.adapters.superset.domain.chart import Chart
 from odd_collector.adapters.superset.client import SupersetClient
@@ -15,18 +17,25 @@ def generator():
 
 
 def test_create_dashboards_entities(generator):
-    charts = [Chart(id=chart_node.get('id'),
-                    dataset_id=chart_node.get('datasource_id'),
-                    dashboards_ids_names=nodes_with_chart_ids.get(chart_node.get('id'))
+    charts = [
+        Chart(
+            id=chart_node.get("id"),
+            dataset_id=chart_node.get("datasource_id"),
+            dashboards_ids_names=nodes_with_chart_ids.get(chart_node.get("id")),
+        )
+        for chart_node in chart_nodes
+    ]
 
-                    ) for chart_node in chart_nodes]
-
-    datasets = [Dataset(id=dataset.get('id'),
-                        name=dataset.get('table_name'),
-                        db_id=dataset.get('database').get('id'),
-                        db_name=dataset.get('database').get('database_name'),
-                        kind=dataset.get('kind')
-                        ) for dataset in datasets_nodes]
+    datasets = [
+        Dataset(
+            id=dataset.get("id"),
+            name=dataset.get("table_name"),
+            db_id=dataset.get("database").get("id"),
+            db_name=dataset.get("database").get("database_name"),
+            kind=dataset.get("kind"),
+        )
+        for dataset in datasets_nodes
+    ]
     dashboards = SupersetClient._extract_dashboards_from_charts(charts)
 
     dashboards_entities = create_dashboards_entities(generator, datasets, dashboards)
@@ -35,9 +44,17 @@ def test_create_dashboards_entities(generator):
     assert len(dashboards_entities[0].data_consumer.inputs) == 2
     assert len(dashboards_entities[1].data_consumer.inputs) == 1
 
-    assert dashboards_entities[0].data_consumer.inputs[0] == "//superset/host/host/databases/examples/datasets/threads"
-    assert dashboards_entities[0].data_consumer.inputs[1] == "//superset/host/host/databases/jj/datasets/channels"
-    assert dashboards_entities[1].data_consumer.inputs[0] == "//superset/host/host/databases/examples/datasets/pppp"
-
+    assert (
+        dashboards_entities[0].data_consumer.inputs[0]
+        == "//superset/host/host/databases/examples/datasets/threads"
+    )
+    assert (
+        dashboards_entities[0].data_consumer.inputs[1]
+        == "//superset/host/host/databases/jj/datasets/channels"
+    )
+    assert (
+        dashboards_entities[1].data_consumer.inputs[0]
+        == "//superset/host/host/databases/examples/datasets/pppp"
+    )
 
     pass

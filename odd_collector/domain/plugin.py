@@ -172,5 +172,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "cubejs": CubeJSPlugin,
     "odbc": OdbcPlugin,
     "vertica": VerticaPlugin,
-    "superset": SupersetPlugin
+    "superset": SupersetPlugin,
 }

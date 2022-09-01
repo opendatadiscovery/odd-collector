@@ -18,13 +18,9 @@ def test_table_to_data_entity(generator):
         name="table-name",
         db_id="db-id-1",
         db_name="db-name",
-        kind='virtual',
+        kind="virtual",
         columns=[
-            Column(
-                id=1,
-                name="Age",
-                remote_type="TEXT"
-            ),
+            Column(id=1, name="Age", remote_type="TEXT"),
             Column(
                 id=3,
                 name="Height",

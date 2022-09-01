@@ -18,7 +18,6 @@ def map_column(oddrn_generator: SupersetGenerator, column: Column) -> DataSetFie
                 logical_type=column_type,
                 is_nullable=False,
             ),
-
         )
     except Exception as e:
         raise MappingDataError(f"Mapping column {column_name} failed") from e

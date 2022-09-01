@@ -11,12 +11,10 @@ class SupersetPathsModel(BasePathsModel):
 
     class Config:
         dependencies_map = {
-            "databases": (
-                "databases",
-            ),
+            "databases": ("databases",),
             "datasets": ("databases", "datasets"),
             "columns": ("databases", "datasets", "columns"),
-            "dashboards": ("dashboards", )
+            "dashboards": ("dashboards",),
         }
         # data_source_path = "databases"
 

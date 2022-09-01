@@ -12,12 +12,14 @@ from .mappers.dashboards import create_dashboards_entities
 
 class Adapter(AbstractAdapter):
     def __init__(
-            self, config: SupersetPlugin, client: Type[SupersetClient] = None
+        self, config: SupersetPlugin, client: Type[SupersetClient] = None
     ) -> None:
         client = client or SupersetClient
         self.client = client(config)
 
-        self.__oddrn_generator = SupersetGenerator(host_settings=self.client.get_server_host())
+        self.__oddrn_generator = SupersetGenerator(
+            host_settings=self.client.get_server_host()
+        )
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
@@ -43,8 +45,12 @@ class Adapter(AbstractAdapter):
         }
 
         datasets_data_entities = datasets_data_entities_by_id.values()
-        databases_entities = create_databases_entities(self.__oddrn_generator, list(datasets.values()))
-        dashboards_entities = create_dashboards_entities(self.__oddrn_generator, list(datasets.values()), dashboards)
+        databases_entities = create_databases_entities(
+            self.__oddrn_generator, list(datasets.values())
+        )
+        dashboards_entities = create_dashboards_entities(
+            self.__oddrn_generator, list(datasets.values()), dashboards
+        )
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
             items=[*datasets_data_entities, *databases_entities, *dashboards_entities],

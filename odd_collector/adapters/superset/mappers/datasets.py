@@ -17,7 +17,7 @@ def create_dataset(oddrn_generator, dataset: Dataset):
 
 
 def map_table(oddrn_generator: SupersetGenerator, dataset: Dataset) -> DataEntity:
-    if dataset.kind == 'virtual':
+    if dataset.kind == "virtual":
         _type = DataEntityType.VIEW
     else:
         _type = DataEntityType.TABLE
