@@ -125,6 +125,10 @@ class TableauPlugin(BasePlugin):
     token_value: Optional[SecretStr]
 
 
+class VerticaPlugin(DatabasePlugin):
+    type: Literal["vertica"]
+
+
 class CubeJSPlugin(BasePlugin):
     type: Literal["cubejs"]
     host: str
@@ -138,13 +142,6 @@ class CubeJSPlugin(BasePlugin):
             raise ValueError("Token must be set in production mode")
 
         return value
-
-
-class SupersetPlugin(BasePlugin):
-    type: Literal["superset"]
-    server: str
-    username: str
-    password: str
 
 
 PLUGIN_FACTORY: PluginFactory = {
@@ -167,5 +164,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "tableau": TableauPlugin,
     "cubejs": CubeJSPlugin,
     "odbc": OdbcPlugin,
-    "superset": SupersetPlugin
+    "vertica": VerticaPlugin,
 }
