@@ -1,8 +1,9 @@
 import pytest
 from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
-from odd_collector.adapters.superset.mappers.databases import create_databases_entities
+from odd_collector.adapters.superset.mappers.databases import map_database
 from odd_collector.adapters.superset.domain.dataset import Dataset
 from .raw_data import datasets_nodes
+from typing import Dict
 
 
 @pytest.fixture
@@ -24,7 +25,13 @@ def test_create_databases_entities(generator):
         for dataset in datasets_nodes
     ]
 
-    databases_entities = create_databases_entities(generator, datasets)
+    databases_ids_names: Dict[int, str] = {
+        dataset.database_id: dataset.database_name for dataset in datasets
+    }
+    databases_entities = [
+        map_database(generator, datasets, database_id, database_name)
+        for database_id, database_name in databases_ids_names.items()
+    ]
     assert len(databases_entities) == 3
     assert databases_entities[0].oddrn == "//superset/host/host/databases/examples"
     assert databases_entities[1].oddrn == "//superset/host/host/databases/jj"

@@ -1,21 +1,22 @@
-from typing import List, Dict, Union, Any, NamedTuple, Optional
+from typing import List, Dict, Any, NamedTuple, Optional, Tuple, Union
 from urllib.parse import urlparse
 from .domain.column import Column
 from .domain.chart import Chart
 from .domain.dashboard import Dashboard
 from odd_collector.domain.plugin import SupersetPlugin
 from .domain.dataset import Dataset
-import json
+from json import dumps
 
-import requests
 import asyncio
 import aiohttp
 
 
 class RequestArgs(NamedTuple):
+    method: str
     url: str
-    params: Optional[Dict[Any, Any]]
-    headers: Optional[Dict[Any, Any]]
+    params: Optional[Dict[Any, Any]] = None
+    headers: Optional[Dict[Any, Any]] = None
+    payload: Optional[Dict[Any, Any]] = None
 
 
 class SupersetClient:
@@ -23,27 +24,39 @@ class SupersetClient:
         self.__config = config
         self.__base_url = config.server + "/api/v1/"
 
-    def __get_access_token(self) -> str:
+    async def __get_access_token(self) -> str:
         payload = {
             "username": self.__config.username,
             "password": self.__config.password,
             "provider": "db",
         }
-        r = self.__query("POST", "security/login", payload)
-        return json.loads(r.content)["access_token"]
+        async with aiohttp.ClientSession() as session:
+            response = await self.__fetch_async_response(
+                session,
+                RequestArgs(
+                    method="POST",
+                    url=self.__base_url + "security/login",
+                    payload=payload,
+                ),
+            )
+            return response.get("access_token")
 
     @staticmethod
-    async def __fetch_async_response(session, request_args: RequestArgs):
-        async with session.get(
+    async def __fetch_async_response(
+        session, request_args: RequestArgs
+    ) -> Dict[Any, Any]:
+        async with session.request(
+            request_args.method,
             url=request_args.url,
             params=request_args.params,
             headers=request_args.headers,
+            json=request_args.payload,
         ) as response:
             return await response.json()
 
     async def __fetch_all_async_responses(
         self, request_args_list: List[RequestArgs]
-    ) -> tuple:
+    ) -> Tuple:
         async with aiohttp.ClientSession() as session:
             return await asyncio.gather(
                 *[
@@ -53,30 +66,14 @@ class SupersetClient:
                 return_exceptions=True,
             )
 
-    def __build_headers(self) -> Dict[str, str]:
-        return {"Authorization": "Bearer " + self.__get_access_token()}
-
-    def __query(
-        self,
-        method: str,
-        endpoint: str,
-        payload: Dict[str, Union[str, int]] = None,
-        headers: Dict[str, str] = None,
-        params: Dict[str, Union[str, int]] = None,
-    ) -> requests.Response:
-        return requests.request(
-            method,
-            self.__base_url + endpoint,
-            json=payload,
-            headers=headers,
-            params=params,
-        )
+    async def __build_headers(self) -> Dict[str, str]:
+        return {"Authorization": "Bearer " + await self.__get_access_token()}
 
     def get_server_host(self) -> str:
         return urlparse(self.__config.server).netloc
 
-    def get_datasets(self) -> List[Dataset]:
-        dataset_nodes = self._get_nodes_list_with_pagination("dataset")
+    async def get_datasets(self) -> List[Dataset]:
+        dataset_nodes = await self._get_nodes_list_with_pagination("dataset")
         return [
             Dataset(
                 id=dataset.get("id"),
@@ -88,20 +85,20 @@ class SupersetClient:
             for dataset in dataset_nodes
         ]
 
-    async def __get_dashboard_nodes_by_chart_ids(self, chart_ids: List[int]):
-        headers = self.__build_headers()
+    async def __get_dashboard_nodes_by_chart_ids(self, chart_ids: List[int]) -> Tuple:
+        headers = await self.__build_headers()
         urls = [self.__base_url + f"chart/{chart_id}" for chart_id in chart_ids]
         dashboard_nodes = self.__fetch_all_async_responses(
-            [RequestArgs(url, None, headers) for url in urls]
+            [RequestArgs("GET", url, None, headers) for url in urls]
         )
         return await dashboard_nodes
 
-    def _get_nodes_list_with_pagination(
+    async def _get_nodes_list_with_pagination(
         self, endpoint: str, columns: List[str] = None
     ) -> List[Any]:
         default_page_size = 100
 
-        def get_result_for_a_page(page: int):
+        async def get_result_for_a_page(page: int):
             base_q = {
                 "page_size": default_page_size,
                 "order_direction": "asc",
@@ -109,29 +106,30 @@ class SupersetClient:
             }
             if columns is not None:
                 base_q.update({"columns": columns})
-            decoded = json.loads(
-                self.__query(
-                    "GET",
-                    endpoint,
-                    None,
-                    self.__build_headers(),
-                    {"q": json.dumps(base_q)},
-                ).content
-            )
-            return decoded["result"]
+            async with aiohttp.ClientSession() as session:
+                response = await self.__fetch_async_response(
+                    session,
+                    RequestArgs(
+                        method="GET",
+                        url=self.__base_url + endpoint,
+                        params={"q": dumps(base_q)},
+                        headers=await self.__build_headers(),
+                    ),
+                )
+            return response.get("result")
 
         nodes_list = []
         pg = 0
         results_len = default_page_size
         while results_len == default_page_size:
-            result = get_result_for_a_page(pg)
+            result = await get_result_for_a_page(pg)
             nodes_list += result
             results_len = len(result)
             pg += 1
         return nodes_list
 
     async def _get_charts(self) -> List[Chart]:
-        chart_nodes = self._get_nodes_list_with_pagination(
+        chart_nodes = await self._get_nodes_list_with_pagination(
             "chart", ["datasource_id", "id"]
         )
         chart_ids = [chart_node.get("id") for chart_node in chart_nodes]
@@ -183,13 +181,13 @@ class SupersetClient:
 
         return dashboards
 
-    async def __get_datasets_columns_nodes(self, datasets_ids: List[int]):
-        headers = self.__build_headers()
+    async def __get_datasets_columns_nodes(self, datasets_ids: List[int]) -> Tuple:
+        headers = await self.__build_headers()
         urls = [
             self.__base_url + f"dataset/{dataset_id}" for dataset_id in datasets_ids
         ]
         datasets_columns_nodes = self.__fetch_all_async_responses(
-            [RequestArgs(url, None, headers) for url in urls]
+            [RequestArgs("GET", url, None, headers) for url in urls]
         )
         return await datasets_columns_nodes
 

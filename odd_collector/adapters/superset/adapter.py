@@ -6,8 +6,8 @@ from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
 from .domain.dataset import Dataset
 from odd_collector.domain.plugin import SupersetPlugin
 from .mappers.datasets import map_table
-from .mappers.databases import create_databases_entities
-from .mappers.dashboards import create_dashboards_entities
+from .mappers.databases import map_database
+from .mappers.dashboards import map_dashboard
 
 
 class Adapter(AbstractAdapter):
@@ -25,7 +25,7 @@ class Adapter(AbstractAdapter):
         return self.__oddrn_generator.get_data_source_oddrn()
 
     async def _get_datasets(self) -> Dict[str, Dataset]:
-        dsets = self.client.get_datasets()
+        dsets = await self.client.get_datasets()
         datasets_by_id: Dict[str, Dataset] = {dataset.id: dataset for dataset in dsets}
         dsets_ids = [dset.id for dset in dsets]
         datasets_columns = await self.client.get_datasets_columns(dsets_ids)
@@ -45,12 +45,24 @@ class Adapter(AbstractAdapter):
         }
 
         datasets_data_entities = datasets_data_entities_by_id.values()
-        databases_entities = create_databases_entities(
-            self.__oddrn_generator, list(datasets.values())
-        )
-        dashboards_entities = create_dashboards_entities(
-            self.__oddrn_generator, list(datasets.values()), dashboards
-        )
+        databases_ids_names: Dict[int, str] = {
+            dataset.database_id: dataset.database_name for dataset in datasets.values()
+        }
+
+        databases_entities = [
+            map_database(
+                self.__oddrn_generator,
+                list(datasets.values()),
+                database_id,
+                database_name,
+            )
+            for database_id, database_name in databases_ids_names.items()
+        ]
+
+        dashboards_entities = [
+            map_dashboard(self.__oddrn_generator, list(datasets.values()), dashboard)
+            for dashboard in dashboards
+        ]
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
             items=[*datasets_data_entities, *databases_entities, *dashboards_entities],
