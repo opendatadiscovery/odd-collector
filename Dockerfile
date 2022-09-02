@@ -1,8 +1,8 @@
 FROM python:3.9.12-slim-buster as base
 
-ENV POETRY_PATH=/etc/poetry \
+ENV POETRY_HOME=/etc/poetry \
     POETRY_VERSION=1.1.6
-ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 FROM base AS build
 
@@ -22,7 +22,7 @@ RUN curl -s -o microsoft.asc https://packages.microsoft.com/keys/microsoft.asc \
     && apt-get update -y \
     && apt-get install -y g++ unixodbc-dev
 
-RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_PATH} python3 -
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python3 -
 RUN poetry config virtualenvs.create false
 RUN poetry config experimental.new-installer false
 
@@ -42,13 +42,9 @@ RUN apt-get update -y && apt-get install -y gnupg2 \
     && apt-key add microsoft.asc && rm microsoft.asc \
     && mv mssql-release.list /etc/apt/sources.list.d/mssql-release.list \
     && apt-get update -y \
-    && apt-get install -y g++ \
-    unixodbc \
-    unixodbc-dev \ 
-    unixodbc-bin \
-    msodbcsql17 \ 
-    libgssapi-krb5-2 \ 
-    libpq-dev 
+    && apt-get install -y g++ unixodbc-dev \
+    && apt-get install -y unixodbc-bin \
+    && apt-get install -y msodbcsql17 libgssapi-krb5-2 libpq-dev
 
 
 RUN useradd --create-home --shell /bin/bash app
