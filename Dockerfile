@@ -42,7 +42,9 @@ RUN apt-get update -y && apt-get install -y gnupg2 \
     && apt-key add microsoft.asc && rm microsoft.asc \
     && mv mssql-release.list /etc/apt/sources.list.d/mssql-release.list \
     && apt-get update -y \
-    && apt-get install -y g++ unixodbc-dev \ 
+    && apt-get install -y g++ \
+    unixodbc \
+    unixodbc-dev \ 
     unixodbc-bin \
     msodbcsql17 \ 
     libgssapi-krb5-2 \ 
