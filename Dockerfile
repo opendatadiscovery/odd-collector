@@ -22,7 +22,7 @@ RUN curl -s -o microsoft.asc https://packages.microsoft.com/keys/microsoft.asc \
     && apt-get update -y \
     && apt-get install -y g++ unixodbc-dev
 
-RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+RUN curl -sSL https://install.python-poetry.org | python3 -
 RUN mv /root/.poetry $POETRY_PATH
 RUN poetry config virtualenvs.create false
 RUN poetry config experimental.new-installer false
