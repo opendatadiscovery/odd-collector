@@ -1,8 +1,8 @@
 FROM python:3.9.12-slim-buster as base
 
-ENV POETRY_PATH=/opt/poetry \
+ENV POETRY_HOME=/etc/poetry \
     POETRY_VERSION=1.1.6
-ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 FROM base AS build
 
@@ -22,8 +22,7 @@ RUN curl -s -o microsoft.asc https://packages.microsoft.com/keys/microsoft.asc \
     && apt-get update -y \
     && apt-get install -y g++ unixodbc-dev
 
-RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-RUN mv /root/.poetry $POETRY_PATH
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python3 -
 RUN poetry config virtualenvs.create false
 RUN poetry config experimental.new-installer false
 

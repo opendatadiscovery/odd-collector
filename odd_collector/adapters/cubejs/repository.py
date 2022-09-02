@@ -15,7 +15,7 @@ class CubeJsRepositoryBase(ABC):
         self._dev_mode = config.dev_mode
         self._token = config.token
 
-    def get_cubes(self) -> List[Cube]:
+    async def get_cubes(self) -> List[Cube]:
         raise NotImplementedError
 
 
