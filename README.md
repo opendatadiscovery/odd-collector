@@ -31,6 +31,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | Snowflake     | [config](config_examples/snowflake.yaml)     |
 | Tableau       | [config](config_examples/tableau.yaml)       |
 | Tarantool     | [config](config_examples/tarantool.yaml)     |
+| Vertica       | [config](config_examples/vertica.yaml)       |
 | ODBC          | [config](config_examples/odbc.yaml), [README.md](odd_collector/adapters/odbc/README.md) |
 | Cube          | [config](config_examples/cubejs.yaml)        |
 
