@@ -313,7 +313,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "confluent-kafka"
-version = "1.9.0"
+version = "1.9.2"
 description = "Confluent's Python client for Apache Kafka"
 category = "main"
 optional = false
@@ -1880,7 +1880,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "uvicorn"
-version = "0.18.2"
+version = "0.18.3"
 description = "The lightning-fast ASGI server."
 category = "main"
 optional = false
@@ -1892,13 +1892,13 @@ colorama = {version = ">=0.4", optional = true, markers = "sys_platform == \"win
 h11 = ">=0.8"
 httptools = {version = ">=0.4.0", optional = true, markers = "extra == \"standard\""}
 python-dotenv = {version = ">=0.13", optional = true, markers = "extra == \"standard\""}
-PyYAML = {version = ">=5.1", optional = true, markers = "extra == \"standard\""}
+pyyaml = {version = ">=5.1", optional = true, markers = "extra == \"standard\""}
 uvloop = {version = ">=0.14.0,<0.15.0 || >0.15.0,<0.15.1 || >0.15.1", optional = true, markers = "sys_platform != \"win32\" and sys_platform != \"cygwin\" and platform_python_implementation != \"PyPy\" and extra == \"standard\""}
 watchfiles = {version = ">=0.13", optional = true, markers = "extra == \"standard\""}
 websockets = {version = ">=10.0", optional = true, markers = "extra == \"standard\""}
 
 [package.extras]
-standard = ["websockets (>=10.0)", "httptools (>=0.4.0)", "watchfiles (>=0.13)", "python-dotenv (>=0.13)", "PyYAML (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "colorama (>=0.4)"]
+standard = ["colorama (>=0.4)", "httptools (>=0.4.0)", "python-dotenv (>=0.13)", "pyyaml (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "watchfiles (>=0.13)", "websockets (>=10.0)"]
 
 [[package]]
 name = "uvloop"
@@ -1980,7 +1980,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9.1"
-content-hash = "5801c2dc6e544ab9e4f6a3817c42441bbd3cfa445925f8c6ae7ab5f9ef5a6bf1"
+content-hash = "0f68eb47afa0f846c6b84bf082792d10e6b05f936e1ab0213a6a81b343456401"
 
 [metadata.files]
 absl-py = [
@@ -2240,25 +2240,7 @@ colorama = [
     {file = "colorama-0.4.5-py2.py3-none-any.whl", hash = "sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da"},
     {file = "colorama-0.4.5.tar.gz", hash = "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"},
 ]
-confluent-kafka = [
-    {file = "confluent-kafka-1.9.0.tar.gz", hash = "sha256:2f87004473718d1976f57c9e23307c216daf8cbd47ffa7115ef0ce48963c9c69"},
-    {file = "confluent_kafka-1.9.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:7cec61388faf7d122ae0bfb7948bdb1333ad8bd95a6cdc50eac97342e0faff75"},
-    {file = "confluent_kafka-1.9.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:f85c80a6b37bf60caa8118d2be205380e037e389769ee92b15cc733e3044e17a"},
-    {file = "confluent_kafka-1.9.0-cp36-cp36m-win32.whl", hash = "sha256:fb23fd087695cf1753a43bf77173e9c87f535b9293b94b7f29f17461c1ba9eb5"},
-    {file = "confluent_kafka-1.9.0-cp36-cp36m-win_amd64.whl", hash = "sha256:066856f43b248c6634f43a01bb5798c1acf8553fcad0ee04f353643a2473b788"},
-    {file = "confluent_kafka-1.9.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:5559cb175cb668f53e4a053d921a06393aaf2a16b14cd807439e93d7100b1594"},
-    {file = "confluent_kafka-1.9.0-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:49312cd1dce9963578669412831c55a83dc42ced0af975fe8a885860d4439505"},
-    {file = "confluent_kafka-1.9.0-cp37-cp37m-win32.whl", hash = "sha256:1446e5d8502694f4a9140ace087567b85300bd9766a532e006f2f6e9c6e99284"},
-    {file = "confluent_kafka-1.9.0-cp37-cp37m-win_amd64.whl", hash = "sha256:c3bfe2a13efb0bb810146466175038c0202b8e5f14a9a37ca494bbd777f26870"},
-    {file = "confluent_kafka-1.9.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:80b87db486566067f7a24955f33db0fe74af977938c917216fe709b0332f668e"},
-    {file = "confluent_kafka-1.9.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:41590186d9528b4a9e3a6116551918471f41e82f54438742f1c8ecbe2441d1c3"},
-    {file = "confluent_kafka-1.9.0-cp38-cp38-win32.whl", hash = "sha256:9ea5916b7537e5679011387336c101433567587d3862351e75c8bb8d0dc3d838"},
-    {file = "confluent_kafka-1.9.0-cp38-cp38-win_amd64.whl", hash = "sha256:fa1cbc113809a0aa1f8b33c4ec2cf246fcbc329c3b9e40054514d4c95ffd44e4"},
-    {file = "confluent_kafka-1.9.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:fdca4a62ed61ae8d77758f3df163c7959a1757a2cd37f0f54a15f7f347841b59"},
-    {file = "confluent_kafka-1.9.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:45fa3b9d4d015c099dcb5fd77cbc0d40f6683afe9a9b279c82fb0ed814e11724"},
-    {file = "confluent_kafka-1.9.0-cp39-cp39-win32.whl", hash = "sha256:4a93eccaab455ab4ad70cdd22f2e15b9fd5607a019dd08cd95b04308193f84cb"},
-    {file = "confluent_kafka-1.9.0-cp39-cp39-win_amd64.whl", hash = "sha256:2008aeca66112722d3bcbff0baa40e129bdc6747755d5e71409493f2b56ffa36"},
-]
+confluent-kafka = []
 cryptography = []
 dask = [
     {file = "dask-2022.1.1-py3-none-any.whl", hash = "sha256:6caaf633c85ecd1197025de0b8bd244ef88b4b1810f315b09005b3fe5c21ee8e"},
