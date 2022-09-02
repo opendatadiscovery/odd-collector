@@ -126,6 +126,10 @@ class TableauPlugin(BasePlugin):
     token_value: Optional[SecretStr]
 
 
+class VerticaPlugin(DatabasePlugin):
+    type: Literal["vertica"]
+
+
 class CubeJSPlugin(BasePlugin):
     type: Literal["cubejs"]
     host: str
@@ -161,4 +165,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "tableau": TableauPlugin,
     "cubejs": CubeJSPlugin,
     "odbc": OdbcPlugin,
+    "vertica": VerticaPlugin,
 }
