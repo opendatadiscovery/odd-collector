@@ -2,6 +2,13 @@ from typing import Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
+from pydantic import SecretStr, validator
+
+from odd_collector.domain.predefined_data_source import PredefinedDatasourceParams
+
+
+class WithPredefinedDataSource:
+    predefined_datasource: PredefinedDatasourceParams
 
 
 class WithHost(BasePlugin):
@@ -22,6 +29,11 @@ class PostgreSQLPlugin(DatabasePlugin):
     type: Literal["postgresql"]
 
 
+class OdbcPlugin(DatabasePlugin):
+    type: Literal["odbc"]
+    driver: str = "{ODBC Driver 17s for SQL Server}"
+
+
 class MySQLPlugin(DatabasePlugin):
     type: Literal["mysql"]
     ssl_disabled: Optional[bool] = False
@@ -34,6 +46,7 @@ class MSSQLPlugin(DatabasePlugin):
 
 class ClickhousePlugin(DatabasePlugin):
     type: Literal["clickhouse"]
+    port: Optional[int]
 
 
 class RedshiftPlugin(DatabasePlugin):
@@ -107,8 +120,29 @@ class TableauPlugin(BasePlugin):
     type: Literal["tableau"]
     server: str
     site: str
-    user: str
-    password: str
+    user: Optional[str]
+    password: Optional[SecretStr]
+    token_name: Optional[str]
+    token_value: Optional[SecretStr]
+
+
+class VerticaPlugin(DatabasePlugin):
+    type: Literal["vertica"]
+
+
+class CubeJSPlugin(BasePlugin):
+    type: Literal["cubejs"]
+    host: str
+    dev_mode: bool = False
+    token: Optional[SecretStr]
+    predefined_datasource: PredefinedDatasourceParams
+
+    @validator("token")
+    def validate_token(cls, value: Optional[SecretStr], values):
+        if values.get("dev_mode") == False and value is None:
+            raise ValueError("Token must be set in production mode")
+
+        return value
 
 
 PLUGIN_FACTORY: PluginFactory = {
@@ -129,4 +163,7 @@ PLUGIN_FACTORY: PluginFactory = {
     "tarantool": TarantoolPlugin,
     "neo4j": Neo4jPlugin,
     "tableau": TableauPlugin,
+    "cubejs": CubeJSPlugin,
+    "odbc": OdbcPlugin,
+    "vertica": VerticaPlugin,
 }

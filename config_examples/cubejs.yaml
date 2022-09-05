@@ -1,0 +1,20 @@
+default_pulling_interval: 10
+token: ""
+platform_host_url: localhost:8080
+plugins:
+  - type: postgresql
+    name: postgresql_adapter
+    database: computer
+    host: localhost
+    port: 5432
+    user: postgres
+    password: postgres
+  - type: cubejs
+    host: http://localhost:4000
+    name: cubejs
+    token: ""
+    dev_mode: true
+    predefined_datasource:
+      type: postgres
+      host: localhost
+      database: computer

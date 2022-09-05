@@ -1,11 +1,18 @@
 default_pulling_interval: 10
-token: ""
-platform_host_url: "http://localhost:8080"
+token: <COLLECTOR_TOKEN>
+platform_host_url: http://localhost:8080
 plugins:
-  - type: postgresql
-    name: test_psql
-    host: "database"
-    port: 5432
-    database: ""
-    user: ""
-    password: ""
+  - type: clickhouse
+    name: clickhouse_adapter
+    host: localhost
+    database: helloworld
+    user: default
+    password: qwerty
+  - type: cubejs
+    name: cubejs_adapter
+    host: http://localhost:4000
+    token: <CUBEJS_TOKEN>
+    predefined_datasource:
+      type: clickhouse
+      host: localhost
+      database: helloworld
