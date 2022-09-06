@@ -1,2 +1,0 @@
-class ClickHouseException(Exception):
-    pass
