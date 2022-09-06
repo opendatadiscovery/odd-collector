@@ -22,6 +22,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | Hive          | [config](config_examples/hive.yaml)                                                     |
 | Kafka         | [config](config_examples/kafka.yaml)                                                    |
 | Kubeflow      | [config](config_examples/kubeflow.yaml)                                                 |
+| MariaDB       | [config](config_examples/mysql.yaml), _supported via MySql adapter_                     |
 | MongoDB       | [config](config_examples/mongodb.yaml)                                                  |
 | MSSql         | [config](config_examples/mssql.yaml)                                                    |
 | MySql         | [config](config_examples/mysql.yaml)                                                    |
