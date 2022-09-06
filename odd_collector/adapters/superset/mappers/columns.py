@@ -1,6 +1,6 @@
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataSetField, DataSetFieldType
-from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
+from oddrn_generator.generators import SupersetGenerator
 from odd_models.models import Type as ColumnType
 from ..domain.column import Column
 

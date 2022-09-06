@@ -1,7 +1,7 @@
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity, DataEntityType, DataSet
 
-from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
+from oddrn_generator.generators import SupersetGenerator
 from .columns import map_column
 from ..domain.dataset import Dataset
 

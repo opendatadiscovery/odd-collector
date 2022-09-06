@@ -1,20 +1,18 @@
 default_pulling_interval: 10
-token: ""
+token: <COLLECTOR_TOKEN>
 platform_host_url: http://localhost:8080
 plugins:
-  - type: postgresql
-    name: postgresql_adapter
-    database: computer
+  - type: clickhouse
+    name: clickhouse_adapter
     host: localhost
-    port: 5432
-    user: postgres
-    password: ""
+    database: my_database
+    user: default
+    password: qwerty
   - type: cubejs
-    name: cubejs
+    name: cubejs_adapter
     host: http://localhost:4000
-    token: ""
     dev_mode: true
     predefined_datasource:
-      type: "postgres"
+      type: clickhouse
       host: localhost
-      database: computer
+      database: my_database

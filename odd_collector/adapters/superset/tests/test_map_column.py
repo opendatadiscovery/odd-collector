@@ -1,6 +1,6 @@
 import pytest
 from odd_models.models import Type
-from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
+from oddrn_generator.generators import SupersetGenerator
 
 from odd_collector.adapters.superset.domain.column import Column
 from odd_collector.adapters.superset.mappers.columns import map_column

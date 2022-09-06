@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, NamedTuple, Optional, Tuple, Union
+from typing import List, Dict, Any, NamedTuple, Optional, Tuple
 from urllib.parse import urlparse
 from .domain.column import Column
 from .domain.chart import Chart
@@ -73,7 +73,7 @@ class SupersetClient:
         return urlparse(self.__config.server).netloc
 
     async def get_datasets(self) -> List[Dataset]:
-        dataset_nodes = await self._get_nodes_list_with_pagination("dataset")
+        dataset_nodes = await self.__get_nodes_list_with_pagination("dataset")
         return [
             Dataset(
                 id=dataset.get("id"),
@@ -93,7 +93,7 @@ class SupersetClient:
         )
         return await dashboard_nodes
 
-    async def _get_nodes_list_with_pagination(
+    async def __get_nodes_list_with_pagination(
         self, endpoint: str, columns: List[str] = None
     ) -> List[Any]:
         default_page_size = 100
@@ -128,8 +128,8 @@ class SupersetClient:
             pg += 1
         return nodes_list
 
-    async def _get_charts(self) -> List[Chart]:
-        chart_nodes = await self._get_nodes_list_with_pagination(
+    async def __get_charts(self) -> List[Chart]:
+        chart_nodes = await self.__get_nodes_list_with_pagination(
             "chart", ["datasource_id", "id"]
         )
         chart_ids = [chart_node.get("id") for chart_node in chart_nodes]
@@ -157,10 +157,10 @@ class SupersetClient:
         ]
 
     async def get_dashboards(self) -> List[Dashboard]:
-        return self._extract_dashboards_from_charts(await self._get_charts())
+        return self.extract_dashboards_from_charts(await self.__get_charts())
 
     @staticmethod
-    def _extract_dashboards_from_charts(charts: List[Chart]) -> List[Dashboard]:
+    def extract_dashboards_from_charts(charts: List[Chart]) -> List[Dashboard]:
         unique_dashboard_ids_names: Dict[int, str] = {}
         for chart in charts:
             unique_dashboard_ids_names.update(chart.dashboards_ids_names)

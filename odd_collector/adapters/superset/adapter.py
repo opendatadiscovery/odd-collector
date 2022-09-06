@@ -2,7 +2,7 @@ from typing import Dict, Type
 from .client import SupersetClient
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
-from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
+from oddrn_generator.generators import SupersetGenerator
 from .domain.dataset import Dataset
 from odd_collector.domain.plugin import SupersetPlugin
 from .mappers.datasets import map_table
@@ -43,16 +43,17 @@ class Adapter(AbstractAdapter):
             dataset_id: map_table(self.__oddrn_generator, dataset)
             for dataset_id, dataset in datasets.items()
         }
+        datasets_values = list(datasets.values())
 
         datasets_data_entities = datasets_data_entities_by_id.values()
         databases_ids_names: Dict[int, str] = {
-            dataset.database_id: dataset.database_name for dataset in datasets.values()
+            dataset.database_id: dataset.database_name for dataset in datasets_values
         }
 
         databases_entities = [
             map_database(
                 self.__oddrn_generator,
-                list(datasets.values()),
+                datasets_values,
                 database_id,
                 database_name,
             )
@@ -60,7 +61,7 @@ class Adapter(AbstractAdapter):
         ]
 
         dashboards_entities = [
-            map_dashboard(self.__oddrn_generator, list(datasets.values()), dashboard)
+            map_dashboard(self.__oddrn_generator, datasets_values, dashboard)
             for dashboard in dashboards
         ]
         return DataEntityList(

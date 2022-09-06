@@ -1,5 +1,5 @@
 import pytest
-from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
+from oddrn_generator.generators import SupersetGenerator
 from odd_collector.adapters.superset.mappers.databases import map_database
 from odd_collector.adapters.superset.domain.dataset import Dataset
 from .raw_data import datasets_nodes
@@ -51,4 +51,3 @@ def test_create_databases_entities(generator):
         databases_entities[2].data_entity_group.entities_list[0]
         == "//superset/host/host/databases/ppp/datasets/channels"
     )
-    pass

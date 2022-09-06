@@ -1,5 +1,5 @@
 import pytest
-from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
+from oddrn_generator.generators import SupersetGenerator
 from odd_collector.adapters.superset.mappers.dashboards import (
     map_dashboard,
 )
@@ -36,7 +36,7 @@ def test_create_dashboards_entities(generator):
         )
         for dataset in datasets_nodes
     ]
-    dashboards = SupersetClient._extract_dashboards_from_charts(charts)
+    dashboards = SupersetClient.extract_dashboards_from_charts(charts)
 
     dashboards_entities = [
         map_dashboard(generator, datasets, dashboard) for dashboard in dashboards

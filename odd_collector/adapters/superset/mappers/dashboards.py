@@ -1,7 +1,7 @@
 from ..domain.dataset import Dataset
 from ..domain.dashboard import Dashboard
 from typing import List
-from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
+from oddrn_generator.generators import SupersetGenerator
 from odd_models.models import DataEntity, DataEntityType, DataConsumer
 
 

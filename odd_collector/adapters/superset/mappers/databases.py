@@ -1,6 +1,6 @@
 from ..domain.dataset import Dataset
 from typing import List, Dict
-from odd_collector.adapters.superset.plugin.plugin import SupersetGenerator
+from oddrn_generator.generators import SupersetGenerator
 from odd_models.models import DataEntity, DataEntityType, DataEntityGroup
 
 
