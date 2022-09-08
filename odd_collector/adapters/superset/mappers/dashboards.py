@@ -12,6 +12,9 @@ def map_dashboard(
     return DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path("dashboards", dashboard.name),
         name=dashboard.name,
+        owner=dashboard.owner,
+        description=dashboard.description,
+        metadata=dashboard.metadata,
         type=DataEntityType.DASHBOARD,
         data_consumer=DataConsumer(
             inputs=[

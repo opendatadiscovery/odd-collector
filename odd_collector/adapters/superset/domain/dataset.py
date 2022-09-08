@@ -1,5 +1,6 @@
-from typing import List
+from typing import List, Optional
 from odd_collector.adapters.superset.domain.column import Column
+from odd_models.models import MetadataExtension
 
 
 class Dataset:
@@ -11,7 +12,13 @@ class Dataset:
         db_name: str,
         kind: str,
         columns: List[Column] = None,
+        metadata: Optional[List[MetadataExtension]] = None,
+        owner: Optional[str] = None,
+        description: Optional[str] = None,
     ):
+        self.description = description
+        self.owner = owner
+        self.metadata = metadata
         self.id = id
         self.name = name
         self.database_name = db_name

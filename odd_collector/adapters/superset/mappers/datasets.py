@@ -24,6 +24,9 @@ def map_table(oddrn_generator: SupersetGenerator, dataset: Dataset) -> DataEntit
     try:
         return DataEntity(
             oddrn=dataset.get_oddrn(oddrn_generator),
+            owner=dataset.owner,
+            description=dataset.description,
+            metadata=dataset.metadata,
             name=dataset.name,
             type=_type,
             dataset=create_dataset(oddrn_generator, dataset),

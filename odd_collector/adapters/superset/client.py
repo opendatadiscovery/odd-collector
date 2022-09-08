@@ -5,6 +5,12 @@ from .domain.chart import Chart
 from .domain.dashboard import Dashboard
 from odd_collector.domain.plugin import SupersetPlugin
 from .domain.dataset import Dataset
+from .domain.metadata import create_metadata_extension_list, add_owner
+from . import (
+    _METADATA_SCHEMA_URL_PREFIX,
+    _keys_to_include_dashboard,
+    _keys_to_include_dataset,
+)
 from json import dumps
 
 import asyncio
@@ -77,6 +83,10 @@ class SupersetClient:
         return [
             Dataset(
                 id=dataset.get("id"),
+                metadata=create_metadata_extension_list(
+                    _METADATA_SCHEMA_URL_PREFIX, dataset, _keys_to_include_dataset
+                ),
+                description=dataset.get("description"),
                 name=dataset.get("table_name"),
                 db_id=dataset.get("database").get("id"),
                 db_name=dataset.get("database").get("database_name"),
@@ -157,7 +167,33 @@ class SupersetClient:
         ]
 
     async def get_dashboards(self) -> List[Dashboard]:
-        return self.extract_dashboards_from_charts(await self.__get_charts())
+        dashboards_without_metadata = self.extract_dashboards_from_charts(
+            await self.__get_charts()
+        )
+        nodes_with_metadata = await self.__get_dashboards_nodes_with_metadata()
+        return self.populate_dashboards_with_metadata(
+            dashboards_without_metadata, nodes_with_metadata
+        )
+
+    async def __get_dashboards_nodes_with_metadata(self) -> Dict[int, Dict[Any, Any]]:
+        nodes_with_metadata = await self.__get_nodes_list_with_pagination("dashboard")
+        return {node.get("id"): node for node in nodes_with_metadata}
+
+    @staticmethod
+    def populate_dashboards_with_metadata(
+        dashboards_without_metadata: List[Dashboard],
+        nodes_with_metadata: Dict[int, Dict[Any, Any]],
+    ):
+        dashboards_with_metadata: List[Dashboard] = []
+        for dashboard in dashboards_without_metadata:
+            metanode = nodes_with_metadata.get(dashboard.id)
+            dashboard.metadata = create_metadata_extension_list(
+                _METADATA_SCHEMA_URL_PREFIX, metanode, _keys_to_include_dashboard
+            )
+            dashboard = add_owner(metanode, dashboard)
+
+            dashboards_with_metadata.append(dashboard)
+        return dashboards_with_metadata
 
     @staticmethod
     def extract_dashboards_from_charts(charts: List[Chart]) -> List[Dashboard]:
