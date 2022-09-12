@@ -168,14 +168,14 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "boto3"
-version = "1.24.70"
+version = "1.24.71"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.70,<1.28.0"
+botocore = ">=1.27.71,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -184,7 +184,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.70"
+version = "1.27.71"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -1140,7 +1140,7 @@ sqlparse = "0.4.2"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.42"
+version = "0.1.43"
 description = "Open Data Discovery Resource Name Generator"
 category = "main"
 optional = false
@@ -1754,7 +1754,7 @@ protobuf = ">=3.13,<4"
 
 [[package]]
 name = "termcolor"
-version = "2.0.0"
+version = "2.0.1"
 description = "ANSI color formatting for output in terminal"
 category = "main"
 optional = false
@@ -2147,12 +2147,12 @@ black = [
     {file = "black-22.3.0.tar.gz", hash = "sha256:35020b8886c022ced9282b51b5a875b6d1ab0c387b31a065b84db7c33085ca79"},
 ]
 boto3 = [
-    {file = "boto3-1.24.70-py3-none-any.whl", hash = "sha256:bb69ebe7c484305568b1aaed664db3d09716dc93235e41f23538f99ea4f3addc"},
-    {file = "boto3-1.24.70.tar.gz", hash = "sha256:abac9c7e54212ee68c2a311812a498ece2c43f98d1302f099128a9fe45cf37c5"},
+    {file = "boto3-1.24.71-py3-none-any.whl", hash = "sha256:c82d7ab1cdcf4701a424b1820d9646d2c0869c129266917cad35aae9e9419c1c"},
+    {file = "boto3-1.24.71.tar.gz", hash = "sha256:0ee555dc0f362d2761d86e0264ee79985b09de4289334fbec7de384b39ccce72"},
 ]
 botocore = [
-    {file = "botocore-1.27.70-py3-none-any.whl", hash = "sha256:c0a014b4dfd7ffe739393034aa6e70e73f3a1b22c7667a59858259b341bf5082"},
-    {file = "botocore-1.27.70.tar.gz", hash = "sha256:2ad5be6ca322a549f858d245237358ed300f7347096caacbb29c013e10663d34"},
+    {file = "botocore-1.27.71-py3-none-any.whl", hash = "sha256:6b86c6277e5eb4f9d87de824d53f0b6789b618184ccda555be24741034de107a"},
+    {file = "botocore-1.27.71.tar.gz", hash = "sha256:91dc4e8ae768db3a5c26ef8acd6425bbbec4b17636350d526c226a5879d3c613"},
 ]
 cachetools = [
     {file = "cachetools-4.2.4-py3-none-any.whl", hash = "sha256:92971d3cb7d2a97efff7c7bb1657f21a8f5fb309a37530537c71b1774189f2d1"},
@@ -3055,8 +3055,8 @@ odd-models = [
     {file = "odd_models-2.0.2-py3-none-any.whl", hash = "sha256:292d93621073364c259f852748f23673e1ee5bdafb0885d0d31e6c4992313e6f"},
 ]
 oddrn-generator = [
-    {file = "oddrn-generator-0.1.42.tar.gz", hash = "sha256:c346c813ff4b19801696179af90050b787811e00953da5415e2784c7e3cfb871"},
-    {file = "oddrn_generator-0.1.42-py3-none-any.whl", hash = "sha256:a1542f1743f7b55e045cc4661e03b28d44a19c83e70ab0328e400c23b27f8ddd"},
+    {file = "oddrn-generator-0.1.43.tar.gz", hash = "sha256:09e8982fd6a701da10051b2db7a668d7858a32f6da423c63ee9cd5cadc555c89"},
+    {file = "oddrn_generator-0.1.43-py3-none-any.whl", hash = "sha256:6cf9573ebdb5f4c3749816e9a2c243303d3a044475dd10005bd7dd92710859f5"},
 ]
 oscrypto = [
     {file = "oscrypto-1.3.0-py2.py3-none-any.whl", hash = "sha256:2b2f1d2d42ec152ca90ccb5682f3e051fb55986e1b170ebde472b133713e7085"},
@@ -3590,8 +3590,8 @@ tensorflow-metadata = [
     {file = "tensorflow_metadata-1.10.0-py3-none-any.whl", hash = "sha256:e3ff528496105c0d73b2a402877525b1695635378fbe5c1b47ac7b3780816bb3"},
 ]
 termcolor = [
-    {file = "termcolor-2.0.0-py3-none-any.whl", hash = "sha256:6e1a4b8e9c064ad8f9dfe2f9b35a7871d6ea5b6bb4f9da55bc0fd494b2302204"},
-    {file = "termcolor-2.0.0.tar.gz", hash = "sha256:4889f2243b1da3934fc6cf4b57ee50a0ce98065ec06bfddac3fa6db24a9fcde2"},
+    {file = "termcolor-2.0.1-py3-none-any.whl", hash = "sha256:7e597f9de8e001a3208c4132938597413b9da45382b6f1d150cff8d062b7aaa3"},
+    {file = "termcolor-2.0.1.tar.gz", hash = "sha256:6b2cf769e93364a2676e1de56a7c0cff2cf5bd07f37e9cc80b0dd6320ebfe388"},
 ]
 thrift = [
     {file = "thrift-0.13.0.tar.gz", hash = "sha256:9af1c86bf73433afc6010ed376a6c6aca2b54099cc0d61895f640870a9ae7d89"},
