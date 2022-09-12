@@ -1,18 +1,56 @@
 default_pulling_interval: 10
-token: <COLLECTOR_TOKEN>
+token: "CJW2qIOvlG8oG4FKEw399KmpSXdmRf8BaqDhJyKj"
 platform_host_url: http://localhost:8080
 plugins:
-  - type: clickhouse
-    name: clickhouse_adapter
+#  - type: mysql
+#    name: mysql_adapter
+#    description: "" # Optional string
+#    database: test_schema_mysql
+#    host: localhost
+#    port: 3306
+#    user: root
+#    password: 417b168ed2ed0c71d787436fae03db0d
+#    ssl_disabled: False # Optional, default: False
+
+
+  - type: presto
+    name: presto_adapter
+    description: "" # Optional string
     host: localhost
-    database: my_database
-    user: default
-    password: qwerty
-  - type: cubejs
-    name: cubejs_adapter
-    host: http://localhost:4000
-    dev_mode: true
-    predefined_datasource:
-      type: clickhouse
-      host: localhost
-      database: my_database
+    port: 8081
+    user: root
+
+
+
+#  - type: tableau
+#    name: tableau_adapter
+#    description: "" # Optional string
+#    server: https://dub01.online.tableau.com/
+#    site: provectustrialonly
+#    user: ulukashou@provectus.com
+#    password: f44PX#rNMzC$K@X # Optional string
+#    token_name:  # Optional string, used for connection to TableauServer with 2FA
+#    token_value:  # Optional string, used for connection to TableauServer with 2FA
+
+#  - type: superset
+#    name: superset_adapter
+#    server: http://localhost:8088/
+#    username: admin
+#    password: admin
+
+#  - type: postgresql
+#    name: new_another_name
+#    database: computer
+#    host: localhost
+#    port: 5432
+#    user: postgres
+#    password: ""
+#  - type: cubejs
+#    name: cubejs
+#    host: http://localhost:4000
+#    token: ""
+#    dev_mode: true
+#    predefined_datasource:
+#      type: "postgres"
+#      host: localhost
+#      database: computer
