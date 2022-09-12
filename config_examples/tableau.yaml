@@ -11,3 +11,4 @@ plugins:
     password: password # Optional string
     token_name: token_name # Optional string, used for connection to TableauServer with 2FA
     token_value: token_value # Optional string, used for connection to TableauServer with 2FA
+    pagination_size: 10 # This parameter may affect performance of the query as the query gets larger, default: 10

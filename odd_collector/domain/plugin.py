@@ -124,6 +124,7 @@ class TableauPlugin(BasePlugin):
     password: Optional[SecretStr]
     token_name: Optional[str]
     token_value: Optional[SecretStr]
+    pagination_size: int = 10
 
 
 class VerticaPlugin(DatabasePlugin):
