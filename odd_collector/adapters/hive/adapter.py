@@ -7,6 +7,10 @@ from more_itertools import flatten
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import HiveGenerator
+from thrift_files.libraries.thrift_hive_metastore_client.ttypes import (
+    PrimaryKeysRequest,
+)
+
 from .mappers.tables import map_hive_table
 from .mappers.columns.main import map_column_stats
 
@@ -68,7 +72,11 @@ class Adapter(AbstractAdapter):
             return []
 
     def __process_table_raw_data(self, table_stats) -> DataEntity:
-        columns = {c.name: c.type for c in table_stats.sd.cols}
+        pk = self.__get_primary_keys(table_stats)
+        columns = {
+            c.name: {"type": c.type, "is_primary_key": c.name in pk}
+            for c in table_stats.sd.cols
+        }
         unmapped_stats = self.__get_columns_stats(table_stats, columns)
         stats = map_column_stats(unmapped_stats) or None
         result = map_hive_table(self.__host, table_stats, columns, stats)
@@ -97,6 +105,14 @@ class Adapter(AbstractAdapter):
                 f"Stats has not been gathered. "
             )
             return []
+
+    def __get_primary_keys(self, table_stats):
+        pr_request = PrimaryKeysRequest(
+            table_stats.dbName, table_stats.tableName, table_stats.catName
+        )
+        pr_response = self.__cursor.get_primary_keys(pr_request)
+        keys = [key.column_name for key in pr_response.primaryKeys]
+        return keys
 
     def __connect(self):
         self.__connection = HiveMetastoreClient(self.__host, self.__port)
