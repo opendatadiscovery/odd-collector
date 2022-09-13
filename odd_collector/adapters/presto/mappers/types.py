@@ -47,6 +47,5 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "iprefix": Type.TYPE_STRING,
     "hyperloglog": Type.TYPE_STRING,
     "p4hyperloglog": Type.TYPE_STRING,
-    "khyperloglog": Type.TYPE_STRING
-
+    "khyperloglog": Type.TYPE_STRING,
 }

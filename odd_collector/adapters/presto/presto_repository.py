@@ -1,36 +1,66 @@
 from prestodb.dbapi import connect
+from prestodb.auth import BasicAuthentication
 from typing import List, Union
+from typing import Dict
 from .mappers import catalogs_to_exclude, schemas_to_exclude
+
+
+class LdapPropertiesError(Exception):
+    def __init__(self, _property_name):
+        self.message = f"LDAP requires {_property_name} as well"
+        super().__init__(self.message)
 
 
 class PrestoRepository:
     def __init__(self, config):
-        self.__host = config.host
-        self.__port = config.port
-        self.__user = config.user
+        self.__config = config
+
+    @property
+    def __conn_params(self) -> Dict[str, str]:
+        base_params = {
+            "host": self.__config.host,
+            "port": self.__config.port,
+            "user": self.__config.user,
+        }
+        if (self.__config.principal_id is None) & (self.__config.password is None):
+            return base_params
+        else:
+            if (self.__config.principal_id is not None) & (
+                self.__config.password is not None
+            ):
+                base_params.update(
+                    {
+                        "http_scheme": "https",
+                        "auth": BasicAuthentication(
+                            self.__config.principal_id, self.__config.password
+                        ),
+                    }
+                )
+                return base_params
+            else:
+                if (self.__config.principal_id is not None) & (
+                    self.__config.password is None
+                ):
+                    raise LdapPropertiesError("password")
+                else:
+                    raise LdapPropertiesError("principal_id")
 
     @property
     def server_url(self):
-        return f"{self.__host}:{self.__port}"
+        return f"{self.__config.host}:{self.__config.port}"
 
     @staticmethod
     def iterable_to_str(inst: Union[list, set]) -> str:
-        return ', '.join(f"'{w}'" for w in inst)
+        return ", ".join(f"'{w}'" for w in inst)
 
     def __execute(self, query: str) -> List[list]:
-        presto_conn_params = {
-            "host": self.__host,
-            "port": self.__port,
-            "user": self.__user,
-        }
-        with connect(**presto_conn_params) as conn:
+        with connect(**self.__conn_params) as conn:
             cur = conn.cursor()
             cur.execute(query)
             records = cur.fetchall()
             return records
 
-    @property
-    def __columns_query(self):
+    def __get_columns_query(self):
         return f"""
             SELECT table_cat, table_schem, table_name, column_name, type_name
             FROM system.jdbc.columns 
@@ -39,8 +69,7 @@ class PrestoRepository:
 
         """
 
-    @property
-    def __tables_query(self):
+    def __get_tables_query(self):
         return f"""
             SELECT table_cat, table_schem, table_name, table_type
             FROM system.jdbc.tables 
@@ -50,7 +79,7 @@ class PrestoRepository:
         """
 
     def get_columns(self) -> List[list]:
-        return self.__execute(self.__columns_query)
+        return self.__execute(self.__get_columns_query())
 
     def get_tables(self) -> List[list]:
-        return self.__execute(self.__tables_query)
+        return self.__execute(self.__get_tables_query())

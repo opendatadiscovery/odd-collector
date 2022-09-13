@@ -150,6 +150,8 @@ class PrestoPlugin(BasePlugin):
     host: str
     port: int
     user: str
+    principal_id: Optional[str]
+    password: Optional[str]
 
 
 PLUGIN_FACTORY: PluginFactory = {

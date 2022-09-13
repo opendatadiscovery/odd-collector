@@ -8,17 +8,9 @@ class ColumnMetadata(NamedTuple):
     column_name: Any
     type_name: Any
 
-    @classmethod
-    def get_str_fields(cls):
-        return ", ".join(cls._fields)
-
 
 class TableMetadata(NamedTuple):
     table_cat: Any
     table_schem: Any
     table_name: Any
     table_type: Any
-
-    @classmethod
-    def get_str_fields(cls):
-        return ", ".join(cls._fields)
