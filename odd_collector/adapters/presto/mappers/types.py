@@ -1,0 +1,52 @@
+# https://prestodb.io/docs/current/language/types.html
+
+from odd_models.models import Type
+from typing import Dict
+
+TYPES_SQL_TO_ODD: Dict[str, Type] = {
+    "tinyint": Type.TYPE_INTEGER,
+    "smallint": Type.TYPE_INTEGER,
+    "mediumint": Type.TYPE_INTEGER,
+    "int": Type.TYPE_INTEGER,
+    "integer": Type.TYPE_INTEGER,
+    "bigint": Type.TYPE_INTEGER,
+    "float": Type.TYPE_NUMBER,
+    "real": Type.TYPE_NUMBER,
+    "double": Type.TYPE_NUMBER,
+    "double precision": Type.TYPE_NUMBER,
+    "decimal": Type.TYPE_NUMBER,
+    "numeric": Type.TYPE_NUMBER,
+    "bit": Type.TYPE_BINARY,
+    "boolean": Type.TYPE_BOOLEAN,
+    "char": Type.TYPE_CHAR,
+    "varchar": Type.TYPE_STRING,
+    "tinytext": Type.TYPE_STRING,
+    "mediumtext": Type.TYPE_STRING,
+    "longtext": Type.TYPE_STRING,
+    "text": Type.TYPE_STRING,
+    "interval": Type.TYPE_DURATION,
+    "date": Type.TYPE_DATETIME,
+    "time": Type.TYPE_DATETIME,
+    "datetime": Type.TYPE_DATETIME,
+    "timestamp": Type.TYPE_DATETIME,
+    "year": Type.TYPE_INTEGER,
+    "binary": Type.TYPE_BINARY,
+    "varbinary": Type.TYPE_BINARY,
+    "tinyblob": Type.TYPE_BINARY,
+    "mediumblob": Type.TYPE_BINARY,
+    "longblob": Type.TYPE_BINARY,
+    "blob": Type.TYPE_BINARY,
+    "json": Type.TYPE_STRING,
+    "enum": Type.TYPE_UNION,
+    "set": Type.TYPE_LIST,
+    "array": Type.TYPE_STRUCT,
+    "map": Type.TYPE_MAP,
+    "row": Type.TYPE_STRUCT,
+    "ipaddress": Type.TYPE_STRING,
+    "uuid": Type.TYPE_STRING,
+    "iprefix": Type.TYPE_STRING,
+    "hyperloglog": Type.TYPE_STRING,
+    "p4hyperloglog": Type.TYPE_STRING,
+    "khyperloglog": Type.TYPE_STRING
+
+}

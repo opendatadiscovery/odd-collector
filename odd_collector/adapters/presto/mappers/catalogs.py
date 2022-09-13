@@ -1,5 +1,5 @@
 from typing import Dict
-from oddrn_generator.generators import Generator
+from oddrn_generator.generators import PrestoGenerator
 from odd_models.models import (
     DataEntity,
     DataEntityType,
@@ -7,7 +7,7 @@ from odd_models.models import (
 )
 
 
-def map_catalog(oddrn_generator: Generator, catalog_node_name: str, schemas_node: Dict[str, dict]):
+def map_catalog(oddrn_generator: PrestoGenerator, catalog_node_name: str, schemas_node: Dict[str, dict]) -> DataEntity:
     return DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path("catalogs", catalog_node_name),
         name=catalog_node_name,

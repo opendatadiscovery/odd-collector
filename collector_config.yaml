@@ -1,5 +1,5 @@
 default_pulling_interval: 10
-token: "IuPlVvE95kaIGvcYGzYgzuwRkHdJ8dP6gWfyM6SD"
+token: "bA7FbikTycblINdQGjyyaeVlyMT2wRQWAGr1DKRK"
 platform_host_url: http://localhost:8080
 plugins:
 #  - type: mysql
