@@ -3,7 +3,7 @@ from odd_collector_sdk.domain.adapter import AbstractAdapter
 from .presto_repository import PrestoRepository
 from typing import Type, List
 from pandas import DataFrame
-from .mappers.models import ColumnMetadata
+from .mappers.models import ColumnMetadata, TableMetadata
 from .mappers.catalogs import map_catalog
 from .mappers.schemas import map_schema
 from .mappers.tables import map_table
@@ -30,13 +30,18 @@ class Adapter(AbstractAdapter):
 
     def get_data_entity_list(self) -> DataEntityList:
         columns_nodes = self.repository.get_columns()
-        df = DataFrame(columns_nodes)
-        df.columns = ColumnMetadata._fields
+        tables_nodes = self.repository.get_tables()
+
+        df_tables = DataFrame(tables_nodes)
+        df_tables.columns = TableMetadata._fields
+
+        df_column = DataFrame(columns_nodes)
+        df_column.columns = ColumnMetadata._fields
         nested_nodes = {
             tb_catalog_name: {tb_schema_name: {tb_name: tb[['column_name', 'type_name']].to_dict('records') for
                                                tb_name, tb in tb_schema.groupby('table_name')} for
                               tb_schema_name, tb_schema in tb_catalog.groupby('table_schem')} for
-            tb_catalog_name, tb_catalog in df.groupby('table_cat')}
+            tb_catalog_name, tb_catalog in df_column.groupby('table_cat')}
 
         cats_entities: List[DataEntity] = []
         schemas_entities: List[DataEntity] = []
@@ -53,7 +58,10 @@ class Adapter(AbstractAdapter):
                 self.__oddrn_generator.set_oddrn_paths(catalogs=catalog_node_name, schemas=schema_node_name)
 
                 for table_node_name, columns_nodes in tables_node.items():
-                    tables_entities.append(map_table(self.__oddrn_generator, table_node_name, columns_nodes))
+                    tables_entities.append(map_table(self.__oddrn_generator, table_node_name,
+                                                     columns_nodes, df_tables, catalog_node_name, schema_node_name
+                                                     )
+                                           )
 
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
