@@ -95,6 +95,12 @@ contact_points: list = []
 }
 DatabasePlugin <|-- CassandraPlugin
 
+class PrestoPlugin{
+type: Literal["presto"]
+contact_points: list = []
+}
+DatabasePlugin <|-- PrestoPlugin
+
 class TarantoolPlugin {
 type: Literal["tarantool"]
 }
