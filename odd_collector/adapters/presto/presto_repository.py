@@ -2,6 +2,7 @@ from prestodb.dbapi import connect
 from prestodb.auth import BasicAuthentication
 from typing import List, Union
 from typing import Dict
+from .presto_repository_base import PrestoRepositoryBase
 from .mappers import catalogs_to_exclude, schemas_to_exclude
 
 
@@ -11,43 +12,36 @@ class LdapPropertiesError(Exception):
         super().__init__(self.message)
 
 
-class PrestoRepository:
-    def __init__(self, config):
-        self.__config = config
-
+class PrestoRepository(PrestoRepositoryBase):
     @property
     def __conn_params(self) -> Dict[str, str]:
         base_params = {
-            "host": self.__config.host,
-            "port": self.__config.port,
-            "user": self.__config.user,
+            "host": self._config.host,
+            "port": self._config.port,
+            "user": self._config.user,
         }
-        if (self.__config.principal_id is None) & (self.__config.password is None):
+        if (self._config.principal_id is None) & (self._config.password is None):
             return base_params
         else:
-            if (self.__config.principal_id is not None) & (
-                self.__config.password is not None
+            if (self._config.principal_id is not None) & (
+                self._config.password is not None
             ):
                 base_params.update(
                     {
                         "http_scheme": "https",
                         "auth": BasicAuthentication(
-                            self.__config.principal_id, self.__config.password
+                            self._config.principal_id, self._config.password
                         ),
                     }
                 )
                 return base_params
             else:
-                if (self.__config.principal_id is not None) & (
-                    self.__config.password is None
+                if (self._config.principal_id is not None) & (
+                    self._config.password is None
                 ):
                     raise LdapPropertiesError("password")
                 else:
                     raise LdapPropertiesError("principal_id")
-
-    @property
-    def server_url(self):
-        return f"{self.__config.host}:{self.__config.port}"
 
     @staticmethod
     def iterable_to_str(inst: Union[list, set]) -> str:

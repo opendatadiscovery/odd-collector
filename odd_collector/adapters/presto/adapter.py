@@ -1,6 +1,7 @@
 from odd_collector.domain.plugin import PrestoPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from .presto_repository import PrestoRepository
+from .presto_repository_base import PrestoRepositoryBase
 from typing import Type, List
 from pandas import DataFrame
 from .mappers.models import ColumnMetadata, TableMetadata
@@ -13,7 +14,7 @@ from odd_models.models import DataEntity, DataEntityList
 
 class Adapter(AbstractAdapter):
     def __init__(
-        self, config: PrestoPlugin, repository: Type[PrestoRepository] = None
+        self, config: PrestoPlugin, repository: Type[PrestoRepositoryBase] = None
     ) -> None:
         repository = repository or PrestoRepository
         self.repository = repository(config)
