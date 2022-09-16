@@ -9,17 +9,13 @@ from .mappers.models import ColumnMetadata, TableMetadata
 from .mappers.catalogs import map_catalog
 from .mappers.schemas import map_schema
 from .mappers.tables import map_table
-from oddrn_generator.generators import PrestoGenerator
+from oddrn_generator.generators import PrestoGenerator, TrinoGenerator
 from odd_models.models import DataEntity, DataEntityList
-
-
-class TrinoGenerator(PrestoGenerator):
-    source = "trino"
 
 
 class Adapter(AbstractAdapter):
     def __init__(
-        self, config: Union[PrestoPlugin, TrinoPlugin], repository: Type[PrestoRepositoryBase] = None
+            self, config: Union[PrestoPlugin, TrinoPlugin], repository: Type[PrestoRepositoryBase] = None
     ) -> None:
         if config.type == 'presto':
             repository = repository or PrestoRepository

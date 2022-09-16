@@ -101,6 +101,12 @@ contact_points: list = []
 }
 DatabasePlugin <|-- PrestoPlugin
 
+class TrinoPlugin{
+type: Literal["trino"]
+contact_points: list = []
+}
+DatabasePlugin <|-- TrinoPlugin
+
 class TarantoolPlugin {
 type: Literal["tarantool"]
 }
