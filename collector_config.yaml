@@ -1,5 +1,5 @@
 default_pulling_interval: 10
-token: "CZvAjujrmX4a8AaR1ixP3I9nmIywgdYGDVXKDjIj"
+token: "FHwSZTUpL6ej0FF6zvSsUaqu8bYATtE3vYT0hShN"
 platform_host_url: http://localhost:8080
 plugins:
 #  - type: mysql
@@ -13,12 +13,12 @@ plugins:
 #    ssl_disabled: False # Optional, default: False
 
 
-  - type: presto
-    name: presto_adapter
-    description: "" # Optional string
-    host: localhost
-    port: 8081
-    user: root
+#  - type: presto
+#    name: presto_adapter
+#    description: "" # Optional string
+#    host: localhost
+#    port: 8081
+#    user: root
 
   - type: trino
     name: trino_adapter
