@@ -15,9 +15,11 @@ from odd_models.models import DataEntity, DataEntityList
 
 class Adapter(AbstractAdapter):
     def __init__(
-            self, config: Union[PrestoPlugin, TrinoPlugin], repository: Type[PrestoRepositoryBase] = None
+        self,
+        config: Union[PrestoPlugin, TrinoPlugin],
+        repository: Type[PrestoRepositoryBase] = None,
     ) -> None:
-        if config.type == 'presto':
+        if config.type == "presto":
             repository = repository or PrestoRepository
             generator = PrestoGenerator
         else:
@@ -25,9 +27,7 @@ class Adapter(AbstractAdapter):
             generator = TrinoGenerator
         self.repository = repository(config)
 
-        self.__oddrn_generator = generator(
-            host_settings=self.repository.server_url
-        )
+        self.__oddrn_generator = generator(host_settings=self.repository.server_url)
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()

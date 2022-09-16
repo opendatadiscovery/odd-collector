@@ -12,7 +12,6 @@ class LdapPropertiesError(Exception):
 
 
 class PrestoRepositoryCommon(PrestoRepositoryBase):
-
     @abstractmethod
     def _get_conn_params(self) -> Dict[str, str]:
         pass

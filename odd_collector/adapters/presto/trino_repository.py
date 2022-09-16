@@ -5,7 +5,6 @@ from .presto_repository_common import PrestoRepositoryCommon
 
 
 class TrinoRepository(PrestoRepositoryCommon):
-
     def _get_conn_params(self) -> Dict[str, str]:
         base_params = self.base_params
 
