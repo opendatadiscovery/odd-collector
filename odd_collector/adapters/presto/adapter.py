@@ -1,8 +1,9 @@
-from odd_collector.domain.plugin import PrestoPlugin
+from odd_collector.domain.plugin import PrestoPlugin, TrinoPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from .presto_repository import PrestoRepository
+from .trino_repository import TrinoRepository
 from .presto_repository_base import PrestoRepositoryBase
-from typing import Type, List
+from typing import Type, List, Union
 from pandas import DataFrame
 from .mappers.models import ColumnMetadata, TableMetadata
 from .mappers.catalogs import map_catalog
@@ -12,14 +13,23 @@ from oddrn_generator.generators import PrestoGenerator
 from odd_models.models import DataEntity, DataEntityList
 
 
+class TrinoGenerator(PrestoGenerator):
+    source = "trino"
+
+
 class Adapter(AbstractAdapter):
     def __init__(
-        self, config: PrestoPlugin, repository: Type[PrestoRepositoryBase] = None
+        self, config: Union[PrestoPlugin, TrinoPlugin], repository: Type[PrestoRepositoryBase] = None
     ) -> None:
-        repository = repository or PrestoRepository
+        if config.type == 'presto':
+            repository = repository or PrestoRepository
+            generator = PrestoGenerator
+        else:
+            repository = repository or TrinoRepository
+            generator = TrinoGenerator
         self.repository = repository(config)
 
-        self.__oddrn_generator = PrestoGenerator(
+        self.__oddrn_generator = generator(
             host_settings=self.repository.server_url
         )
 
