@@ -1,0 +1,1 @@
+from ..presto import adapter
