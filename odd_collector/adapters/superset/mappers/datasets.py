@@ -30,8 +30,9 @@ def map_table(oddrn_generator: SupersetGenerator, dataset: Dataset) -> DataEntit
         )
         if dataset.kind == "virtual":
             data_entity.type = DataEntityType.VIEW
-            data_entity.data_transformer = extract_transformer_data(dataset.metadata[0].metadata.get('sql'),
-                                                                    oddrn_generator, 'datasets')
+            data_entity.data_transformer = extract_transformer_data(
+                dataset.metadata[0].metadata.get("sql"), oddrn_generator, "datasets"
+            )
         else:
             data_entity.type = DataEntityType.TABLE
         return data_entity

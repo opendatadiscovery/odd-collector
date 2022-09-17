@@ -9,7 +9,6 @@ import logging
 
 
 def extract_transformer_data(
-
     sql: str, oddrn_generator: Generator, datasets_node_name: str
 ) -> DataTransformer:
     """
@@ -33,13 +32,17 @@ def extract_transformer_data(
     )
 
 
-def get_oddrn_list(tables, oddrn_generator: Generator, datasets_node_name: str) -> List[str]:
+def get_oddrn_list(
+    tables, oddrn_generator: Generator, datasets_node_name: str
+) -> List[str]:
     response = []
     oddrn_generator = deepcopy(oddrn_generator)
     for table in tables:
         source = table.split(".")
         table_name = source[1] if len(source) > 1 else source[0]
         response.append(
-            oddrn_generator.get_oddrn_by_path(datasets_node_name, table_name.replace("`", ""))
+            oddrn_generator.get_oddrn_by_path(
+                datasets_node_name, table_name.replace("`", "")
+            )
         )
     return response
