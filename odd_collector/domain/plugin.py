@@ -146,6 +146,23 @@ class CubeJSPlugin(BasePlugin):
         return value
 
 
+class PrestoPlugin(BasePlugin):
+    type: Literal["presto"]
+    host: str
+    port: int
+    user: str
+    principal_id: Optional[str]
+    password: Optional[str]
+
+
+class TrinoPlugin(BasePlugin):
+    type: Literal["trino"]
+    host: str
+    port: int
+    user: str
+    password: Optional[str]
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -166,5 +183,7 @@ PLUGIN_FACTORY: PluginFactory = {
     "tableau": TableauPlugin,
     "cubejs": CubeJSPlugin,
     "odbc": OdbcPlugin,
+    "presto": PrestoPlugin,
+    "trino": TrinoPlugin,
     "vertica": VerticaPlugin,
 }
