@@ -34,6 +34,8 @@ snowflake-connector-python = "2.4.1"
 tableauserverclient = "0.19.0"
 tarantool = "0.8.0"
 vertica-python = "1.1.1"
+pydruid = "^0.6.3"
+SQLAlchemy = "^1.4.41"
 
 [tool.isort]
 profile = "black"

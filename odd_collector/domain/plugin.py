@@ -127,6 +127,12 @@ class TableauPlugin(BasePlugin):
     pagination_size: int = 10
 
 
+class DruidPlugin(BasePlugin):
+    type: Literal["druid"]
+    host: str
+    port: int
+
+
 class VerticaPlugin(DatabasePlugin):
     type: Literal["vertica"]
 
@@ -167,4 +173,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "cubejs": CubeJSPlugin,
     "odbc": OdbcPlugin,
     "vertica": VerticaPlugin,
+    "druid": DruidPlugin
 }
