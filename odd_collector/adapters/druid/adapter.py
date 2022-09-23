@@ -70,7 +70,7 @@ class Adapter(AbstractAdapter):
             type=DataSetFieldType(
                 type=TYPES_DRUID_TO_ODD.get(column.type, models.Type.TYPE_UNKNOWN),
                 logical_type=column.type,
-                is_nullable=True
+                is_nullable=column.is_nullable
             )
         )
 

@@ -8,3 +8,4 @@ class Column:
     table: str
     name: str
     type: str
+    is_nullable: bool

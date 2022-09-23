@@ -118,11 +118,12 @@ class DruidClient(DruidBaseClient):
                                 row["TABLE_SCHEMA"],
                                 row["TABLE_NAME"],
                                 row["COLUMN_NAME"],
-                                row["DATA_TYPE"])
+                                row["DATA_TYPE"],
+                                True if row["IS_NULLABLE"] == 'YES' else False)
                 table_columns.append(column)
         except Exception as e:
             # Throw
-            raise MappingDataError("Couldn't transform Druid result to Table model") from e
+            raise MappingDataError("Couldn't transform Druid result to Column model") from e
 
         # Return
         return table_columns
