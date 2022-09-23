@@ -36,8 +36,6 @@ tarantool = "0.8.0"
 vertica-python = "1.1.1"
 presto-python-client = "0.8.2"
 trino = "0.315.0"
-pydruid = "^0.6.3"
-SQLAlchemy = "^1.4.41"
 
 [tool.isort]
 profile = "black"
