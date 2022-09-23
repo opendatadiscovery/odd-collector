@@ -1,5 +1,4 @@
 import dataclasses
-from typing import Any
 
 
 @dataclasses.dataclass
@@ -8,5 +7,5 @@ class Table:
     schema: str
     name: str
     type: str
-    is_joinable: bool
-    is_broadcast: bool
+    is_joinable: str
+    is_broadcast: str
