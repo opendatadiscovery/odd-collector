@@ -47,9 +47,8 @@ class DruidClient(DruidBaseClient):
               "IS_JOINABLE", 
               "IS_BROADCAST"
             FROM INFORMATION_SCHEMA.TABLES
-            WHERE 
-                "TABLE_SCHEMA" != 'INFORMATION_SCHEMA'
-            AND "TABLE_SCHEMA" != 'sys'
+            WHERE LOWER("TABLE_SCHEMA") != 'information_schema'
+              AND LOWER("TABLE_SCHEMA") != 'sys'
         """
 
         # Execute

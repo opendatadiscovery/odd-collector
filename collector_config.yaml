@@ -1,18 +1,8 @@
 default_pulling_interval: 10
-token: <COLLECTOR_TOKEN>
+token: "RCHB9uNJzZPyklX4jJ0da0DmnaPaVB284jPMfPmR"
 platform_host_url: http://localhost:8080
 plugins:
-  - type: clickhouse
-    name: clickhouse_adapter
-    host: localhost
-    database: my_database
-    user: default
-    password: qwerty
-  - type: cubejs
-    name: cubejs_adapter
-    host: http://localhost:4000
-    dev_mode: true
-    predefined_datasource:
-      type: clickhouse
-      host: localhost
-      database: my_database
+  - type: druid
+    name: druid_prod
+    host: http://druid-prod-1-group-router.data-processing.adswizz.com
+    port: 8080
