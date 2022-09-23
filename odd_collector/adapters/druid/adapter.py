@@ -58,7 +58,7 @@ class Adapter(AbstractAdapter):
             metadata=[],
             dataset=DataSet(
                 rows_number=1,
-                field_list=[self.column_to_data_set_field(column) for column in columns]
+                field_list=list(map(self.column_to_data_set_field, columns))
             )
         )
 
