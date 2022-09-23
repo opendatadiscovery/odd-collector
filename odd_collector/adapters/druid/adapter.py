@@ -3,11 +3,11 @@ from typing import List, Type
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntityList, DataEntity, DataEntityType, DataSet, DataSetField, DataSetFieldType
 
-from odd_collector.adapters.druid.client import DruidBaseClient, DruidClient
-from odd_collector.adapters.druid.domain.column import Column
-from odd_collector.adapters.druid.domain.table import Table
-from odd_collector.adapters.druid.generator import DruidGenerator
-from odd_collector.adapters.druid.types import TYPES_DRUID_TO_ODD
+from odd_collector.adapters.druid.mappers.client import DruidBaseClient, DruidClient
+from odd_collector.adapters.druid.mappers.column import Column
+from odd_collector.adapters.druid.mappers.generator import DruidGenerator
+from odd_collector.adapters.druid.mappers.table import Table
+from odd_collector.adapters.druid.mappers.types import TYPES_DRUID_TO_ODD
 from odd_collector.domain.plugin import DruidPlugin
 
 
@@ -41,8 +41,7 @@ class Adapter(AbstractAdapter):
 
         # Transform
         data_entities = [
-            self.table_to_data_entity(table,
-                                      list(filter(lambda column: column.table == table.name, columns)))
+            self.table_to_data_entity(table, list(filter(lambda column: column.table == table.name, columns)))
             for table in tables
         ]
 
@@ -57,7 +56,6 @@ class Adapter(AbstractAdapter):
             type=DataEntityType.DATABASE_SERVICE,
             metadata=[],
             dataset=DataSet(
-                rows_number=1,
                 field_list=list(map(self.column_to_data_set_field, columns))
             )
         )

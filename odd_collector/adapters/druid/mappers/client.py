@@ -5,9 +5,9 @@ from typing import List
 import requests
 from odd_collector_sdk.errors import MappingDataError, DataSourceError
 
-from .domain.column import Column
-from .domain.table import Table
-from ...domain.plugin import DruidPlugin
+from odd_collector.adapters.druid.mappers.column import Column
+from odd_collector.adapters.druid.mappers.table import Table
+from odd_collector.domain.plugin import DruidPlugin
 
 
 class DruidBaseClient(ABC):
