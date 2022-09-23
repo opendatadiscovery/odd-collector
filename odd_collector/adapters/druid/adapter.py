@@ -51,7 +51,7 @@ class Adapter(AbstractAdapter):
     def table_to_data_entity(self, table: Table, columns: List[Column]) -> DataEntity:
         # Return
         return DataEntity(
-            oddrn=self.__oddrn_generator.get_oddrn_by_path("tables"),
+            oddrn=self.__oddrn_generator.get_oddrn_by_path("tables", table.name),
             name=table.name,
             type=DataEntityType.DATABASE_SERVICE,
             metadata=[],
@@ -63,7 +63,7 @@ class Adapter(AbstractAdapter):
     def column_to_data_set_field(self, column: Column) -> DataSetField:
         from odd_models import models
         return DataSetField(
-            oddrn=self.__oddrn_generator.get_oddrn_by_path(f"columns", column.name),
+            oddrn=self.__oddrn_generator.get_oddrn_by_path("columns", column.name),
             name=column.name,
             type=DataSetFieldType(
                 type=TYPES_DRUID_TO_ODD.get(column.type, models.Type.TYPE_UNKNOWN),
