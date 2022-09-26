@@ -146,6 +146,12 @@ class CubeJSPlugin(BasePlugin):
         return value
 
 
+class MetabasePlugin(WithHost, WithPort):
+    type: Literal["metabase"]
+    login: str
+    password: SecretStr
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -167,4 +173,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "cubejs": CubeJSPlugin,
     "odbc": OdbcPlugin,
     "vertica": VerticaPlugin,
+    "metabase": MetabasePlugin,
 }
