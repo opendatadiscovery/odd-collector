@@ -27,5 +27,5 @@ class Card(BaseModel):
         )
         return generator.get_oddrn_by_path("cards")
 
-    def get_owner(self) -> str:
-        return self.creator.common_name
+    def get_owner(self) -> Optional[str]:
+        return self.creator.common_name if self.creator else None

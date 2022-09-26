@@ -12,7 +12,7 @@ from odd_collector.domain.plugin import MetabasePlugin
 from .domain import Card, Collection, Dashboard, Table
 from .logger import logger
 
-T = TypeVar("T", Card, Dashboard, Table)
+T = TypeVar("T", Card, Dashboard, Table, Collection)
 
 
 class MetabaseClient:
