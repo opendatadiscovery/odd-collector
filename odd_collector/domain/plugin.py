@@ -151,6 +151,7 @@ class MetabasePlugin(WithHost, WithPort):
     login: str
     password: SecretStr
 
+
 class PrestoPlugin(BasePlugin):
     type: Literal["presto"]
     host: str
