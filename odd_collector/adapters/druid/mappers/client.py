@@ -19,6 +19,9 @@ class DruidBaseClient(ABC):
     def get_columns(self) -> List[Column]:
         raise NotImplementedError
 
+    def get_tables_nr_of_rows(self) -> dict:
+        raise NotImplementedError
+
 
 class DruidClient(DruidBaseClient):
     def __init__(self, config: DruidPlugin) -> None:
@@ -118,7 +121,8 @@ class DruidClient(DruidBaseClient):
                                 row["TABLE_NAME"],
                                 row["COLUMN_NAME"],
                                 row["DATA_TYPE"],
-                                True if row["IS_NULLABLE"] == 'YES' else False)
+                                True if row["IS_NULLABLE"] == 'YES' else False,
+                                row["ORDINAL_POSITION"])
                 table_columns.append(column)
         except Exception as e:
             # Throw
@@ -126,3 +130,36 @@ class DruidClient(DruidBaseClient):
 
         # Return
         return table_columns
+
+    def get_tables_nr_of_rows(self) -> dict:
+        # Prepare
+        tables_nr_of_rows = {}
+        url = f"{self.__config.host}:{self.__config.port}/druid/v2/sql/"
+        sql_query = f"""
+        SELECT 
+            datasource,
+            CASE WHEN SUM(num_rows) = 0 THEN 0 ELSE SUM(num_rows) / (COUNT(*) FILTER(WHERE num_rows > 0)) END AS avg_num_rows
+        FROM sys.segments
+--      todo: is_active shall be considered for newest druid versions   
+        WHERE is_available = 1
+        GROUP BY 1
+        """
+
+        # Execute
+        try:
+            result = requests.post(url, json={"query": sql_query})
+            result_dict = json.loads(result.text)
+        except Exception as e:
+            # Throw
+            raise DataSourceError(f"Couldn't execute Druid query: {sql_query}") from e
+
+        # Transform
+        try:
+            for row in result_dict:
+                tables_nr_of_rows[row["datasource"]] = row["avg_num_rows"]
+        except Exception as e:
+            # Throw
+            raise MappingDataError("Couldn't transform Druid result for number of rows per table") from e
+
+        # Return
+        return tables_nr_of_rows

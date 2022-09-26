@@ -34,6 +34,7 @@ class Adapter(AbstractAdapter):
         # Fetch
         tables: List[Table] = self.client.get_tables()
         columns: List[Column] = self.client.get_columns()
+        tables_nr_of_rows: dict = self.client.get_tables_nr_of_rows()
 
         # Set oddrn
         [self.set_table_oddrns(table) for table in tables]
@@ -41,14 +42,16 @@ class Adapter(AbstractAdapter):
 
         # Transform
         data_entities = [
-            self.table_to_data_entity(table, list(filter(lambda column: column.table == table.name, columns)))
+            self.table_to_data_entity(table,
+                                      list(filter(lambda column: column.table == table.name, columns)),
+                                      tables_nr_of_rows.get(table.name, 0))
             for table in tables
         ]
 
         # Return
         return data_entities
 
-    def table_to_data_entity(self, table: Table, columns: List[Column]) -> DataEntity:
+    def table_to_data_entity(self, table: Table, columns: List[Column], nr_of_rows: int) -> DataEntity:
         # Return
         return DataEntity(
             oddrn=self.__oddrn_generator.get_oddrn_by_path("tables", table.name),
@@ -56,6 +59,7 @@ class Adapter(AbstractAdapter):
             type=DataEntityType.DATABASE_SERVICE,
             metadata=[],
             dataset=DataSet(
+                rows_number=nr_of_rows,
                 field_list=list(map(self.column_to_data_set_field, columns))
             )
         )

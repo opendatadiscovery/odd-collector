@@ -9,3 +9,4 @@ class Column:
     name: str
     type: str
     is_nullable: bool
+    ordinal_position: int
