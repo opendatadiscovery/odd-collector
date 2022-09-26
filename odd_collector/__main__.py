@@ -12,9 +12,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("odd-collector")
 
-
 try:
-
     loop = asyncio.get_event_loop()
 
     cur_dirname = os.path.dirname(os.path.realpath(__file__))

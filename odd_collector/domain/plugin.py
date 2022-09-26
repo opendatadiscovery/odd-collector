@@ -188,6 +188,11 @@ class OddAdapterPlugin(BasePlugin):
     host: str
     data_source_oddrn: str
 
+class MetabasePlugin(WithHost, WithPort):
+    type: Literal["metabase"]
+    login: str
+    password: SecretStr
+
 
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
@@ -216,4 +221,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "superset": SupersetPlugin,
     "redash": RedashPlugin,
     "odd_adapter": OddAdapterPlugin,
+    "metabase": MetabasePlugin,
 }
