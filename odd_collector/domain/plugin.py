@@ -166,6 +166,11 @@ class CubeJSPlugin(BasePlugin):
         return value
 
 
+class MetabasePlugin(WithHost, WithPort):
+    type: Literal["metabase"]
+    login: str
+    password: SecretStr
+
 class PrestoPlugin(BasePlugin):
     type: Literal["presto"]
     host: str
