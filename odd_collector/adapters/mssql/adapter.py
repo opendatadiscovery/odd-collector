@@ -34,12 +34,15 @@ class Adapter(AbstractAdapter):
 
     def get_data_entity_list(self) -> DataEntityList:
         items = self.get_data_entities()
-        schemas_entities = extract_schemas_entities_from_tables(items, self.__oddrn_generator)
-        dbs_entity = map_db_service(items[0].metadata[0].metadata['table_catalog'],
-                                    [schema_entity.oddrn for schema_entity in schemas_entities],
-                                    "databases",
-                                    self.__oddrn_generator
-                                    )
+        schemas_entities = extract_schemas_entities_from_tables(
+            items, self.__oddrn_generator
+        )
+        dbs_entity = map_db_service(
+            items[0].metadata[0].metadata["table_catalog"],
+            [schema_entity.oddrn for schema_entity in schemas_entities],
+            "databases",
+            self.__oddrn_generator,
+        )
 
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
