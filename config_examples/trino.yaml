@@ -1,0 +1,11 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: trino
+    name: trino_adapter
+    description: "" # Optional string
+    host: localhost
+    port: 8081
+    user: root
+    password: "" # Optional string (LDAP-configured cluster)
