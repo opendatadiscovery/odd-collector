@@ -1,3 +1,4 @@
+import asyncio
 from abc import ABC, abstractmethod
 from typing import List
 
@@ -10,15 +11,20 @@ from odd_collector.domain.plugin import DruidPlugin
 
 
 class DruidBaseClient(ABC):
+
     @abstractmethod
-    async def get_tables(self) -> List[Table]:
+    async def get_resources(self):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_columns(self) -> List[Column]:
+    async def get_tables(self, session: ClientSession) -> List[Table]:
         raise NotImplementedError
 
-    async def get_tables_nr_of_rows(self) -> dict:
+    @abstractmethod
+    async def get_columns(self, session: ClientSession) -> List[Column]:
+        raise NotImplementedError
+
+    async def get_tables_nr_of_rows(self, session: ClientSession) -> dict:
         raise NotImplementedError
 
 
@@ -26,7 +32,18 @@ class DruidClient(DruidBaseClient):
     def __init__(self, config: DruidPlugin) -> None:
         self.__config = config
 
-    async def get_tables(self) -> List[Table]:
+    async def get_resources(self):
+        async with ClientSession() as session:
+            tasks = [
+                asyncio.create_task(self.get_tables(session)),
+                asyncio.create_task(self.get_columns(session)),
+                asyncio.create_task(self.get_tables_nr_of_rows(session))
+            ]
+
+            # Return
+            return await asyncio.gather(*tasks)
+
+    async def get_tables(self, session: ClientSession) -> List[Table]:
         """
         Get tables from druid.
 
@@ -54,15 +71,14 @@ class DruidClient(DruidBaseClient):
 
         # Execute
         try:
-            async with ClientSession() as session:
-                async with session.post(url, json={"query": sql_query}) as response:
-                    records = await response.json()
-                    return [Table.from_response(record) for record in records]
+            async with session.post(url, json={"query": sql_query}) as response:
+                records = await response.json()
+                return [Table.from_response(record) for record in records]
         except Exception as e:
             # Throw
             raise DataSourceError(f"Couldn't execute Druid query: {sql_query}") from e
 
-    async def get_columns(self) -> List[Column]:
+    async def get_columns(self, session: ClientSession) -> List[Column]:
         # Prepare
         url = f"{self.__config.host}:{self.__config.port}/druid/v2/sql/"
         sql_query = """
@@ -89,15 +105,14 @@ class DruidClient(DruidBaseClient):
 
         # Execute
         try:
-            async with ClientSession() as session:
-                async with session.post(url, json={"query": sql_query}) as response:
-                    records = await response.json()
-                    return [Column.from_response(record) for record in records]
+            async with session.post(url, json={"query": sql_query}) as response:
+                records = await response.json()
+                return [Column.from_response(record) for record in records]
         except Exception as e:
             # Throw
             raise DataSourceError(f"Couldn't execute Druid query: {sql_query}") from e
 
-    async def get_tables_nr_of_rows(self) -> dict:
+    async def get_tables_nr_of_rows(self, session: ClientSession) -> dict:
         # Prepare
         url = f"{self.__config.host}:{self.__config.port}/druid/v2/sql/"
         sql_query = f"""
@@ -112,13 +127,12 @@ class DruidClient(DruidBaseClient):
 
         # Execute
         try:
-            async with ClientSession() as session:
-                async with session.post(url, json={"query": sql_query}) as response:
-                    # Fetch
-                    records = await response.json()
+            async with session.post(url, json={"query": sql_query}) as response:
+                # Fetch
+                records = await response.json()
 
-                    # Return
-                    return dict((record["datasource"], record["avg_num_rows"]) for record in records)
+                # Return
+                return dict((record["datasource"], record["avg_num_rows"]) for record in records)
 
         except Exception as e:
             # Throw

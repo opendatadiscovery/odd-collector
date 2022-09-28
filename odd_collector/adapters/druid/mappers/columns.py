@@ -7,6 +7,7 @@ from odd_collector.adapters.druid.mappers.types import TYPES_DRUID_TO_ODD
 
 
 def column_to_data_set_field(oddrn_generator: DruidGenerator, column: Column) -> DataSetField:
+    # Return
     return DataSetField(
         oddrn=oddrn_generator.get_oddrn_by_path("columns", column.name),
         name=column.name,

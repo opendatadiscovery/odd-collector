@@ -4,8 +4,6 @@ from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntityList, DataEntity
 
 from odd_collector.adapters.druid.client import DruidBaseClient, DruidClient
-from odd_collector.adapters.druid.domain.column import Column
-from odd_collector.adapters.druid.domain.table import Table
 from odd_collector.adapters.druid.generator import DruidGenerator
 from odd_collector.adapters.druid.mappers.tables import table_to_data_entity
 from odd_collector.domain.plugin import DruidPlugin
@@ -32,9 +30,7 @@ class Adapter(AbstractAdapter):
 
     async def get_data_entities(self) -> List[DataEntity]:
         # Fetch
-        tables: List[Table] = await self.client.get_tables()
-        columns: List[Column] = await self.client.get_columns()
-        tables_nr_of_rows: dict = await self.client.get_tables_nr_of_rows()
+        tables, columns, tables_nr_of_rows = await self.client.get_resources()
 
         # Transform
         data_entities = [
