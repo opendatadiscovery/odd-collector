@@ -10,6 +10,7 @@ from oddrn_generator import MssqlGenerator
 from .logger import logger
 from .mappers import column_query, table_query
 from .mappers.tables import map_table
+from .mappers.schemas import extract_schemas_entities_from_tables, map_db_service
 
 
 class Adapter(AbstractAdapter):
@@ -32,9 +33,20 @@ class Adapter(AbstractAdapter):
         )
 
     def get_data_entity_list(self) -> DataEntityList:
+        items = self.get_data_entities()
+        schemas_entities = extract_schemas_entities_from_tables(
+            items, self.__oddrn_generator
+        )
+        dbs_entity = map_db_service(
+            items[0].metadata[0].metadata["table_catalog"],
+            [schema_entity.oddrn for schema_entity in schemas_entities],
+            "databases",
+            self.__oddrn_generator,
+        )
+
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=self.get_data_entities(),
+            items=[*items, *schemas_entities, dbs_entity],
         )
 
     def get_data_source_oddrn(self) -> str:
