@@ -40,15 +40,15 @@ pipeline {
       stage('Build image') {
         steps {
           echo 'Building image'
-          sh "docker build -t ${ECR_URL}/${IMAGE_NAME}:${GIT-SHA8} ."
+          sh "docker build -t ${ECR_URL}/${IMAGE_NAME}:${GIT_SHA8} ."
         }
       }
 
       stage('Pushing image') {
         steps {
           sh """
-            docker push ${ECR_URL}/${IMAGE_NAME}:${GIT-SHA8}
-            docker rmi -f ${ECR_URL}/${IMAGE_NAME}:${GIT-SHA8} >/dev/null 2>&1
+            docker push ${ECR_URL}/${IMAGE_NAME}:${GIT_SHA8}
+            docker rmi -f ${ECR_URL}/${IMAGE_NAME}:${GIT_SHA8} >/dev/null 2>&1
           """
         }
       }
@@ -56,7 +56,7 @@ pipeline {
 
     post {
       always {
-        dockerImages('remove', ["${ECR_URL}/${IMAGE_NAME}:${GIT-SHA8}"])
+        dockerImages('remove', ["${ECR_URL}/${IMAGE_NAME}:${GIT_SHA8}"])
       }
     }
 }
