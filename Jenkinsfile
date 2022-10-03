@@ -59,5 +59,4 @@ pipeline {
         dockerImages('remove', ["${ECR_URL}/${IMAGE_NAME}:${GIT-SHA8}"])
       }
     }
-  }
 }
