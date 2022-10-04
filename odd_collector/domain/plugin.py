@@ -163,6 +163,10 @@ class TrinoPlugin(BasePlugin):
     password: Optional[str]
 
 
+class AirbytePlugin(WithHost):
+    type: Literal["airbyte"]
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -186,4 +190,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "presto": PrestoPlugin,
     "trino": TrinoPlugin,
     "vertica": VerticaPlugin,
+    "airbyte": AirbytePlugin,
 }
