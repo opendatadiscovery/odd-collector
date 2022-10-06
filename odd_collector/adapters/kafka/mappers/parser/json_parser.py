@@ -1,12 +1,12 @@
 import logging as log
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
+from odd_models.models import DataSetField, DataSetFieldType
 from oddrn_generator import KafkaGenerator
 
 from . import AbstractParser
-from .nodes import Node, UnionNode, ObjectNode, ArrayNode, Inherited, JsonPrimitiveNode
-from .types import RawSchema, Field
-from odd_models.models import DataSetField, DataSetFieldType
+from .nodes import ArrayNode, Inherited, JsonPrimitiveNode, Node, ObjectNode, UnionNode
+from .types import Field, RawSchema
 
 
 class JsonParser(AbstractParser):

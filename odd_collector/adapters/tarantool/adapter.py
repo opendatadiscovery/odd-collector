@@ -1,13 +1,14 @@
 import contextlib
 import logging
-from odd_collector.domain.plugin import TarantoolPlugin
 
 import tarantool
-from odd_models.models import DataEntity, DataEntityList
 from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntity, DataEntityList
+from oddrn_generator import TarantoolGenerator
+
+from odd_collector.domain.plugin import TarantoolPlugin
 
 from .mappers.spaces import map_table
-from oddrn_generator import TarantoolGenerator
 
 
 class Adapter(AbstractAdapter):

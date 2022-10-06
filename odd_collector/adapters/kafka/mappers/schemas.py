@@ -1,18 +1,19 @@
+from typing import Dict, List
+
+from confluent_kafka.schema_registry import SchemaRegistryClient
 from odd_models.models import (
     DataEntity,
-    DataSet,
-    DataEntityType,
     DataEntityGroup,
+    DataEntityType,
+    DataSet,
     DataSetField,
     DataSetFieldType,
+    Type,
 )
 from oddrn_generator import Generator
-from typing import Dict, List
+
 from .avro_schema import avro_schema
 from .json_schema import json_schema
-from confluent_kafka.schema_registry import SchemaRegistryClient
-from odd_models.models import Type
-
 
 SCHEMA_FILE_URL = (
     "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/"

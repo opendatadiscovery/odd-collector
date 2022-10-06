@@ -1,6 +1,6 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
-from odd_models.models import DataEntityType, DataEntity, DataSet
+from odd_models.models import DataEntity, DataEntityType, DataSet
 
 from . import metadata_extractor
 from .fields import map_field

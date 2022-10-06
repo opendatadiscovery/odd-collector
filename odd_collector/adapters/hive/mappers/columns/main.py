@@ -1,10 +1,11 @@
-import re
 import logging
+import re
+from typing import Any, Dict, Iterable, List, Tuple
+
 from lark import Lark, LarkError
-from typing import List, Tuple, Dict, Any, Iterable
+
 from .field_stat_schema import FIELD_TYPE_SCHEMA
 from .hive_field_type_transformer import HiveFieldTypeTransformer
-
 
 hive_field_type_transformer = HiveFieldTypeTransformer()
 parser = Lark.open(

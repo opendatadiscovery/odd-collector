@@ -2,8 +2,7 @@ from typing import Union
 
 from odd_models.models import MetadataExtension
 
-from ..domain.table import Table
-from ..domain.table import Column
+from ..domain.table import Column, Table
 
 _METADATA_SCHEMA_URL_PREFIX: str = (
     "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"

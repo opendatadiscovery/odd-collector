@@ -2,11 +2,11 @@ from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import MysqlGenerator
 
 from . import (
-    _data_set_field_metadata_schema_url,
     _data_set_field_metadata_excluded_keys,
+    _data_set_field_metadata_schema_url,
 )
-from .models import ColumnMetadata
 from .metadata import append_metadata_extension, convert_bytes_to_str
+from .models import ColumnMetadata
 from .types import TYPES_SQL_TO_ODD
 
 

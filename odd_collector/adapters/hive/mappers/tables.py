@@ -1,12 +1,14 @@
 import logging
-from typing import List
 from datetime import datetime
+from typing import List
+
 from more_itertools import flatten
 from odd_models.models import DataEntity, DataEntityType
 from oddrn_generator import HiveGenerator
-from .metadata import _metadata
-from .columns.main import map_column
+
 from . import StatsNamedTuple
+from .columns.main import map_column
+from .metadata import _metadata
 from .utils import transform_datetime
 
 

@@ -1,14 +1,16 @@
-import logging
-from confluent_kafka.schema_registry import SchemaRegistryClient
-from confluent_kafka.admin import AdminClient
-from confluent_kafka import Consumer, KafkaException, TopicPartition
-from odd_models.models import DataEntity, DataEntityList
-from typing import List, Dict
-from .mappers.schemas import map_topics
-from .kafka_generator import KafkaGenerator
-from odd_collector_sdk.domain.adapter import AbstractAdapter
 import json
+import logging
+from typing import Dict, List
+
 import requests
+from confluent_kafka import Consumer, KafkaException, TopicPartition
+from confluent_kafka.admin import AdminClient
+from confluent_kafka.schema_registry import SchemaRegistryClient
+from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntity, DataEntityList
+
+from .kafka_generator import KafkaGenerator
+from .mappers.schemas import map_topics
 
 FORMAT = "%(asctime)s | %(levelname)s | %(name)s  | %(message)s"
 

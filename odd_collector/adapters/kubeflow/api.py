@@ -1,6 +1,7 @@
-import kfp
 import logging
-from typing import List, Iterable
+from typing import Iterable, List
+
+import kfp
 
 MAX_PAGE_SIZE = 10
 

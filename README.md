@@ -13,7 +13,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 
 ## Implemented adapters
 | Service       | Config example                                                                          |
-|---------------|-----------------------------------------------------------------------------------------|
+| ------------- | --------------------------------------------------------------------------------------- |
 | Cassandra     | [config](config_examples/cassandra.yaml)                                                |
 | ClickHouse    | [config](config_examples/clickhouse.yaml)                                               |
 | Dbt           | [config](config_examples/dbt.yaml)                                                      |
@@ -36,6 +36,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | Vertica       | [config](config_examples/vertica.yaml)                                                  |
 | ODBC          | [config](config_examples/odbc.yaml), [README.md](odd_collector/adapters/odbc/README.md) |
 | Cube          | [config](config_examples/cubejs.yaml)                                                   |
+| ODD Adapter   | [config](config_examples/odd_adapter.yaml)                                              |
 
 
 ## Class diagram of adapter class hierarchy

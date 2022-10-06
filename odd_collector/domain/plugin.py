@@ -163,6 +163,12 @@ class TrinoPlugin(BasePlugin):
     password: Optional[str]
 
 
+class OddAdapterPlugin(BasePlugin):
+    type: Literal["odd_adapter"]
+    host: str
+    data_source_oddrn: str
+
+
 class AirbytePlugin(WithHost):
     type: Literal["airbyte"]
 
@@ -190,5 +196,6 @@ PLUGIN_FACTORY: PluginFactory = {
     "presto": PrestoPlugin,
     "trino": TrinoPlugin,
     "vertica": VerticaPlugin,
+    "odd_adapter": OddAdapterPlugin,
     "airbyte": AirbytePlugin,
 }

@@ -1,9 +1,10 @@
+from odd_models.models import DataSetField, DataSetFieldType, Type
+from oddrn_generator import PostgresqlGenerator
+
 from odd_collector.adapters.postgresql.config import (
     _data_set_field_metadata_excluded_keys,
     _data_set_field_metadata_schema_url,
 )
-from odd_models.models import DataSetField, DataSetFieldType, Type
-from oddrn_generator import PostgresqlGenerator
 
 from .metadata import append_metadata_extension
 from .models import ColumnMetadata

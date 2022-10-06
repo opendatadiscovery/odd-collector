@@ -1,16 +1,19 @@
-from odd_collector.domain.plugin import PrestoPlugin, TrinoPlugin
+from typing import List, Type, Union
+
 from odd_collector_sdk.domain.adapter import AbstractAdapter
-from .presto_repository import PrestoRepository
-from .trino_repository import TrinoRepository
-from .presto_repository_base import PrestoRepositoryBase
-from typing import Type, List, Union
+from odd_models.models import DataEntity, DataEntityList
+from oddrn_generator.generators import PrestoGenerator, TrinoGenerator
 from pandas import DataFrame
-from .mappers.models import ColumnMetadata, TableMetadata
+
+from odd_collector.domain.plugin import PrestoPlugin, TrinoPlugin
+
 from .mappers.catalogs import map_catalog
+from .mappers.models import ColumnMetadata, TableMetadata
 from .mappers.schemas import map_schema
 from .mappers.tables import map_table
-from oddrn_generator.generators import PrestoGenerator, TrinoGenerator
-from odd_models.models import DataEntity, DataEntityList
+from .presto_repository import PrestoRepository
+from .presto_repository_base import PrestoRepositoryBase
+from .trino_repository import TrinoRepository
 
 
 class Adapter(AbstractAdapter):
