@@ -1,21 +1,18 @@
 from collections import defaultdict
+from typing import Any, Dict, List, Tuple, Union
 
-from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup
+from cassandra.util import OrderedMapSerializedKey, SortedSet
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
 
-from typing import List, Dict, Tuple, Any, Union
-
+from ..cassandra_generator import CassandraGenerator
 from . import (
-    TableMetadata,
     ColumnMetadata,
-    _data_set_metadata_schema_url,
+    TableMetadata,
     _data_set_metadata_excluded_keys,
+    _data_set_metadata_schema_url,
 )
 from .columns import map_column
 from .metadata import get_metadata_extension
-
-from ..cassandra_generator import CassandraGenerator
-
-from cassandra.util import OrderedMapSerializedKey, SortedSet
 
 
 def get_table_name_to_columns(

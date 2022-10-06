@@ -1,10 +1,10 @@
-from odd_models.models import DataEntity, DataSet, MetadataExtension, DataEntityType
+from odd_models.models import DataEntity, DataEntityType, DataSet, MetadataExtension
 from oddrn_generator import MssqlGenerator
 
 from . import (
-    _data_set_metadata_schema_url,
-    MetadataNamedtuple,
     ColumnMetadataNamedtuple,
+    MetadataNamedtuple,
+    _data_set_metadata_schema_url,
 )
 from .columns import map_column
 from .types import TABLE_TYPES_SQL_TO_ODD

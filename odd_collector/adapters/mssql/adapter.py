@@ -2,15 +2,16 @@ import contextlib
 from typing import List
 
 import pyodbc
-from odd_collector.domain.plugin import MSSQLPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import MssqlGenerator
 
+from odd_collector.domain.plugin import MSSQLPlugin
+
 from .logger import logger
 from .mappers import column_query, table_query
-from .mappers.tables import map_table
 from .mappers.schemas import extract_schemas_entities_from_tables, map_db_service
+from .mappers.tables import map_table
 
 
 class Adapter(AbstractAdapter):

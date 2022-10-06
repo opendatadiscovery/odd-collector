@@ -1,6 +1,8 @@
-from contextlib import contextmanager
-import pyodbc
 import logging
+from contextlib import contextmanager
+
+import pyodbc
+
 from .exception import DBException
 
 

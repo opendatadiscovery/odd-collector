@@ -1,10 +1,11 @@
 from typing import Any, Dict
+
 from odd_models.models import (
+    BinaryFieldStat,
     BooleanFieldStat,
     DateTimeFieldStat,
     NumberFieldStat,
     StringFieldStat,
-    BinaryFieldStat,
 )
 
 DEFAULT_VALUE = -1

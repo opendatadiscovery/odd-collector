@@ -1,8 +1,8 @@
-from typing import List, Union, Callable
-from typing import Dict
 from abc import abstractmethod
-from .presto_repository_base import PrestoRepositoryBase
+from typing import Callable, Dict, List, Union
+
 from .mappers import catalogs_to_exclude, schemas_to_exclude
+from .presto_repository_base import PrestoRepositoryBase
 
 
 class LdapPropertiesError(Exception):

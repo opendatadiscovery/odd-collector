@@ -1,18 +1,18 @@
 from collections import namedtuple
+from typing import List
+
 from odd_models.models import MetadataExtension
 
 from odd_collector.adapters.redshift.mappers import (
+    ColumnMetadataNamedtuple,
+    ColumnMetadataNamedtupleExternal,
+    ColumnMetadataNamedtupleRedshift,
     MetadataNamedtuple,
     MetadataNamedtupleAll,
-    MetadataNamedtupleRedshift,
     MetadataNamedtupleExternal,
     MetadataNamedtupleInfo,
-    ColumnMetadataNamedtuple,
-    ColumnMetadataNamedtupleRedshift,
-    ColumnMetadataNamedtupleExternal,
+    MetadataNamedtupleRedshift,
 )
-
-from typing import List
 
 
 class MetadataTable:

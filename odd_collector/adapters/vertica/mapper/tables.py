@@ -1,10 +1,9 @@
 from odd_collector_sdk.errors import MappingDataError
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
 from oddrn_generator import VerticaGenerator
 
 from ..domain.table import Table
 from ..mapper.types import TABLE_TYPES_SQL_TO_ODD
-from odd_models.models import DataEntity, DataEntityType, DataEntityGroup, DataSet
-
 from .columns import map_column
 from .metadata import map_metadata
 from .views import extract_transformer_data

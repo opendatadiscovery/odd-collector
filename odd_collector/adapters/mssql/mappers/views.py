@@ -1,10 +1,11 @@
 from copy import deepcopy
 from typing import List
 
-from odd_collector.adapters.mssql.logger import logger
 from odd_models.models import DataTransformer
 from odd_models.utils import SqlParser
 from oddrn_generator import MssqlGenerator
+
+from odd_collector.adapters.mssql.logger import logger
 
 
 def extract_transformer_data(

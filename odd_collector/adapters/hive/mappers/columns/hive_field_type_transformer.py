@@ -1,4 +1,4 @@
-from lark import Transformer, Token
+from lark import Token, Transformer
 
 
 class HiveFieldTypeTransformer(Transformer):

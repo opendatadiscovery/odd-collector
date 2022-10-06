@@ -4,10 +4,10 @@ from feast.entity import Entity
 from feast.feature_view import FeatureView
 from google.protobuf.json_format import MessageToDict
 from more_itertools import flatten
-from odd_models.models import DataEntity, DataSet, DataEntityType
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import FeastGenerator
 
-from . import metadata_extractor, dataset_field_mapper
+from . import dataset_field_mapper, metadata_extractor
 
 
 class FeatureViewMapper:

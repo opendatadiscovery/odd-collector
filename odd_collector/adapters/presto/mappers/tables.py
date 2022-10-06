@@ -1,12 +1,10 @@
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator.generators import PrestoGenerator
-from .columns import map_column
 from pandas import DataFrame
-from odd_models.models import (
-    DataEntity,
-    DataEntityType,
-    DataSet,
-)
+
+from .columns import map_column
 
 
 def map_table(

@@ -1,12 +1,12 @@
 import pytest
+from odd_models.models import DataEntityType, Type
 from oddrn_generator.generators import PrestoGenerator
-from odd_collector.adapters.presto.mappers.tables import map_table
-from odd_collector.adapters.presto.mappers.models import TableMetadata
 from pandas import DataFrame
-from odd_models.models import DataEntityType
-from odd_models.models import Type
-from .raw_data import nested_nodes
-from .raw_data import tables_nodes
+
+from odd_collector.adapters.presto.mappers.models import TableMetadata
+from odd_collector.adapters.presto.mappers.tables import map_table
+
+from .raw_data import nested_nodes, tables_nodes
 
 catalog_node_name = "mysql"
 schema_node_name = "test_schema_mysql2"

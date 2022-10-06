@@ -1,22 +1,22 @@
 import logging as log
 from copy import copy
-from typing import List, Dict
+from typing import Dict, List
 
+from odd_models.models import DataSetField, DataSetFieldType
 from oddrn_generator import KafkaGenerator
 
 from . import AbstractParser
 from .nodes import (
-    Inherited,
-    UnionNode,
-    ObjectNode,
     ArrayNode,
-    MapNode,
-    EnumNode,
     AvroPrimitiveNode,
+    EnumNode,
+    Inherited,
+    MapNode,
     Node,
+    ObjectNode,
+    UnionNode,
 )
 from .types import Field, RawSchema
-from odd_models.models import DataSetField, DataSetFieldType
 
 
 class AvroParser(AbstractParser):

@@ -1,7 +1,7 @@
-from odd_models.models import DataEntity, DataSet, MetadataExtension, DataEntityType
+from odd_models.models import DataEntity, DataEntityType, DataSet, MetadataExtension
 from oddrn_generator import OdbcGenerator
 
-from . import _data_set_metadata_schema_url, Metadata, ColumnMetadata
+from . import ColumnMetadata, Metadata, _data_set_metadata_schema_url
 from .columns import map_column
 from .types import TABLE_TYPES_SQL_TO_ODD
 
