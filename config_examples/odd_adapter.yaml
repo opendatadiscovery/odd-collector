@@ -1,0 +1,8 @@
+default_pulling_interval: 10
+token: <COLLECTOR_TOKEN>
+platform_host_url: http://localhost:8080
+plugins:
+  - type: odd_adapter
+    name: my_adapter
+    host: http://localhost:8000
+    data_source_oddrn: //my_adapter/host/localhost:8080
