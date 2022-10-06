@@ -1,9 +1,10 @@
 import logging
 
-from odd_collector.domain.plugin import OdbcPlugin
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import OdbcGenerator
+
+from odd_collector.domain.plugin import OdbcPlugin
 
 from .mappers.tables import map_table
 from .odbc_repository import OdbcRepository

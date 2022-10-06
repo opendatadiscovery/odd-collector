@@ -1,7 +1,8 @@
-from odd_collector.adapters.presto.presto_repository_base import PrestoRepositoryBase
 from odd_collector.adapters.presto.adapter import Adapter
-from .raw_data import tables_nodes, columns_nodes, nested_nodes
+from odd_collector.adapters.presto.presto_repository_base import PrestoRepositoryBase
 from odd_collector.domain.plugin import PrestoPlugin
+
+from .raw_data import columns_nodes, nested_nodes, tables_nodes
 
 
 class PrestoRepositoryTest(PrestoRepositoryBase):

@@ -1,9 +1,9 @@
 import logging
 from time import perf_counter
-from hive_metastore_client import HiveMetastoreClient
-from typing import List, Dict
-from more_itertools import flatten
+from typing import Dict, List
 
+from hive_metastore_client import HiveMetastoreClient
+from more_itertools import flatten
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import HiveGenerator
@@ -11,8 +11,8 @@ from thrift_files.libraries.thrift_hive_metastore_client.ttypes import (
     PrimaryKeysRequest,
 )
 
-from .mappers.tables import map_hive_table
 from .mappers.columns.main import map_column_stats
+from .mappers.tables import map_hive_table
 
 
 class Adapter(AbstractAdapter):

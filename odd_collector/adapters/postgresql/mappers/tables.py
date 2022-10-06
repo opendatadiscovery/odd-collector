@@ -1,12 +1,13 @@
 import logging
 from typing import List
 
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
+from oddrn_generator import PostgresqlGenerator
+
 from odd_collector.adapters.postgresql.config import (
     _data_set_metadata_excluded_keys,
     _data_set_metadata_schema_url,
 )
-from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
-from oddrn_generator import PostgresqlGenerator
 
 from ..exceptions import MappingException
 from .columns import map_column

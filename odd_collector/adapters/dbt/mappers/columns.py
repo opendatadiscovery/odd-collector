@@ -2,8 +2,8 @@ from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import DbtGenerator
 
 from . import (
-    _data_set_field_metadata_schema_url,
     _data_set_field_metadata_excluded_keys,
+    _data_set_field_metadata_schema_url,
 )
 from .metadata import _append_metadata_extension
 from .types import TYPES_SNOWFLAKE_TO_ODD

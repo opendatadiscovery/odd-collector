@@ -3,7 +3,7 @@ from typing import List
 from feast.entity import Entity
 from feast.feature import Feature
 from feast.value_type import ValueType
-from odd_models.models import Type, DataSetField, DataSetFieldType
+from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import FeastGenerator
 
 from .types import TYPES_FEAST_FEATURE_TO_ODD

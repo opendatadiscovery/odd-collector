@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
 
-from odd_collector.adapters.postgresql.connectors import PostgreSQLConnector
 from psycopg2 import sql
+
+from odd_collector.adapters.postgresql.connectors import PostgreSQLConnector
 
 
 class AbstractRepository(ABC):

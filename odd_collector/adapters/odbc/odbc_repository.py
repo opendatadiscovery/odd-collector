@@ -1,8 +1,9 @@
 import logging
 
+from pyodbc import Cursor
+
 from odd_collector.adapters.odbc.connection import connect_odbc
 from odd_collector.adapters.odbc.odbc_repository_base import OdbcRepositoryBase
-from pyodbc import Cursor
 
 
 class OdbcRepository(OdbcRepositoryBase):

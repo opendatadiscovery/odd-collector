@@ -1,7 +1,8 @@
 # https://prestodb.io/docs/current/language/types.html
 
-from odd_models.models import Type
 from typing import Dict
+
+from odd_models.models import Type
 
 TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "tinyint": Type.TYPE_INTEGER,

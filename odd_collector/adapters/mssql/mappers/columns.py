@@ -1,14 +1,14 @@
 from odd_models.models import (
     DataSetField,
+    DataSetFieldStat,
     DataSetFieldType,
     MetadataExtension,
-    DataSetFieldStat,
     Type,
 )
 from oddrn_generator import MssqlGenerator
 
-from . import _data_set_field_metadata_schema_url, ColumnMetadataNamedtuple
-from .helpers import __convert_bytes_to_str_in_dict, __convert_bytes_to_str
+from . import ColumnMetadataNamedtuple, _data_set_field_metadata_schema_url
+from .helpers import __convert_bytes_to_str, __convert_bytes_to_str_in_dict
 from .types import TYPES_SQL_TO_ODD
 
 

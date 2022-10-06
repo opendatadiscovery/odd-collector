@@ -1,9 +1,11 @@
 import logging
-from oddrn_generator import SnowflakeGenerator
-from snowflake import connector
+
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
-from .mappers import _tables_select, _columns_select
+from oddrn_generator import SnowflakeGenerator
+from snowflake import connector
+
+from .mappers import _columns_select, _tables_select
 from .mappers.tables import map_table
 
 

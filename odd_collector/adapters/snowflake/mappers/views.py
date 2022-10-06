@@ -2,7 +2,6 @@ import logging
 from copy import deepcopy
 from typing import List
 
-
 from odd_models.models import DataTransformer
 from odd_models.utils import SqlParser
 from oddrn_generator import SnowflakeGenerator

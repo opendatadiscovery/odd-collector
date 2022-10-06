@@ -2,7 +2,6 @@ from typing import Any, Dict
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
 
-
 # As of ElasticSearch 7.x supported fields are listed here
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html#
 TYPES_ELASTIC_TO_ODD = {
