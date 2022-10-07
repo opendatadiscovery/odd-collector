@@ -1,13 +1,14 @@
 import logging
 from odd_models.models import DataEntity, DataEntityType, DataTransformer
-from typing import Any, List, Dict
-
-from .oddrn import generate_connection_oddrn, generate_dataset_oddrn
 from oddrn_generator import AirbyteGenerator
+from .oddrn import generate_connection_oddrn, generate_dataset_oddrn
+from ..api import ApiGetter
 
 
-def map_connection(connection: dict, oddrn_gen: AirbyteGenerator) -> DataEntity:
+def map_connection(connection: dict, oddrn_gen: AirbyteGenerator, api: ApiGetter) -> DataEntity:
     """
+    Mapping of connection metadata retrieved from Airbyte API
+    Example data:
     {
             "connectionId": "9e34b2ab-0602-45e5-9e2e-18eca64c56a7",
             "name": "MySQL <> Postgres",
@@ -85,10 +86,14 @@ def map_connection(connection: dict, oddrn_gen: AirbyteGenerator) -> DataEntity:
     """
     conn_id = connection.get("connectionId")
     name = connection.get("name")
-    # source_id = connection.get("sourceId")
-    # destination_id = connection.get("destinationId")
-    # inputs: List[str] = [generate_dataset_oddrn(source_id, oddrn_gen)]
-    # outputs: List[str] = [generate_dataset_oddrn(destination_id, oddrn_gen)]
+    source_id = connection.get("sourceId")
+    destination_id = connection.get("destinationId")
+    source_meta = api.get_dataset_definition(is_source=True, dataset_id=source_id)
+    destination_meta = api.get_dataset_definition(is_source=False, dataset_id=destination_id)
+    source_oddrn = generate_dataset_oddrn(is_source=True, dataset_meta=source_meta)
+    destination_oddrn = generate_dataset_oddrn(is_source=False, dataset_meta=destination_meta)
+    inputs = [source_oddrn] if source_oddrn else []
+    outputs = [destination_oddrn] if destination_oddrn else []
     try:
         return DataEntity(
             oddrn=generate_connection_oddrn(conn_id, oddrn_gen),
@@ -102,8 +107,8 @@ def map_connection(connection: dict, oddrn_gen: AirbyteGenerator) -> DataEntity:
                 description=None,
                 source_code_url=None,
                 sql=None,
-                inputs=[],
-                outputs=[],
+                inputs=inputs,
+                outputs=outputs,
                 subtype="DATATRANSFORMER_JOB",
             ),
         )

@@ -1,20 +1,21 @@
 import json
 import requests
 import logging
-from typing import List, Iterable
-
-MAX_PAGE_SIZE = 10
+from typing import List
 
 
 class ApiGetter:
+    """Class intended for retrieving data from Airbyte API"""
+
     __WORKSPACE_IDS = []
     __CONNECTIONS = []
 
-    def __init__(self, host: str) -> None:
-        self.__workspaces_request = f"http://{host}/api/v1/workspaces/list"
-        self.__connections_request = f"http://{host}/api/v1/connections/list"
-        self.__source_definition_request = f"http://{host}/api/v1/sources/get"
-        self.__destination_definition_request = f"http://{host}/api/v1/destinations/get"
+    def __init__(self, host: str, port: int) -> None:
+        self.__base_url = f"http://{host}:{port}/api/v1"
+        self.__workspaces_request = f"{self.__base_url}/workspaces/list"
+        self.__connections_request = f"{self.__base_url}/connections/list"
+        self.__source_definition_request = f"{self.__base_url}/sources/get"
+        self.__destination_definition_request = f"{self.__base_url}/destinations/get"
         self.__headers = {
             'Content-type': 'application/json',
             'Accept': 'application/json'
@@ -29,7 +30,7 @@ class ApiGetter:
             return self.__WORKSPACE_IDS
 
         except TypeError:
-            logging.warning("Pipelines endpoint response is not returned")
+            logging.warning("Workspaces endpoint response is not returned")
             return []
 
     def get_all_connections(self, workspace_ids: List[str]) -> List[dict]:
@@ -43,18 +44,18 @@ class ApiGetter:
                 self.__CONNECTIONS.extend(response["connections"])
             return self.__CONNECTIONS
         except TypeError:
-            logging.warning("Runs endpoint response is not returned")
+            logging.warning("Connections endpoint response is not returned")
             return []
 
-    # def get_dataset_definition(self, is_source: bool, connections: List[dict]) -> dict:
-    #     body_dict = {}
-    #     url = self.__source_definition_request if is_source else self.__destination_definition_request
-    #     try:
-    #         body_dict['sourceId'] = connections[0]['sourceId']
-    #         request_body = json.dumps(body_dict)
-    #         response = requests.post(url=url, data=request_body,
-    #                                  headers=self.__headers).json()
-    #         return response
-    #     except TypeError:
-    #         logging.warning("Runs endpoint response is not returned")
-    #         return {}
+    def get_dataset_definition(self, is_source: bool, dataset_id: str) -> dict:
+        field_name = 'sourceId' if is_source else 'destinationId'
+        body = {field_name: dataset_id}
+        url = self.__source_definition_request if is_source else self.__destination_definition_request
+        try:
+            request_body = json.dumps(body)
+            response = requests.post(url=url, data=request_body,
+                                     headers=self.__headers).json()
+            return response
+        except TypeError:
+            logging.warning("Dataset endpoint response is not returned")
+            return {}

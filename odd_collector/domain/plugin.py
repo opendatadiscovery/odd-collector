@@ -169,7 +169,7 @@ class OddAdapterPlugin(BasePlugin):
     data_source_oddrn: str
 
 
-class AirbytePlugin(WithHost):
+class AirbytePlugin(WithHost, WithPort):
     type: Literal["airbyte"]
 
 
