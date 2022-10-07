@@ -11,13 +11,18 @@ def generate_dataset_oddrn(is_source: bool, dataset_meta: dict) -> Optional[str]
     """Function intended for generatring oddrn of
     sources and destinations in Airbyte connections"""
 
-    name = str(dataset_meta.get("sourceName")).lower() if is_source else str(
-        dataset_meta.get("destinationName")).lower()
+    name = (
+        str(dataset_meta.get("sourceName")).lower()
+        if is_source
+        else str(dataset_meta.get("destinationName")).lower()
+    )
     dataset = verify_dataset_name(name)
     if dataset:
         host = dataset_meta.get("connectionConfiguration").get("host")
         database = dataset_meta.get("connectionConfiguration").get("database")
-        oddrn_gen = Generator(data_source=dataset, host_settings=host, databases=database)
+        oddrn_gen = Generator(
+            data_source=dataset, host_settings=host, databases=database
+        )
 
         return oddrn_gen.get_data_source_oddrn()
     return None

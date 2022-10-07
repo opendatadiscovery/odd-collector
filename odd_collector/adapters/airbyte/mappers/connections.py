@@ -5,7 +5,9 @@ from .oddrn import generate_connection_oddrn, generate_dataset_oddrn
 from ..api import ApiGetter
 
 
-def map_connection(connection: dict, oddrn_gen: AirbyteGenerator, api: ApiGetter) -> DataEntity:
+def map_connection(
+    connection: dict, oddrn_gen: AirbyteGenerator, api: ApiGetter
+) -> DataEntity:
     """
     Mapping of connection metadata retrieved from Airbyte API
     Example data:
@@ -89,9 +91,13 @@ def map_connection(connection: dict, oddrn_gen: AirbyteGenerator, api: ApiGetter
     source_id = connection.get("sourceId")
     destination_id = connection.get("destinationId")
     source_meta = api.get_dataset_definition(is_source=True, dataset_id=source_id)
-    destination_meta = api.get_dataset_definition(is_source=False, dataset_id=destination_id)
+    destination_meta = api.get_dataset_definition(
+        is_source=False, dataset_id=destination_id
+    )
     source_oddrn = generate_dataset_oddrn(is_source=True, dataset_meta=source_meta)
-    destination_oddrn = generate_dataset_oddrn(is_source=False, dataset_meta=destination_meta)
+    destination_oddrn = generate_dataset_oddrn(
+        is_source=False, dataset_meta=destination_meta
+    )
     inputs = [source_oddrn] if source_oddrn else []
     outputs = [destination_oddrn] if destination_oddrn else []
     try:
