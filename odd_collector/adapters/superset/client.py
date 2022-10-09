@@ -5,6 +5,7 @@ from .domain.chart import Chart
 from .domain.dashboard import Dashboard
 from odd_collector.domain.plugin import SupersetPlugin
 from .domain.dataset import Dataset
+from .domain.database import Database
 from .domain.metadata import create_metadata_extension_list, add_owner
 from . import (
     _METADATA_SCHEMA_URL_PREFIX,
@@ -49,19 +50,19 @@ class SupersetClient:
 
     @staticmethod
     async def __fetch_async_response(
-        session, request_args: RequestArgs
+            session, request_args: RequestArgs
     ) -> Dict[Any, Any]:
         async with session.request(
-            request_args.method,
-            url=request_args.url,
-            params=request_args.params,
-            headers=request_args.headers,
-            json=request_args.payload,
+                request_args.method,
+                url=request_args.url,
+                params=request_args.params,
+                headers=request_args.headers,
+                json=request_args.payload,
         ) as response:
             return await response.json()
 
     async def __fetch_all_async_responses(
-        self, request_args_list: List[RequestArgs]
+            self, request_args_list: List[RequestArgs]
     ) -> Tuple:
         async with aiohttp.ClientSession() as session:
             return await asyncio.gather(
@@ -91,6 +92,7 @@ class SupersetClient:
                 db_id=dataset.get("database").get("id"),
                 db_name=dataset.get("database").get("database_name"),
                 kind=dataset.get("kind"),
+                schema=dataset.get("schema")
             )
             for dataset in dataset_nodes
         ]
@@ -104,7 +106,7 @@ class SupersetClient:
         return await dashboard_nodes
 
     async def __get_nodes_list_with_pagination(
-        self, endpoint: str, columns: List[str] = None
+            self, endpoint: str, columns: List[str] = None
     ) -> List[Any]:
         default_page_size = 100
 
@@ -181,8 +183,8 @@ class SupersetClient:
 
     @staticmethod
     def populate_dashboards_with_metadata(
-        dashboards_without_metadata: List[Dashboard],
-        nodes_with_metadata: Dict[int, Dict[Any, Any]],
+            dashboards_without_metadata: List[Dashboard],
+            nodes_with_metadata: Dict[int, Dict[Any, Any]],
     ):
         dashboards_with_metadata: List[Dashboard] = []
         for dashboard in dashboards_without_metadata:
@@ -227,8 +229,26 @@ class SupersetClient:
         )
         return await datasets_columns_nodes
 
+    async def get_databases(self) -> List[Database]:
+        nodes_ids = await self.__get_nodes_list_with_pagination("database")
+        headers = await self.__build_headers()
+        urls = [
+            self.__base_url + f"database/{database['id']}" for database in nodes_ids
+        ]
+        databases_nodes = await self.__fetch_all_async_responses(
+            [RequestArgs("GET", url, None, headers) for url in urls]
+        )
+
+        return [
+            Database(id=node['id'],
+                     database_name=node['result']['parameters']['database'],
+                     backend=node['result']['backend'],
+                     host=node['result']['parameters'].get('host'),
+                     port=node['result']['parameters'].get('port')
+                     ) for node in databases_nodes]
+
     async def get_datasets_columns(
-        self, datasets_ids: List[int]
+            self, datasets_ids: List[int]
     ) -> Dict[int, List[Column]]:
         datasets_columns: Dict[int, List[Column]] = {}
         nodes = await self.__get_datasets_columns_nodes(datasets_ids)

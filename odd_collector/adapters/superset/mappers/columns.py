@@ -1,11 +1,11 @@
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataSetField, DataSetFieldType
-from oddrn_generator.generators import SupersetGenerator
+from oddrn_generator.generators import Generator
 from odd_models.models import Type as ColumnType
 from ..domain.column import Column
 
 
-def map_column(oddrn_generator: SupersetGenerator, column: Column) -> DataSetField:
+def map_column(oddrn_generator: Generator, column: Column) -> DataSetField:
     column_name = column.name
     column_type = column.remote_type
 
