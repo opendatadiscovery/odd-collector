@@ -13,7 +13,7 @@ from .mappers.dashboards import map_dashboard
 
 class Adapter(AbstractAdapter):
     def __init__(
-            self, config: SupersetPlugin, client: Type[SupersetClient] = None
+        self, config: SupersetPlugin, client: Type[SupersetClient] = None
     ) -> None:
         client = client or SupersetClient
         self.client = client(config)
@@ -36,30 +36,41 @@ class Adapter(AbstractAdapter):
 
         return list(datasets_by_id.values())
 
-    async def get_databases_dict(self) -> Dict[str, Database]:
+    async def _get_databases_dict(self) -> Dict[str, Database]:
         databases = await self.client.get_databases()
         return {database.id: database for database in databases}
 
-    async def get_data_entity_list(self) -> DataEntityList:
-
-        datasets = await self._get_datasets()
-        databases_dict = await self.get_databases_dict()
-        dashboards = await self.client.get_dashboards()
+    def _split_views_and_tables(
+        self, datasets: List[Dataset], databases: Dict[str, Database]
+    ) -> (Dict[int, DataEntity], Dict[int, str]):
         views_entities_dict: Dict[int, DataEntity] = {}
         datasets_oddrns_dict: Dict[int, str] = {}
         for dataset in datasets:
             database_id = dataset.database_id
-            database = databases_dict.get(database_id)
+            database = databases.get(database_id)
             backend_cls = backends_factory.get(database.backend)
             backend = backend_cls(database)
-            if dataset.kind == 'virtual':
-                view_entity = map_table(self._oddrn_generator, dataset, external_backend=backend)
+            if dataset.kind == "virtual":
+                view_entity = map_table(
+                    self._oddrn_generator, dataset, external_backend=backend
+                )
                 views_entities_dict.update({dataset.id: view_entity})
             else:
                 gen = backend.get_generator_with_schemas(dataset.schema)
                 gen.get_oddrn_by_path(backend.table_path_name, dataset.name)
                 oddrn = gen.get_oddrn_by_path(backend.table_path_name)
                 datasets_oddrns_dict.update({dataset.id: oddrn})
+        return views_entities_dict, datasets_oddrns_dict
+
+    async def get_data_entity_list(self) -> DataEntityList:
+
+        datasets = await self._get_datasets()
+        databases_dict = await self._get_databases_dict()
+        dashboards = await self.client.get_dashboards()
+
+        views_entities_dict, datasets_oddrns_dict = self._split_views_and_tables(
+            datasets, databases_dict
+        )
         for dataset_id, dataset in views_entities_dict.items():
             datasets_oddrns_dict.update({dataset_id: dataset.oddrn})
 

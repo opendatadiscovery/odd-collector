@@ -6,7 +6,9 @@ from odd_models.models import DataEntity, DataEntityType, DataConsumer
 
 
 def map_dashboard(
-    oddrn_generator: SupersetGenerator, datasets_oddrns_dict: Dict[int, str], dashboard: Dashboard
+    oddrn_generator: SupersetGenerator,
+    datasets_oddrns_dict: Dict[int, str],
+    dashboard: Dashboard,
 ) -> DataEntity:
     oddrn_generator.set_oddrn_paths(dashboards=dashboard.name)
     return DataEntity(

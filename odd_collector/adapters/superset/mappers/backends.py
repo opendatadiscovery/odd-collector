@@ -1,8 +1,4 @@
-from oddrn_generator.generators import (
-    MysqlGenerator,
-    PostgresqlGenerator,
-    Generator
-)
+from oddrn_generator.generators import MysqlGenerator, PostgresqlGenerator, Generator
 from typing import Dict, Type, List
 from abc import abstractmethod
 from odd_collector.adapters.superset.domain.database import Database
@@ -26,7 +22,7 @@ class DatabaseBackend:
 
 
 class JdbcBackend(DatabaseBackend):
-    table_path_name = 'tables'
+    table_path_name = "tables"
 
     def get_generator(self):
         return self.generator_cls(
@@ -41,7 +37,7 @@ class JdbcBackend(DatabaseBackend):
 
 
 class PostgresBackend(JdbcBackend):
-    database_backend = 'postgresql'
+    database_backend = "postgresql"
     generator_cls = PostgresqlGenerator
 
     def get_generator_with_schemas(self, schema_name: str) -> Generator:
@@ -51,7 +47,7 @@ class PostgresBackend(JdbcBackend):
 
 
 class MysqlBackend(JdbcBackend):
-    database_backend = 'mysql'
+    database_backend = "mysql"
     generator_cls = MysqlGenerator
 
     def get_generator_with_schemas(self, sche) -> Generator:

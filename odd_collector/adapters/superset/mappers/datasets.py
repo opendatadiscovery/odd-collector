@@ -16,8 +16,11 @@ def create_dataset(oddrn_generator, dataset: Dataset):
     )
 
 
-def map_table(oddrn_generator: SupersetGenerator, dataset: Dataset, external_backend: DatabaseBackend = None) \
-        -> DataEntity:
+def map_table(
+    oddrn_generator: SupersetGenerator,
+    dataset: Dataset,
+    external_backend: DatabaseBackend = None,
+) -> DataEntity:
     data_entity = DataEntity(
         oddrn=dataset.get_oddrn(oddrn_generator),
         owner=dataset.owner,
