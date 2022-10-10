@@ -16,11 +16,11 @@ def column_to_data_set_field(oddrn_generator: DruidGenerator, column: Column, co
     # Check
     if column_stats is not None:
         # Add tags
-        # tags.append(Tag(name=f"max_value:{column_stats.max_value}"))
-        # tags.append(Tag(name=f"min_value:{column_stats.min_value}"))
-        # tags.append(Tag(name=f"has_multiple_values:{column_stats.has_multiple_values}"))
-        tags.append(Tag(name=f"size:{column_stats.size / 1024}mb"))
-        # tags.append(Tag(name=f"data type:{column_stats.data_type}"))
+        tags.append(Tag(name=f"max_value:{column_stats.max_value}"))
+        tags.append(Tag(name=f"min_value:{column_stats.min_value}"))
+        tags.append(Tag(name=f"has_multiple_values:{column_stats.has_multiple_values}"))
+        tags.append(Tag(name=f"size:{column_stats.size / 1024} mb"))
+        tags.append(Tag(name=f"type:{column_stats.type}"))
 
         # Get logical type
         logical_type = column_stats.data_type
