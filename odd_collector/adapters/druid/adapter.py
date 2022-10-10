@@ -31,6 +31,7 @@ class Adapter(AbstractAdapter):
     async def get_data_entities(self) -> List[DataEntity]:
         # Fetch
         tables, columns, tables_nr_of_rows = await self.client.get_resources()
+        tables_columns_stats = await self.client.get_column_stats([table.name for table in tables])
 
         # Transform
         data_entities = [
@@ -38,6 +39,7 @@ class Adapter(AbstractAdapter):
                 self.__oddrn_generator,
                 table,
                 list(filter(lambda column: column.table == table.name, columns)),
+                tables_columns_stats[table.name],
                 tables_nr_of_rows.get(table.name, 0)
             ) for table in tables
         ]

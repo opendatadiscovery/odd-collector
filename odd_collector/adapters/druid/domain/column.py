@@ -2,6 +2,8 @@ from dataclasses import dataclass
 
 from odd_collector_sdk.errors import MappingDataError
 
+from odd_collector.adapters.druid.domain.column_stats import ColumnStats
+
 
 @dataclass
 class Column:
@@ -12,6 +14,7 @@ class Column:
     type: str
     is_nullable: bool
     ordinal_position: int
+    stats: ColumnStats = None
 
     @staticmethod
     def from_response(record: dict):
