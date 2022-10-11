@@ -1,4 +1,9 @@
-from oddrn_generator.generators import MysqlGenerator, PostgresqlGenerator, Generator
+from oddrn_generator.generators import (
+    MysqlGenerator,
+    PostgresqlGenerator,
+    Generator,
+    PrestoGenerator,
+)
 from typing import Dict, Type, List
 from abc import abstractmethod
 from odd_collector.adapters.superset.domain.database import Database
@@ -26,8 +31,8 @@ class JdbcBackend(DatabaseBackend):
 
     def get_generator(self):
         return self.generator_cls(
-            host_settings=self.database.host,
-            # host_settings='localhost',
+            # host_settings=self.database.host,
+            host_settings="localhost",
             databases=self.database.database_name,
         )
 
@@ -54,7 +59,25 @@ class MysqlBackend(JdbcBackend):
         return self.get_generator()
 
 
-backends: List[Type[DatabaseBackend]] = [PostgresBackend, MysqlBackend]
+class PrestoBackend(DatabaseBackend):
+    database_backend = "presto"
+    generator_cls = PrestoGenerator
+    table_path_name = "tables"
+
+    def get_generator(self):
+        return self.generator_cls(
+            # host_settings=self.database.host,
+            host_settings="localhost",
+            catalogs=self.database.database_name,
+        )
+
+    def get_generator_with_schemas(self, schema_name: str) -> Generator:
+        gen = self.get_generator()
+        gen.get_oddrn_by_path("schemas", schema_name)
+        return gen
+
+
+backends: List[Type[DatabaseBackend]] = [PostgresBackend, MysqlBackend, PrestoBackend]
 backends_factory: Dict[str, Type[DatabaseBackend]] = {
     backend.database_backend: backend for backend in backends
 }
