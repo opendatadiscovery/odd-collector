@@ -18,6 +18,23 @@ import asyncio
 import aiohttp
 
 
+class DbUriParser:
+    def __init__(self, alchemy_uri: str):
+        self.parsed_uri = urlparse(alchemy_uri)
+
+    @property
+    def host(self) -> str:
+        return self.parsed_uri.hostname
+
+    @property
+    def port(self) -> int:
+        return self.parsed_uri.port
+
+    @property
+    def db_name(self) -> str:
+        return self.parsed_uri.path.split("/")[1]
+
+
 class RequestArgs(NamedTuple):
     method: str
     url: str
@@ -239,16 +256,19 @@ class SupersetClient:
             [RequestArgs("GET", url, None, headers) for url in urls]
         )
 
-        return [
-            Database(
-                id=node["id"],
-                database_name=node["result"]["parameters"]["database"],
-                backend=node["result"]["backend"],
-                host=node["result"]["parameters"].get("host"),
-                port=node["result"]["parameters"].get("port"),
+        databases: List[Database] = []
+        for node in databases_nodes:
+            db_params_parser = DbUriParser(node["result"]["sqlalchemy_uri"])
+            databases.append(
+                Database(
+                    id=node["id"],
+                    database_name=db_params_parser.db_name,
+                    backend=node["result"]["backend"],
+                    host=db_params_parser.host,
+                    port=db_params_parser.port,
+                )
             )
-            for node in databases_nodes
-        ]
+        return databases
 
     async def get_datasets_columns(
         self, datasets_ids: List[int]
