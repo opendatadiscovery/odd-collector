@@ -1,4 +1,3 @@
-from ..domain.dataset import Dataset
 from ..domain.dashboard import Dashboard
 from typing import Dict
 from oddrn_generator.generators import SupersetGenerator
