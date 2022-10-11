@@ -1,17 +1,16 @@
 import logging
-from typing import List
 from collections import namedtuple
-
-from odd_collector_sdk.domain.adapter import AbstractAdapter
-from oddrn_generator import CassandraGenerator
-from odd_models.models import DataEntity, DataEntityList
+from typing import List
 
 import cassandra
-from cassandra.cluster import Cluster, ExecutionProfile, EXEC_PROFILE_DEFAULT
-from cassandra.query import tuple_factory
 from cassandra.auth import PlainTextAuthProvider
+from cassandra.cluster import EXEC_PROFILE_DEFAULT, Cluster, ExecutionProfile
+from cassandra.query import tuple_factory
+from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntity, DataEntityList
+from oddrn_generator import CassandraGenerator
 
-from .mappers import _table_select, _column_select
+from .mappers import _column_select, _table_select
 from .mappers.tables import map_tables
 
 

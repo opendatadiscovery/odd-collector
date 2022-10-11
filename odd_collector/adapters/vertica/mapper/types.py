@@ -4,9 +4,9 @@
 # System table TYPES which Provides information about supported data types:
 #   https://www.vertica.com/docs/9.3.x/HTML/Content/Authoring/SQLReferenceManual/SystemTables/CATALOG/TYPES.htm
 
-from odd_models.models import Type, DataEntityType
 from typing import Dict
 
+from odd_models.models import DataEntityType, Type
 
 TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "binary": Type.TYPE_BINARY,

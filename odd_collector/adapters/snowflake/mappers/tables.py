@@ -1,11 +1,11 @@
-from odd_models.models import DataEntity, DataSet, DataEntityType
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import SnowflakeGenerator
 
 from . import (
-    MetadataNamedtuple,
-    _data_set_metadata_schema_url,
-    _data_set_metadata_excluded_keys,
     ColumnMetadataNamedtuple,
+    MetadataNamedtuple,
+    _data_set_metadata_excluded_keys,
+    _data_set_metadata_schema_url,
 )
 from .columns import map_column
 from .metadata import append_metadata_extension

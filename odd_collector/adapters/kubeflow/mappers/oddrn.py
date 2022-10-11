@@ -1,5 +1,5 @@
-from typing import Dict
 import logging
+from typing import Dict
 from urllib.parse import urlparse
 
 from oddrn_generator import KubeflowGenerator

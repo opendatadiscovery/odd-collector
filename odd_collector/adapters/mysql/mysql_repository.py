@@ -1,13 +1,12 @@
 import logging
+from typing import List
 
 import mysql.connector
 from mysql.connector import errorcode
 
-from .mysql_repository_base import MysqlRepositoryBase
-from .mappers import _column_table, _column_order_by
+from .mappers import _column_order_by, _column_table
 from .mappers.models import ColumnMetadata
-
-from typing import List
+from .mysql_repository_base import MysqlRepositoryBase
 
 
 class MysqlRepository(MysqlRepositoryBase):

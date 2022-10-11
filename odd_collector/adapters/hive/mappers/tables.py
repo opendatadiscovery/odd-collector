@@ -1,32 +1,43 @@
 import logging
-from typing import List
 from datetime import datetime
+from typing import List
+
 from more_itertools import flatten
 from odd_models.models import DataEntity, DataEntityType
 from oddrn_generator import HiveGenerator
-from .metadata import _metadata
-from .columns.main import map_column
+
 from . import StatsNamedTuple
+from .columns.main import map_column
+from .metadata import _metadata
+from .utils import transform_datetime
 
 
 def map_hive_table(
     host_name: str, table_stats, columns: dict, stats: List[StatsNamedTuple] = None
 ) -> DataEntity:
-    table_oddrn = HiveGenerator(
+
+    hive_generator = HiveGenerator(
         host_settings=host_name,
         databases=table_stats.dbName,
-        tables=table_stats.tableName,
-    ).get_data_source_oddrn()
-    owner = HiveGenerator(
-        host_settings=host_name, databases=table_stats.dbName, owners=table_stats.owner
-    ).get_data_source_oddrn()
-    created_at = f"{datetime.fromtimestamp(table_stats.createTime)}"
-    updated_at = f"{datetime.fromtimestamp(table_stats.lastAccessTime)}"
+    )
+    hive_generator.set_oddrn_paths(**{"tables": table_stats.tableName})
+    table_oddrn = hive_generator.get_oddrn_by_path("tables")
+    owner = table_stats.owner
+    created_at = f"{transform_datetime(datetime.fromtimestamp(table_stats.createTime))}"
+    updated_at = (
+        f"{transform_datetime(datetime.fromtimestamp(table_stats.lastAccessTime))}"
+    )
     columns_mapping = list(
         flatten(
             [
-                map_column(c_name, c_type, table_oddrn, __get_stats(c_name, stats))
-                for c_name, c_type in columns.items()
+                map_column(
+                    c_name,
+                    c_info["type"],
+                    table_oddrn,
+                    __get_stats(c_name, stats),
+                    c_info["is_primary_key"],
+                )
+                for c_name, c_info in columns.items()
             ]
         )
     )

@@ -1,10 +1,11 @@
-import re
 import logging
+import re
+from typing import Any, Dict, Iterable, List, Tuple
+
 from lark import Lark, LarkError
-from typing import List, Tuple, Dict, Any, Iterable
+
 from .field_stat_schema import FIELD_TYPE_SCHEMA
 from .hive_field_type_transformer import HiveFieldTypeTransformer
-
 
 hive_field_type_transformer = HiveFieldTypeTransformer()
 parser = Lark.open(
@@ -74,7 +75,9 @@ def __parse(field_type: str) -> Dict[str, Any]:
     return hive_field_type_transformer.transform(column_tree)
 
 
-def map_column(c_name, c_type, table_oddrn: str, stats=None) -> List[Dict[str, Any]]:
+def map_column(
+    c_name, c_type, table_oddrn: str, stats=None, is_primary_key=False
+) -> List[Dict[str, Any]]:
     try:
         column_type_value = re.sub(r"\([^)]*\)", "", c_type)
         type_parsed = __parse(column_type_value)
@@ -83,6 +86,7 @@ def map_column(c_name, c_type, table_oddrn: str, stats=None) -> List[Dict[str, A
             column_name=c_name,
             stats=stats,
             type_parsed=type_parsed,
+            is_primary_key=is_primary_key,
         )
     except (LarkError, KeyError) as e:
         logging.warning(
@@ -99,6 +103,7 @@ def __map_column(
     type_parsed: Dict[str, Any] = None,
     is_key: bool = None,
     is_value: bool = None,
+    is_primary_key: bool = None,
 ) -> List[Dict[str, Any]]:
     try:
         result = []
@@ -124,6 +129,7 @@ def __map_column(
             },
             "is_key": bool(is_key),
             "is_value": bool(is_value),
+            "is_primary_key": bool(is_primary_key),
             "owner": None,
             "metadata": None,
             "stats": stats or {},

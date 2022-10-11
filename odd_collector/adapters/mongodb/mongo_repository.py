@@ -1,6 +1,6 @@
 import logging
-import pymongo
 
+import pymongo
 from pymongo import MongoClient
 
 from .exceptions import DBException

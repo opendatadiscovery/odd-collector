@@ -1,6 +1,5 @@
 from odd_models.models import Type
 
-
 TYPES_SQL_TO_ODD = {
     "Date": Type.TYPE_DATETIME,
     "DateTime": Type.TYPE_DATETIME,

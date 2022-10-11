@@ -46,6 +46,7 @@ class MSSQLPlugin(DatabasePlugin):
 
 class ClickhousePlugin(DatabasePlugin):
     type: Literal["clickhouse"]
+    port: Optional[int]
 
 
 class RedshiftPlugin(DatabasePlugin):
@@ -123,6 +124,7 @@ class TableauPlugin(BasePlugin):
     password: Optional[SecretStr]
     token_name: Optional[str]
     token_value: Optional[SecretStr]
+    pagination_size: int = 10
 
 
 class VerticaPlugin(DatabasePlugin):
@@ -151,6 +153,29 @@ class CubeJSPlugin(BasePlugin):
         return value
 
 
+class PrestoPlugin(BasePlugin):
+    type: Literal["presto"]
+    host: str
+    port: int
+    user: str
+    principal_id: Optional[str]
+    password: Optional[str]
+
+
+class TrinoPlugin(BasePlugin):
+    type: Literal["trino"]
+    host: str
+    port: int
+    user: str
+    password: Optional[str]
+
+
+class OddAdapterPlugin(BasePlugin):
+    type: Literal["odd_adapter"]
+    host: str
+    data_source_oddrn: str
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -171,6 +196,9 @@ PLUGIN_FACTORY: PluginFactory = {
     "tableau": TableauPlugin,
     "cubejs": CubeJSPlugin,
     "odbc": OdbcPlugin,
+    "presto": PrestoPlugin,
+    "trino": TrinoPlugin,
     "vertica": VerticaPlugin,
     "superset": SupersetPlugin,
+    "odd_adapter": OddAdapterPlugin,
 }

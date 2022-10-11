@@ -2,7 +2,6 @@ from typing import Any, Dict, Set
 
 from humps import decamelize
 
-
 SCHEMA_FILE_URL = (
     "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/"
     "main/specification/extensions/elasticsearch.json"

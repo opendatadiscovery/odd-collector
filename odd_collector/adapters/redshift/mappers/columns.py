@@ -2,10 +2,10 @@ from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import RedshiftGenerator
 
 from . import (
-    _data_set_field_metadata_schema_url_redshift,
     _data_set_field_metadata_excluded_keys_redshift,
+    _data_set_field_metadata_schema_url_redshift,
 )
-from .metadata import _append_metadata_extension, MetadataColumn
+from .metadata import MetadataColumn, _append_metadata_extension
 from .types import TYPES_SQL_TO_ODD
 
 

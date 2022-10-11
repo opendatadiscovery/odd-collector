@@ -1,11 +1,12 @@
-from oddrn_generator import Generator
-from typing import Dict, List
-from odd_models.models import DataSetField
-from .parser import create_mapper
-from typing import Dict, Any, List, Union
-from confluent_kafka.schema_registry import RegisteredSchema, SchemaRegistryClient
 import json
 import logging as log
+from typing import Any, Dict, List, Union
+
+from confluent_kafka.schema_registry import RegisteredSchema, SchemaRegistryClient
+from odd_models.models import DataSetField
+from oddrn_generator import Generator
+
+from .parser import create_mapper
 
 
 def __extract_referenced_nodes(

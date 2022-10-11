@@ -1,5 +1,7 @@
-from odd_models.models import DataSetField, DataSetFieldType, Type
 from typing import List
+
+from odd_models.models import DataSetField, DataSetFieldType, Type
+
 from .types import TYPES_MONGO_TO_ODD
 
 

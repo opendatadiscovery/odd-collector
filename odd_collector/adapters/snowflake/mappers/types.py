@@ -1,4 +1,4 @@
-from odd_models.models import Type, DataEntityType
+from odd_models.models import DataEntityType, Type
 
 TYPES_SQL_TO_ODD: dict[str, Type] = {
     "INT": Type.TYPE_INTEGER,
