@@ -1,18 +1,19 @@
+from typing import List
+
 import pytz
-from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
 from oddrn_generator import RedshiftGenerator
 
-from . import _data_set_metadata_schema_url_info, _data_set_metadata_excluded_keys_info
+from . import _data_set_metadata_excluded_keys_info, _data_set_metadata_schema_url_info
 from .columns import map_column
 from .metadata import (
-    _append_metadata_extension,
-    MetadataTables,
-    MetadataColumns,
     MetadataColumn,
+    MetadataColumns,
+    MetadataTables,
+    _append_metadata_extension,
 )
 from .types import TABLE_TYPES_SQL_TO_ODD
 from .views import extract_transformer_data
-from typing import List
 
 
 def map_table(

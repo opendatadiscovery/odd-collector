@@ -14,7 +14,7 @@
 # Other data types:
 # uniqueidentifier, sql_variant, xml, rowversion, hierarchyid, cursor, table,
 # Spatial Geometry Types, Spatial Geography Types
-from odd_models.models import Type, DataEntityType
+from odd_models.models import DataEntityType, Type
 
 TYPES_SQL_TO_ODD: dict[str, Type] = {
     "tinyint": Type.TYPE_INTEGER,

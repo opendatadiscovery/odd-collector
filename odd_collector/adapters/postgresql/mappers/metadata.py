@@ -1,11 +1,12 @@
 from dataclasses import asdict, astuple
 from typing import List, Union
 
+from odd_models.models import MetadataExtension
+
 from odd_collector.adapters.postgresql.mappers.models import (
     ColumnMetadata,
     TableMetadata,
 )
-from odd_models.models import MetadataExtension
 
 
 def append_metadata_extension(

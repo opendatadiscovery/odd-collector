@@ -1,9 +1,9 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from typing import List
 
 from oddrn_generator import KafkaGenerator
 
-from .types import RawSchema, Field
+from .types import Field, RawSchema
 
 
 class AbstractParser(ABC):

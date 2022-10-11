@@ -163,6 +163,12 @@ class TrinoPlugin(BasePlugin):
     password: Optional[str]
 
 
+class OddAdapterPlugin(BasePlugin):
+    type: Literal["odd_adapter"]
+    host: str
+    data_source_oddrn: str
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -186,4 +192,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "presto": PrestoPlugin,
     "trino": TrinoPlugin,
     "vertica": VerticaPlugin,
+    "odd_adapter": OddAdapterPlugin,
 }

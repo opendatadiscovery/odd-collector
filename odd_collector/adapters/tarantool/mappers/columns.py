@@ -1,7 +1,7 @@
 from collections import namedtuple
 
-from oddrn_generator import TarantoolGenerator
 from odd_models.models import DataSetField, DataSetFieldType, Type
+from oddrn_generator import TarantoolGenerator
 
 from .metadata import append_metadata_extension, data_set_field_metadata_schema_url
 from .types import TYPES_Tarantool_TO_ODD

@@ -1,6 +1,6 @@
-from typing import Optional, List, Any
+from typing import Any, List, Optional
 
-from funcy import pluck, cat, ldistinct, get_in
+from funcy import cat, get_in, ldistinct, pluck
 
 
 class Sheet:

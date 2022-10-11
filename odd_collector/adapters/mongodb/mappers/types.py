@@ -29,8 +29,9 @@ bytes [#bytes]_                          binary         both
 =======================================  =============  ===================
 """
 
-from odd_models.models import Type, DataEntityType
 from typing import Dict
+
+from odd_models.models import DataEntityType, Type
 
 TYPES_MONGO_TO_ODD: Dict[str, Type] = {
     "date": Type.TYPE_DATETIME,

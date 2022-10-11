@@ -1,7 +1,9 @@
 import pytest
-from oddrn_generator.generators import PrestoGenerator
-from odd_collector.adapters.presto.mappers.catalogs import map_catalog
 from odd_models.models import DataEntityType
+from oddrn_generator.generators import PrestoGenerator
+
+from odd_collector.adapters.presto.mappers.catalogs import map_catalog
+
 from .raw_data import nested_nodes
 
 

@@ -1,19 +1,18 @@
-from typing import List, Dict, Tuple, Any
+from typing import Any, Dict, List, Tuple
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import (
-    DataEntityList,
     DataEntity,
-    DataEntityType,
     DataEntityGroup,
+    DataEntityList,
+    DataEntityType,
 )
-
-
 from oddrn_generator import VerticaGenerator
-from .vertica_repository import VerticaRepository
-from .mapper.tables import map_table
-from .domain.table import Table
+
 from .domain.column import Column
+from .domain.table import Table
+from .mapper.tables import map_table
+from .vertica_repository import VerticaRepository
 
 
 class Adapter(AbstractAdapter):

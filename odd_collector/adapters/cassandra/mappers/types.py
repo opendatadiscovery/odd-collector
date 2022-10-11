@@ -1,5 +1,6 @@
-from odd_models.models import Type
 from typing import Dict
+
+from odd_models.models import Type
 
 # Excluded types: BLOB, TIMEUUID, UUID, USER-DEFINED TODO add those types
 

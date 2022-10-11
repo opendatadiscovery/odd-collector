@@ -1,9 +1,9 @@
 import logging
 from typing import Dict, List
 
-from feast import FeatureStore, Entity
-from odd_models.models import DataEntity, DataEntityList
+from feast import Entity, FeatureStore
 from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import FeastGenerator
 
 from .mappers.datasets import FeatureViewMapper

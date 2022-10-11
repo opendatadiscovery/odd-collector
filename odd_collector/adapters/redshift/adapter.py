@@ -1,27 +1,24 @@
 import logging
+from typing import List
 
 import psycopg2
+from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import RedshiftGenerator
 
 from .mappers import (
+    ColumnMetadataNamedtuple_QUERY,
+    ColumnMetadataNamedtupleExternal_QUERY,
+    ColumnMetadataNamedtupleRedshift_QUERY,
     MetadataNamedtuple_QUERY,
     MetadataNamedtupleAll_QUERY,
-    MetadataNamedtupleRedshift_QUERY,
     MetadataNamedtupleExternal_QUERY,
     MetadataNamedtupleInfo_QUERY,
-    ColumnMetadataNamedtuple_QUERY,
-    ColumnMetadataNamedtupleRedshift_QUERY,
-    ColumnMetadataNamedtupleExternal_QUERY,
+    MetadataNamedtupleRedshift_QUERY,
     PrimaryKeys_QUERY,
 )
-from .mappers.metadata import MetadataTables, MetadataColumns
+from .mappers.metadata import MetadataColumns, MetadataTables
 from .mappers.tables import map_table
-
-
-from odd_collector_sdk.domain.adapter import AbstractAdapter
-
-from typing import List
 
 
 class Adapter(AbstractAdapter):

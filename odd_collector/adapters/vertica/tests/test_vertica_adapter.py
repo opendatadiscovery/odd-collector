@@ -6,6 +6,7 @@ from dateutil.tz import tzoffset
 from odd_models.models import DataEntityType
 
 from odd_collector.domain.plugin import VerticaPlugin
+
 from ..adapter import Adapter
 from ..domain.column import Column
 from ..domain.table import Table
