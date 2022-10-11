@@ -8,19 +8,11 @@ from odd_collector.adapters.superset.mappers.columns import map_column
 
 @pytest.fixture
 def generator():
-    return SupersetGenerator(
-        host_settings="host",
-        databases="db",
-        datasets="dataset",
-    )
+    return SupersetGenerator(host_settings="host", databases="db", datasets="dataset")
 
 
 def test_map_column(generator):
-    column = Column(
-        id=1,
-        name="Age",
-        remote_type="TEXT",
-    )
+    column = Column(id=1, name="Age", remote_type="TEXT")
     data_entity = map_column(generator, column)
 
     assert (

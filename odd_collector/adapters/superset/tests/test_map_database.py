@@ -8,9 +8,7 @@ from typing import Dict
 
 @pytest.fixture
 def generator():
-    return SupersetGenerator(
-        host_settings="host",
-    )
+    return SupersetGenerator(host_settings="host")
 
 
 def test_create_databases_entities(generator):

@@ -30,7 +30,6 @@ class Dataset:
 
     def get_oddrn(self, oddrn_generator):
         oddrn_generator.set_oddrn_paths(
-            databases=self.database_name,
-            datasets=self.name,
+            databases=self.database_name, datasets=self.name
         )
         return oddrn_generator.get_oddrn_by_path("datasets")

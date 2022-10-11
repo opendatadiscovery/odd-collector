@@ -21,11 +21,7 @@ def test_table_to_data_entity(generator):
         kind="virtual",
         columns=[
             Column(id=1, name="Age", remote_type="TEXT"),
-            Column(
-                id=3,
-                name="Height",
-                remote_type="INTEGER",
-            ),
+            Column(id=3, name="Height", remote_type="INTEGER"),
         ],
     )
 
