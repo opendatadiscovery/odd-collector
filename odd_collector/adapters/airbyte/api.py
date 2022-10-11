@@ -4,13 +4,15 @@ import logging
 from typing import List
 
 
-class ApiGetter:
-    """Class intended for retrieving data from Airbyte API"""
+class AirbyteApi:
+    """
+    Class intended for retrieving data from Airbyte API
+    """
 
     __WORKSPACE_IDS = []
     __CONNECTIONS = []
 
-    def __init__(self, host: str, port: int) -> None:
+    def __init__(self, host: str, port: str) -> None:
         self.__base_url = f"http://{host}:{port}/api/v1"
         self.__workspaces_request = f"{self.__base_url}/workspaces/list"
         self.__connections_request = f"{self.__base_url}/connections/list"

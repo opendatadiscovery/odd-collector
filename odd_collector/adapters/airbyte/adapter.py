@@ -2,7 +2,7 @@ from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_collector.domain.plugin import AirbytePlugin
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import AirbyteGenerator
-from .api import ApiGetter
+from .api import AirbyteApi
 from .mappers.connections import map_connection
 
 
@@ -10,7 +10,7 @@ class Adapter(AbstractAdapter):
     def __init__(self, config: AirbytePlugin) -> None:
         self.__host = config.host
         self.__port = config.port
-        self.__api = ApiGetter(self.__host, self.__port)
+        self.__api = AirbyteApi(self.__host, self.__port)
         self.__oddrn_generator = AirbyteGenerator(host_settings=config.host)
 
     def get_data_entity_list(self) -> DataEntityList:

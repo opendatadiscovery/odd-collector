@@ -2,11 +2,11 @@ import logging
 from odd_models.models import DataEntity, DataEntityType, DataTransformer
 from oddrn_generator import AirbyteGenerator
 from .oddrn import generate_connection_oddrn, generate_dataset_oddrn
-from ..api import ApiGetter
+from ..api import AirbyteApi
 
 
 def map_connection(
-    connection: dict, oddrn_gen: AirbyteGenerator, api: ApiGetter
+        connection: dict, oddrn_gen: AirbyteGenerator, api: AirbyteApi
 ) -> DataEntity:
     """
     Mapping of connection metadata retrieved from Airbyte API
@@ -88,6 +88,9 @@ def map_connection(
     """
     conn_id = connection.get("connectionId")
     name = connection.get("name")
+    tables = []
+    for stream in connection["syncCatalog"]["streams"]:
+        tables.append(stream["stream"]["name"])
     source_id = connection.get("sourceId")
     destination_id = connection.get("destinationId")
     source_meta = api.get_dataset_definition(is_source=True, dataset_id=source_id)

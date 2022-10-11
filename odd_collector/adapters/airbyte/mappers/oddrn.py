@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from oddrn_generator import AirbyteGenerator, Generator
 from odd_collector.adapters.airbyte.mappers.dataset import verify_dataset_name
 
@@ -8,8 +8,10 @@ def generate_connection_oddrn(conn_id: str, oddrn_gen: AirbyteGenerator) -> str:
 
 
 def generate_dataset_oddrn(is_source: bool, dataset_meta: dict) -> Optional[str]:
-    """Function intended for generatring oddrn of
-    sources and destinations in Airbyte connections"""
+    """
+    Function intended for generatring oddrn of
+    sources and destinations in Airbyte connections
+    """
 
     name = (
         str(dataset_meta.get("sourceName")).lower()
