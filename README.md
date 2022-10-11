@@ -13,7 +13,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 
 ## Implemented adapters
 | Service       | Config example                                                                          |
-|---------------|------------------------------------------------------------------------------------------------------------------------------------|
+| ------------- | --------------------------------------------------------------------------------------- |
 | Cassandra     | [config](config_examples/cassandra.yaml)                                                |
 | ClickHouse    | [config](config_examples/clickhouse.yaml)                                               |
 | Dbt           | [config](config_examples/dbt.yaml)                                                      |
@@ -29,11 +29,12 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | Neo4j         | [config](config_examples/neo4j.yaml)                                                    |
 | PostgreSQL    | [config](config_examples/postgresql.yaml)                                               |
 | Presto        | [config](config_examples/presto.yaml)                                                   |
-|Redshift      | [config](config_examples/redshift.yaml)                                                 |
+| Redshift      | [config](config_examples/redshift.yaml)                                                 |
 | Snowflake     | [config](config_examples/snowflake.yaml)                                                |
 | Superset      | [config](config_examples/superset.yaml)                                                 |
 | Tableau       | [config](config_examples/tableau.yaml)                                                  |
-| Tarantool     | [config](config_examples/tarantool.yaml)                                                || Trino         | [config](config_examples/trino.yaml)                                                    |
+| Tarantool     | [config](config_examples/tarantool.yaml)                                                |
+| Trino         | [config](config_examples/trino.yaml)                                                    |
 | Vertica       | [config](config_examples/vertica.yaml)                                                  |
 | ODBC          | [config](config_examples/odbc.yaml), [README.md](odd_collector/adapters/odbc/README.md) |
 | Cube          | [config](config_examples/cubejs.yaml)                                                   |
