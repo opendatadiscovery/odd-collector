@@ -15,66 +15,53 @@ class DatabaseBackend:
 
     database_backend: str
     generator_cls: Type[Generator]
-    table_path_name: str
-
-    @abstractmethod
-    def get_generator(self) -> Generator:
-        pass
-
-    @abstractmethod
-    def get_generator_with_schemas(self, sche) -> Generator:
-        pass
-
-
-class JdbcBackend(DatabaseBackend):
+    database_path_name: str
+    schema_path_name: str
     table_path_name = "tables"
 
-    def get_generator(self):
+    def get_generator_for_database_lvl(self):
         return self.generator_cls(
-            # host_settings=self.database.host,
-            host_settings="localhost",
-            databases=self.database.database_name,
+            **{
+                "host_settings": self.database.host,
+                self.database_path_name: self.database.database_name,
+            }
         )
 
     @abstractmethod
-    def get_generator_with_schemas(self, schema_name: str) -> Generator:
+    def get_generator_for_schema_lvl(self, schema_name: str) -> Generator:
         pass
 
 
-class PostgresBackend(JdbcBackend):
+class DeepLvlBackend(DatabaseBackend):
+    def get_generator_for_schema_lvl(self, schema_name: str) -> Generator:
+        gen = self.get_generator_for_database_lvl()
+        gen.get_oddrn_by_path(self.schema_path_name, schema_name)
+        return gen
+
+
+class ShallowLvlBackend(DatabaseBackend):
+    def get_generator_for_schema_lvl(self, schema_name: str) -> Generator:
+        return self.get_generator_for_database_lvl()
+
+
+class PostgresBackend(DeepLvlBackend):
     database_backend = "postgresql"
     generator_cls = PostgresqlGenerator
-
-    def get_generator_with_schemas(self, schema_name: str) -> Generator:
-        gen = self.get_generator()
-        gen.get_oddrn_by_path("schemas", schema_name)
-        return gen
+    database_path_name = "databases"
+    schema_path_name = "schemas"
 
 
-class MysqlBackend(JdbcBackend):
+class MysqlBackend(ShallowLvlBackend):
     database_backend = "mysql"
     generator_cls = MysqlGenerator
-
-    def get_generator_with_schemas(self, sche) -> Generator:
-        return self.get_generator()
+    database_path_name = "databases"
 
 
-class PrestoBackend(DatabaseBackend):
+class PrestoBackend(DeepLvlBackend):
     database_backend = "presto"
     generator_cls = PrestoGenerator
-    table_path_name = "tables"
-
-    def get_generator(self):
-        return self.generator_cls(
-            # host_settings=self.database.host,
-            host_settings="localhost",
-            catalogs=self.database.database_name,
-        )
-
-    def get_generator_with_schemas(self, schema_name: str) -> Generator:
-        gen = self.get_generator()
-        gen.get_oddrn_by_path("schemas", schema_name)
-        return gen
+    database_path_name = "catalogs"
+    schema_path_name = "schemas"
 
 
 backends: List[Type[DatabaseBackend]] = [PostgresBackend, MysqlBackend, PrestoBackend]

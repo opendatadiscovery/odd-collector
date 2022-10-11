@@ -30,7 +30,7 @@ def map_table(
 
     if dataset.kind == "virtual":
         if external_backend is not None:
-            view_gen = external_backend.get_generator_with_schemas(dataset.schema)
+            view_gen = external_backend.get_generator_for_schema_lvl(dataset.schema)
 
             table_path = external_backend.table_path_name
         else:

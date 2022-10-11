@@ -56,7 +56,7 @@ class Adapter(AbstractAdapter):
                 )
                 views_entities_dict.update({dataset.id: view_entity})
             else:
-                gen = backend.get_generator_with_schemas(dataset.schema)
+                gen = backend.get_generator_for_schema_lvl(dataset.schema)
                 gen.get_oddrn_by_path(backend.table_path_name, dataset.name)
                 oddrn = gen.get_oddrn_by_path(backend.table_path_name)
                 datasets_oddrns_dict.update({dataset.id: oddrn})
