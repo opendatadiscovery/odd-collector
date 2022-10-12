@@ -21,6 +21,16 @@ password: str
 }
 odd_collector_sdk.domain.plugin.Plugin <|-- TableauPlugin
 
+
+class SupersetPlugin{
+type: Literal["superset"]
+server: str
+username: str
+password: str
+}
+odd_collector_sdk.domain.plugin.Plugin <|-- SupersetPlugin
+
+
 class KubeflowPlugin {
 type: Literal["kubeflow"]
 host: str
