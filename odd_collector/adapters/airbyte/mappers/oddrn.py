@@ -9,7 +9,7 @@ def generate_connection_oddrn(conn_id: str, oddrn_gen: AirbyteGenerator) -> str:
     return oddrn_gen.get_oddrn_by_path("connections", new_value=conn_id)
 
 
-def generate_dataset_oddrn(
+async def generate_dataset_oddrn(
     is_source: bool,
     connection_meta: dict,
     airbyte_api: AirbyteApi,
@@ -28,7 +28,7 @@ def generate_dataset_oddrn(
         if is_source
         else connection_meta.get("destinationId")
     )
-    dataset_meta = airbyte_api.get_dataset_definition(
+    dataset_meta = await airbyte_api.get_dataset_definition(
         is_source=is_source, dataset_id=dataset_id
     )
 
@@ -47,7 +47,7 @@ def generate_dataset_oddrn(
         )
 
         deg_oddrn = oddrn_gen.get_data_source_oddrn()
-        dataset_oddrns = odd_api.get_data_entities_oddrns(deg_oddrn)
+        dataset_oddrns = await odd_api.get_data_entities_oddrns(deg_oddrn)
         for oddrn in dataset_oddrns:
             if search(r"\w+$", oddrn).group() in replicated_tables:
                 entities.append(oddrn)

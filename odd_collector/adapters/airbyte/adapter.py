@@ -10,24 +10,25 @@ class Adapter(AbstractAdapter):
     def __init__(self, config: AirbytePlugin) -> None:
         self.__host = config.host
         self.__port = config.port
+        self.__platfrom_host = config.platform_host
         self.__airbyte_api = AirbyteApi(self.__host, self.__port)
-        self.__odd_api = OddPlatformApi(self.__host, "8080")
+        self.__odd_api = OddPlatformApi(self.__platfrom_host)
         self.__oddrn_generator = AirbyteGenerator(host_settings=config.host)
 
-    def get_data_entity_list(self) -> DataEntityList:
+    async def get_data_entity_list(self) -> DataEntityList:
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=self.__get_connections(),
+            items=await self.__get_connections(),
         )
 
     def get_data_source_oddrn(self) -> str:
         return self.__oddrn_generator.get_data_source_oddrn()
 
-    def __get_connections(self) -> list[DataEntity]:
-        all_workspaces = self.__airbyte_api.get_all_workspaces()
-        all_connections = self.__airbyte_api.get_all_connections(all_workspaces)
+    async def __get_connections(self) -> list[DataEntity]:
+        all_workspaces = await self.__airbyte_api.get_all_workspaces()
+        all_connections = await self.__airbyte_api.get_all_connections(all_workspaces)
         return [
-            map_connection(
+            await map_connection(
                 connection, self.__oddrn_generator, self.__airbyte_api, self.__odd_api
             )
             for connection in all_connections

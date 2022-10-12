@@ -5,7 +5,7 @@ from .oddrn import generate_connection_oddrn, generate_dataset_oddrn
 from ..api import AirbyteApi, OddPlatformApi
 
 
-def map_connection(
+async def map_connection(
     connection: dict,
     oddrn_gen: AirbyteGenerator,
     airbyte_api: AirbyteApi,
@@ -92,13 +92,13 @@ def map_connection(
     conn_id = connection.get("connectionId")
     name = connection.get("name")
 
-    source_oddrns = generate_dataset_oddrn(
+    source_oddrns = await generate_dataset_oddrn(
         is_source=True,
         connection_meta=connection,
         airbyte_api=airbyte_api,
         odd_api=odd_api,
     )
-    destination_oddrns = generate_dataset_oddrn(
+    destination_oddrns = await generate_dataset_oddrn(
         is_source=False,
         connection_meta=connection,
         airbyte_api=airbyte_api,

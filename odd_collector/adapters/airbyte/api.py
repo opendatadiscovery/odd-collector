@@ -1,5 +1,5 @@
 import json
-import requests
+import aiohttp
 import logging
 from typing import List, Optional
 
@@ -9,66 +9,56 @@ class AirbyteApi:
     Class intended for retrieving data from Airbyte API
     """
 
-    __WORKSPACE_IDS = []
-    __CONNECTIONS = []
-
     def __init__(self, host: str, port: str) -> None:
-        self.__base_url = f"http://{host}:{port}/api/v1"
-        self.__workspaces_request = f"{self.__base_url}/workspaces/list"
-        self.__connections_request = f"{self.__base_url}/connections/list"
-        self.__source_definition_request = f"{self.__base_url}/sources/get"
-        self.__destination_definition_request = f"{self.__base_url}/destinations/get"
+        self.__base_url = f"http://{host}:{port}"
         self.__headers = {
             "Content-type": "application/json",
             "Accept": "application/json",
         }
 
-    def get_all_workspaces(self) -> List[str]:
-        try:
-            response = requests.post(self.__workspaces_request).json()
-            workspaces = response["workspaces"]
-            for workspace in workspaces:
-                self.__WORKSPACE_IDS.append(workspace["workspaceId"])
-            return self.__WORKSPACE_IDS
+    async def get_all_workspaces(self) -> List[str]:
+        async with aiohttp.ClientSession(self.__base_url) as session:
+            try:
+                async with session.post("/api/v1/workspaces/list") as resp:
+                    result = await resp.json()
+                    workspaces = result["workspaces"]
+                return [workspace["workspaceId"] for workspace in workspaces]
+            except TypeError:
+                logging.warning("Workspaces endpoint response is not returned")
+                return []
 
-        except TypeError:
-            logging.warning("Workspaces endpoint response is not returned")
-            return []
+    async def get_all_connections(self, workspace_ids: List[str]) -> List[dict]:
+        connections = []
+        async with aiohttp.ClientSession(self.__base_url) as session:
+            try:
+                for workspace_id in workspace_ids:
+                    workspaces_dict = {"workspaceId": workspace_id}
+                    request_body = json.dumps(workspaces_dict)
+                    async with session.post(
+                            "/api/v1/connections/list", data=request_body, headers=self.__headers
+                    ) as resp:
+                        result = await resp.json()
+                        connections.extend(result["connections"])
+                return connections
+            except TypeError:
+                logging.warning("Connections endpoint response is not returned")
+                return []
 
-    def get_all_connections(self, workspace_ids: List[str]) -> List[dict]:
-        workspaces_dict = {}
-        try:
-            for workspace_id in workspace_ids:
-                workspaces_dict["workspaceId"] = workspace_id
-                request_body = json.dumps(workspaces_dict)
-                response = requests.post(
-                    url=self.__connections_request,
-                    data=request_body,
-                    headers=self.__headers,
-                ).json()
-                self.__CONNECTIONS.extend(response["connections"])
-            return self.__CONNECTIONS
-        except TypeError:
-            logging.warning("Connections endpoint response is not returned")
-            return []
-
-    def get_dataset_definition(self, is_source: bool, dataset_id: str) -> dict:
+    async def get_dataset_definition(self, is_source: bool, dataset_id: str) -> dict:
         field_name = "sourceId" if is_source else "destinationId"
         body = {field_name: dataset_id}
-        url = (
-            self.__source_definition_request
-            if is_source
-            else self.__destination_definition_request
-        )
-        try:
-            request_body = json.dumps(body)
-            response = requests.post(
-                url=url, data=request_body, headers=self.__headers
-            ).json()
-            return response
-        except TypeError:
-            logging.warning("Dataset endpoint response is not returned")
-            return {}
+        url = "/api/v1/sources/get" if is_source else "/api/v1/destinations/get"
+        async with aiohttp.ClientSession(self.__base_url) as session:
+            try:
+                request_body = json.dumps(body)
+                async with session.post(
+                        url, data=request_body, headers=self.__headers
+                ) as resp:
+                    result = await resp.json()
+                    return result
+            except TypeError:
+                logging.warning("Dataset endpoint response is not returned")
+                return {}
 
 
 class OddPlatformApi:
@@ -76,18 +66,21 @@ class OddPlatformApi:
     Class intended to retrieve data from ODD API
     """
 
-    def __init__(self, host: str, port: str) -> None:
-        self.__base_url = f"http://{host}:{port}"
+    def __init__(self, host_url: str) -> None:
+        self.__base_url = host_url
 
-    def get_data_entities_oddrns(self, deg_oddrn: str) -> List[Optional[str]]:
-        url = f"{self.__base_url}/ingestion/dataentities"
+    async def get_data_entities_oddrns(self, deg_oddrn: str) -> List[Optional[str]]:
         params = {"deg_oddrn": deg_oddrn}
         entities = []
-        try:
-            response = requests.get(url, params).json()
-            for item in response["items"]:
-                entities.append(item["oddrn"])
-            return entities
-        except TypeError:
-            logging.warning("Dataset endpoint response is not returned")
-            return entities
+        async with aiohttp.ClientSession(self.__base_url) as session:
+            try:
+                async with session.get(
+                        "/ingestion/dataentities", params=params
+                ) as resp:
+                    result = await resp.json()
+                    for item in result["items"]:
+                        entities.append(item["oddrn"])
+                    return entities
+            except TypeError:
+                logging.warning("Dataset endpoint response is not returned")
+                return entities
