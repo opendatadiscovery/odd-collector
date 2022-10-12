@@ -2,11 +2,14 @@ import logging
 from odd_models.models import DataEntity, DataEntityType, DataTransformer
 from oddrn_generator import AirbyteGenerator
 from .oddrn import generate_connection_oddrn, generate_dataset_oddrn
-from ..api import AirbyteApi
+from ..api import AirbyteApi, OddPlatformApi
 
 
 def map_connection(
-        connection: dict, oddrn_gen: AirbyteGenerator, api: AirbyteApi
+    connection: dict,
+    oddrn_gen: AirbyteGenerator,
+    airbyte_api: AirbyteApi,
+    odd_api: OddPlatformApi,
 ) -> DataEntity:
     """
     Mapping of connection metadata retrieved from Airbyte API
@@ -88,21 +91,22 @@ def map_connection(
     """
     conn_id = connection.get("connectionId")
     name = connection.get("name")
-    tables = []
-    for stream in connection["syncCatalog"]["streams"]:
-        tables.append(stream["stream"]["name"])
-    source_id = connection.get("sourceId")
-    destination_id = connection.get("destinationId")
-    source_meta = api.get_dataset_definition(is_source=True, dataset_id=source_id)
-    destination_meta = api.get_dataset_definition(
-        is_source=False, dataset_id=destination_id
+
+    source_oddrns = generate_dataset_oddrn(
+        is_source=True,
+        connection_meta=connection,
+        airbyte_api=airbyte_api,
+        odd_api=odd_api,
     )
-    source_oddrn = generate_dataset_oddrn(is_source=True, dataset_meta=source_meta)
-    destination_oddrn = generate_dataset_oddrn(
-        is_source=False, dataset_meta=destination_meta
+    destination_oddrns = generate_dataset_oddrn(
+        is_source=False,
+        connection_meta=connection,
+        airbyte_api=airbyte_api,
+        odd_api=odd_api,
     )
-    inputs = [source_oddrn] if source_oddrn else []
-    outputs = [destination_oddrn] if destination_oddrn else []
+    print(source_oddrns)
+    print(destination_oddrns)
+
     try:
         return DataEntity(
             oddrn=generate_connection_oddrn(conn_id, oddrn_gen),
@@ -116,8 +120,8 @@ def map_connection(
                 description=None,
                 source_code_url=None,
                 sql=None,
-                inputs=inputs,
-                outputs=outputs,
+                inputs=source_oddrns,
+                outputs=destination_oddrns,
                 subtype="DATATRANSFORMER_JOB",
             ),
         )

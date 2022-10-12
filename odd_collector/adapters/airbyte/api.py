@@ -1,7 +1,7 @@
 import json
 import requests
 import logging
-from typing import List
+from typing import List, Optional
 
 
 class AirbyteApi:
@@ -69,3 +69,25 @@ class AirbyteApi:
         except TypeError:
             logging.warning("Dataset endpoint response is not returned")
             return {}
+
+
+class OddPlatformApi:
+    """
+    Class intended to retrieve data from ODD API
+    """
+
+    def __init__(self, host: str, port: str) -> None:
+        self.__base_url = f"http://{host}:{port}"
+
+    def get_data_entities_oddrns(self, deg_oddrn: str) -> List[Optional[str]]:
+        url = f"{self.__base_url}/ingestion/dataentities"
+        params = {"deg_oddrn": deg_oddrn}
+        entities = []
+        try:
+            response = requests.get(url, params).json()
+            for item in response["items"]:
+                entities.append(item["oddrn"])
+            return entities
+        except TypeError:
+            logging.warning("Dataset endpoint response is not returned")
+            return entities
