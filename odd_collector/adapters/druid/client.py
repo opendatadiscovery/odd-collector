@@ -11,7 +11,6 @@ from odd_collector.domain.plugin import DruidPlugin
 
 
 class DruidBaseClient(ABC):
-
     @abstractmethod
     async def get_resources(self):
         raise NotImplementedError
@@ -37,7 +36,7 @@ class DruidClient(DruidBaseClient):
             tasks = [
                 asyncio.create_task(self.get_tables(session)),
                 asyncio.create_task(self.get_columns(session)),
-                asyncio.create_task(self.get_tables_nr_of_rows(session))
+                asyncio.create_task(self.get_tables_nr_of_rows(session)),
             ]
 
             # Return
@@ -132,7 +131,9 @@ class DruidClient(DruidBaseClient):
                 records = await response.json()
 
                 # Return
-                return dict((record["datasource"], record["avg_num_rows"]) for record in records)
+                return dict(
+                    (record["datasource"], record["avg_num_rows"]) for record in records
+                )
 
         except Exception as e:
             # Throw

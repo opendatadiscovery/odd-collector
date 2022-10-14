@@ -10,12 +10,12 @@ from odd_collector.domain.plugin import DruidPlugin
 
 
 class Adapter(AbstractAdapter):
-    def __init__(self, config: DruidPlugin, client: Type[DruidBaseClient] = None) -> None:
+    def __init__(
+        self, config: DruidPlugin, client: Type[DruidBaseClient] = None
+    ) -> None:
         self.__host = config.host
         self.__port = config.port
-        self.__oddrn_generator = DruidGenerator(
-            host_settings=f"{self.__host}"
-        )
+        self.__oddrn_generator = DruidGenerator(host_settings=f"{self.__host}")
         client = client or DruidClient
         self.client = client(config)
 
@@ -38,8 +38,9 @@ class Adapter(AbstractAdapter):
                 self.__oddrn_generator,
                 table,
                 list(filter(lambda column: column.table == table.name, columns)),
-                tables_nr_of_rows.get(table.name, 0)
-            ) for table in tables
+                tables_nr_of_rows.get(table.name, 0),
+            )
+            for table in tables
         ]
 
         # Return

@@ -17,13 +17,17 @@ class Column:
     def from_response(record: dict):
         try:
             # Return
-            return Column(record["TABLE_CATALOG"],
-                          record["TABLE_SCHEMA"],
-                          record["TABLE_NAME"],
-                          record["COLUMN_NAME"],
-                          record["DATA_TYPE"],
-                          True if record["IS_NULLABLE"] == 'YES' else False,
-                          record["ORDINAL_POSITION"])
+            return Column(
+                record["TABLE_CATALOG"],
+                record["TABLE_SCHEMA"],
+                record["TABLE_NAME"],
+                record["COLUMN_NAME"],
+                record["DATA_TYPE"],
+                True if record["IS_NULLABLE"] == "YES" else False,
+                record["ORDINAL_POSITION"],
+            )
         except Exception as e:
             # Throw
-            raise MappingDataError("Couldn't transform Druid result to Column model") from e
+            raise MappingDataError(
+                "Couldn't transform Druid result to Column model"
+            ) from e

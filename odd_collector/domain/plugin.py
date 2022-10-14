@@ -205,7 +205,7 @@ PLUGIN_FACTORY: PluginFactory = {
     "presto": PrestoPlugin,
     "trino": TrinoPlugin,
     "vertica": VerticaPlugin,
-    "druid": DruidPlugin
+    "druid": DruidPlugin,
     "superset": SupersetPlugin,
     "odd_adapter": OddAdapterPlugin,
 }
