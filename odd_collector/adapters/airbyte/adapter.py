@@ -44,7 +44,9 @@ class Adapter(AbstractAdapter):
 
             connections_data.append((connection, input_oddrns, output_oddrns))
 
-        return [map_connection(data, self.__oddrn_generator) for data in connections_data]
+        return [
+            map_connection(data, self.__oddrn_generator) for data in connections_data
+        ]
 
     async def __get_dataset_oddrns(
         self, is_source: bool, dataset_id: str, connection: dict
