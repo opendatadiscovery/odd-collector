@@ -27,8 +27,9 @@
 # VARBITOID         'bit varying'                   'bit varying'
 # VARCHAROID        'character varying'             'character varying'
 
-from odd_models.models import Type, DataEntityType
 from typing import Dict
+
+from odd_models.models import DataEntityType, Type
 
 TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "date": Type.TYPE_DATETIME,

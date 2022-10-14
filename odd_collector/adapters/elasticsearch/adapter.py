@@ -1,9 +1,9 @@
 import logging
-from elasticsearch import Elasticsearch
-
 from typing import Iterable
-from odd_models.models import DataEntity, DataEntityList
+
+from elasticsearch import Elasticsearch
 from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import ElasticSearchGenerator
 
 from .mappers.indexes import map_index

@@ -1,5 +1,5 @@
-from abc import abstractmethod
 import re
+from abc import abstractmethod
 from typing import List, Optional
 
 from oddrn_generator import KafkaGenerator

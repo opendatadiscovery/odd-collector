@@ -1,7 +1,9 @@
-from prestodb.dbapi import connect
+from typing import Callable, Dict
+
 from prestodb.auth import BasicAuthentication
-from typing import Dict, Callable
-from .presto_repository_common import PrestoRepositoryCommon, LdapPropertiesError
+from prestodb.dbapi import connect
+
+from .presto_repository_common import LdapPropertiesError, PrestoRepositoryCommon
 
 
 class PrestoRepository(PrestoRepositoryCommon):

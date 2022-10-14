@@ -3,8 +3,8 @@ from oddrn_generator import SnowflakeGenerator
 
 from . import (
     ColumnMetadataNamedtuple,
-    _data_set_field_metadata_schema_url,
     _data_set_field_metadata_excluded_keys,
+    _data_set_field_metadata_schema_url,
 )
 from .metadata import append_metadata_extension
 from .types import TYPES_SQL_TO_ODD

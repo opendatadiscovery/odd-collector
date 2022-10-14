@@ -1,4 +1,5 @@
-from typing import NamedTuple, List
+from typing import List, NamedTuple
+
 from odd_models.models import MetadataExtension
 
 

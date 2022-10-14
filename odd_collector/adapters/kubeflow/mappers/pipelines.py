@@ -1,10 +1,10 @@
 import logging
-from odd_models.models import DataEntity, DataTransformer
-from typing import Any, Iterable, List, Dict
-from odd_models.models import MetadataExtension
+from typing import Any, Dict, Iterable, List
 
-from .oddrn import generate_pipeline_oddrn, generate_input_oddrn
+from odd_models.models import DataEntity, DataTransformer, MetadataExtension
 from oddrn_generator import KubeflowGenerator
+
+from .oddrn import generate_input_oddrn, generate_pipeline_oddrn
 
 
 def __extract_metadata(data: Dict[str, Any]) -> List[MetadataExtension]:

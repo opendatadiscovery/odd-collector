@@ -137,6 +137,13 @@ class VerticaPlugin(DatabasePlugin):
     type: Literal["vertica"]
 
 
+class SupersetPlugin(BasePlugin):
+    type: Literal["superset"]
+    server: str
+    username: str
+    password: str
+
+
 class CubeJSPlugin(BasePlugin):
     type: Literal["cubejs"]
     host: str
@@ -169,6 +176,12 @@ class TrinoPlugin(BasePlugin):
     password: Optional[str]
 
 
+class OddAdapterPlugin(BasePlugin):
+    type: Literal["odd_adapter"]
+    host: str
+    data_source_oddrn: str
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -193,4 +206,6 @@ PLUGIN_FACTORY: PluginFactory = {
     "trino": TrinoPlugin,
     "vertica": VerticaPlugin,
     "druid": DruidPlugin
+    "superset": SupersetPlugin,
+    "odd_adapter": OddAdapterPlugin,
 }

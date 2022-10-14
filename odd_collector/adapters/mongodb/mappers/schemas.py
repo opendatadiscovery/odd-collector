@@ -1,5 +1,7 @@
-from odd_models.models import DataEntity, DataSet, DataEntityType, DataEntityGroup
 from typing import Dict, List
+
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
+
 from .columns import map_columns
 
 SCHEMA_FILE_URL = (

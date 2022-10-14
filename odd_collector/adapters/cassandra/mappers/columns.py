@@ -2,16 +2,14 @@ from typing import Union
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
 
+from ..cassandra_generator import CassandraGenerator
 from . import (
     ColumnMetadata,
     _data_set_field_metadata_excluded_keys,
     _data_set_field_metadata_schema_url,
 )
-
 from .metadata import get_metadata_extension
 from .types import TYPES_CASSANDRA_TO_ODD
-
-from ..cassandra_generator import CassandraGenerator
 
 
 def map_column(
