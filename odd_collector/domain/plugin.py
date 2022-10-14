@@ -138,6 +138,12 @@ class SupersetPlugin(BasePlugin):
     password: str
 
 
+class RedashPlugin(BasePlugin):
+    type: Literal["redash"]
+    server: str
+    api_key: str
+
+
 class CubeJSPlugin(BasePlugin):
     type: Literal["cubejs"]
     host: str
@@ -200,5 +206,6 @@ PLUGIN_FACTORY: PluginFactory = {
     "trino": TrinoPlugin,
     "vertica": VerticaPlugin,
     "superset": SupersetPlugin,
+    "redash": RedashPlugin,
     "odd_adapter": OddAdapterPlugin,
 }
