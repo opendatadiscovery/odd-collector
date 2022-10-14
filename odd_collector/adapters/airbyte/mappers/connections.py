@@ -1,15 +1,12 @@
-import logging
 from odd_models.models import DataEntity, DataEntityType, DataTransformer
 from oddrn_generator import AirbyteGenerator
-from .oddrn import generate_connection_oddrn, generate_dataset_oddrn
-from ..api import AirbyteApi, OddPlatformApi
+from .oddrn import generate_connection_oddrn
+from ..logger import logger
 
 
-async def map_connection(
-    connection: dict,
+def map_connection(
+    conn_data: tuple,
     oddrn_gen: AirbyteGenerator,
-    airbyte_api: AirbyteApi,
-    odd_api: OddPlatformApi,
 ) -> DataEntity:
     """
     Mapping of connection metadata retrieved from Airbyte API
@@ -89,23 +86,11 @@ async def map_connection(
             "sourceCatalogId": "b524ea8e-ec73-4bba-b5a5-ba162e5e23f5"
         }
     """
-    conn_id = connection.get("connectionId")
-    name = connection.get("name")
-
-    source_oddrns = await generate_dataset_oddrn(
-        is_source=True,
-        connection_meta=connection,
-        airbyte_api=airbyte_api,
-        odd_api=odd_api,
-    )
-    destination_oddrns = await generate_dataset_oddrn(
-        is_source=False,
-        connection_meta=connection,
-        airbyte_api=airbyte_api,
-        odd_api=odd_api,
-    )
-    print(source_oddrns)
-    print(destination_oddrns)
+    connection_meta = conn_data[0]
+    inputs = conn_data[1]
+    outputs = conn_data[2]
+    conn_id = connection_meta.get("connectionId")
+    name = connection_meta.get("name")
 
     try:
         return DataEntity(
@@ -120,13 +105,11 @@ async def map_connection(
                 description=None,
                 source_code_url=None,
                 sql=None,
-                inputs=source_oddrns,
-                outputs=destination_oddrns,
+                inputs=inputs,
+                outputs=outputs,
                 subtype="DATATRANSFORMER_JOB",
             ),
         )
     except (TypeError, KeyError, ValueError):
-        logging.warning(
-            "Problems with DataEntity JSON serialization. " "Returning: {}."
-        )
+        logger.warning("Problems with DataEntity JSON serialization. " "Returning: {}.")
         return {}

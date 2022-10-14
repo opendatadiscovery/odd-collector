@@ -1,7 +1,7 @@
 import json
 import aiohttp
-import logging
 from typing import List, Optional
+from .logger import logger
 
 
 class AirbyteApi:
@@ -16,7 +16,7 @@ class AirbyteApi:
             "Accept": "application/json",
         }
 
-    async def get_all_workspaces(self) -> List[str]:
+    async def get_workspaces(self) -> List[str]:
         async with aiohttp.ClientSession(self.__base_url) as session:
             try:
                 async with session.post("/api/v1/workspaces/list") as resp:
@@ -24,10 +24,10 @@ class AirbyteApi:
                     workspaces = result["workspaces"]
                 return [workspace["workspaceId"] for workspace in workspaces]
             except TypeError:
-                logging.warning("Workspaces endpoint response is not returned")
+                logger.warning("Workspaces endpoint response is not returned")
                 return []
 
-    async def get_all_connections(self, workspace_ids: List[str]) -> List[dict]:
+    async def get_connections(self, workspace_ids: List[str]) -> List[dict]:
         connections = []
         async with aiohttp.ClientSession(self.__base_url) as session:
             try:
@@ -43,7 +43,7 @@ class AirbyteApi:
                         connections.extend(result["connections"])
                 return connections
             except TypeError:
-                logging.warning("Connections endpoint response is not returned")
+                logger.warning("Connections endpoint response is not returned")
                 return []
 
     async def get_dataset_definition(self, is_source: bool, dataset_id: str) -> dict:
@@ -59,13 +59,13 @@ class AirbyteApi:
                     result = await resp.json()
                     return result
             except TypeError:
-                logging.warning("Dataset endpoint response is not returned")
+                logger.warning("Dataset endpoint response is not returned")
                 return {}
 
 
 class OddPlatformApi:
     """
-    Class intended to retrieve data from ODD API
+    Class intended to retrieve data from ODD Platform API
     """
 
     def __init__(self, host_url: str) -> None:
@@ -84,5 +84,5 @@ class OddPlatformApi:
                         entities.append(item["oddrn"])
                     return entities
             except TypeError:
-                logging.warning("Dataset endpoint response is not returned")
+                logger.warning("Dataset endpoint response is not returned")
                 return entities
