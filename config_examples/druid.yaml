@@ -1,0 +1,9 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: druid
+    name: druid_adapter
+    description: "" # Optional string
+    host: host
+    port: 0000
