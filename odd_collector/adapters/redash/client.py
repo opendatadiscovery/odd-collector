@@ -5,6 +5,7 @@ from typing import NamedTuple, Tuple, Optional, Dict, Any, List
 from odd_collector.domain.plugin import RedashPlugin
 from .domain.query import Query
 from .domain.datasource import DataSource
+from .domain.dashboard import Dashboard
 
 
 class RequestArgs(NamedTuple):
@@ -88,13 +89,9 @@ class RedashClient:
         nodes = await self.__get_nodes_list_with_pagination(
             "queries"
         )
-        return [Query(id=node['id'],
-                      query=node['query'],
-                      data_source_id=node['data_source_id'],
-                      name=node['name']
-                      ) for node in nodes]
+        return [Query.from_response(node) for node in nodes]
 
-    async def get_data_sources_nodes(self):
+    async def __get_data_sources_nodes(self) -> Dict[str, Any]:
         async with ClientSession() as session:
             return await self.__fetch_async_response(
                 session,
@@ -105,17 +102,22 @@ class RedashClient:
                 ),
             )
 
-    async def get_data_sources(self):
-        common_nodes = await self.get_data_sources_nodes()
+    async def get_dashboards(self) -> List[Dashboard]:
+        common_nodes = await self.__get_nodes_list_with_pagination("dashboards")
+        urls = [
+            self.__base_url + f"dashboards/{common_node['slug']}" for common_node in common_nodes
+        ]
+        nodes = await self.__fetch_all_async_responses(
+            [RequestArgs("GET", url, None, self.__headers) for url in urls]
+        )
+        return [Dashboard.from_response(node) for node in nodes]
+
+    async def get_data_sources(self) -> List[DataSource]:
+        common_nodes = await self.__get_data_sources_nodes()
         urls = [
             self.__base_url + f"data_sources/{datasource_common_node['id']}" for datasource_common_node in common_nodes
         ]
         nodes = await self.__fetch_all_async_responses(
             [RequestArgs("GET", url, None, self.__headers) for url in urls]
         )
-        return [DataSource(name=node['name'],
-                           syntax=node['syntax'],
-                           options=node['options'],
-                           type=node['type'],
-                           id=node['id']
-                           ) for node in nodes]
+        return [DataSource.from_response(node) for node in nodes]

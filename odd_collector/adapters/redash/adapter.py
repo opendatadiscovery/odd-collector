@@ -1,4 +1,4 @@
-from typing import Dict, Type
+from typing import Dict, Type, List
 from odd_models.models import DataEntity
 from odd_models.models import DataEntityList
 from odd_collector_sdk.domain.adapter import AbstractAdapter
@@ -6,8 +6,10 @@ from odd_collector.domain.plugin import RedashPlugin
 from .client import RedashClient
 from oddrn_generator import RedashGenerator
 from .domain.datasource import DataSource
+from .domain.query import Query
 from .mappers.datasources import ds_types_factory
 from .mappers.queries import map_query
+from .mappers.dashboards import map_dashboard
 
 
 class Adapter(AbstractAdapter):
@@ -24,10 +26,8 @@ class Adapter(AbstractAdapter):
     def get_data_source_oddrn(self) -> str:
         return self._oddrn_generator.get_data_source_oddrn()
 
-    async def get_data_entity_list(self) -> DataEntityList:
-        datasources = await self.client.get_data_sources()
+    def __get_views_entities_dict(self, datasources: List[DataSource], queries: List[Query]) -> Dict[int, DataEntity]:
         datasources_ids_dict: Dict[str, DataSource] = {datasource.id: datasource for datasource in datasources}
-        queries = await self.client.get_queries()
         views_entities_dict: Dict[int, DataEntity] = {}
         for query in queries:
             datasource_id = query.data_source_id
@@ -39,8 +39,17 @@ class Adapter(AbstractAdapter):
                 self._oddrn_generator, query, external_ds_type=ds_type
             )
             views_entities_dict.update({query.id: view_entity})
+        return views_entities_dict
+
+    async def get_data_entity_list(self) -> DataEntityList:
+        dashboards = await self.client.get_dashboards()
+        datasources = await self.client.get_data_sources()
+        queries = await self.client.get_queries()
+        views_entities_dict = self.__get_views_entities_dict(datasources, queries)
+        dashboards_entities = [map_dashboard(self._oddrn_generator, views_entities_dict, dashboard) for dashboard in
+                               dashboards]
 
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=[*list(views_entities_dict.values())],
+            items=[*list(views_entities_dict.values()), *dashboards_entities],
         )
