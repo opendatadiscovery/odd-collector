@@ -90,5 +90,3 @@ class JustAnotherParser:
         ]
 
         return [*flattened_split_matches, *flattened_sub_matches]
-
-
