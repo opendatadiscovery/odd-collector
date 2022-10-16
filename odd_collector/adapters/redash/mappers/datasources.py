@@ -1,7 +1,12 @@
 from abc import abstractmethod
 from ..domain.datasource import DataSource
 from typing import Type, List, Dict
-from oddrn_generator import Generator, PostgresqlGenerator, MssqlGenerator, MysqlGenerator
+from oddrn_generator import (
+    Generator,
+    PostgresqlGenerator,
+    MssqlGenerator,
+    MysqlGenerator,
+)
 
 
 class DataSourceType:
@@ -29,7 +34,9 @@ class DataSourceType:
     def get_generator_for_schema_lvl(self, schema_name: str) -> Generator:
         pass
 
-    def get_generator_for_table_lvl(self, schema_name: str, table_name: str) -> Generator:
+    def get_generator_for_table_lvl(
+        self, schema_name: str, table_name: str
+    ) -> Generator:
         gen = self.get_generator_for_schema_lvl(schema_name)
         gen.get_oddrn_by_path(self.table_path_name, table_name)
         return gen
@@ -80,7 +87,12 @@ class MysqlRdsType(MysqlType):
     type = "rds_mysql"
 
 
-ds_types: List[Type[DataSourceType]] = [PostgresType, MysqlType, MysqlRdsType, MssqlType]
+ds_types: List[Type[DataSourceType]] = [
+    PostgresType,
+    MysqlType,
+    MysqlRdsType,
+    MssqlType,
+]
 ds_types_factory: Dict[str, Type[DataSourceType]] = {
     ds_type.type: ds_type for ds_type in ds_types
 }

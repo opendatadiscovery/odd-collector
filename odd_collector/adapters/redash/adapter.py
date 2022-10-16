@@ -13,9 +13,7 @@ from .mappers.dashboards import map_dashboard
 
 
 class Adapter(AbstractAdapter):
-    def __init__(
-            self, config: RedashPlugin, client: Type[RedashClient] = None
-    ) -> None:
+    def __init__(self, config: RedashPlugin, client: Type[RedashClient] = None) -> None:
         client = client or RedashClient
         self.client = client(config)
 
@@ -26,8 +24,12 @@ class Adapter(AbstractAdapter):
     def get_data_source_oddrn(self) -> str:
         return self._oddrn_generator.get_data_source_oddrn()
 
-    def __get_views_entities_dict(self, datasources: List[DataSource], queries: List[Query]) -> Dict[int, DataEntity]:
-        datasources_ids_dict: Dict[str, DataSource] = {datasource.id: datasource for datasource in datasources}
+    def __get_views_entities_dict(
+        self, datasources: List[DataSource], queries: List[Query]
+    ) -> Dict[int, DataEntity]:
+        datasources_ids_dict: Dict[str, DataSource] = {
+            datasource.id: datasource for datasource in datasources
+        }
         views_entities_dict: Dict[int, DataEntity] = {}
         for query in queries:
             datasource_id = query.data_source_id
@@ -46,8 +48,10 @@ class Adapter(AbstractAdapter):
         datasources = await self.client.get_data_sources()
         queries = await self.client.get_queries()
         views_entities_dict = self.__get_views_entities_dict(datasources, queries)
-        dashboards_entities = [map_dashboard(self._oddrn_generator, views_entities_dict, dashboard) for dashboard in
-                               dashboards]
+        dashboards_entities = [
+            map_dashboard(self._oddrn_generator, views_entities_dict, dashboard)
+            for dashboard in dashboards
+        ]
 
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),

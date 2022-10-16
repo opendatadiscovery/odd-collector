@@ -23,19 +23,19 @@ class RedashClient:
 
     @staticmethod
     async def __fetch_async_response(
-            session, request_args: RequestArgs
+        session, request_args: RequestArgs
     ) -> Dict[Any, Any]:
         async with session.request(
-                request_args.method,
-                url=request_args.url,
-                params=request_args.params,
-                headers=request_args.headers,
-                json=request_args.payload,
+            request_args.method,
+            url=request_args.url,
+            params=request_args.params,
+            headers=request_args.headers,
+            json=request_args.payload,
         ) as response:
             return await response.json()
 
     async def __fetch_all_async_responses(
-            self, request_args_list: List[RequestArgs]
+        self, request_args_list: List[RequestArgs]
     ) -> Tuple:
         async with ClientSession() as session:
             return await gather(
@@ -53,9 +53,7 @@ class RedashClient:
     def get_server_host(self) -> str:
         return urlparse(self.__config.server).netloc
 
-    async def __get_nodes_list_with_pagination(
-            self, endpoint: str
-    ) -> List[Any]:
+    async def __get_nodes_list_with_pagination(self, endpoint: str) -> List[Any]:
         default_page_size = 25
 
         async def get_result_for_a_page(page: int):
@@ -86,9 +84,7 @@ class RedashClient:
         return nodes_list
 
     async def get_queries(self) -> List[Query]:
-        nodes = await self.__get_nodes_list_with_pagination(
-            "queries"
-        )
+        nodes = await self.__get_nodes_list_with_pagination("queries")
         return [Query.from_response(node) for node in nodes]
 
     async def __get_data_sources_nodes(self) -> Dict[str, Any]:
@@ -97,15 +93,16 @@ class RedashClient:
                 session,
                 RequestArgs(
                     method="GET",
-                    url=self.__base_url + 'data_sources',
-                    headers=self.__headers
+                    url=self.__base_url + "data_sources",
+                    headers=self.__headers,
                 ),
             )
 
     async def get_dashboards(self) -> List[Dashboard]:
         common_nodes = await self.__get_nodes_list_with_pagination("dashboards")
         urls = [
-            self.__base_url + f"dashboards/{common_node['slug']}" for common_node in common_nodes
+            self.__base_url + f"dashboards/{common_node['slug']}"
+            for common_node in common_nodes
         ]
         nodes = await self.__fetch_all_async_responses(
             [RequestArgs("GET", url, None, self.__headers) for url in urls]
@@ -115,7 +112,8 @@ class RedashClient:
     async def get_data_sources(self) -> List[DataSource]:
         common_nodes = await self.__get_data_sources_nodes()
         urls = [
-            self.__base_url + f"data_sources/{datasource_common_node['id']}" for datasource_common_node in common_nodes
+            self.__base_url + f"data_sources/{datasource_common_node['id']}"
+            for datasource_common_node in common_nodes
         ]
         nodes = await self.__fetch_all_async_responses(
             [RequestArgs("GET", url, None, self.__headers) for url in urls]

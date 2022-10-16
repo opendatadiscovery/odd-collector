@@ -12,9 +12,10 @@ class DataSource:
 
     @staticmethod
     def from_response(node: Dict[str, Any]):
-        return DataSource(name=node['name'],
-                          syntax=node['syntax'],
-                          options=node['options'],
-                          type=node['type'],
-                          id=node['id']
-                          )
+        return DataSource(
+            name=node["name"],
+            syntax=node["syntax"],
+            options=node["options"],
+            type=node["type"],
+            id=node["id"],
+        )

@@ -19,17 +19,18 @@ class TablesExtractionError(Exception):
 
 
 def map_query(
-        oddrn_generator: RedashGenerator,
-        query: Query,
-        external_ds_type: DataSourceType = None,
+    oddrn_generator: RedashGenerator,
+    query: Query,
+    external_ds_type: DataSourceType = None,
 ) -> DataEntity:
     data_entity = DataEntity(
         oddrn=query.get_oddrn(oddrn_generator),
         name=query.name,
         type=DataEntityType.VIEW,
+        metadata=query.metadata
         # dataset=create_dataset(oddrn_generator, query),
     )
-    parser = JustAnotherParser(query.query)
+    parser = JustAnotherParser(query.metadata[0].metadata.get("query"))
     oddrns: List[str] = []
     tables = parser.get_tables_names()
     for table in tables:
@@ -42,15 +43,13 @@ def map_query(
         else:
             if not len(splitted_table) == 1:
                 raise TablesExtractionError("multiple values for ShallowLvlType")
-            schema_name = ''
+            schema_name = ""
             table_name = splitted_table[0]
 
         view_gen = external_ds_type.get_generator_for_table_lvl(schema_name, table_name)
         oddrns.append(view_gen.get_oddrn_by_path(external_ds_type.table_path_name))
     data_entity.data_transformer = DataTransformer(
-        inputs=oddrns,
-        outputs=[],
-        sql=query.query
+        inputs=oddrns, outputs=[], sql=query.metadata[0].metadata.get("query")
     )
 
     return data_entity
