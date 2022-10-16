@@ -1,0 +1,8 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: redash
+    name: redash_adapter
+    server: http://localhost
+    api_key: <api_key>
