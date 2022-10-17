@@ -7,7 +7,7 @@ from .domain.database import Database
 from .domain.dataset import Dataset
 from odd_collector.domain.plugin import SupersetPlugin
 from .mappers.datasets import map_table
-from .mappers.backends import backends_factory
+from .mappers.backends import backends_factory, BackendMapperError
 from .mappers.dashboards import map_dashboard
 
 
@@ -48,7 +48,10 @@ class Adapter(AbstractAdapter):
         for dataset in datasets:
             database_id = dataset.database_id
             database = databases.get(database_id)
-            backend_cls = backends_factory.get(database.backend)
+            backend_name = database.backend
+            backend_cls = backends_factory.get(backend_name)
+            if backend_cls is None:
+                raise BackendMapperError(backend_name)
             backend = backend_cls(database)
             if dataset.kind == "virtual":
                 view_entity = map_table(

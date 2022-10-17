@@ -9,6 +9,11 @@ from abc import abstractmethod
 from odd_collector.adapters.superset.domain.database import Database
 
 
+class BackendMapperError(Exception):
+    def __init__(self, backend_name: str):
+        super().__init__(f"Backend {backend_name} wasn't implemented yet")
+
+
 class DatabaseBackend:
     def __init__(self, database: Database):
         self.database = database
