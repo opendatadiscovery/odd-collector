@@ -89,7 +89,7 @@ class SupersetClient(RestClient):
         return await dashboard_nodes
 
     async def __get_nodes_list_with_pagination(
-            self, endpoint: str, columns: List[str] = None
+        self, endpoint: str, columns: List[str] = None
     ) -> List[Any]:
         default_page_size = 100
 
@@ -113,7 +113,9 @@ class SupersetClient(RestClient):
                 )
             return response.get("result")
 
-        return await self.collect_nodes_with_pagination(default_page_size, get_result_for_a_page)
+        return await self.collect_nodes_with_pagination(
+            default_page_size, get_result_for_a_page
+        )
 
     async def __get_charts(self) -> List[Chart]:
         chart_nodes = await self.__get_nodes_list_with_pagination(
@@ -158,8 +160,8 @@ class SupersetClient(RestClient):
 
     @staticmethod
     def populate_dashboards_with_metadata(
-            dashboards_without_metadata: List[Dashboard],
-            nodes_with_metadata: Dict[int, Dict[Any, Any]],
+        dashboards_without_metadata: List[Dashboard],
+        nodes_with_metadata: Dict[int, Dict[Any, Any]],
     ):
         dashboards_with_metadata: List[Dashboard] = []
         for dashboard in dashboards_without_metadata:
@@ -229,7 +231,7 @@ class SupersetClient(RestClient):
         return databases
 
     async def get_datasets_columns(
-            self, datasets_ids: List[int]
+        self, datasets_ids: List[int]
     ) -> Dict[int, List[Column]]:
         datasets_columns: Dict[int, List[Column]] = {}
         nodes = await self.__get_datasets_columns_nodes(datasets_ids)
