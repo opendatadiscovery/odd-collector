@@ -1,50 +1,17 @@
 from aiohttp import ClientSession
-from asyncio import gather
 from urllib.parse import urlparse
-from typing import NamedTuple, Tuple, Optional, Dict, Any, List
+from typing import Dict, Any, List
 from odd_collector.domain.plugin import RedashPlugin
 from .domain.query import Query
 from .domain.datasource import DataSource
 from .domain.dashboard import Dashboard
+from odd_collector.domain.rest_client.client import RestClient, RequestArgs
 
 
-class RequestArgs(NamedTuple):
-    method: str
-    url: str
-    params: Optional[Dict[Any, Any]] = None
-    headers: Optional[Dict[Any, Any]] = None
-    payload: Optional[Dict[Any, Any]] = None
-
-
-class RedashClient:
+class RedashClient(RestClient):
     def __init__(self, config: RedashPlugin):
         self.__config = config
         self.__base_url = config.server + "/api/"
-
-    @staticmethod
-    async def __fetch_async_response(
-        session, request_args: RequestArgs
-    ) -> Dict[Any, Any]:
-        async with session.request(
-            request_args.method,
-            url=request_args.url,
-            params=request_args.params,
-            headers=request_args.headers,
-            json=request_args.payload,
-        ) as response:
-            return await response.json()
-
-    async def __fetch_all_async_responses(
-        self, request_args_list: List[RequestArgs]
-    ) -> Tuple:
-        async with ClientSession() as session:
-            return await gather(
-                *[
-                    self.__fetch_async_response(session, request_args=request_args)
-                    for request_args in request_args_list
-                ],
-                return_exceptions=True,
-            )
 
     @property
     def __headers(self) -> Dict[str, str]:
@@ -62,7 +29,7 @@ class RedashClient:
                 "page": page,
             }
             async with ClientSession() as session:
-                response = await self.__fetch_async_response(
+                response = await self.fetch_async_response(
                     session,
                     RequestArgs(
                         method="GET",
@@ -73,15 +40,9 @@ class RedashClient:
                 )
             return response.get("results")
 
-        nodes_list = []
-        pg = 1
-        results_len = default_page_size
-        while results_len == default_page_size:
-            result = await get_result_for_a_page(pg)
-            nodes_list += result
-            results_len = len(result)
-            pg += 1
-        return nodes_list
+        return await self.collect_nodes_with_pagination(
+            default_page_size, get_result_for_a_page, 1
+        )
 
     async def get_queries(self) -> List[Query]:
         nodes = await self.__get_nodes_list_with_pagination("queries")
@@ -89,7 +50,7 @@ class RedashClient:
 
     async def __get_data_sources_nodes(self) -> Dict[str, Any]:
         async with ClientSession() as session:
-            return await self.__fetch_async_response(
+            return await self.fetch_async_response(
                 session,
                 RequestArgs(
                     method="GET",
@@ -104,7 +65,7 @@ class RedashClient:
             self.__base_url + f"dashboards/{common_node['slug']}"
             for common_node in common_nodes
         ]
-        nodes = await self.__fetch_all_async_responses(
+        nodes = await self.fetch_all_async_responses(
             [RequestArgs("GET", url, None, self.__headers) for url in urls]
         )
         return [Dashboard.from_response(node) for node in nodes]
@@ -115,7 +76,7 @@ class RedashClient:
             self.__base_url + f"data_sources/{datasource_common_node['id']}"
             for datasource_common_node in common_nodes
         ]
-        nodes = await self.__fetch_all_async_responses(
+        nodes = await self.fetch_all_async_responses(
             [RequestArgs("GET", url, None, self.__headers) for url in urls]
         )
         return [DataSource.from_response(node) for node in nodes]
