@@ -1,4 +1,4 @@
-from odd_collector.domain.utils import JustAnotherParser
+from odd_collector.domain.utils import AnotherSqlParser
 from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransformer
 from ..domain.query import Query
 from typing import List
@@ -30,7 +30,7 @@ def map_query(
         metadata=query.metadata
         # dataset=create_dataset(oddrn_generator, query),
     )
-    parser = JustAnotherParser(query.metadata[0].metadata.get("query"))
+    parser = AnotherSqlParser(query.metadata[0].metadata.get("query"))
     oddrns: List[str] = []
     tables = parser.get_tables_names()
     for table in tables:

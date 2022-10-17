@@ -50,12 +50,30 @@ def get_oddrn_list(
     return response
 
 
-class JustAnotherParser:
+class AnotherSqlParser:
+    """
+    Another util for extracting params from sql queries
+    """
+
     def __init__(self, sql_query: str):
         self.sql_query = sql_query
 
     @staticmethod
     def patch_query(str_sql) -> str:
+        """
+        clean query for future operation
+
+        Parameters
+        ----------
+        str_sql : str
+            raw sql query .
+
+        Returns
+        -------
+        str
+            clean query .
+        """
+
         stage1 = str_sql.replace("\n", " ").replace(";", "")
         stage2 = re.sub(r"\s+", " ", stage1).strip()
         stage3 = re.sub(r"(\s*,\s*)", ",", stage2)
@@ -63,6 +81,14 @@ class JustAnotherParser:
         return stage3
 
     def get_tables_names(self) -> List[str]:
+        """
+        extract names of tables with schemas from sql query
+
+        Returns
+        -------
+        List
+            list of tables .
+        """
         fmt_sql = self.patch_query(self.sql_query)
 
         PATTERN = re.compile(
