@@ -7,7 +7,7 @@ from .client import RedashClient
 from oddrn_generator import RedashGenerator
 from .domain.datasource import DataSource
 from .domain.query import Query
-from .mappers.datasources import ds_types_factory
+from .mappers.datasources import ds_types_factory, DatasourceMapperError
 from .mappers.queries import map_query
 from .mappers.dashboards import map_dashboard
 
@@ -34,7 +34,10 @@ class Adapter(AbstractAdapter):
         for query in queries:
             datasource_id = query.data_source_id
             datasource = datasources_ids_dict.get(datasource_id)
-            ds_type_cls = ds_types_factory.get(datasource.type)
+            datasource_type_name = datasource.type
+            ds_type_cls = ds_types_factory.get(datasource_type_name)
+            if ds_type_cls is None:
+                raise DatasourceMapperError(datasource_type_name)
             ds_type = ds_type_cls(datasource)
 
             view_entity = map_query(

@@ -9,6 +9,11 @@ from oddrn_generator import (
 )
 
 
+class DatasourceMapperError(Exception):
+    def __init__(self, datasource_type_name: str):
+        super().__init__(f"Datasource {datasource_type_name} wasn't implemented yet")
+
+
 class DataSourceType:
     def __init__(self, data_source: DataSource):
         self.data_source = data_source
