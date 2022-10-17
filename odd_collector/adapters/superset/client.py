@@ -114,7 +114,7 @@ class SupersetClient(RestClient):
             return response.get("result")
 
         return await self.collect_nodes_with_pagination(
-            default_page_size, get_result_for_a_page
+            default_page_size, get_result_for_a_page, 0
         )
 
     async def __get_charts(self) -> List[Chart]:
