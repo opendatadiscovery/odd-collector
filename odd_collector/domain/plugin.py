@@ -171,7 +171,7 @@ class OddAdapterPlugin(BasePlugin):
 
 class AirbytePlugin(WithHost, WithPort):
     type: Literal["airbyte"]
-    platform_host: str
+    platform_host_url: str
 
 
 PLUGIN_FACTORY: PluginFactory = {

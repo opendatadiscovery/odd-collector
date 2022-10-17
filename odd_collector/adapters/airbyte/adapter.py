@@ -12,9 +12,9 @@ class Adapter(AbstractAdapter):
     def __init__(self, config: AirbytePlugin) -> None:
         self.__host = config.host
         self.__port = config.port
-        self.__platfrom_host = config.platform_host
+        self.__platfrom_host_url = config.platform_host_url
         self.__airbyte_api = AirbyteApi(self.__host, self.__port)
-        self.__odd_api = OddPlatformApi(self.__platfrom_host)
+        self.__odd_api = OddPlatformApi(self.__platfrom_host_url)
         self.__oddrn_generator = AirbyteGenerator(host_settings=config.host)
 
     async def get_data_entity_list(self) -> DataEntityList:
