@@ -3,7 +3,8 @@ from oddrn_generator.generators import (
     PostgresqlGenerator,
     Generator,
     PrestoGenerator,
-    TrinoGenerator
+    TrinoGenerator,
+    MssqlGenerator
 )
 from typing import Dict, Type, List
 from abc import abstractmethod
@@ -75,7 +76,14 @@ class TrinoBackend(PrestoBackend):
     generator_cls = TrinoGenerator
 
 
-backends: List[Type[DatabaseBackend]] = [PostgresBackend, MysqlBackend, PrestoBackend, TrinoBackend]
+class MssqlBackend(DeepLvlBackend):
+    database_backend = "mssql"
+    generator_cls = MssqlGenerator
+    database_path_name = "databases"
+    schema_path_name = "schemas"
+
+
+backends: List[Type[DatabaseBackend]] = [PostgresBackend, MysqlBackend, PrestoBackend, TrinoBackend, MssqlBackend]
 backends_factory: Dict[str, Type[DatabaseBackend]] = {
     backend.database_backend: backend for backend in backends
 }
