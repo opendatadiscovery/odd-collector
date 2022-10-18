@@ -7,7 +7,8 @@ from .client import RedashClient
 from oddrn_generator import RedashGenerator
 from .domain.datasource import DataSource
 from .domain.query import Query
-from .mappers.datasources import ds_types_factory, DatasourceMapperError
+from .mappers.datasources import ds_types_factory
+from downloads.external_generators import ExternalGeneratorMappingError
 from .mappers.queries import map_query
 from .mappers.dashboards import map_dashboard
 
@@ -37,8 +38,8 @@ class Adapter(AbstractAdapter):
             datasource_type_name = datasource.type
             ds_type_cls = ds_types_factory.get(datasource_type_name)
             if ds_type_cls is None:
-                raise DatasourceMapperError(datasource_type_name)
-            ds_type = ds_type_cls(datasource)
+                raise ExternalGeneratorMappingError(datasource_type_name)
+            ds_type = ds_type_cls(datasource).get_external_generator()
 
             view_entity = map_query(
                 self._oddrn_generator, query, external_ds_type=ds_type

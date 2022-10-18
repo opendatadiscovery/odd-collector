@@ -2,7 +2,7 @@ from odd_collector.domain.utils import AnotherSqlParser
 from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransformer
 from ..domain.query import Query
 from typing import List
-from .datasources import DataSourceType, DeepLvlType
+from downloads.external_generators import DeepLvlGenerator, ExternalDbGenerator
 from oddrn_generator import RedashGenerator
 
 
@@ -21,7 +21,7 @@ class TablesExtractionError(Exception):
 def map_query(
     oddrn_generator: RedashGenerator,
     query: Query,
-    external_ds_type: DataSourceType = None,
+    external_ds_type: ExternalDbGenerator = None,
 ) -> DataEntity:
     data_entity = DataEntity(
         oddrn=query.get_oddrn(oddrn_generator),
@@ -35,7 +35,7 @@ def map_query(
     tables = parser.get_tables_names()
     for table in tables:
         splitted_table = table.split(".")
-        if isinstance(external_ds_type, DeepLvlType):
+        if isinstance(external_ds_type, DeepLvlGenerator):
             if not len(splitted_table) == 2:
                 raise TablesExtractionError("absent of schema or table for DeepLvlType")
             schema_name = splitted_table[0]

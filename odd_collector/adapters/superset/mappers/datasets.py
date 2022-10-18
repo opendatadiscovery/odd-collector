@@ -3,8 +3,7 @@ from oddrn_generator.generators import SupersetGenerator
 from .columns import map_column
 from odd_collector.domain.utils import extract_transformer_data
 from ..domain.dataset import Dataset
-from .backends import DatabaseBackend
-
+from downloads.external_generators import ExternalDbGenerator
 
 def create_dataset(oddrn_generator, dataset: Dataset):
     parent_oddrn = oddrn_generator.get_oddrn_by_path("datasets")
@@ -16,7 +15,7 @@ def create_dataset(oddrn_generator, dataset: Dataset):
 def map_table(
     oddrn_generator: SupersetGenerator,
     dataset: Dataset,
-    external_backend: DatabaseBackend = None,
+    external_backend: ExternalDbGenerator = None,
 ) -> DataEntity:
     data_entity = DataEntity(
         oddrn=dataset.get_oddrn(oddrn_generator),

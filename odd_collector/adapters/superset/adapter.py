@@ -49,7 +49,7 @@ class Adapter(AbstractAdapter):
             database_id = dataset.database_id
             database = databases.get(database_id)
             backend_cls = backends_factory.get(database.backend)
-            backend = backend_cls(database)
+            backend = backend_cls(database).get_external_generator()
             if dataset.kind == "virtual":
                 view_entity = map_table(
                     self._oddrn_generator, dataset, external_backend=backend
