@@ -1,7 +1,40 @@
-from odd_models.models import DataEntity, DataEntityType, DataTransformer
+from collections.abc import MutableMapping
+from typing import Any
+from odd_models.models import (
+    DataEntity,
+    DataEntityType,
+    DataTransformer,
+    MetadataExtension,
+)
 from oddrn_generator import AirbyteGenerator
 from .oddrn import generate_connection_oddrn
 from ..logger import logger
+
+
+def __extract_metadata(data: dict[str, Any]) -> list[MetadataExtension]:
+    def _flatten_dict_gen(d, parent_key, sep):
+        for k, v in d.items():
+            new_key = parent_key + sep + k if parent_key else k
+            if isinstance(v, MutableMapping):
+                yield from flatten_dict(v, new_key, sep=sep).items()
+            elif isinstance(v, list) and isinstance(v[0], str):
+                v = ", ".join(item for item in v)
+                yield new_key, v
+            else:
+                yield new_key, v
+
+    def flatten_dict(d: MutableMapping, parent_key: str = "", sep: str = "."):
+        return dict(_flatten_dict_gen(d, parent_key, sep))
+
+    data.pop("syncCatalog", None)
+    metadata = flatten_dict(data)
+
+    return [
+        MetadataExtension(
+            schema_url="https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/kubeflow.json#/definitions/Pipeline",
+            metadata=metadata,
+        )
+    ]
 
 
 def map_connection(
@@ -100,7 +133,7 @@ def map_connection(
             owner=None,
             updated_at=None,
             created_at=None,
-            metadata=None,
+            metadata=__extract_metadata(connection_meta),
             data_transformer=DataTransformer(
                 description=None,
                 source_code_url=None,
