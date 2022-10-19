@@ -1,6 +1,6 @@
 from typing import Dict, Type, List
 from odd_collector.adapters.superset.domain.database import Database
-from downloads.external_generators import ExternalPostgresGenerator, ExternalPrestoGenerator, \
+from oddrn_generator.utils.external_generators import ExternalPostgresGenerator, ExternalPrestoGenerator, \
     ExternalMysqlGenerator, ExternalDbSettings, ExternalGeneratorBuilder, ExternalMssqlGenerator, \
     ExternalTrinoGenerator
 

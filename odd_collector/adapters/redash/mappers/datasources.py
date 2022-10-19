@@ -1,5 +1,5 @@
 from typing import Type, List, Dict
-from downloads.external_generators import ExternalPostgresGenerator, ExternalMssqlGenerator, \
+from oddrn_generator.utils.external_generators import ExternalPostgresGenerator, ExternalMssqlGenerator, \
     ExternalMysqlGenerator, ExternalDbSettings, ExternalGeneratorBuilder
 from odd_collector.adapters.redash.domain.datasource import DataSource
 

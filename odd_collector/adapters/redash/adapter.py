@@ -8,7 +8,7 @@ from oddrn_generator import RedashGenerator
 from .domain.datasource import DataSource
 from .domain.query import Query
 from .mappers.datasources import ds_types_factory
-from downloads.external_generators import ExternalGeneratorMappingError
+from oddrn_generator.utils.external_generators import ExternalGeneratorMappingError
 from .mappers.queries import map_query
 from .mappers.dashboards import map_dashboard
 
