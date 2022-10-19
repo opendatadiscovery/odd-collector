@@ -1,8 +1,14 @@
 from typing import Dict, Type, List
 from odd_collector.adapters.superset.domain.database import Database
-from oddrn_generator.utils.external_generators import ExternalPostgresGenerator, ExternalPrestoGenerator, \
-    ExternalMysqlGenerator, ExternalDbSettings, ExternalGeneratorBuilder, ExternalMssqlGenerator, \
-    ExternalTrinoGenerator
+from oddrn_generator.utils.external_generators import (
+    ExternalPostgresGenerator,
+    ExternalPrestoGenerator,
+    ExternalMysqlGenerator,
+    ExternalDbSettings,
+    ExternalGeneratorBuilder,
+    ExternalMssqlGenerator,
+    ExternalTrinoGenerator,
+)
 
 
 class SupersetExternalGeneratorBuilder(ExternalGeneratorBuilder):
@@ -10,8 +16,9 @@ class SupersetExternalGeneratorBuilder(ExternalGeneratorBuilder):
         self.database = database
 
     def build_db_settings(self) -> ExternalDbSettings:
-        return ExternalDbSettings(host=self.database.host,
-                                  database_name=self.database.database_name)
+        return ExternalDbSettings(
+            host=self.database.host, database_name=self.database.database_name
+        )
 
 
 class PostgresBackend(SupersetExternalGeneratorBuilder):
@@ -44,8 +51,7 @@ backends: List[Type[SupersetExternalGeneratorBuilder]] = [
     MysqlBackend,
     TrinoBackend,
     PrestoBackend,
-    MssqlBackend
-
+    MssqlBackend,
 ]
 
 backends_factory: Dict[str, Type[SupersetExternalGeneratorBuilder]] = {

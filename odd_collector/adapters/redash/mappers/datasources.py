@@ -1,6 +1,11 @@
 from typing import Type, List, Dict
-from oddrn_generator.utils.external_generators import ExternalPostgresGenerator, ExternalMssqlGenerator, \
-    ExternalMysqlGenerator, ExternalDbSettings, ExternalGeneratorBuilder
+from oddrn_generator.utils.external_generators import (
+    ExternalPostgresGenerator,
+    ExternalMssqlGenerator,
+    ExternalMysqlGenerator,
+    ExternalDbSettings,
+    ExternalGeneratorBuilder,
+)
 from odd_collector.adapters.redash.domain.datasource import DataSource
 
 
@@ -13,8 +18,10 @@ class RedashExternalGeneratorBuilder(ExternalGeneratorBuilder):
     db_name_key: str
 
     def build_db_settings(self) -> ExternalDbSettings:
-        return ExternalDbSettings(host=self.datasource.options[self.host_key],
-                                  database_name=self.datasource.options[self.db_name_key])
+        return ExternalDbSettings(
+            host=self.datasource.options[self.host_key],
+            database_name=self.datasource.options[self.db_name_key],
+        )
 
 
 class PostgresType(RedashExternalGeneratorBuilder):
@@ -49,8 +56,7 @@ ds_types: List[Type[RedashExternalGeneratorBuilder]] = [
     PostgresType,
     MssqlType,
     MysqlType,
-    RdsMysqlType
-
+    RdsMysqlType,
 ]
 
 ds_types_factory: Dict[str, Type[RedashExternalGeneratorBuilder]] = {
