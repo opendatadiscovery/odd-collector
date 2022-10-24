@@ -1,5 +1,6 @@
-from typing import List, Dict, Any, NamedTuple, Optional, Tuple, Callable
 from asyncio import gather
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple
+
 from aiohttp import ClientSession
 
 
@@ -12,22 +13,21 @@ class RequestArgs(NamedTuple):
 
 
 class RestClient:
-
     @staticmethod
     async def fetch_async_response(
-            session, request_args: RequestArgs
+        session, request_args: RequestArgs
     ) -> Dict[Any, Any]:
         async with session.request(
-                request_args.method,
-                url=request_args.url,
-                params=request_args.params,
-                headers=request_args.headers,
-                json=request_args.payload,
+            request_args.method,
+            url=request_args.url,
+            params=request_args.params,
+            headers=request_args.headers,
+            json=request_args.payload,
         ) as response:
             return await response.json()
 
     async def fetch_all_async_responses(
-            self, request_args_list: List[RequestArgs]
+        self, request_args_list: List[RequestArgs]
     ) -> Tuple:
         async with ClientSession() as session:
             return await gather(
@@ -39,7 +39,9 @@ class RestClient:
             )
 
     @staticmethod
-    async def collect_nodes_with_pagination(default_page_size: int, fetch_function: Callable):
+    async def collect_nodes_with_pagination(
+        default_page_size: int, fetch_function: Callable
+    ):
         nodes_list = []
         pg = 0
         results_len = default_page_size

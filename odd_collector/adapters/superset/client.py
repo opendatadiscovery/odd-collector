@@ -1,21 +1,23 @@
-from typing import List, Dict, Any, NamedTuple, Optional, Tuple
+import asyncio
+from json import dumps
+from typing import Any, Dict, List, NamedTuple, Optional, Tuple
 from urllib.parse import urlparse
-from .domain.column import Column
-from .domain.chart import Chart
-from .domain.dashboard import Dashboard
+
+import aiohttp
+
 from odd_collector.domain.plugin import SupersetPlugin
-from .domain.dataset import Dataset
-from .domain.database import Database
-from .domain.metadata import create_metadata_extension_list, add_owner
+
 from . import (
     _METADATA_SCHEMA_URL_PREFIX,
     _keys_to_include_dashboard,
     _keys_to_include_dataset,
 )
-from json import dumps
-
-import asyncio
-import aiohttp
+from .domain.chart import Chart
+from .domain.column import Column
+from .domain.dashboard import Dashboard
+from .domain.database import Database
+from .domain.dataset import Dataset
+from .domain.metadata import add_owner, create_metadata_extension_list
 
 
 class DbUriParser:

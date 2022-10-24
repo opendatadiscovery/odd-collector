@@ -1,11 +1,13 @@
+from abc import abstractmethod
+from typing import Dict, List, Type
+
 from oddrn_generator.generators import (
+    Generator,
     MysqlGenerator,
     PostgresqlGenerator,
-    Generator,
     PrestoGenerator,
 )
-from typing import Dict, Type, List
-from abc import abstractmethod
+
 from odd_collector.adapters.superset.domain.database import Database
 
 

@@ -1,5 +1,7 @@
+from typing import Any, Dict, List, Union
+
 from odd_models.models import MetadataExtension
-from typing import List, Dict, Any, Union
+
 from .dashboard import Dashboard
 from .dataset import Dataset
 
