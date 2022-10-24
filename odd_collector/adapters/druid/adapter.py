@@ -1,7 +1,7 @@
 from typing import List, Type
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntityList, DataEntity
+from odd_models.models import DataEntity, DataEntityList
 
 from odd_collector.adapters.druid.client import DruidBaseClient, DruidClient
 from odd_collector.adapters.druid.generator import DruidGenerator

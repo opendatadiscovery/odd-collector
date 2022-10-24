@@ -1,4 +1,5 @@
-from typing import Optional, Set, List
+from typing import List, Optional, Set
+
 from odd_models.models import MetadataExtension
 
 

@@ -1,14 +1,17 @@
-from typing import Dict, Type, List
-from .client import SupersetClient
+from typing import Dict, List, Type
+
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator.generators import SupersetGenerator
+
+from odd_collector.domain.plugin import SupersetPlugin
+
+from .client import SupersetClient
 from .domain.database import Database
 from .domain.dataset import Dataset
-from odd_collector.domain.plugin import SupersetPlugin
-from .mappers.datasets import map_table
 from .mappers.backends import backends_factory
 from .mappers.dashboards import map_dashboard
+from .mappers.datasets import map_table
 
 
 class Adapter(AbstractAdapter):

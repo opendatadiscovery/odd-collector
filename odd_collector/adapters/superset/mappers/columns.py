@@ -1,7 +1,8 @@
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataSetField, DataSetFieldType
-from oddrn_generator.generators import Generator
 from odd_models.models import Type as ColumnType
+from oddrn_generator.generators import Generator
+
 from ..domain.column import Column
 
 

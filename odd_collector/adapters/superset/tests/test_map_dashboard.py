@@ -1,10 +1,12 @@
 import pytest
 from oddrn_generator.generators import SupersetGenerator
-from odd_collector.adapters.superset.mappers.dashboards import map_dashboard
-from odd_collector.adapters.superset.domain.dataset import Dataset
-from odd_collector.adapters.superset.domain.chart import Chart
+
 from odd_collector.adapters.superset.client import SupersetClient
-from .raw_data import datasets_nodes, chart_nodes, nodes_with_chart_ids
+from odd_collector.adapters.superset.domain.chart import Chart
+from odd_collector.adapters.superset.domain.dataset import Dataset
+from odd_collector.adapters.superset.mappers.dashboards import map_dashboard
+
+from .raw_data import chart_nodes, datasets_nodes, nodes_with_chart_ids
 
 
 @pytest.fixture
