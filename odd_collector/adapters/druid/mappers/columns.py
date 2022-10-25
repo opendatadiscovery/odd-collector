@@ -19,7 +19,7 @@ def column_to_data_set_field(oddrn_generator: DruidGenerator, column: Column, co
         tags.append(Tag(name=f"max_value:{column_stats.max_value}"))
         tags.append(Tag(name=f"min_value:{column_stats.min_value}"))
         tags.append(Tag(name=f"has_multiple_values:{column_stats.has_multiple_values}"))
-        tags.append(Tag(name=f"size:{column_stats.size / 1024} mb"))
+        tags.append(Tag(name="size:{:.2f} mb".format(column_stats.size / 1024)))
         tags.append(Tag(name=f"type:{column_stats.type}"))
 
         # Get logical type
