@@ -207,6 +207,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "vertica": VerticaPlugin,
     "druid": DruidPlugin,
     "superset": SupersetPlugin,
-    "odd_adapter": OddAdapterPlugin,
-    "druid": DruidPlugin
+    "odd_adapter": OddAdapterPlugin
 }
