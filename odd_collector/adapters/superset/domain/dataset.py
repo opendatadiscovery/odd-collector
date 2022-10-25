@@ -1,6 +1,8 @@
 from typing import List, Optional
-from odd_collector.adapters.superset.domain.column import Column
+
 from odd_models.models import MetadataExtension
+
+from odd_collector.adapters.superset.domain.column import Column
 
 
 class Dataset:

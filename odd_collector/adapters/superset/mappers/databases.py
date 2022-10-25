@@ -1,7 +1,9 @@
-from ..domain.dataset import Dataset
-from typing import List, Dict
+from typing import Dict, List
+
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator.generators import SupersetGenerator
-from odd_models.models import DataEntity, DataEntityType, DataEntityGroup
+
+from ..domain.dataset import Dataset
 
 
 def create_databases_entities(
