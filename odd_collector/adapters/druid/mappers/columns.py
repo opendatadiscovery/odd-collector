@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from odd_models import models
-from odd_models.models import DataSetField, DataSetFieldType, Tag, DataSetFieldStat, StringFieldStat, NumberFieldStat
+from odd_models.models import DataSetField, DataSetFieldType, Tag, DataSetFieldStat, StringFieldStat, NumberFieldStat, ComplexFieldStat
 
 from odd_collector.adapters.druid.domain.column import Column
 from odd_collector.adapters.druid.domain.column_stats import ColumnStats
@@ -46,14 +46,16 @@ def column_stats_to_data_set_field_stat(column_stats: ColumnStats) -> Optional[D
         # Char, Varchar
         return DataSetFieldStat(
             string_stats=StringFieldStat(
-                max_length=0,
+                max_length=len(column_stats.max_value or ""),
                 avg_length=0,
                 nulls_count=0,
                 unique_count=column_stats.cardinality or 0
             )
         )
-    elif column_stats.data_type.upper() == 'LONG':
-        # Boolean, Tiny int, Small int, Integer, Big integer, Timestamp, Date
+    elif column_stats.data_type.upper() == 'LONG' \
+            or column_stats.data_type.upper() == 'FLOAT' \
+            or column_stats.data_type.upper() == 'DOUBLE':
+        # Boolean, Tiny int, Small int, Integer, Big integer, Timestamp, Date, Float, Double
         return DataSetFieldStat(
             number_stats=NumberFieldStat(
                 low_value=column_stats.min_value or 0,
@@ -62,9 +64,11 @@ def column_stats_to_data_set_field_stat(column_stats: ColumnStats) -> Optional[D
                 unique_count=column_stats.cardinality or 0
             )
         )
-    elif column_stats.data_type.upper() == 'FLOAT' or column_stats == 'DOUBLE':
-        # Decimal, Float, Real, Double
-        return None
     else:
-        # Complex type
-        return None
+        # Complex types (HLL, DataSketch)
+        return DataSetFieldStat(
+            complex_stats=ComplexFieldStat(
+                nulls_count=0,
+                unique_count=column_stats.cardinality or 0
+            )
+        )

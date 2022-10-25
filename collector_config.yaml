@@ -1,8 +1,18 @@
 default_pulling_interval: 10
-token: "T96HG4NTha6bLenXt6OLwlVoRu00Gd63QobNs4C7"
+token: <COLLECTOR_TOKEN>
 platform_host_url: http://localhost:8080
 plugins:
-  - type: druid
-    name: imply-query-prod
-    host: http://imply-query-prod-01.data-processing.adswizz.com
-    port: 8888
+  - type: clickhouse
+    name: clickhouse_adapter
+    host: localhost
+    database: my_database
+    user: default
+    password: qwerty
+  - type: cubejs
+    name: cubejs_adapter
+    host: http://localhost:4000
+    dev_mode: true
+    predefined_datasource:
+      type: clickhouse
+      host: localhost
+      database: my_database
