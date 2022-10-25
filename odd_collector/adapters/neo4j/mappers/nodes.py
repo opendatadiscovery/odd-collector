@@ -1,19 +1,18 @@
+from collections import namedtuple
 from typing import Dict, List, NamedTuple
 
-from odd_models.models import DataEntity, DataSet, DataEntityType
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import Neo4jGenerator
-from collections import namedtuple
 
 from . import (
+    FieldMetadata,
     NodeMetadata,
     RelationMetadata,
-    _data_set_metadata_schema_url,
     _data_set_metadata_excluded_keys,
-    FieldMetadata,
+    _data_set_metadata_schema_url,
 )
-
-from .metadata import append_metadata_extension
 from .fields import map_field
+from .metadata import append_metadata_extension
 
 
 def map_nodes(

@@ -1,11 +1,9 @@
-from typing import Dict, Any
+from typing import Any, Dict
+
+from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator.generators import PrestoGenerator
+
 from .types import TYPES_SQL_TO_ODD
-from odd_models.models import (
-    DataSetField,
-    DataSetFieldType,
-    Type,
-)
 
 
 def split_by_braces(value: str) -> str:

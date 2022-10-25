@@ -1,6 +1,8 @@
-from trino.dbapi import connect
+from typing import Callable, Dict
+
 from trino.auth import BasicAuthentication
-from typing import Dict, Callable
+from trino.dbapi import connect
+
 from .presto_repository_common import PrestoRepositoryCommon
 
 

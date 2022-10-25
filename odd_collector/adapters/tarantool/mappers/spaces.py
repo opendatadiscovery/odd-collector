@@ -1,9 +1,9 @@
 from collections import namedtuple
 
-from odd_models.models import DataEntity, DataSet, DataEntityType
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import TarantoolGenerator
 
-from .columns import map_column, ColumnMetadata
+from .columns import ColumnMetadata, map_column
 from .metadata import append_metadata_extension, data_set_metadata_schema_url
 
 _space_metadata: str = "id, owner, name, engine, field_count, flags, format"

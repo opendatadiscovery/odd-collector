@@ -1,23 +1,15 @@
+from typing import List
+
 import pytz
-from odd_models.models import (
-    DataEntity,
-    DataSet,
-    DataEntityType,
-    DataEntityGroup,
-)
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
 from oddrn_generator import MysqlGenerator
 
-from . import (
-    _data_set_metadata_schema_url,
-    _data_set_metadata_excluded_keys,
-)
-from .models import TableMetadata, ColumnMetadata
+from . import _data_set_metadata_excluded_keys, _data_set_metadata_schema_url
 from .columns import map_column
 from .metadata import append_metadata_extension
+from .models import ColumnMetadata, TableMetadata
 from .types import TABLE_TYPES_SQL_TO_ODD
 from .views import extract_transformer_data
-
-from typing import List
 
 
 def map_tables(

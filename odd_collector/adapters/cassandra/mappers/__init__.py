@@ -1,6 +1,5 @@
 from collections import namedtuple
 
-
 _METADATA_SCHEMA_URL_PREFIX: str = (
     "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"
     "extensions/cassandra.json#/definitions/Cassandra"

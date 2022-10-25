@@ -1,6 +1,7 @@
 from typing import Dict
+
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator.generators import PrestoGenerator
-from odd_models.models import DataEntity, DataEntityType, DataEntityGroup
 
 
 def map_schema(

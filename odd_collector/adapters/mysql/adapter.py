@@ -1,11 +1,10 @@
 import logging
-
-from odd_models.models import DataEntity, DataEntityList
-from oddrn_generator import MysqlGenerator
-
 from typing import List
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_models.models import DataEntity, DataEntityList
+from oddrn_generator import MysqlGenerator
+
 from .mappers.tables import map_tables
 from .mysql_repository import MysqlRepository
 

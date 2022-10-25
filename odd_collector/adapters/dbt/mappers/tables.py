@@ -2,13 +2,13 @@ from copy import deepcopy
 from datetime import datetime
 
 import pytz
-from odd_models.models import DataEntity, DataSet, DataTransformer, DataEntityType
+from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransformer
 from oddrn_generator import DbtGenerator
 
 from . import (
     _DATETIME_FORMAT,
-    _data_set_metadata_schema_url,
     _data_set_metadata_excluded_keys,
+    _data_set_metadata_schema_url,
 )
 from .columns import map_column
 from .metadata import _append_metadata_extension

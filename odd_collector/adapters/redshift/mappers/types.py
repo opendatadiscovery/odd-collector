@@ -49,9 +49,10 @@
 
 # https://docs.aws.amazon.com/redshift/latest/dg/r_SUPER_type.html
 
-# https://docs.aws.amazon.com/redshift/latest/dg/c_unsupported-postgresql-datatypes.html
-from odd_models.models import Type, DataEntityType
 from typing import Dict
+
+# https://docs.aws.amazon.com/redshift/latest/dg/c_unsupported-postgresql-datatypes.html
+from odd_models.models import DataEntityType, Type
 
 TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "smallint": Type.TYPE_INTEGER,
