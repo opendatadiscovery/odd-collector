@@ -7,7 +7,10 @@ from snowflake import connector
 
 from .mappers import _columns_select, _tables_select
 from .mappers.tables import map_table
-from odd_collector.domain.database_enitites_extractor import extract_schemas_entities_from_tables, map_db_service
+from odd_collector.domain.database_enitites_extractor import (
+    extract_schemas_entities_from_tables,
+    map_db_service,
+)
 
 
 class Adapter(AbstractAdapter):

@@ -10,7 +10,10 @@ from odd_collector.domain.plugin import MSSQLPlugin
 
 from .logger import logger
 from .mappers import column_query, table_query
-from odd_collector.domain.database_enitites_extractor import extract_schemas_entities_from_tables, map_db_service
+from odd_collector.domain.database_enitites_extractor import (
+    extract_schemas_entities_from_tables,
+    map_db_service,
+)
 from .mappers.tables import map_table
 
 
