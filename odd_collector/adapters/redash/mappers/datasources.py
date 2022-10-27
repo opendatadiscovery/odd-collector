@@ -5,6 +5,7 @@ from oddrn_generator.utils.external_generators import (
     ExternalMysqlGenerator,
     ExternalDbSettings,
     ExternalGeneratorBuilder,
+    ExternalSnowflakeGenerator,
 )
 from odd_collector.adapters.redash.domain.datasource import DataSource
 
@@ -21,6 +22,18 @@ class RedashExternalGeneratorBuilder(ExternalGeneratorBuilder):
         return ExternalDbSettings(
             host=self.datasource.options[self.host_key],
             database_name=self.datasource.options[self.db_name_key],
+        )
+
+
+class SnowflakeType(RedashExternalGeneratorBuilder):
+    external_generator = ExternalSnowflakeGenerator
+    type = "snowflake"
+
+    def build_db_settings(self) -> ExternalDbSettings:
+        options = self.datasource.options
+        return ExternalDbSettings(
+            host=f"{options['account']}.{options['region']}.snowflakecomputing.com",
+            database_name=self.datasource.options["database"],
         )
 
 
@@ -57,6 +70,7 @@ ds_types: List[Type[RedashExternalGeneratorBuilder]] = [
     MssqlType,
     MysqlType,
     RdsMysqlType,
+    SnowflakeType,
 ]
 
 ds_types_factory: Dict[str, Type[RedashExternalGeneratorBuilder]] = {
