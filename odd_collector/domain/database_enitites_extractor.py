@@ -1,5 +1,5 @@
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
-from oddrn_generator import MssqlGenerator
+from oddrn_generator import Generator
 
 
 def extract_table_schema_name(table_entity: DataEntity) -> str:
@@ -10,7 +10,7 @@ def map_db_service(
     db_service_name: str,
     group_oddrns: list[str],
     oddrn_path_name: str,
-    oddrn_generator: MssqlGenerator,
+    oddrn_generator: Generator,
 ) -> DataEntity:
     return DataEntity(
         type=DataEntityType.DATABASE_SERVICE,
@@ -21,7 +21,7 @@ def map_db_service(
 
 
 def extract_schemas_entities_from_tables(
-    tables_entities: list[DataEntity], oddrn_generator: MssqlGenerator
+    tables_entities: list[DataEntity], oddrn_generator: Generator
 ) -> list[DataEntity]:
     schemas_list: set[str] = set(
         [extract_table_schema_name(table_entity) for table_entity in tables_entities]
