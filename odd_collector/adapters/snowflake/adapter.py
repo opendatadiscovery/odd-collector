@@ -17,10 +17,10 @@ class Adapter(AbstractAdapter):
         self.__database = config.database
         self.__user = config.user
         self.__password = config.password
-        self.__account = config.account
+        self.__account = config.host.split(".snowflakecomputing.com")[0]
         self.__warehouse = config.warehouse
         self.__oddrn_generator = SnowflakeGenerator(
-            host_settings=f"{self.__account}.snowflakecomputing.com",
+            host_settings=config.host,
             databases=self.__database,
         )
 

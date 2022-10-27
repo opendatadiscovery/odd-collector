@@ -68,7 +68,6 @@ class KafkaPlugin(BasePlugin):
 
 class SnowflakePlugin(DatabasePlugin):
     type: Literal["snowflake"]
-    account: str
     warehouse: str
 
 

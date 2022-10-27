@@ -9,5 +9,4 @@ plugins:
     port: 0000
     user: user
     password: password
-    account: account
     warehouse: warehouse
