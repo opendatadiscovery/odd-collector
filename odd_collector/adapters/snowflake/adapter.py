@@ -7,6 +7,7 @@ from snowflake import connector
 
 from .mappers import _columns_select, _tables_select
 from .mappers.tables import map_table
+from odd_collector.domain.database_enitites_extractor import extract_schemas_entities_from_tables, map_db_service
 
 
 class Adapter(AbstractAdapter):
@@ -25,9 +26,21 @@ class Adapter(AbstractAdapter):
         )
 
     def get_data_entity_list(self) -> DataEntityList:
+
+        tables_entities = self.get_data_entities()
+        schemas_entities = extract_schemas_entities_from_tables(
+            tables_entities, self.__oddrn_generator
+        )
+
+        dbs_entity = map_db_service(
+            tables_entities[0].metadata[0].metadata["table_catalog"],
+            [schema_entity.oddrn for schema_entity in schemas_entities],
+            "databases",
+            self.__oddrn_generator,
+        )
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=self.get_data_entities(),
+            items=[*tables_entities, *schemas_entities, dbs_entity],
         )
 
     def get_data_source_oddrn(self) -> str:

@@ -11,9 +11,6 @@ _data_set_field_metadata_schema_url: str = (
 )
 
 _data_set_metadata_excluded_keys: set = {
-    "table_catalog",
-    "table_schema",
-    "table_name",
     "table_type",
     "table_owner",
     "row_count",
