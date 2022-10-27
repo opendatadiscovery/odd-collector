@@ -21,7 +21,6 @@ class Adapter(AbstractAdapter):
         self.__warehouse = config.warehouse
         self.__oddrn_generator = SnowflakeGenerator(
             host_settings=f"{self.__account}.snowflakecomputing.com",
-            warehouses=self.__warehouse,
             databases=self.__database,
         )
 
