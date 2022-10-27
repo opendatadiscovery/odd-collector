@@ -10,6 +10,7 @@ from .mappers.datasets import map_table
 from .mappers.backends import backends_factory
 from .mappers.dashboards import map_dashboard
 from oddrn_generator.utils.external_generators import ExternalGeneratorMappingError
+from oddrn_generator.utils.external_generators import ExternalSnowflakeGenerator
 
 
 class Adapter(AbstractAdapter):
@@ -54,6 +55,9 @@ class Adapter(AbstractAdapter):
             if backend_cls is None:
                 raise ExternalGeneratorMappingError(backend_name)
             backend = backend_cls(database).get_external_generator()
+            if isinstance(backend, ExternalSnowflakeGenerator):
+                dataset.name = dataset.name.upper()
+                dataset.schema = dataset.schema.upper()
             if dataset.kind == "virtual":
                 view_entity = map_table(
                     self._oddrn_generator, dataset, external_backend=backend

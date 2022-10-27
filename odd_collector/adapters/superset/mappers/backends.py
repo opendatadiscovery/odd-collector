@@ -8,6 +8,7 @@ from oddrn_generator.utils.external_generators import (
     ExternalGeneratorBuilder,
     ExternalMssqlGenerator,
     ExternalTrinoGenerator,
+    ExternalSnowflakeGenerator,
 )
 
 
@@ -18,6 +19,17 @@ class SupersetExternalGeneratorBuilder(ExternalGeneratorBuilder):
     def build_db_settings(self) -> ExternalDbSettings:
         return ExternalDbSettings(
             host=self.database.host, database_name=self.database.database_name
+        )
+
+
+class SnowflakeBackend(SupersetExternalGeneratorBuilder):
+    external_generator = ExternalSnowflakeGenerator
+    type = "snowflake"
+
+    def build_db_settings(self) -> ExternalDbSettings:
+        return ExternalDbSettings(
+            host=self.database.host + ".snowflakecomputing.com",
+            database_name=self.database.database_name,
         )
 
 
@@ -52,6 +64,7 @@ backends: List[Type[SupersetExternalGeneratorBuilder]] = [
     TrinoBackend,
     PrestoBackend,
     MssqlBackend,
+    SnowflakeBackend,
 ]
 
 backends_factory: Dict[str, Type[SupersetExternalGeneratorBuilder]] = {
