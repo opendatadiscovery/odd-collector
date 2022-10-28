@@ -1,17 +1,14 @@
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import SnowflakeGenerator
-
-from . import (
-    ColumnMetadataNamedtuple,
-    _data_set_field_metadata_excluded_keys,
-    _data_set_field_metadata_schema_url,
-)
-from .metadata import append_metadata_extension
-from .types import TYPES_SQL_TO_ODD
+from odd_collector.adapters.snowflake.config import _data_set_field_metadata_schema_url, \
+    _data_set_field_metadata_excluded_keys
+from odd_collector.adapters.snowflake.mappers.metadata import append_metadata_extension
+from odd_collector.adapters.snowflake.mappers.models import ColumnMetadata
+from odd_collector.adapters.snowflake.mappers.types import TYPES_SQL_TO_ODD
 
 
 def map_column(
-    column_metadata: ColumnMetadataNamedtuple,
+    column_metadata: ColumnMetadata,
     oddrn_generator: SnowflakeGenerator,
     owner: str,
     parent_oddrn_path: str,

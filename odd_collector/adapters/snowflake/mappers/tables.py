@@ -1,35 +1,35 @@
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import SnowflakeGenerator
 
-from . import (
-    ColumnMetadataNamedtuple,
-    MetadataNamedtuple,
-    _data_set_metadata_excluded_keys,
-    _data_set_metadata_schema_url,
-)
-from .columns import map_column
-from .metadata import append_metadata_extension
-from .types import TABLE_TYPES_SQL_TO_ODD
-from .utils import transform_datetime
-from .views import extract_transformer_data
+from odd_collector.adapters.snowflake.config import _data_set_metadata_schema_url, _data_set_metadata_excluded_keys
+from odd_collector.adapters.snowflake.mappers.columns import map_column
+from odd_collector.adapters.snowflake.mappers.metadata import append_metadata_extension
+from odd_collector.adapters.snowflake.mappers.models import TableMetadata, ColumnMetadata
+from odd_collector.adapters.snowflake.mappers.types import TABLE_TYPES_SQL_TO_ODD
+from odd_collector.adapters.snowflake.mappers.utils import transform_datetime
+from odd_collector.adapters.snowflake.mappers.views import extract_transformer_data
 
 
 def map_table(
-    oddrn_generator: SnowflakeGenerator, tables: list[tuple], columns: list[tuple]
+    oddrn_generator: SnowflakeGenerator, tables: list[tuple], columns: list[tuple], database: str
 ) -> list[DataEntity]:
     data_entities: list[DataEntity] = []
     column_index: int = 0
 
     for table in tables:
-        metadata: MetadataNamedtuple = MetadataNamedtuple(*table)
-
+        metadata: TableMetadata = TableMetadata(*table)
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
             metadata.table_type, DataEntityType.UNKNOWN
         )
-        oddrn_path = "views" if data_entity_type == DataEntityType.VIEW else "tables"
+        oddrn_path = (
+            "views" if data_entity_type == DataEntityType.VIEW else "tables"
+        )
+
+        table_schema: str = metadata.table_schema
+        table_name: str = metadata.table_name
 
         oddrn_generator.set_oddrn_paths(
-            **{"schemas": metadata.table_schema, oddrn_path: metadata.table_name}
+            **{"schemas": table_schema, oddrn_path: table_name}
         )
 
         # DataEntity
@@ -68,9 +68,7 @@ def map_table(
         # DatasetField
         while column_index < len(columns):
             column: tuple = columns[column_index]
-            column_metadata: ColumnMetadataNamedtuple = ColumnMetadataNamedtuple(
-                *column
-            )
+            column_metadata: ColumnMetadata = ColumnMetadata(*column)
 
             if (
                 column_metadata.table_schema == metadata.table_schema

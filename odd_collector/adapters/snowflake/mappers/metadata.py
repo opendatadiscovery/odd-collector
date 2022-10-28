@@ -1,16 +1,22 @@
-from typing import NamedTuple
+
+from dataclasses import asdict, astuple
+from typing import Union
 
 from odd_models.models import MetadataExtension
+from odd_collector.adapters.snowflake.mappers.models import (
+    ColumnMetadata,
+    TableMetadata,
+)
 
 
 def append_metadata_extension(
     metadata_list: list[MetadataExtension],
     schema_url: str,
-    named_tuple: NamedTuple,
+    metadata: Union[ColumnMetadata, TableMetadata],
     excluded_keys: set = None,
 ):
-    if named_tuple is not None and len(named_tuple) > 0:
-        metadata: dict = named_tuple._asdict()
+    if metadata is not None and len(astuple(metadata)) > 0:
+        metadata: dict = asdict(metadata)
         if excluded_keys is not None:
             for key in excluded_keys:
                 metadata.pop(key)
