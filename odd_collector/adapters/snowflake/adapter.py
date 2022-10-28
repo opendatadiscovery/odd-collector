@@ -7,7 +7,7 @@ from snowflake import connector
 
 from .mappers import _columns_select, _tables_select
 from .mappers.tables import map_table
-
+#comment
 
 class Adapter(AbstractAdapter):
     __connection = None
