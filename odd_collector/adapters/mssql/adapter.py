@@ -1,93 +1,87 @@
-import contextlib
+import traceback
 from typing import List
 
-import pyodbc
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import MssqlGenerator
 
 from odd_collector.domain.plugin import MSSQLPlugin
 
+from .connector import ConnectionConfig, DefaultConnector
 from .logger import logger
-from .mappers import column_query, table_query
-from .mappers.schemas import extract_schemas_entities_from_tables, map_db_service
-from .mappers.tables import map_table
+from .mappers.database import map_database
+from .mappers.schemas import map_schemas
+from .mappers.tables import map_tables
+from .mappers.views import map_views
+from .models import Column, Table, View
 
 
 class Adapter(AbstractAdapter):
-    __connection = None
-    __cursor = None
-
     def __init__(self, config: MSSQLPlugin) -> None:
-        # https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15
-        # https://github.com/mkleehammer/pyodbc/wiki/Install
-        # https://github.com/mkleehammer/pyodbc/wiki/Connecting-to-SQL-Server-from-Linux
-        # cat /etc/odbcinst.ini
-
-        # TODO: Encrypt=YES;TrustServerCertificate=YES for 18 ODBC Driver
-        self.__data_source: str = (
-            f"DRIVER={config.driver};SERVER={config.host};DATABASE={config.database};"
-            f"UID={config.user};PWD={config.password}"
-        )
-        self.__oddrn_generator = MssqlGenerator(
+        self._generator = MssqlGenerator(
             host_settings=f"{config.host}", databases=config.database
         )
+        self._cfg = config
 
     def get_data_entity_list(self) -> DataEntityList:
-        items = self.get_data_entities()
-        schemas_entities = extract_schemas_entities_from_tables(
-            items, self.__oddrn_generator
-        )
-        dbs_entity = map_db_service(
-            items[0].metadata[0].metadata["table_catalog"],
-            [schema_entity.oddrn for schema_entity in schemas_entities],
-            "databases",
-            self.__oddrn_generator,
-        )
+        try:
+            tables, columns, views = [], [], []
 
-        return DataEntityList(
-            data_source_oddrn=self.get_data_source_oddrn(),
-            items=[*items, *schemas_entities, dbs_entity],
-        )
+            connection_cfg = ConnectionConfig(
+                server=self._cfg.host,
+                database=self._cfg.database,
+                user=self._cfg.user,
+                password=self._cfg.password,
+            )
+
+            with DefaultConnector(connection_cfg) as conn:
+                tables = conn.get_tables()
+                columns = conn.get_columns()
+                views = conn.get_views()
+
+            tables_entities = self.get_table_entities(tables, columns)
+            views_entities = self.get_views_entities(views, columns)
+            schemas_entities = self.get_schemas_entities(tables, views)
+            database_entities = self.get_database_entities(schemas_entities)
+
+            de = DataEntityList(
+                data_source_oddrn=self.get_data_source_oddrn(),
+                items=[
+                    *tables_entities,
+                    *views_entities,
+                    *schemas_entities,
+                    *database_entities,
+                ],
+            )
+
+            return de
+        except Exception as err:
+            logger.debug(traceback.format_exc())
+            raise err
 
     def get_data_source_oddrn(self) -> str:
-        return self.__oddrn_generator.get_data_source_oddrn()
+        return self._generator.get_data_source_oddrn()
 
-    def get_data_entities(self) -> List[DataEntity]:
-        try:
-            self.__connect()
+    def get_views_entities(self, views, columns) -> List[DataEntity]:
+        return list(map_views(views, columns, self._generator))
 
-            tables = self.__execute(table_query)
-            columns = self.__execute(column_query)
+    def get_table_entities(
+        self, tables: List[Table], columns: List[Column]
+    ) -> List[DataEntity]:
+        return list(map_tables(tables, columns, self._generator))
 
-            return map_table(self.__oddrn_generator, tables, columns)
-        except Exception:
-            logger.error("Failed to load metadata for tables", exc_info=True)
-        finally:
-            self.__disconnect()
-        return []
+    def get_schemas_entities(
+        self, tables: List[Table], views: List[View]
+    ) -> List[DataEntity]:
+        return list(map_schemas(tables, views, self._generator))
 
-    def __execute(self, query: str) -> List[tuple]:
-        self.__cursor.execute(query)
-        return self.__cursor.fetchall()
-
-    def __connect(self) -> None:
-        try:
-            self.__connection = pyodbc.connect(self.__data_source)
-            self.__cursor = self.__connection.cursor()
-        except Exception as e:
-            raise DBException("Database error") from e
-        return
-
-    def __disconnect(self) -> None:
-        with contextlib.suppress(Exception):
-            if self.__cursor:
-                self.__cursor.close()
-        with contextlib.suppress(Exception):
-            if self.__connection:
-                self.__connection.close()
-        return
-
-
-class DBException(Exception):
-    pass
+    def get_database_entities(
+        self, schema_entities: List[DataEntity]
+    ) -> List[DataEntity]:
+        return [
+            map_database(
+                self._cfg.database,
+                [de.oddrn for de in schema_entities],
+                self._generator,
+            )
+        ]

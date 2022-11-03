@@ -41,7 +41,7 @@ class MySQLPlugin(DatabasePlugin):
 
 class MSSQLPlugin(DatabasePlugin):
     type: Literal["mssql"]
-    driver: str
+    password: SecretStr
 
 
 class ClickhousePlugin(DatabasePlugin):
