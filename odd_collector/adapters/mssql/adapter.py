@@ -54,9 +54,6 @@ class Adapter(AbstractAdapter):
                 ],
             )
 
-            with open("out.json", "w+") as file:
-                file.write(de.json())
-
             return de
         except Exception as err:
             logger.debug(traceback.format_exc())
