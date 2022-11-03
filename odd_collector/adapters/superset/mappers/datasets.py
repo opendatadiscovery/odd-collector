@@ -1,11 +1,10 @@
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator.generators import SupersetGenerator
-
-from odd_collector.domain.utils import extract_transformer_data
-
-from ..domain.dataset import Dataset
-from .backends import DatabaseBackend
 from .columns import map_column
+from odd_collector.domain.utils import extract_transformer_data
+from ..domain.dataset import Dataset
+from oddrn_generator.utils.external_generators import ExternalDbGenerator
+from oddrn_generator.utils.external_generators import ExternalSnowflakeGenerator
 
 
 def create_dataset(oddrn_generator, dataset: Dataset):
@@ -18,7 +17,7 @@ def create_dataset(oddrn_generator, dataset: Dataset):
 def map_table(
     oddrn_generator: SupersetGenerator,
     dataset: Dataset,
-    external_backend: DatabaseBackend = None,
+    external_backend: ExternalDbGenerator = None,
 ) -> DataEntity:
     data_entity = DataEntity(
         oddrn=dataset.get_oddrn(oddrn_generator),
@@ -31,6 +30,9 @@ def map_table(
     )
 
     if dataset.kind == "virtual":
+        query: str = dataset.metadata[0].metadata.get("sql")
+        if isinstance(external_backend, ExternalSnowflakeGenerator):
+            query = query.upper()
         if external_backend is not None:
             view_gen = external_backend.get_generator_for_schema_lvl(dataset.schema)
 
@@ -40,7 +42,7 @@ def map_table(
             table_path = "datasets"
         data_entity.type = DataEntityType.VIEW
         data_entity.data_transformer = extract_transformer_data(
-            dataset.metadata[0].metadata.get("sql"), view_gen, table_path
+            query, view_gen, table_path
         )
     else:
         data_entity.type = DataEntityType.TABLE

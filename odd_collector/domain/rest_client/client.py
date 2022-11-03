@@ -1,6 +1,5 @@
+from typing import List, Dict, Any, NamedTuple, Optional, Tuple, Callable
 from asyncio import gather
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple
-
 from aiohttp import ClientSession
 
 
@@ -40,10 +39,10 @@ class RestClient:
 
     @staticmethod
     async def collect_nodes_with_pagination(
-        default_page_size: int, fetch_function: Callable
+        default_page_size: int, fetch_function: Callable, start_page_number: int
     ):
         nodes_list = []
-        pg = 0
+        pg = start_page_number
         results_len = default_page_size
         while results_len == default_page_size:
             result = await fetch_function(pg)
