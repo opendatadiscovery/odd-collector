@@ -36,7 +36,8 @@ tarantool = "0.8.0"
 vertica-python = "1.1.1"
 presto-python-client = "0.8.2"
 trino = "0.315.0"
-odd-models = "^2.0.6"
+odd-models = "2.0.10"
+pymssql = "^2.2.5"
 
 [tool.isort]
 profile = "black"
