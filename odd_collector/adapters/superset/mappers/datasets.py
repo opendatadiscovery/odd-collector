@@ -1,10 +1,14 @@
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator.generators import SupersetGenerator
-from .columns import map_column
+from oddrn_generator.utils.external_generators import (
+    ExternalDbGenerator,
+    ExternalSnowflakeGenerator,
+)
+
 from odd_collector.domain.utils import extract_transformer_data
+
 from ..domain.dataset import Dataset
-from oddrn_generator.utils.external_generators import ExternalDbGenerator
-from oddrn_generator.utils.external_generators import ExternalSnowflakeGenerator
+from .columns import map_column
 
 
 def create_dataset(oddrn_generator, dataset: Dataset):

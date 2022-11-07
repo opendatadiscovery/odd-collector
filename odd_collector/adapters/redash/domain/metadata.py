@@ -1,5 +1,6 @@
+from typing import Any, Dict, List
+
 from odd_models.models import MetadataExtension
-from typing import List, Dict, Any
 
 
 def create_metadata_extension_list(

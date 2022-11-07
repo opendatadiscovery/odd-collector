@@ -1,16 +1,18 @@
-from typing import Dict, Type, List
-from odd_models.models import DataEntity
-from odd_models.models import DataEntityList
+from typing import Dict, List, Type
+
 from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_collector.domain.plugin import RedashPlugin
-from .client import RedashClient
+from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import RedashGenerator
+from oddrn_generator.utils.external_generators import ExternalGeneratorMappingError
+
+from odd_collector.domain.plugin import RedashPlugin
+
+from .client import RedashClient
 from .domain.datasource import DataSource
 from .domain.query import Query
-from .mappers.datasources import ds_types_factory
-from oddrn_generator.utils.external_generators import ExternalGeneratorMappingError
-from .mappers.queries import map_query
 from .mappers.dashboards import map_dashboard
+from .mappers.datasources import ds_types_factory
+from .mappers.queries import map_query
 
 
 class Adapter(AbstractAdapter):

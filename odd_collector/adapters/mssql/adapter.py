@@ -32,6 +32,7 @@ class Adapter(AbstractAdapter):
                 database=self._cfg.database,
                 user=self._cfg.user,
                 password=self._cfg.password,
+                port=self._cfg.port,
             )
 
             with DefaultConnector(connection_cfg) as conn:

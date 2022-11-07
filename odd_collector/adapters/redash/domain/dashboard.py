@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import List, Dict, Any
-from .metadata import create_metadata_extension_list
-from .. import (
-    _METADATA_SCHEMA_URL_PREFIX,
-    _keys_to_include_dashboard,
-)
+from typing import Any, Dict, List
+
 from odd_models.models import MetadataExtension
+
+from .. import _METADATA_SCHEMA_URL_PREFIX, _keys_to_include_dashboard
+from .metadata import create_metadata_extension_list
 
 
 @dataclass

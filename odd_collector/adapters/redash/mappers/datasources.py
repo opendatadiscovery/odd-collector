@@ -1,12 +1,14 @@
-from typing import Type, List, Dict
+from typing import Dict, List, Type
+
 from oddrn_generator.utils.external_generators import (
-    ExternalPostgresGenerator,
-    ExternalMssqlGenerator,
-    ExternalMysqlGenerator,
     ExternalDbSettings,
     ExternalGeneratorBuilder,
+    ExternalMssqlGenerator,
+    ExternalMysqlGenerator,
+    ExternalPostgresGenerator,
     ExternalSnowflakeGenerator,
 )
+
 from odd_collector.adapters.redash.domain.datasource import DataSource
 
 
