@@ -1,7 +1,9 @@
-from ..domain.dashboard import Dashboard
 from typing import Dict
+
+from odd_models.models import DataConsumer, DataEntity, DataEntityType
 from oddrn_generator.generators import RedashGenerator
-from odd_models.models import DataEntity, DataEntityType, DataConsumer
+
+from ..domain.dashboard import Dashboard
 
 
 def map_dashboard(

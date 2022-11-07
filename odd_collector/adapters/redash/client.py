@@ -1,11 +1,14 @@
-from aiohttp import ClientSession
+from typing import Any, Dict, List
 from urllib.parse import urlparse
-from typing import Dict, Any, List
+
+from aiohttp import ClientSession
+
 from odd_collector.domain.plugin import RedashPlugin
-from .domain.query import Query
-from .domain.datasource import DataSource
+from odd_collector.domain.rest_client.client import RequestArgs, RestClient
+
 from .domain.dashboard import Dashboard
-from odd_collector.domain.rest_client.client import RestClient, RequestArgs
+from .domain.datasource import DataSource
+from .domain.query import Query
 
 
 class RedashClient(RestClient):

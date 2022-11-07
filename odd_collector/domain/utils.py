@@ -1,8 +1,8 @@
+import itertools
 import logging
+import re
 from copy import deepcopy
 from typing import List
-import itertools
-import re
 
 from odd_models.models import DataTransformer
 from odd_models.utils import SqlParser

@@ -1,5 +1,6 @@
-from typing import List, Dict, Any, NamedTuple, Optional, Tuple, Callable
 from asyncio import gather
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple
+
 from aiohttp import ClientSession
 
 

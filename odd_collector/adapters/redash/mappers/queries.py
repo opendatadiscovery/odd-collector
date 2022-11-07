@@ -1,12 +1,15 @@
-from odd_collector.domain.utils import AnotherSqlParser
-from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransformer
-from ..domain.query import Query
 from typing import List
+
+from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransformer
+from oddrn_generator import RedashGenerator
 from oddrn_generator.utils.external_generators import (
     DeepLvlGenerator,
     ExternalDbGenerator,
 )
-from oddrn_generator import RedashGenerator
+
+from odd_collector.domain.utils import AnotherSqlParser
+
+from ..domain.query import Query
 
 
 def create_dataset(oddrn_generator, query: Query):

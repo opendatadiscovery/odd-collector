@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
-from .metadata import create_metadata_extension_list
-from .. import (
-    _METADATA_SCHEMA_URL_PREFIX,
-    _keys_to_include_query,
-)
+from typing import Any, Dict, List, Optional
+
 from odd_models.models import MetadataExtension
+
+from .. import _METADATA_SCHEMA_URL_PREFIX, _keys_to_include_query
+from .metadata import create_metadata_extension_list
 
 
 @dataclass

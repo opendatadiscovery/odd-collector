@@ -98,7 +98,7 @@ class DefaultConnector(contextlib.ContextDecorator):
                 user=self._config.user,
                 password=self._config.password.get_secret_value(),
                 database=self._config.database,
-                port=self._config.port
+                port=self._config.port,
             )
             return self
         except pymssql._pymssql.OperationalError as e:
