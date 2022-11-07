@@ -83,6 +83,7 @@ class ConnectionConfig:
     database: str
     user: str
     password: SecretStr
+    port: str
 
 
 class DefaultConnector(contextlib.ContextDecorator):
@@ -93,10 +94,11 @@ class DefaultConnector(contextlib.ContextDecorator):
     def __enter__(self) -> "DefaultConnector":
         try:
             self.conn = pymssql.connect(
-                self._config.server,
-                self._config.user,
-                self._config.password.get_secret_value(),
-                self._config.database,
+                server=self._config.server,
+                user=self._config.user,
+                password=self._config.password.get_secret_value(),
+                database=self._config.database,
+                port=self._config.port
             )
             return self
         except pymssql._pymssql.OperationalError as e:
