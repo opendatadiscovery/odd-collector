@@ -1,6 +1,7 @@
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import Generator
 
+from .metadata import get_metadata
 from ..domain import Collection
 
 
@@ -18,7 +19,7 @@ def map_collection(collection: Collection, generator: Generator) -> DataEntity:
         name=collection.name,
         oddrn=generator.get_oddrn_by_path("collections", collection.id),
         description=collection.description,
-        metadata=None,
+        metadata=get_metadata(collection),
         tags=None,
         type=DataEntityType.FILE,
         data_entity_group=DataEntityGroup(

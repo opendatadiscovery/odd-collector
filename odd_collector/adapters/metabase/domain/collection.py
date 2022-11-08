@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict, Any
 
 from pydantic import BaseModel
 
@@ -11,3 +11,10 @@ class Collection(BaseModel):
     archived: Optional[bool]
     cards_id: Optional[List[int]] = []
     dashboards_id: Optional[List[int]] = []
+    can_write: bool
+
+    @property
+    def metadata(self) -> Dict[str, Any]:
+        return {
+            "can_write": self.can_write,
+        }

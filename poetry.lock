@@ -1156,7 +1156,7 @@ sqlparse = "0.4.2"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.53"
+version = "0.1.57"
 description = "Open Data Discovery Resource Name Generator"
 category = "main"
 optional = false
@@ -2082,7 +2082,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9.1"
-content-hash = "106dda9b88ba0f55bbc0f5984e79e6b467da87575f40fb652d433ccba9958dca"
+content-hash = "5225c7f69e96bff871d353b119b967c25986abc142fa4866bbd8ad67e8c4dd65"
 
 [metadata.files]
 absl-py = [
@@ -3157,8 +3157,8 @@ odd-models = [
     {file = "odd_models-2.0.10-py3-none-any.whl", hash = "sha256:32e590232784c919a3604ef50edb8cda37135378fdd62ef2a790f4de1a5bb3f4"},
 ]
 oddrn-generator = [
-    {file = "oddrn-generator-0.1.53.tar.gz", hash = "sha256:a1ccea969a1f28e34f81e1ed572458a3c7589a711eb5b1c17f2b2dd7e69594f4"},
-    {file = "oddrn_generator-0.1.53-py3-none-any.whl", hash = "sha256:11cf7d59243e3f4f6df1662453ea1e8eddcf94ed2d06ff85453f6aeedb9a70a8"},
+    {file = "oddrn-generator-0.1.57.tar.gz", hash = "sha256:d4a203227dd943d7c6874c68640fa07365a5107b41e5a5adc6582e7a47d6ed06"},
+    {file = "oddrn_generator-0.1.57-py3-none-any.whl", hash = "sha256:54e1bcba7835418f3b6190dbd50d06544f69b86979337aa84395570205bdabd1"},
 ]
 oscrypto = [
     {file = "oscrypto-1.3.0-py2.py3-none-any.whl", hash = "sha256:2b2f1d2d42ec152ca90ccb5682f3e051fb55986e1b170ebde472b133713e7085"},

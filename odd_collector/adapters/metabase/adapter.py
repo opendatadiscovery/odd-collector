@@ -3,11 +3,11 @@ from urllib import parse
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
+from oddrn_generator.generators import MetabaseGenerator
 
 from odd_collector.domain.plugin import MetabasePlugin
 
 from .client import MetabaseClient
-from .generator import MetabaseGenerator
 from .mappers.card import map_card
 from .mappers.collection import map_collection
 from .mappers.dashboard import map_dashboard
@@ -17,6 +17,7 @@ class Adapter(AbstractAdapter):
     def __init__(self, config: MetabasePlugin) -> None:
         self.config = config
         self.client = MetabaseClient(config)
+
         self.generator = MetabaseGenerator(
             host_settings=parse.urlparse(config.host).netloc
         )

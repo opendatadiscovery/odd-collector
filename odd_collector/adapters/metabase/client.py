@@ -8,7 +8,6 @@ from funcy import group_by, lmap, lpluck, lpluck_attr
 from odd_collector_sdk.errors import DataSourceAuthorizationError
 
 from odd_collector.domain.plugin import MetabasePlugin
-
 from .domain import Card, Collection, Dashboard, Table
 from .logger import logger
 
@@ -34,16 +33,18 @@ class MetabaseClient:
 
     async def get_dashboard_by(self, session: ClientSession, dashboard_id: int):
         """Get dashboards details from Metabase"""
-        response = await session.get("/api/dashboard/3")
+        response = await session.get(f"/api/dashboard/{dashboard_id}")
         return await response.json()
 
     async def get_dashboards(self, session: ClientSession) -> List[Dashboard]:
         dashboards = await self._get_resources(
             session, self.__DASHBOARD_ENDPOINT, Dashboard
         )
-        # Need to take information which cards has dashboard
-        ids = lpluck_attr("id", dashboards)
-        tasks = [asyncio.create_task(self.get_dashboard_by(session, id)) for id in ids]
+        # Need to take information which cards have dashboard
+        tasks = [
+            asyncio.create_task(self.get_dashboard_by(session, id))
+            for id in lpluck_attr("id", dashboards)
+        ]
         dashboards_list = await asyncio.gather(*tasks)
 
         for idx, dashboard in enumerate(dashboards_list):
@@ -92,6 +93,7 @@ class MetabaseClient:
         logger.debug("Getting %s", endpoint.split("/")[-1])
         response = await session.get(endpoint)
         entities = await response.json()
+
         return lmap(model.parse_obj, entities)
 
     @asynccontextmanager

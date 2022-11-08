@@ -3,6 +3,7 @@ from typing import Optional
 from odd_models.models import DataConsumer, DataEntity, DataEntityType
 from oddrn_generator import Generator, PostgresqlGenerator
 
+from .metadata import get_metadata
 from ..domain import Card, Table
 
 
@@ -34,7 +35,7 @@ def map_card(card: Card, table: Optional[Table], generator: Generator):
         name=card.name,
         description=card.description,
         owner=card.get_owner(),
-        metadata=None,
+        metadata=get_metadata(card),
         tags=None,
         updated_at=card.updated_at,
         created_at=card.created_at,

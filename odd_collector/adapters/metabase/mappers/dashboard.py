@@ -4,6 +4,7 @@ from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import Generator
 
 from ..domain import Dashboard
+from .metadata import get_metadata
 
 
 def map_dashboard(
@@ -19,7 +20,7 @@ def map_dashboard(
         oddrn=generator.get_oddrn_by_path("dashboards"),
         description=dashboard.description,
         owner=dashboard.get_owner(),
-        metadata=None,
+        metadata=get_metadata(dashboard),
         tags=None,
         updated_at=dashboard.updated_at,
         created_at=dashboard.created_at,
