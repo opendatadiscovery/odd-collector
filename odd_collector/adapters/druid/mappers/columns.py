@@ -29,7 +29,7 @@ def column_to_data_set_field(
         tags.append(Tag(name=f"max_value:{column_stats.max_value}"))
         tags.append(Tag(name=f"min_value:{column_stats.min_value}"))
         tags.append(Tag(name=f"has_multiple_values:{column_stats.has_multiple_values}"))
-        tags.append(Tag(name="size:{:.2f} mb".format(column_stats.size / 1024)))
+        tags.append(Tag(name="size:{:.2f} mb".format(column_stats.size / 1048576)))
         tags.append(Tag(name=f"type:{column_stats.type}"))
 
         # Get logical type
