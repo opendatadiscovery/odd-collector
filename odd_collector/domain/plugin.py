@@ -166,6 +166,12 @@ class CubeJSPlugin(BasePlugin):
         return value
 
 
+class MetabasePlugin(WithHost, WithPort):
+    type: Literal["metabase"]
+    login: str
+    password: SecretStr
+
+
 class PrestoPlugin(BasePlugin):
     type: Literal["presto"]
     host: str
@@ -187,6 +193,12 @@ class OddAdapterPlugin(BasePlugin):
     type: Literal["odd_adapter"]
     host: str
     data_source_oddrn: str
+
+
+class MetabasePlugin(WithHost, WithPort):
+    type: Literal["metabase"]
+    login: str
+    password: SecretStr
 
 
 PLUGIN_FACTORY: PluginFactory = {
@@ -216,4 +228,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "superset": SupersetPlugin,
     "redash": RedashPlugin,
     "odd_adapter": OddAdapterPlugin,
+    "metabase": MetabasePlugin,
 }
