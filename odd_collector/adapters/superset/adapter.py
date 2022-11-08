@@ -3,6 +3,10 @@ from typing import Dict, List, Type
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator.generators import SupersetGenerator
+from oddrn_generator.utils.external_generators import (
+    ExternalGeneratorMappingError,
+    ExternalSnowflakeGenerator,
+)
 
 from odd_collector.domain.plugin import SupersetPlugin
 
@@ -51,8 +55,14 @@ class Adapter(AbstractAdapter):
         for dataset in datasets:
             database_id = dataset.database_id
             database = databases.get(database_id)
-            backend_cls = backends_factory.get(database.backend)
-            backend = backend_cls(database)
+            backend_name = database.backend
+            backend_cls = backends_factory.get(backend_name)
+            if backend_cls is None:
+                raise ExternalGeneratorMappingError(backend_name)
+            backend = backend_cls(database).get_external_generator()
+            if isinstance(backend, ExternalSnowflakeGenerator):
+                dataset.name = dataset.name.upper()
+                dataset.schema = dataset.schema.upper()
             if dataset.kind == "virtual":
                 view_entity = map_table(
                     self._oddrn_generator, dataset, external_backend=backend
