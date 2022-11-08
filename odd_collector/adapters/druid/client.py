@@ -14,7 +14,6 @@ from odd_collector.domain.plugin import DruidPlugin
 
 
 class DruidBaseClient(ABC):
-
     @abstractmethod
     async def get_resources(self):
         raise NotImplementedError
@@ -36,7 +35,9 @@ class DruidBaseClient(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_segment_metadata(self, session: ClientSession, table_name: str) -> dict:
+    async def get_segment_metadata(
+        self, session: ClientSession, table_name: str
+    ) -> dict:
         raise NotImplementedError
 
 
@@ -50,7 +51,7 @@ class DruidClient(DruidBaseClient):
             tasks = [
                 asyncio.create_task(self.get_tables(session)),
                 asyncio.create_task(self.get_columns(session)),
-                asyncio.create_task(self.get_tables_nr_of_rows(session))
+                asyncio.create_task(self.get_tables_nr_of_rows(session)),
             ]
 
             # Return
@@ -67,7 +68,8 @@ class DruidClient(DruidBaseClient):
             # Prepare
             result = {}
             tasks = [
-                asyncio.create_task(self.get_segment_metadata(session, table_name)) for table_name in table_names
+                asyncio.create_task(self.get_segment_metadata(session, table_name))
+                for table_name in table_names
             ]
 
             # Fetch
@@ -190,13 +192,17 @@ class DruidClient(DruidBaseClient):
                 records = await response.json()
 
                 # Return
-                return dict((record["datasource"], record["total_rows"]) for record in records)
+                return dict(
+                    (record["datasource"], record["total_rows"]) for record in records
+                )
 
         except Exception as e:
             # Throw
             raise DataSourceError(f"Couldn't execute Druid query: {sql_query}") from e
 
-    async def get_segment_metadata(self, session: ClientSession, table_name: str) -> dict:
+    async def get_segment_metadata(
+        self, session: ClientSession, table_name: str
+    ) -> dict:
         """
         Fetch table metadata from segments
         :param session: the client session
@@ -209,21 +215,26 @@ class DruidClient(DruidBaseClient):
             "queryType": "segmentMetadata",
             "dataSource": f"{table_name}",
             "merge": "true",
-            "analysisTypes": ["cardinality", "minmax", "size", "aggregators", "rollup"]
+            "analysisTypes": ["cardinality", "minmax", "size", "aggregators", "rollup"],
         }
 
         # Execute
         try:
             async with session.post(url, json=query_payload) as response:
                 # Log it
-                logger.debug(f"Get segment metadata for table: {query_payload['dataSource']}")
+                logger.debug(
+                    f"Get segment metadata for table: {query_payload['dataSource']}"
+                )
 
                 # Fetch
                 records = await response.json()
 
                 # Transform
                 columns = records[0]["columns"]
-                columns_stats = [ColumnStats.from_response(column_name, columns[column_name]) for column_name in columns]
+                columns_stats = [
+                    ColumnStats.from_response(column_name, columns[column_name])
+                    for column_name in columns
+                ]
 
                 # Add column type
                 aggregators = records[0]["aggregators"] or []
@@ -232,10 +243,7 @@ class DruidClient(DruidBaseClient):
                         column_stats.type = ColumnType.metric
 
                 # Return
-                return dict(
-                    table_name=table_name,
-                    column_stats=columns_stats
-                )
+                return dict(table_name=table_name, column_stats=columns_stats)
 
         except Exception as e:
             # Throw
