@@ -6,6 +6,7 @@ from odd_models.models import MetadataExtension
 
 prefix = "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/metabase.json#/definitions"
 
+
 @singledispatch
 def get_schema(entity) -> str:
     ...
