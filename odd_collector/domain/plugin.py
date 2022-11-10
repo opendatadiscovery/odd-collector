@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, List
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
@@ -52,6 +52,8 @@ class ClickhousePlugin(DatabasePlugin):
 
 class RedshiftPlugin(DatabasePlugin):
     type: Literal["redshift"]
+    schemas: Optional[List[str]] = None
+    password: SecretStr
 
 
 class MongoDBPlugin(DatabasePlugin):
