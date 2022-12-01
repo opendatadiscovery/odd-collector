@@ -42,7 +42,7 @@ class Table(Connectable):
             "last_altered",
             "created",
             "upstream",
-            "downstream"
+            "downstream",
         ]
 
         return omit(self.__dict__, exclude)

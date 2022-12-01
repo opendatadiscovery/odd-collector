@@ -2,13 +2,13 @@ from typing import List, Optional
 
 from odd_models import models
 from odd_models.models import (
-    DataSetField,
-    DataSetFieldType,
-    Tag,
-    DataSetFieldStat,
-    StringFieldStat,
-    NumberFieldStat,
     ComplexFieldStat,
+    DataSetField,
+    DataSetFieldStat,
+    DataSetFieldType,
+    NumberFieldStat,
+    StringFieldStat,
+    Tag,
 )
 
 from odd_collector.adapters.druid.domain.column import Column

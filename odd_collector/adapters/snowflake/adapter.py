@@ -53,8 +53,6 @@ class Adapter(AbstractAdapter):
             )
             return dels
 
-
-
         except Exception as e:
             raise MappingDataError("Error during mapping") from e
 

@@ -1,8 +1,8 @@
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import Generator
 
-from .metadata import get_metadata
 from ..domain import Collection
+from .metadata import get_metadata
 
 
 def map_collection(collection: Collection, generator: Generator) -> DataEntity:
