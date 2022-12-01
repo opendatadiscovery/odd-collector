@@ -1,6 +1,7 @@
 # IDEs and editors
 .idea/
 .vscode/
+.fleet/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
