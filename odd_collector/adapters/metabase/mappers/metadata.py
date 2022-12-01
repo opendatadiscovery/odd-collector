@@ -1,8 +1,9 @@
 from functools import singledispatch
 from typing import List, Union
 
-from ..domain import Card, Dashboard, Collection
 from odd_models.models import MetadataExtension
+
+from ..domain import Card, Collection, Dashboard
 
 prefix = "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/metabase.json#/definitions"
 

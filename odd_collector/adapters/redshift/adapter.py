@@ -7,6 +7,8 @@ from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import RedshiftGenerator
 
+from ...domain.plugin import RedshiftPlugin
+from .logger import logger
 from .mappers import (
     ColumnMetadataNamedtuple_QUERY,
     ColumnMetadataNamedtupleExternal_QUERY,
@@ -20,8 +22,6 @@ from .mappers import (
 )
 from .mappers.metadata import MetadataColumns, MetadataTables
 from .mappers.tables import map_table
-from ...domain.plugin import RedshiftPlugin
-from .logger import logger
 
 
 class Adapter(AbstractAdapter):

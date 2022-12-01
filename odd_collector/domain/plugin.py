@@ -1,4 +1,4 @@
-from typing import Literal, Optional, List
+from typing import List, Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
@@ -71,8 +71,10 @@ class KafkaPlugin(BasePlugin):
 
 class SnowflakePlugin(DatabasePlugin):
     type: Literal["snowflake"]
-    account: str
-    warehouse: str
+    port: Optional[str] = None
+    password: SecretStr
+    account: Optional[str]
+    warehouse: str  # active warehouse
 
 
 class HivePlugin(WithHost, WithPort):

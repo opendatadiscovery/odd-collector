@@ -3,8 +3,8 @@ from typing import Optional
 from odd_models.models import DataConsumer, DataEntity, DataEntityType
 from oddrn_generator import Generator, PostgresqlGenerator
 
-from .metadata import get_metadata
 from ..domain import Card, Table
+from .metadata import get_metadata
 
 
 def generate_table_oddrn(table: Table):

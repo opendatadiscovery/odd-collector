@@ -1,5 +1,6 @@
 from collections import namedtuple
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from psycopg2 import sql
 from psycopg2.extensions import AsIs
 
