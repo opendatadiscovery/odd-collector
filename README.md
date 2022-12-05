@@ -12,35 +12,35 @@ To learn more about collector types and ODD Platform's architecture, [read the d
  - [Docker compose example](#docker-compose-example)
 
 ## Implemented adapters
-| Service       | Config example                                                                          |
-|---------------|-----------------------------------------------------------------------------------------|
-| Cassandra     | [config](config_examples/cassandra.yaml)                                                |
-| ClickHouse    | [config](config_examples/clickhouse.yaml)                                               |
-| Dbt           | [config](config_examples/dbt.yaml)                                                      |
-| Elasticsearch | [config](config_examples/elasticsearch.yaml)                                            |
-| Feast         | [config](config_examples/feast.yaml)                                                    |
-| Hive          | [config](config_examples/hive.yaml)                                                     |
-| Kafka         | [config](config_examples/kafka.yaml)                                                    |
-| Kubeflow      | [config](config_examples/kubeflow.yaml)                                                 |
-| MariaDB       | [config](config_examples/mysql.yaml), _supported via MySql adapter_                     |
-| MongoDB       | [config](config_examples/mongodb.yaml)                                                  |
-| MSSql         | [config](config_examples/mssql.yaml)                                                    |
-| MySql         | [config](config_examples/mysql.yaml)                                                    |
-| Neo4j         | [config](config_examples/neo4j.yaml)                                                    |
-| PostgreSQL    | [config](config_examples/postgresql.yaml)                                               |
-| Presto        | [config](config_examples/presto.yaml)                                                   |
-| Redash        | [config](config_examples/redash.yaml)                                                   |
-| Redshift      | [config](config_examples/redshift.yaml)                                                 |
-| Snowflake     | [config](config_examples/snowflake.yaml)                                                |
-| Superset      | [config](config_examples/superset.yaml)                                                 |
-| Tableau       | [config](config_examples/tableau.yaml)                                                  |
-| Tarantool     | [config](config_examples/tarantool.yaml)                                                |
-| Trino         | [config](config_examples/trino.yaml)                                                    |
-| Vertica       | [config](config_examples/vertica.yaml)                                                  |
-| ODBC          | [config](config_examples/odbc.yaml), [README.md](odd_collector/adapters/odbc/README.md) |
-| Cube          | [config](config_examples/cubejs.yaml)                                                   |
-| ODD Adapter   | [config](config_examples/odd_adapter.yaml)                                              |
-| Druid Adapter | [config](config_examples/druid.yaml)                                                    |
+| Service                                     | Config example                                                                          |
+|---------------------------------------------|-----------------------------------------------------------------------------------------|
+| Cassandra      <a name="cassandra"></a>     | [config](config_examples/cassandra.yaml)                                                |
+| ClickHouse     <a name="clickhouse"></a>    | [config](config_examples/clickhouse.yaml)                                               |
+| Dbt            <a name="dbt"></a>           | [config](config_examples/dbt.yaml)                                                      |
+| Elasticsearch  <a name="elasticsearch"></a> | [config](config_examples/elasticsearch.yaml)                                            |
+| Feast          <a name="feast"></a>         | [config](config_examples/feast.yaml)                                                    |
+| Hive           <a name="hive"></a>          | [config](config_examples/hive.yaml)                                                     |
+| Kafka          <a name="kafka"></a>         | [config](config_examples/kafka.yaml)                                                    |
+| Kubeflow       <a name="kubeflow"></a>      | [config](config_examples/kubeflow.yaml)                                                 |
+| MariaDB        <a name="mariadb"></a>       | [config](config_examples/mysql.yaml), _supported via MySql adapter_                     |
+| MongoDB        <a name="mongodb"></a>       | [config](config_examples/mongodb.yaml)                                                  |
+| MSSql          <a name="mssql"></a>         | [config](config_examples/mssql.yaml)                                                    |
+| MySql          <a name="mysql"></a>         | [config](config_examples/mysql.yaml)                                                    |
+| Neo4j          <a name="neo4j"></a>         | [config](config_examples/neo4j.yaml)                                                    |
+| PostgreSQL     <a name="postgresql"></a>    | [config](config_examples/postgresql.yaml)                                               |
+| Presto         <a name="presto"></a>        | [config](config_examples/presto.yaml)                                                   |
+| Redash         <a name="redash"></a>        | [config](config_examples/redash.yaml)                                                   |
+| Redshift       <a name="redshift"></a>      | [config](config_examples/redshift.yaml)                                                 |
+| Snowflake      <a name="snowflake"></a>     | [config](config_examples/snowflake.yaml)                                                |
+| Superset       <a name="superset"></a>      | [config](config_examples/superset.yaml)                                                 |
+| Tableau        <a name="tableau"></a>       | [config](config_examples/tableau.yaml)                                                  |
+| Tarantool      <a name="tarantool"></a>     | [config](config_examples/tarantool.yaml)                                                |
+| Trino          <a name="trino"></a>         | [config](config_examples/trino.yaml)                                                    |
+| Vertica        <a name="vertica"></a>       | [config](config_examples/vertica.yaml)                                                  |
+| ODBC           <a name="odbc"></a>          | [config](config_examples/odbc.yaml), [README.md](odd_collector/adapters/odbc/README.md) |
+| Cube           <a name="cubejs"></a>        | [config](config_examples/cubejs.yaml)                                                   |
+| ODD Adapter    <a name="odd-adapter"></a>   | [config](config_examples/odd_adapter.yaml)                                              |
+| Druid Adapter  <a name="druid"></a>         | [config](config_examples/druid.yaml)                                                    |
 
 
 ## Class diagram of adapter class hierarchy
