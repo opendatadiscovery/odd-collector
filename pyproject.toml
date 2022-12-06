@@ -34,9 +34,10 @@ presto-python-client = "0.8.2"
 trino = "0.315.0"
 odd-models = "2.0.10"
 pymssql = "^2.2.5"
-odd-collector-sdk = "^0.3.4"
 oddrn-generator = "^0.1.57"
 snowflake-connector-python = "2.8.1"
+odd-collector-sdk = "0.3.6"
+mlflow = "^2.0.1"
 
 [tool.isort]
 profile = "black"

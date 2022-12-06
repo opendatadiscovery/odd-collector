@@ -205,6 +205,13 @@ class MetabasePlugin(WithHost, WithPort):
     password: SecretStr
 
 
+class MlflowPlugin(BasePlugin):
+    type: Literal["mlflow"]
+    dev_mode: bool = False
+    token: Optional[SecretStr]
+    tracking_url: str
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -233,4 +240,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "redash": RedashPlugin,
     "odd_adapter": OddAdapterPlugin,
     "metabase": MetabasePlugin,
+    "mlflow": MlflowPlugin,
 }
