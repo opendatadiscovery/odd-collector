@@ -200,9 +200,10 @@ class OddAdapterPlugin(BasePlugin):
     data_source_oddrn: str
 
 
-class MetabasePlugin(WithHost, WithPort):
-    type: Literal["metabase"]
-    login: str
+class OraclePlugin(WithHost, WithPort):
+    user: str
+    service: str
+    type: Literal["oracle"]
     password: SecretStr
 
 
@@ -234,4 +235,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "redash": RedashPlugin,
     "odd_adapter": OddAdapterPlugin,
     "metabase": MetabasePlugin,
+    "oracle": OraclePlugin,
 }

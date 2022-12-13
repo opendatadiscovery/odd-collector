@@ -41,6 +41,8 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | Cube          | [config](config_examples/cubejs.yaml)                                                   |
 | ODD Adapter   | [config](config_examples/odd_adapter.yaml)                                              |
 | Druid Adapter | [config](config_examples/druid.yaml)                                                    |
+| Oracle        | [config](config_examples/oracle.yaml)                                                   |
+
 
 
 ## Class diagram of adapter class hierarchy
