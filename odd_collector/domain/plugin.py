@@ -32,6 +32,7 @@ class PostgreSQLPlugin(DatabasePlugin):
 class OdbcPlugin(DatabasePlugin):
     type: Literal["odbc"]
     driver: str = "{ODBC Driver 17s for SQL Server}"
+    password: Optional[SecretStr]
 
 
 class MySQLPlugin(DatabasePlugin):
