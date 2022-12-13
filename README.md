@@ -12,6 +12,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
  - [Docker compose example](#docker-compose-example)
 
 ## Implemented adapters
+
 | Service       | Config example                                                                          |
 |---------------|-----------------------------------------------------------------------------------------|
 | Cassandra     | [config](config_examples/cassandra.yaml)                                                |
@@ -42,7 +43,6 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | ODD Adapter   | [config](config_examples/odd_adapter.yaml)                                              |
 | Druid Adapter | [config](config_examples/druid.yaml)                                                    |
 | Oracle        | [config](config_examples/oracle.yaml)                                                   |
-
 
 
 ## Class diagram of adapter class hierarchy
