@@ -1,0 +1,8 @@
+- type: oracle
+  name: oracle_adapter
+  description: "" # Optional string
+  host: localhost
+  port: 1521
+  user: username # user == schema
+  password: password
+  service: service # i.e XEPDB1
