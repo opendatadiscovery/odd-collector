@@ -1,10 +1,9 @@
-from typing import Type
+from typing import Type, List
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntityList
+from odd_models.models import DataEntityList, DataEntity
 
-from odd_collector.domain.plugin import CubeJSPlugin
-from odd_collector.domain.predefined_data_source import create_predefined_datasource
+from odd_collector.domain.plugin import MlflowPlugin
 
 from .generator import MlFlowGenerator
 from .logger import logger
@@ -16,24 +15,34 @@ from .client import MlflowHelper, MlflowClientBase
 class Adapter(AbstractAdapter):
     def __init__(
             self,
-            config: CubeJSPlugin,
+            config: MlflowPlugin,
             client: Type[MlflowClientBase] = MlflowHelper
     ):
         self.config = config
         self.repo = client(config)
-        self.generator = MlFlowGenerator()
+        self.generator = MlFlowGenerator(host_settings=config.host)
 
     def get_data_source_oddrn(self) -> str:
         return self.generator.get_data_source_oddrn()
 
-    async def get_data_entity_list(self):
+    def get_data_entity_list(self) -> DataEntityList:
         logger.debug("Start collecting")
-        pipeline_info = await self.repo.get_experiment_info()
-        job_info = await self.repo.get_job_info()
-
+        experiments = self.repo.get_experiment_info()
         logger.debug("End collecting")
-        pipeline_entities = [map_experiment(self.generator, pipeline) for pipeline in pipeline_info]
-        job_entities = [map_job(self.generator, job) for job in job_info]
 
-        return DataEntityList(data_source_oddrn=self.get_data_source_oddrn(), items=pipeline_entities), \
-               DataEntityList(items=job_entities)
+        experiments_entities: List[DataEntity] = []
+        jobs_entities: List[DataEntity] = []
+
+        for single_experiment in experiments:
+            self.generator.set_oddrn_paths(experiment=single_experiment.name)
+
+            jobs = single_experiment.jobs
+            job_entities = [map_job(self.generator, single_job) for single_job in jobs]
+
+            jobs_entities.extend(job_entities)
+            experiment_entity = map_experiment(self.generator, single_experiment, [job.oddrn for job in job_entities])
+            experiments_entities.append(experiment_entity)
+
+        return DataEntityList(
+                data_source_oddrn=self.get_data_source_oddrn(),
+                items=[*experiments_entities, *jobs_entities])

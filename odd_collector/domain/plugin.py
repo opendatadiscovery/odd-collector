@@ -205,11 +205,12 @@ class MetabasePlugin(WithHost, WithPort):
     password: SecretStr
 
 
-class MlflowPlugin(BasePlugin):
+class MlflowPlugin(WithHost):
     type: Literal["mlflow"]
     dev_mode: bool = False
+    host: str
     token: Optional[SecretStr]
-    tracking_url: str
+    experiments: Optional[List[str]] = None  # List of pipeline names to filter, if omit fetch all pipelines
 
 
 PLUGIN_FACTORY: PluginFactory = {

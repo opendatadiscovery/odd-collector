@@ -16,7 +16,10 @@ class Job:
         end_time: datetime,
         metrics: dict,
         job_params: dict,
-        user_id: str
+        tags: str,
+        artifacts: list,
+        input_artifacts: list,
+        output_artifacts: list
     ):
         self.experiment_id = experiment_id
         self.run_id = run_id
@@ -26,10 +29,20 @@ class Job:
         self.end_time = end_time
         self.metrics = metrics
         self.job_params = job_params
-        self.user_id = user_id
+        self.tags = tags
+        self.artifacts = artifacts
+        self.input_artifacts = input_artifacts
+        self.output_artifacts = output_artifacts
 
     @staticmethod
-    def from_response(job: Run):
+    def from_response(job: Run, artifacts: list):
+        try:
+            input_artifacts = job.data.params['input_artifacts']
+            output_artifacts = job.data.params['output_artifacts']
+        except KeyError:
+            input_artifacts = None
+            output_artifacts = None
+
         return Job(
             experiment_id=job.info.experiment_id,
             run_id=job.info.run_id,
@@ -39,10 +52,13 @@ class Job:
             end_time=job.info.end_time,
             metrics=job.data.metrics,
             job_params=job.data.params,
-            user_id=job.data.tags
+            tags=job.data.tags,
+            artifacts=artifacts,
+            input_artifacts=input_artifacts,
+            output_artifacts=output_artifacts
         )
 
     def get_oddrn(self, oddrn_generator: MlFlowGenerator):
-        oddrn_generator.get_oddrn_by_path("job", self.run_id)
-        return oddrn_generator.get_oddrn_by_path("job")
+        oddrn_generator.get_oddrn_by_path("jobs", self.run_id)
+        return oddrn_generator.get_oddrn_by_path("jobs")
 
