@@ -1,8 +1,8 @@
 from abc import ABC
 from typing import List, Optional, Callable
 
-from mlflow.entities import Experiment
-from odd_collector_sdk.errors import DataSourceAuthorizationError
+from mlflow.entities import Experiment as MlFlowExperiment
+from odd_collector_sdk.errors import DataSourceError
 
 import mlflow
 from mlflow import MlflowClient
@@ -18,7 +18,6 @@ class MlflowClientBase(ABC):
     def __init__(self, config: MlflowPlugin):
         self.config = config
         self._dev_mode = config.dev_mode
-        self._token = config.token
         self._host = config.host
         self._experiments = config.experiments
 
@@ -30,17 +29,15 @@ class MlflowClientBase(ABC):
 
 
 class MlflowHelper(MlflowClientBase):
-    API_PATH = "mlflow-api/v1"
-
     def __init__(self, config: MlflowPlugin):
         super().__init__(config)
-        self._client = MlflowClient()
+        self._client = MlflowClient("http://0.0.0.0:5001")
         try:
-            mlflow.set_tracking_uri(self._host)
+            mlflow.set_tracking_uri("http://0.0.0.0:5001")
         except Exception as e:
             raise MlflowException(f"Error while creating mlflow client: {self._host}, {e}")
 
-    def get_experiment_info(self) -> List[Experiment]:
+    def get_experiment_info(self) -> List[ExperimentEntity]:
         try:
             experiment_entity_list = self._filter_experiments_by_name()
 
@@ -48,12 +45,10 @@ class MlflowHelper(MlflowClientBase):
                 ExperimentEntity.from_response(experiment, self.get_job_info(experiment))
                 for experiment in experiment_entity_list
             ]
-        except Exception as e:
-            raise DataSourceAuthorizationError(
-                f"Couldn't connect to mlflow: {self._host}"
-            ) from e
+        except MlflowException as e:
+            raise DataSourceError from e
 
-    def _filter_experiments_by_name(self) -> List[Experiment]:
+    def _filter_experiments_by_name(self) -> List[MlFlowExperiment]:
         experiments = mlflow.search_experiments(order_by=["name"])
         return lfilter(self._experiment_name_matches(), experiments)
 
@@ -63,17 +58,17 @@ class MlflowHelper(MlflowClientBase):
         else:
             return None
 
-    def _get_experiment_job_id(self, experiment_entity: Experiment) -> list:
+    def _get_experiment_job_id(self, experiment: MlFlowExperiment) -> list:
         """
             Request experiment's jobs as a dataframe
             iterate to generate a list of jobs (runs) that belongs to specified Experiment
         Returns:
             object: get list of job_ids for specific experiment
         """
-        jobs_df = mlflow.search_runs(experiment_entity.experiment_id)
+        jobs_df = mlflow.search_runs(experiment.experiment_id)
         return [
             job.run_id
-            for index, job in jobs_df.iterrows()
+            for _, job in jobs_df.iterrows()
         ]
 
     def _get_job_artifacts(self, run_id):
@@ -95,14 +90,13 @@ class MlflowHelper(MlflowClientBase):
     def is_folder(self, artifact: str) -> bool:
         return '.' not in artifact
 
-    def get_job_info(self, experiment_entity) -> List[Job]:
+    def get_job_info(self, experiment: MlFlowExperiment) -> List[Job]:
         try:
             experiment_job_list = []
-            for job_id in self._get_experiment_job_id(experiment_entity):
+            for job_id in self._get_experiment_job_id(experiment):
                 job_info = self._client.get_run(job_id)
                 experiment_job_list.append(Job.from_response(job_info, self._get_job_artifacts(job_id)))
+
             return experiment_job_list
-        except Exception as e:
-            raise DataSourceAuthorizationError(
-                f"Couldn't connect to mlflow: {self._host}"
-            ) from e
+        except MlflowException as e:
+            raise DataSourceError from e

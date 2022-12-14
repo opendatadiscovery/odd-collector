@@ -2,11 +2,11 @@ from typing import Optional
 
 from oddrn_generator import Generator
 from oddrn_generator.path_models import BasePathsModel
-from oddrn_generator.server_models import HostSettings
+from oddrn_generator.server_models import HostnameModel
 
 
 class MlflowPathsModel(BasePathsModel):
-    pipelines: Optional[str]
+    experiments: Optional[str]
     jobs: Optional[str]
 
     class Config:
@@ -18,5 +18,5 @@ class MlflowPathsModel(BasePathsModel):
 
 class MlFlowGenerator(Generator):
     source = "mlflow"
-    server_model = HostSettings
+    server_model = HostnameModel
     paths_model = MlflowPathsModel

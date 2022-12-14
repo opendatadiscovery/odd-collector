@@ -34,7 +34,7 @@ class Adapter(AbstractAdapter):
         jobs_entities: List[DataEntity] = []
 
         for single_experiment in experiments:
-            self.generator.set_oddrn_paths(experiment=single_experiment.name)
+            self.generator.set_oddrn_paths(experiments=single_experiment.name)
 
             jobs = single_experiment.jobs
             job_entities = [map_job(self.generator, single_job) for single_job in jobs]

@@ -9,12 +9,12 @@ def map_job(
 ) -> DataEntity:
     return DataEntity(
         oddrn=job.get_oddrn(oddrn_generator),
-        name=f'{job.run_id}',
+        name=job.name,
         metadata=[],
         tags=None,
         type=DataEntityType.JOB,
         data_transformer=DataTransformer(
-            inputs=job.input_artifacts,
-            outputs=job.output_artifacts
+            inputs=job.input_artifacts or [],
+            outputs=job.output_artifacts or []
         )
     )

@@ -8,6 +8,7 @@ from odd_collector.adapters.mlflow.generator import MlFlowGenerator
 class Job:
     def __init__(
         self,
+        name: str,
         experiment_id: str,
         run_id: str,
         status: str,
@@ -21,6 +22,7 @@ class Job:
         input_artifacts: list,
         output_artifacts: list
     ):
+        self.name = name
         self.experiment_id = experiment_id
         self.run_id = run_id
         self.status = status
@@ -36,14 +38,11 @@ class Job:
 
     @staticmethod
     def from_response(job: Run, artifacts: list):
-        try:
-            input_artifacts = job.data.params['input_artifacts']
-            output_artifacts = job.data.params['output_artifacts']
-        except KeyError:
-            input_artifacts = None
-            output_artifacts = None
+        input_artifacts = job.data.params.get('input_artifacts', [])
+        output_artifacts = job.data.params.get('output_artifacts', [])
 
         return Job(
+            name=job.info.run_name,
             experiment_id=job.info.experiment_id,
             run_id=job.info.run_id,
             status=job.info.status,

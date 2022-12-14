@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import List
+from typing import List, Dict, Any, Tuple
 
 from .job import Job
 from ..generator import MlFlowGenerator
@@ -12,10 +11,10 @@ class ExperimentEntity:
         self,
         name: str,
         experiment_id: str,
-        tags: str,
+        tags: Dict[str, Any],
         lifecycle_stage: str,
-        creation_time: datetime,
-        last_update_time: datetime,
+        creation_time: float,
+        last_update_time: Tuple[float],
         artifact_location: str,
         jobs: List[Job]
     ):
@@ -42,5 +41,15 @@ class ExperimentEntity:
         )
 
     def get_oddrn(self, oddrn_generator: MlFlowGenerator):
-        oddrn_generator.get_oddrn_by_path("pipelines", self.name)
-        return oddrn_generator.get_oddrn_by_path("pipelines")
+        oddrn_generator.get_oddrn_by_path("experiments", self.name)
+        return oddrn_generator.get_oddrn_by_path("experiments")
+
+    @property
+    def metadata(self) -> Dict[str, any]:
+        return {
+            'experiment_id': self.experiment_id,
+            **self.tags,
+            'lifecycle_stage': self.lifecycle_stage,
+            'artifact_location': self.artifact_location,
+        }
+
