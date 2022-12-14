@@ -1,17 +1,16 @@
 from abc import ABC
-from typing import List, Optional, Callable
-
-from mlflow.entities import Experiment as MlFlowExperiment
-from odd_collector_sdk.errors import DataSourceError
+from typing import Callable, List, Optional
 
 import mlflow
+from funcy import lfilter
 from mlflow import MlflowClient
+from mlflow.entities import Experiment as MlFlowExperiment
 from mlflow.exceptions import MlflowException
+from odd_collector_sdk.errors import DataSourceError
 
 from ...domain.plugin import MlflowPlugin
 from .domain.experiment import ExperimentEntity
 from .domain.job import Job
-from funcy import lfilter
 
 
 class MlflowClientBase(ABC):
@@ -35,14 +34,18 @@ class MlflowHelper(MlflowClientBase):
         try:
             mlflow.set_tracking_uri("http://0.0.0.0:5001")
         except Exception as e:
-            raise MlflowException(f"Error while creating mlflow client: {self._host}, {e}")
+            raise MlflowException(
+                f"Error while creating mlflow client: {self._host}, {e}"
+            )
 
     def get_experiment_info(self) -> List[ExperimentEntity]:
         try:
             experiment_entity_list = self._filter_experiments_by_name()
 
             return [
-                ExperimentEntity.from_response(experiment, self.get_job_info(experiment))
+                ExperimentEntity.from_response(
+                    experiment, self.get_job_info(experiment)
+                )
                 for experiment in experiment_entity_list
             ]
         except MlflowException as e:
@@ -66,10 +69,7 @@ class MlflowHelper(MlflowClientBase):
             object: get list of job_ids for specific experiment
         """
         jobs_df = mlflow.search_runs(experiment.experiment_id)
-        return [
-            job.run_id
-            for _, job in jobs_df.iterrows()
-        ]
+        return [job.run_id for _, job in jobs_df.iterrows()]
 
     def _get_job_artifacts(self, run_id):
         """
@@ -83,19 +83,22 @@ class MlflowHelper(MlflowClientBase):
         available_artifacts = [f.path for f in self._client.list_artifacts(run_id)]
         all_job_id_artifacts = []
         for artifact in available_artifacts:
-            all_job_id_artifacts.append([f.path for f in self._client.list_artifacts(run_id, artifact)]) \
-                if self.is_folder(artifact) else all_job_id_artifacts.append(artifact)
+            all_job_id_artifacts.append(
+                [f.path for f in self._client.list_artifacts(run_id, artifact)]
+            ) if self.is_folder(artifact) else all_job_id_artifacts.append(artifact)
         return all_job_id_artifacts
 
     def is_folder(self, artifact: str) -> bool:
-        return '.' not in artifact
+        return "." not in artifact
 
     def get_job_info(self, experiment: MlFlowExperiment) -> List[Job]:
         try:
             experiment_job_list = []
             for job_id in self._get_experiment_job_id(experiment):
                 job_info = self._client.get_run(job_id)
-                experiment_job_list.append(Job.from_response(job_info, self._get_job_artifacts(job_id)))
+                experiment_job_list.append(
+                    Job.from_response(job_info, self._get_job_artifacts(job_id))
+                )
 
             return experiment_job_list
         except MlflowException as e:

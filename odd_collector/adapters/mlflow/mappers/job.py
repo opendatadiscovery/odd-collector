@@ -1,12 +1,10 @@
-from odd_models.models import DataTransformer, DataEntity, DataEntityType
+from odd_models.models import DataEntity, DataEntityType, DataTransformer
 
 from ..domain.job import Job
 from ..generator import MlFlowGenerator
 
 
-def map_job(
-        oddrn_generator: MlFlowGenerator, job: Job
-) -> DataEntity:
+def map_job(oddrn_generator: MlFlowGenerator, job: Job) -> DataEntity:
     return DataEntity(
         oddrn=job.get_oddrn(oddrn_generator),
         name=job.name,
@@ -14,7 +12,6 @@ def map_job(
         tags=None,
         type=DataEntityType.JOB,
         data_transformer=DataTransformer(
-            inputs=job.input_artifacts or [],
-            outputs=job.output_artifacts or []
-        )
+            inputs=job.input_artifacts or [], outputs=job.output_artifacts or []
+        ),
     )

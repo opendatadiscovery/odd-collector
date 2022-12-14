@@ -1,9 +1,9 @@
-from typing import List, Dict, Any, Tuple
-
-from .job import Job
-from ..generator import MlFlowGenerator
+from typing import Any, Dict, List, Tuple
 
 from mlflow.entities.experiment import Experiment
+
+from ..generator import MlFlowGenerator
+from .job import Job
 
 
 class ExperimentEntity:
@@ -16,15 +16,15 @@ class ExperimentEntity:
         creation_time: float,
         last_update_time: Tuple[float],
         artifact_location: str,
-        jobs: List[Job]
+        jobs: List[Job],
     ):
         self.name = name
         self.experiment_id = experiment_id
         self.tags = tags
         self.lifecycle_stage = lifecycle_stage
         self.creation_time = creation_time
-        self.last_update_time = last_update_time,
-        self.artifact_location = artifact_location,
+        self.last_update_time = (last_update_time,)
+        self.artifact_location = (artifact_location,)
         self.jobs: List[Job] = jobs
 
     @staticmethod
@@ -37,7 +37,7 @@ class ExperimentEntity:
             creation_time=response.creation_time,
             last_update_time=response.last_update_time,
             artifact_location=response.artifact_location,
-            jobs=jobs
+            jobs=jobs,
         )
 
     def get_oddrn(self, oddrn_generator: MlFlowGenerator):
@@ -47,9 +47,8 @@ class ExperimentEntity:
     @property
     def metadata(self) -> Dict[str, any]:
         return {
-            'experiment_id': self.experiment_id,
+            "experiment_id": self.experiment_id,
             **self.tags,
-            'lifecycle_stage': self.lifecycle_stage,
-            'artifact_location': self.artifact_location,
+            "lifecycle_stage": self.lifecycle_stage,
+            "artifact_location": self.artifact_location,
         }
-

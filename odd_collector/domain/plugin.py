@@ -209,7 +209,9 @@ class MlflowPlugin(WithHost):
     type: Literal["mlflow"]
     dev_mode: bool = False
     host: str
-    experiments: Optional[List[str]] = None  # List of pipeline names to filter, if omit fetch all pipelines
+    experiments: Optional[
+        List[str]
+    ] = None  # List of pipeline names to filter, if omit fetch all pipelines
 
 
 PLUGIN_FACTORY: PluginFactory = {

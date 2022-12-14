@@ -1,22 +1,20 @@
-from typing import Type, List
+from typing import List, Type
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntityList, DataEntity
+from odd_models.models import DataEntity, DataEntityList
 
 from odd_collector.domain.plugin import MlflowPlugin
 
+from .client import MlflowClientBase, MlflowHelper
 from .generator import MlFlowGenerator
 from .logger import logger
 from .mappers.experiment import map_experiment
 from .mappers.job import map_job
-from .client import MlflowHelper, MlflowClientBase
 
 
 class Adapter(AbstractAdapter):
     def __init__(
-            self,
-            config: MlflowPlugin,
-            client: Type[MlflowClientBase] = MlflowHelper
+        self, config: MlflowPlugin, client: Type[MlflowClientBase] = MlflowHelper
     ):
         self.config = config
         self.repo = client(config)
@@ -40,9 +38,12 @@ class Adapter(AbstractAdapter):
             job_entities = [map_job(self.generator, single_job) for single_job in jobs]
 
             jobs_entities.extend(job_entities)
-            experiment_entity = map_experiment(self.generator, single_experiment, [job.oddrn for job in job_entities])
+            experiment_entity = map_experiment(
+                self.generator, single_experiment, [job.oddrn for job in job_entities]
+            )
             experiments_entities.append(experiment_entity)
 
         return DataEntityList(
-                data_source_oddrn=self.get_data_source_oddrn(),
-                items=[*experiments_entities, *jobs_entities])
+            data_source_oddrn=self.get_data_source_oddrn(),
+            items=[*experiments_entities, *jobs_entities],
+        )

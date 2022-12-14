@@ -20,7 +20,7 @@ class Job:
         tags: str,
         artifacts: list,
         input_artifacts: list,
-        output_artifacts: list
+        output_artifacts: list,
     ):
         self.name = name
         self.experiment_id = experiment_id
@@ -38,8 +38,8 @@ class Job:
 
     @staticmethod
     def from_response(job: Run, artifacts: list):
-        input_artifacts = job.data.params.get('input_artifacts', [])
-        output_artifacts = job.data.params.get('output_artifacts', [])
+        input_artifacts = job.data.params.get("input_artifacts", [])
+        output_artifacts = job.data.params.get("output_artifacts", [])
 
         return Job(
             name=job.info.run_name,
@@ -54,10 +54,9 @@ class Job:
             tags=job.data.tags,
             artifacts=artifacts,
             input_artifacts=input_artifacts,
-            output_artifacts=output_artifacts
+            output_artifacts=output_artifacts,
         )
 
     def get_oddrn(self, oddrn_generator: MlFlowGenerator):
         oddrn_generator.get_oddrn_by_path("jobs", self.run_id)
         return oddrn_generator.get_oddrn_by_path("jobs")
-
