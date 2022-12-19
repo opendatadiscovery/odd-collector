@@ -76,7 +76,4 @@ class Adapter(AbstractAdapter):
             ),
         )
 
-        with open("mlflow.json", "w") as file:
-            file.write(items.json())
-
         return items

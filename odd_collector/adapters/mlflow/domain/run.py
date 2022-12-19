@@ -56,7 +56,6 @@ class Run:
 
     @property
     def metadata(self) -> Dict[str, Any]:
-        breakpoint()
         return {
             "run_id": self.run_id,
             "status": self.status,
