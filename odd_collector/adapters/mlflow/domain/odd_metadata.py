@@ -5,4 +5,4 @@ import pydantic
 
 class OddMetadata(pydantic.BaseModel):
     inputs: Optional[List[str]] = []
-    outputs: Optional[List[str]]  = []
+    outputs: Optional[List[str]] = []

@@ -4,8 +4,10 @@ from typing import Any, Dict, List, Optional
 
 from mlflow.entities.model_registry import RegisteredModel
 
-from ..domain.model_version import ModelVersion
 from odd_collector.helpers.datetime_from_ms import datetime_from_milliseconds
+
+from ..domain.model_version import ModelVersion
+
 
 @dataclass
 class Model:
@@ -20,10 +22,10 @@ class Model:
     def from_mlflow(cls, model: RegisteredModel) -> "Model":
         return cls(
             name=model.name,
-            created_at= datetime_from_milliseconds(model.creation_timestamp),
+            created_at=datetime_from_milliseconds(model.creation_timestamp),
             updated_at=datetime_from_milliseconds(model.last_updated_timestamp),
             description=model.description,
-            tags={tag.key: tag.value for tag in model.tags or []}
+            tags={tag.key: tag.value for tag in model.tags or []},
         )
 
     @property

@@ -33,7 +33,9 @@ def map_experiment(
         oddrn=generator.get_oddrn_by_path("experiments"),
         name=experiment.name,
         created_at=experiment.creation_time.isoformat(),
-        updated_at= experiment.last_update_time.isoformat()  if experiment.last_update_time else None,
+        updated_at=experiment.last_update_time.isoformat()
+        if experiment.last_update_time
+        else None,
         metadata=[
             MetadataExtension(
                 schema_url=EXPERIMENT_SCHEMA, metadata=experiment.metadata

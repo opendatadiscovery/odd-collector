@@ -1,6 +1,7 @@
 from datetime import datetime
-import pytz
 from typing import Optional
+
+import pytz
 
 
 def datetime_from_milliseconds(ms: Optional[int]) -> Optional[datetime]:

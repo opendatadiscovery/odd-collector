@@ -14,11 +14,11 @@ from mlflow.exceptions import MlflowException
 from mlflow.store.entities import PagedList
 from odd_collector_sdk.errors import DataSourceError
 
-from .domain.odd_metadata import OddMetadata
 from ...domain.plugin import MlflowPlugin
 from .domain.experiment import Experiment
 from .domain.model import Model
 from .domain.model_version import ModelVersion
+from .domain.odd_metadata import OddMetadata
 from .domain.run import Run
 
 T = TypeVar("T", MlFlowExperiment, MlFLowRun, RegisteredModel, MlFlowModelVersion)
@@ -36,7 +36,7 @@ class MlflowClientBase(ABC):
 
 
 class Client(MlflowClientBase):
-    METADATA_FILE_NAME = 'odd_metadata.json'
+    METADATA_FILE_NAME = "odd_metadata.json"
 
     def __init__(self, config: MlflowPlugin):
         super().__init__(config)
@@ -129,7 +129,7 @@ class Client(MlflowClientBase):
         def _recursive(file_info: FileInfo) -> Iterable[FileInfo]:
             if file_info.is_dir:
                 for file_info in self._client.list_artifacts(
-                        run_id, path=file_info.path
+                    run_id, path=file_info.path
                 ):
                     yield from _recursive(file_info)
             else:
@@ -175,10 +175,12 @@ class Client(MlflowClientBase):
                 file_path = mlflow.artifacts.download_artifacts(
                     run_id=run_id,
                     artifact_path=self.METADATA_FILE_NAME,
-                    dst_path=tmp_dir
+                    dst_path=tmp_dir,
                 )
 
                 return OddMetadata.parse_file(file_path)
         except Exception as e:
-            logging.debug("Could not read metadata file odd_metadata.json", e, exc_info=True)
+            logging.debug(
+                "Could not read metadata file odd_metadata.json", e, exc_info=True
+            )
             return OddMetadata()

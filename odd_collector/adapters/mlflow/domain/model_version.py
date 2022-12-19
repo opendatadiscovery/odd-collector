@@ -3,7 +3,9 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 from mlflow.entities.model_registry import ModelVersion as MLFlowModelVersion
+
 from odd_collector.helpers.datetime_from_ms import datetime_from_milliseconds
+
 
 @dataclass
 class ModelVersion:
@@ -26,7 +28,7 @@ class ModelVersion:
         return cls(
             name=mv.name,
             version=mv.version,
-            created_at= datetime_from_milliseconds(mv.creation_timestamp),
+            created_at=datetime_from_milliseconds(mv.creation_timestamp),
             updated_at=datetime_from_milliseconds(mv.last_updated_timestamp),
             description=mv.description,
             user_id=mv.user_id,
@@ -36,7 +38,7 @@ class ModelVersion:
             run_link=mv.run_link,
             status=mv.status,
             status_message=mv.status_message,
-            tags={tag.key: tag.value for tag in mv.tags or []}
+            tags={tag.key: tag.value for tag in mv.tags or []},
         )
 
     @property
@@ -46,11 +48,11 @@ class ModelVersion:
     @property
     def metadata(self) -> Dict[str, str]:
         return {
-            'current_stage': self.current_stage,
-            'source': self.source,
-            'run_id': self.run_id,
-            'run_link': self.run_link,
-            'status': self.status,
-            'status_message': self.status_message,
-            **self.tags
+            "current_stage": self.current_stage,
+            "source": self.source,
+            "run_id": self.run_id,
+            "run_link": self.run_link,
+            "status": self.status,
+            "status_message": self.status_message,
+            **self.tags,
         }
