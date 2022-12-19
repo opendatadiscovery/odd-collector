@@ -1,0 +1,10 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+    - type: mlflow
+      name: mlflow_adapter
+      dev_mode: False
+      tracking_uri: str
+      registry_uri: str
+      filter_experiments: None  # List of pipeline names to filter, if omit fetches all pipelines

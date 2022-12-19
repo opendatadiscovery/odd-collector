@@ -207,6 +207,16 @@ class OraclePlugin(WithHost, WithPort):
     password: SecretStr
 
 
+class MlflowPlugin(BasePlugin):
+    type: Literal["mlflow"]
+    dev_mode: bool = False
+    tracking_uri: str
+    registry_uri: str
+    filter_experiments: Optional[
+        List[str]
+    ] = None  # List of pipeline names to filter, if omit fetch all pipelines
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -236,4 +246,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "odd_adapter": OddAdapterPlugin,
     "metabase": MetabasePlugin,
     "oracle": OraclePlugin,
+    "mlflow": MlflowPlugin,
 }
