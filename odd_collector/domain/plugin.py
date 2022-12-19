@@ -32,6 +32,7 @@ class PostgreSQLPlugin(DatabasePlugin):
 class OdbcPlugin(DatabasePlugin):
     type: Literal["odbc"]
     driver: str = "{ODBC Driver 17s for SQL Server}"
+    password: Optional[SecretStr]
 
 
 class MySQLPlugin(DatabasePlugin):
@@ -199,9 +200,10 @@ class OddAdapterPlugin(BasePlugin):
     data_source_oddrn: str
 
 
-class MetabasePlugin(WithHost, WithPort):
-    type: Literal["metabase"]
-    login: str
+class OraclePlugin(WithHost, WithPort):
+    user: str
+    service: str
+    type: Literal["oracle"]
     password: SecretStr
 
 
@@ -243,5 +245,6 @@ PLUGIN_FACTORY: PluginFactory = {
     "redash": RedashPlugin,
     "odd_adapter": OddAdapterPlugin,
     "metabase": MetabasePlugin,
-    "mlflow": MlflowPlugin,
+    "oracle": OraclePlugin,
+    "mlflow": MlflowPlugin
 }
