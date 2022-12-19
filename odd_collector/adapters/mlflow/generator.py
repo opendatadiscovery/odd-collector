@@ -7,12 +7,16 @@ from oddrn_generator.server_models import HostnameModel
 
 class MlflowPathsModel(BasePathsModel):
     experiments: Optional[str]
-    jobs: Optional[str]
+    runs: Optional[str]
+    models: Optional[str]
+    model_versions: Optional[str]
 
     class Config:
         dependencies_map = {
             "experiments": ("experiments",),
-            "jobs": ("experiments", "jobs"),
+            "runs": ("experiments", "runs"),
+            "models": ("models",),
+            "model_versions": ("models", "model_versions"),
         }
 
 

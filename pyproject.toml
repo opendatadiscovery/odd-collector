@@ -38,6 +38,8 @@ oddrn-generator = "^0.1.57"
 snowflake-connector-python = "2.8.1"
 odd-collector-sdk = "0.3.6"
 mlflow = "^2.0.1"
+flatdict = "^4.0.1"
+boto3 = "^1.26.32"
 
 [tool.isort]
 profile = "black"
