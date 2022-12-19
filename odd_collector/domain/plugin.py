@@ -246,5 +246,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "odd_adapter": OddAdapterPlugin,
     "metabase": MetabasePlugin,
     "oracle": OraclePlugin,
-    "mlflow": MlflowPlugin
+    "mlflow": MlflowPlugin,
 }
