@@ -18,7 +18,7 @@ def map_tables(tables: List[Table], columns: List[Column], generator: MssqlGener
         yield map_table(table, cols, generator)
 
 
-def map_table(table: Table, columns: List[Column], generator: MssqlGenerator):
+def map_table(table: Table, generator: MssqlGenerator):
     """Map Table to DataEntity"""
     schema: str = table.table_schema
     name: str = table.table_name
@@ -27,7 +27,7 @@ def map_table(table: Table, columns: List[Column], generator: MssqlGenerator):
     oddrn = generator.get_oddrn_by_path("tables")
 
     map_col = partial(map_column, oddrn_generator=generator, parent_oddrn_path="tables")
-    dataset = DataSet(field_list=lmap(map_col, columns))
+    dataset = DataSet(field_list=lmap(map_col, table.columns))
 
     metadata = map_metadata(table)
 

@@ -1,30 +1,14 @@
-from collections import defaultdict
-from typing import List
+from typing import Dict, Set
 
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import MssqlGenerator
 
-from ..models import Table, View
-
 
 def map_schemas(
-    tables: List[Table],
-    views: List[View],
+    value: Dict[str, Set[str]],
     generator: MssqlGenerator,
 ):
-    schemas = defaultdict(set)
-
-    for table in tables:
-        schema_name = table.table_schema
-        generator.set_oddrn_paths(schemas=schema_name, tables=table.table_name)
-        schemas[schema_name].add(generator.get_oddrn_by_path("tables"))
-
-    for view in views:
-        schema_name = view.view_schema
-        generator.set_oddrn_paths(schemas=schema_name, views=view.view_name)
-        schemas[schema_name].add(generator.get_oddrn_by_path("views"))
-
-    for schema_name, values in schemas.items():
+    for schema_name, values in value.items():
         oddrn = generator.get_oddrn_by_path("schemas", schema_name)
 
         yield DataEntity(

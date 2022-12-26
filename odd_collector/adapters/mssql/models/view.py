@@ -1,5 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List
+
+from odd_collector.adapters.mssql.models.column import Column
 
 
 @dataclass
@@ -16,6 +18,7 @@ class View:
     view_schema: str
     view_name: str
     view_dependencies: List[ViewDependency]
+    columns: List[Column] = field(default_factory=list)
 
     @property
     def metadata(self) -> Dict[str, str]:

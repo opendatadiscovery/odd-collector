@@ -1,18 +1,13 @@
 default_pulling_interval: 10
-token: <COLLECTOR_TOKEN>
+token: ""
 platform_host_url: http://localhost:8080
+chunk_size: 1000
 plugins:
-  - type: clickhouse
-    name: clickhouse_adapter
-    host: localhost
-    database: my_database
-    user: default
-    password: qwerty
-  - type: cubejs
-    name: cubejs_adapter
-    host: http://localhost:4000
-    dev_mode: true
-    predefined_datasource:
-      type: clickhouse
-      host: localhost
-      database: my_database
+  - type: mssql
+    name: mssql_adapter
+    description: "" # Optional string
+    database: <DB_NAME> # my_database
+    host: <DB_HOST> # localhost
+    port: <DB_PORT> # 1433
+    user: <USER> # sa
+    password: <PASSWORD>

@@ -1,19 +1,19 @@
-import traceback
-from typing import List
+from collections import defaultdict
+from typing import Dict, Generator, Set
 
+from funcy import lpluck_attr
 from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntity, DataEntityList
+from odd_models.models import DataEntityList
 from oddrn_generator import MssqlGenerator
 
+from odd_collector.adapters.mssql.mappers.views import map_view
 from odd_collector.domain.plugin import MSSQLPlugin
 
-from .connector import ConnectionConfig, DefaultConnector
-from .logger import logger
 from .mappers.database import map_database
 from .mappers.schemas import map_schemas
-from .mappers.tables import map_tables
-from .mappers.views import map_views
-from .models import Column, Table, View
+from .mappers.tables import map_table
+from .mappers.views import map_view
+from .repository import ConnectionConfig, DefaultConnector
 
 
 class Adapter(AbstractAdapter):
@@ -22,67 +22,57 @@ class Adapter(AbstractAdapter):
             host_settings=f"{config.host}", databases=config.database
         )
         self._cfg = config
-
-    def get_data_entity_list(self) -> DataEntityList:
-        try:
-            tables, columns, views = [], [], []
-
-            connection_cfg = ConnectionConfig(
+        self._repo = DefaultConnector(
+            ConnectionConfig(
                 server=self._cfg.host,
                 database=self._cfg.database,
                 user=self._cfg.user,
                 password=self._cfg.password,
                 port=self._cfg.port,
             )
+        )
 
-            with DefaultConnector(connection_cfg) as conn:
-                tables = conn.get_tables()
-                columns = conn.get_columns()
-                views = conn.get_views()
+    def get_data_entity_list(self) -> Generator[DataEntityList, None, None]:
+        data_source_oddrn = self.get_data_source_oddrn()
+        generator = self._generator
 
-            tables_entities = self.get_table_entities(tables, columns)
-            views_entities = self.get_views_entities(views, columns)
-            schemas_entities = self.get_schemas_entities(tables, views)
-            database_entities = self.get_database_entities(schemas_entities)
+        columns = self._repo.get_columns()
+        schemas: Dict[str, Set[str]] = defaultdict(set)
 
-            de = DataEntityList(
-                data_source_oddrn=self.get_data_source_oddrn(),
-                items=[
-                    *tables_entities,
-                    *views_entities,
-                    *schemas_entities,
-                    *database_entities,
-                ],
+        tables_data_entities = []
+        for table in self._repo.get_tables():
+            table.columns = columns.get_columns_for(
+                table.table_catalog, table.table_schema, table.table_name
             )
+            table_data_entity = map_table(table, generator)
 
-            return de
-        except Exception as err:
-            logger.debug(traceback.format_exc())
-            raise err
+            tables_data_entities.append(table_data_entity)
+            schemas[table.table_schema].add(table_data_entity.oddrn)
+
+        views_data_entities = []
+        for view in self._repo.get_views():
+            view.columns = columns.get_columns_for(
+                view.view_catalog, view.view_schema, view.view_name
+            )
+            view_data_entity = map_view(view, generator)
+
+            views_data_entities.append(view_data_entity)
+            schemas[view.view_schema].add(view_data_entity.oddrn)
+
+        schema_entities = list(map_schemas(schemas, generator))
+        database_entity = map_database(
+            self._cfg.database, lpluck_attr("oddrn", schema_entities), generator
+        )
+
+        return DataEntityList(
+            data_source_oddrn=data_source_oddrn,
+            items=[
+                *tables_data_entities,
+                *views_data_entities,
+                *schema_entities,
+                database_entity,
+            ],
+        )
 
     def get_data_source_oddrn(self) -> str:
         return self._generator.get_data_source_oddrn()
-
-    def get_views_entities(self, views, columns) -> List[DataEntity]:
-        return list(map_views(views, columns, self._generator))
-
-    def get_table_entities(
-        self, tables: List[Table], columns: List[Column]
-    ) -> List[DataEntity]:
-        return list(map_tables(tables, columns, self._generator))
-
-    def get_schemas_entities(
-        self, tables: List[Table], views: List[View]
-    ) -> List[DataEntity]:
-        return list(map_schemas(tables, views, self._generator))
-
-    def get_database_entities(
-        self, schema_entities: List[DataEntity]
-    ) -> List[DataEntity]:
-        return [
-            map_database(
-                self._cfg.database,
-                [de.oddrn for de in schema_entities],
-                self._generator,
-            )
-        ]
