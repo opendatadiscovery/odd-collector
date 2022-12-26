@@ -25,7 +25,6 @@ mlflow = "2.0.1"
 neo4j = "4.3.7"
 oracledb = "1.2.1"
 oddrn-generator = "^0.1.57"
-odd-collector-sdk = "^0.3.6"
 odd-models = "2.0.10"
 psycopg2-binary = "2.9.3"
 python = "^3.9.1"
@@ -42,6 +41,8 @@ tableauserverclient = "0.19.0"
 tarantool = "0.8.0"
 trino = "0.315.0"
 vertica-python = "1.1.1"
+odd-collector-sdk = {path = "../odd-collector-sdk", develop = true}
+pyaml-env = "^1.2.1"
 
 [tool.isort]
 profile = "black"
