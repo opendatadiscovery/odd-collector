@@ -1,74 +1,80 @@
-import logging
+from typing import List, Optional, Tuple, Type
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity, DataEntityList
-from oddrn_generator import SnowflakeGenerator
-from snowflake import connector
 
-from .mappers import _columns_select, _tables_select
-from .mappers.tables import map_table
+from odd_collector.domain.plugin import SnowflakePlugin
+
+from .client import SnowflakeClient, SnowflakeClientBase
+from .domain import Table
+from .generator import SnowflakeGenerator
+from .map import map_database, map_schemas, map_table, map_view
 
 
 class Adapter(AbstractAdapter):
-    __connection = None
-    __cursor = None
+    def __init__(
+        self,
+        config: SnowflakePlugin,
+        client: Optional[Type[SnowflakeClientBase]] = SnowflakeClient,
+    ):
+        self._client = client(config)
+        self._config = config
 
-    def __init__(self, config):
-        self.__database = config.database
-        self.__user = config.user
-        self.__password = config.password
-        self.__account = config.account
-        self.__warehouse = config.warehouse
-        self.__oddrn_generator = SnowflakeGenerator(
-            host_settings=f"{self.__account}.snowflakecomputing.com",
-            warehouses=self.__warehouse,
-            databases=self.__database,
-        )
-
-    def get_data_entity_list(self) -> DataEntityList:
-        return DataEntityList(
-            data_source_oddrn=self.get_data_source_oddrn(),
-            items=self.get_data_entities(),
+        self._generator = SnowflakeGenerator(
+            host_settings=config.host,
+            databases=config.database,
         )
 
     def get_data_source_oddrn(self) -> str:
-        return self.__oddrn_generator.get_data_source_oddrn()
+        return self._generator.get_data_source_oddrn()
 
-    def get_data_entities(self) -> list[DataEntity]:
+    def get_data_entity_list(self) -> DataEntityList:
+        db_name = self._config.database
+        tables = self._client.get_tables()
+
+        tables_with_data_entities: List[
+            Tuple[Table, DataEntity]
+        ] = self._get_tables_entities(tables)
+
         try:
-            self.__connect()
+            tables_entities = [
+                table_with_entity[1] for table_with_entity in tables_with_data_entities
+            ]
+            schemas_entities = self._get_schemas_entities(tables_with_data_entities)
+            database_entity: DataEntity = self._get_database_entity(
+                db_name, schemas_entities
+            )
 
-            tables = self.__execute(_tables_select)
-            columns = self.__execute(_columns_select)
+            all_entities = [*tables_entities, *schemas_entities, database_entity]
 
-            return map_table(self.__oddrn_generator, tables, columns)
+            dels = DataEntityList(
+                data_source_oddrn=self.get_data_source_oddrn(), items=all_entities
+            )
+            return dels
+
         except Exception as e:
-            logging.error("Failed to load metadata for tables")
-            logging.exception(e)
-        finally:
-            self.__disconnect()
-        return []
+            raise MappingDataError("Error during mapping") from e
 
-    def __execute(self, query: str) -> list[tuple]:
-        self.__cursor.execute(query)
-        return self.__cursor.fetchall()
+    def _get_tables_entities(
+        self, tables: List[Table]
+    ) -> List[Tuple[Table, DataEntity]]:
+        result = []
 
-    def __connect(self):
-        self.__connection = connector.connect(
-            user=self.__user, password=self.__password, account=self.__account
-        )
-        self.__cursor = self.__connection.cursor().execute(
-            f"USE DATABASE {self.__database}"
-        )
+        for table in tables:
+            if table.table_type == "VIEW":
+                result.append((table, map_view(table, self._generator)))
+            else:
+                result.append((table, map_table(table, self._generator)))
 
-    def __disconnect(self):
-        try:
-            if self.__cursor:
-                self.__cursor.close()
-        except Exception as e:
-            logging.exception(e)
-        try:
-            if self.__connection:
-                self.__connection.close()
-        except Exception as e:
-            logging.exception(e)
+        return result
+
+    def _get_schemas_entities(
+        self, tables_with_entities: List[Tuple[Table, DataEntity]]
+    ) -> List[DataEntity]:
+        return map_schemas(tables_with_entities, self._generator)
+
+    def _get_database_entity(
+        self, database_name: str, schemas: List[DataEntity]
+    ) -> DataEntity:
+        return map_database(database_name, schemas, self._generator)

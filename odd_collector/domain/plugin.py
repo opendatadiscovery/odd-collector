@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import List, Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
@@ -32,6 +32,7 @@ class PostgreSQLPlugin(DatabasePlugin):
 class OdbcPlugin(DatabasePlugin):
     type: Literal["odbc"]
     driver: str = "{ODBC Driver 17s for SQL Server}"
+    password: Optional[SecretStr]
 
 
 class MySQLPlugin(DatabasePlugin):
@@ -41,7 +42,8 @@ class MySQLPlugin(DatabasePlugin):
 
 class MSSQLPlugin(DatabasePlugin):
     type: Literal["mssql"]
-    driver: str
+    password: SecretStr
+    port: str = 1433
 
 
 class ClickhousePlugin(DatabasePlugin):
@@ -51,6 +53,8 @@ class ClickhousePlugin(DatabasePlugin):
 
 class RedshiftPlugin(DatabasePlugin):
     type: Literal["redshift"]
+    schemas: Optional[List[str]] = None
+    password: SecretStr
 
 
 class MongoDBPlugin(DatabasePlugin):
@@ -68,8 +72,10 @@ class KafkaPlugin(BasePlugin):
 
 class SnowflakePlugin(DatabasePlugin):
     type: Literal["snowflake"]
-    account: str
-    warehouse: str
+    port: Optional[str] = None
+    password: SecretStr
+    account: Optional[str]
+    warehouse: str  # active warehouse
 
 
 class HivePlugin(WithHost, WithPort):
@@ -127,8 +133,27 @@ class TableauPlugin(BasePlugin):
     pagination_size: int = 10
 
 
+class DruidPlugin(BasePlugin):
+    type: Literal["druid"]
+    host: str
+    port: int
+
+
 class VerticaPlugin(DatabasePlugin):
     type: Literal["vertica"]
+
+
+class SupersetPlugin(BasePlugin):
+    type: Literal["superset"]
+    server: str
+    username: str
+    password: str
+
+
+class RedashPlugin(BasePlugin):
+    type: Literal["redash"]
+    server: str
+    api_key: str
 
 
 class CubeJSPlugin(BasePlugin):
@@ -144,6 +169,12 @@ class CubeJSPlugin(BasePlugin):
             raise ValueError("Token must be set in production mode")
 
         return value
+
+
+class MetabasePlugin(WithHost, WithPort):
+    type: Literal["metabase"]
+    login: str
+    password: SecretStr
 
 
 class PrestoPlugin(BasePlugin):
@@ -167,6 +198,23 @@ class OddAdapterPlugin(BasePlugin):
     type: Literal["odd_adapter"]
     host: str
     data_source_oddrn: str
+
+
+class OraclePlugin(WithHost, WithPort):
+    user: str
+    service: str
+    type: Literal["oracle"]
+    password: SecretStr
+
+
+class MlflowPlugin(BasePlugin):
+    type: Literal["mlflow"]
+    dev_mode: bool = False
+    tracking_uri: str
+    registry_uri: str
+    filter_experiments: Optional[
+        List[str]
+    ] = None  # List of pipeline names to filter, if omit fetch all pipelines
 
 
 class AirbytePlugin(WithHost, WithPort):
@@ -199,6 +247,12 @@ PLUGIN_FACTORY: PluginFactory = {
     "presto": PrestoPlugin,
     "trino": TrinoPlugin,
     "vertica": VerticaPlugin,
+    "druid": DruidPlugin,
+    "superset": SupersetPlugin,
+    "redash": RedashPlugin,
     "odd_adapter": OddAdapterPlugin,
+    "metabase": MetabasePlugin,
+    "oracle": OraclePlugin,
+    "mlflow": MlflowPlugin,
     "airbyte": AirbytePlugin,
 }

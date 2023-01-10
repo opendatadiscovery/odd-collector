@@ -10,3 +10,4 @@ plugins:
     port: 0000
     user: user
     password: password
+    schemas: ['some_schema_name'] # Optional List[str], when ommitted parse all schemas (except system schemas)

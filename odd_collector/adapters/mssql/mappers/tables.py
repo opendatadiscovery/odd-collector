@@ -1,75 +1,40 @@
-from odd_models.models import DataEntity, DataEntityType, DataSet, MetadataExtension
+from functools import partial
+from typing import List
+
+from funcy import group_by, lmap
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import MssqlGenerator
 
-from . import (
-    ColumnMetadataNamedtuple,
-    MetadataNamedtuple,
-    _data_set_metadata_schema_url,
-)
+from ..models import Column, Table
 from .columns import map_column
-from .types import TABLE_TYPES_SQL_TO_ODD
-from .views import extract_transformer_data
+from .metadata import map_metadata
 
 
-def map_table(
-    oddrn_generator: MssqlGenerator, tables: list[tuple], columns: list[tuple]
-) -> list[DataEntity]:
-    data_entities: list[DataEntity] = []
-    column_index: int = 0
-
+def map_tables(tables: List[Table], columns: List[Column], generator: MssqlGenerator):
+    """Map list of Table to DataEntities"""
+    cols_by_table = group_by(lambda col: col.table_name, columns)
     for table in tables:
-        metadata: MetadataNamedtuple = MetadataNamedtuple(*table)
-        data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
-            metadata.table_type, DataEntityType.UNKNOWN
-        )
-        oddrn_path = "views" if data_entity_type == DataEntityType.VIEW else "tables"
+        cols = cols_by_table.get(table.table_name)
+        yield map_table(table, cols, generator)
 
-        table_schema: str = metadata.table_schema
-        table_name: str = metadata.table_name
 
-        oddrn_generator.set_oddrn_paths(
-            **{"schemas": table_schema, oddrn_path: table_name}
-        )
+def map_table(table: Table, generator: MssqlGenerator):
+    """Map Table to DataEntity"""
+    schema: str = table.table_schema
+    name: str = table.table_name
+    generator.set_oddrn_paths(**{"schemas": schema, "tables": name})
 
-        data_entity: DataEntity = DataEntity(
-            oddrn=oddrn_generator.get_oddrn_by_path(oddrn_path),
-            name=table_name,
-            type=data_entity_type,
-            owner=oddrn_generator.get_oddrn_by_path("schemas"),
-            metadata=[
-                MetadataExtension(
-                    schema_url=_data_set_metadata_schema_url,
-                    metadata=metadata._asdict(),
-                )
-            ],
-        )
-        data_entities.append(data_entity)
+    oddrn = generator.get_oddrn_by_path("tables")
 
-        data_entity.dataset = DataSet(description=None, field_list=[])
+    map_col = partial(map_column, oddrn_generator=generator, parent_oddrn_path="tables")
+    dataset = DataSet(field_list=lmap(map_col, table.columns))
 
-        # DataTransformer
-        if data_entity_type == DataEntityType.VIEW:
-            data_entity.data_transformer = extract_transformer_data(
-                metadata.view_definition, oddrn_generator
-            )
+    metadata = map_metadata(table)
 
-        while column_index < len(columns):
-            column: tuple = columns[column_index]
-            column_metadata: ColumnMetadataNamedtuple = ColumnMetadataNamedtuple(
-                *column
-            )
-
-            if (
-                column_metadata.table_schema == table_schema
-                and column_metadata.table_name == table_name
-            ):
-                data_entity.dataset.field_list.append(
-                    map_column(
-                        column_metadata, oddrn_generator, data_entity.owner, oddrn_path
-                    )
-                )
-                column_index += 1
-            else:
-                break
-
-    return data_entities
+    return DataEntity(
+        oddrn=oddrn,
+        name=name,
+        type=DataEntityType.TABLE,
+        metadata=metadata,
+        dataset=dataset,
+    )
