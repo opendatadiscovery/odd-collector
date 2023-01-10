@@ -10,7 +10,12 @@ from .mappers.oddrn import filter_dataset_oddrn, generate_deg_oddrn
 
 class Adapter(AbstractAdapter):
     def __init__(self, config: AirbytePlugin) -> None:
-        self.__airbyte_api = AirbyteApi(host=config.host, port=config.port, user=config.user, password=config.password)
+        self.__airbyte_api = AirbyteApi(
+            host=config.host,
+            port=config.port,
+            user=config.user,
+            password=config.password,
+        )
         self.__odd_api = OddPlatformApi(host_url=config.platform_host_url)
         self.__oddrn_generator = AirbyteGenerator(host_settings=config.host)
 
@@ -46,7 +51,7 @@ class Adapter(AbstractAdapter):
         ]
 
     async def __get_dataset_oddrns(
-            self, is_source: bool, dataset_id: str, connection: dict
+        self, is_source: bool, dataset_id: str, connection: dict
     ) -> list[Optional[str]]:
         dataset_meta = await self.__airbyte_api.get_dataset_definition(
             is_source, dataset_id

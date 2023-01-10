@@ -36,9 +36,9 @@ class AirbyteApi:
                     workspaces_dict = {"workspaceId": workspace_id}
                     request_body = json.dumps(workspaces_dict)
                     async with session.post(
-                            "/api/v1/connections/list",
-                            data=request_body,
-                            headers=self.__headers,
+                        "/api/v1/connections/list",
+                        data=request_body,
+                        headers=self.__headers,
                     ) as resp:
                         result = await resp.json()
                         connections.extend(result["connections"])
@@ -55,7 +55,7 @@ class AirbyteApi:
             try:
                 request_body = json.dumps(body)
                 async with session.post(
-                        url, data=request_body, headers=self.__headers
+                    url, data=request_body, headers=self.__headers
                 ) as resp:
                     result = await resp.json()
                     return result
@@ -78,7 +78,7 @@ class OddPlatformApi:
         async with aiohttp.ClientSession(self.__base_url) as session:
             try:
                 async with session.get(
-                        "/ingestion/entities/degs/children", params=params
+                    "/ingestion/entities/degs/children", params=params
                 ) as resp:
                     result = await resp.json()
                     for item in result["items"]:
