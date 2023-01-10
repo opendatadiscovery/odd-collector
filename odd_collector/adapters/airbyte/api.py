@@ -81,7 +81,6 @@ class OddPlatformApi:
                         "/ingestion/entities/degs/children", params=params
                 ) as resp:
                     result = await resp.json()
-                    logger.info(f"Result: {result}")
                     for item in result["items"]:
                         entities.append(item["oddrn"])
                     return entities
