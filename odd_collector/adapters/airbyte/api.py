@@ -9,15 +9,16 @@ class AirbyteApi:
     Class intended for retrieving data from Airbyte API
     """
 
-    def __init__(self, host: str, port: str) -> None:
+    def __init__(self, host: str, port: str, user: str, password: str) -> None:
         self.__base_url = f"http://{host}:{port}"
         self.__headers = {
             "Content-type": "application/json",
             "Accept": "application/json",
         }
+        self.__auth = aiohttp.BasicAuth(login=user, password=password)
 
     async def get_workspaces(self) -> List[str]:
-        async with aiohttp.ClientSession(self.__base_url) as session:
+        async with aiohttp.ClientSession(self.__base_url, auth=self.__auth) as session:
             try:
                 async with session.post("/api/v1/workspaces/list") as resp:
                     result = await resp.json()
@@ -29,15 +30,15 @@ class AirbyteApi:
 
     async def get_connections(self, workspace_ids: List[str]) -> List[dict]:
         connections = []
-        async with aiohttp.ClientSession(self.__base_url) as session:
+        async with aiohttp.ClientSession(self.__base_url, auth=self.__auth) as session:
             try:
                 for workspace_id in workspace_ids:
                     workspaces_dict = {"workspaceId": workspace_id}
                     request_body = json.dumps(workspaces_dict)
                     async with session.post(
-                        "/api/v1/connections/list",
-                        data=request_body,
-                        headers=self.__headers,
+                            "/api/v1/connections/list",
+                            data=request_body,
+                            headers=self.__headers,
                     ) as resp:
                         result = await resp.json()
                         connections.extend(result["connections"])
@@ -50,11 +51,11 @@ class AirbyteApi:
         field_name = "sourceId" if is_source else "destinationId"
         body = {field_name: dataset_id}
         url = "/api/v1/sources/get" if is_source else "/api/v1/destinations/get"
-        async with aiohttp.ClientSession(self.__base_url) as session:
+        async with aiohttp.ClientSession(self.__base_url, auth=self.__auth) as session:
             try:
                 request_body = json.dumps(body)
                 async with session.post(
-                    url, data=request_body, headers=self.__headers
+                        url, data=request_body, headers=self.__headers
                 ) as resp:
                     result = await resp.json()
                     return result
@@ -72,14 +73,15 @@ class OddPlatformApi:
         self.__base_url = host_url
 
     async def get_data_entities_oddrns(self, deg_oddrn: str) -> List[Optional[str]]:
-        params = {"deg_oddrn": deg_oddrn}
+        params = {"oddrn": deg_oddrn}
         entities = []
         async with aiohttp.ClientSession(self.__base_url) as session:
             try:
                 async with session.get(
-                    "/ingestion/dataentities", params=params
+                        "/ingestion/entities/degs/children", params=params
                 ) as resp:
                     result = await resp.json()
+                    logger.info(f"Result: {result}")
                     for item in result["items"]:
                         entities.append(item["oddrn"])
                     return entities
