@@ -42,7 +42,7 @@ tarantool = "0.8.0"
 trino = "0.315.0"
 vertica-python = "1.1.1"
 pyaml-env = "^1.2.1"
-odd-collector-sdk = "0.3.8"
+odd-collector-sdk = "0.3.10"
 
 [tool.isort]
 profile = "black"
