@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Tuple, Union
 from cassandra.util import OrderedMapSerializedKey, SortedSet
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
 
-from ..cassandra_generator import CassandraGenerator
+from oddrn_generator import CassandraGenerator
 from . import (
     ColumnMetadata,
     TableMetadata,

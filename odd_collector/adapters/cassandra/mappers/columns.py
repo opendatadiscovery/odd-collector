@@ -2,7 +2,7 @@ from typing import Union
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
 
-from ..cassandra_generator import CassandraGenerator
+from oddrn_generator import CassandraGenerator
 from . import (
     ColumnMetadata,
     _data_set_field_metadata_excluded_keys,
@@ -43,6 +43,8 @@ def map_column(
             logical_type=data_type,
             is_nullable=column_metadata.kind != "partition_key",
         ),
+        is_primary_key=column_metadata.kind in ["partition_key", "clustering"],
+        is_sort_key=column_metadata.kind == "clustering"
     )
 
     return dsf
