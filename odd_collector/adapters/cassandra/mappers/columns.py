@@ -44,7 +44,7 @@ def map_column(
             is_nullable=column_metadata.kind != "partition_key",
         ),
         is_primary_key=column_metadata.kind in ["partition_key", "clustering"],
-        is_sort_key=column_metadata.kind == "clustering"
+        is_sort_key=column_metadata.kind == "clustering",
     )
 
     return dsf
