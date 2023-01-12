@@ -50,31 +50,47 @@ WHERE table_type != 'VIEW'
 ORDER BY table_catalog, table_schema, table_name;"""
 
 COLUMNS_QUERY: str = """
+WITH primary_keys as (
+    SELECT KU.table_catalog, KU.table_schema, KU.table_name, KU.column_name 
+    FROM information_schema.table_constraints AS TC 
+    INNER JOIN information_schema.key_column_usage AS KU
+    ON TC.constraint_name = KU.constraint_name
+    AND TC.constraint_type  = 'PRIMARY KEY'
+)
 SELECT
-    table_catalog,
-    table_schema,
-    table_name,
-    column_name,
-    ordinal_position,
-    column_default,
-    is_nullable,
-    data_type,
-    character_maximum_length,
-    character_octet_length,
-    numeric_precision,
-    numeric_precision_radix,
-    numeric_scale,
-    datetime_precision,
-    character_set_catalog,
-    character_set_schema,
-    character_set_name,
-    collation_catalog,
-    collation_schema,
-    collation_name,
-    domain_catalog,
-    domain_schema,
-    domain_name
-FROM information_schema.columns
+    C.table_catalog,
+    C.table_schema,
+    C.table_name,
+    C.column_name,
+    C.ordinal_position,
+    C.column_default,
+    C.is_nullable,
+    CASE
+        WHEN PK.column_name IS NOT NULL THEN 1
+    ELSE 0
+    END AS is_primary_key,
+    C.data_type,
+    C.character_maximum_length,
+    C.character_octet_length,
+    C.numeric_precision,
+    C.numeric_precision_radix,
+    C.numeric_scale,
+    C.datetime_precision,
+    C.character_set_catalog,
+    C.character_set_schema,
+    C.character_set_name,
+    C.collation_catalog,
+    C.collation_schema,
+    C.collation_name,
+    C.domain_catalog,
+    C.domain_schema,
+    C.domain_name
+FROM information_schema.columns as C
+LEFT JOIN primary_keys as PK
+ON  C.table_catalog = PK.table_catalog
+AND C.table_schema = PK.table_schema
+AND C.table_name = PK.table_name
+AND C.column_name = PK.column_name
 ORDER BY table_catalog, table_schema, table_name, ordinal_position
 """
 
