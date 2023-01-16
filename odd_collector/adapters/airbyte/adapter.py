@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_collector.domain.plugin import AirbytePlugin
@@ -5,7 +6,7 @@ from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import AirbyteGenerator
 from .api import AirbyteApi, OddPlatformApi
 from .mappers.connections import map_connection
-from .mappers.oddrn import filter_dataset_oddrn, generate_deg_oddrn
+from .mappers.oddrn import filter_dataset_oddrn, generate_dataset_oddrn
 
 
 class Adapter(AbstractAdapter):
@@ -45,6 +46,8 @@ class Adapter(AbstractAdapter):
             )
 
             connections_data.append((connection, input_oddrns, output_oddrns))
+            logging.info(f"INPUT DATA: {input_oddrns}")
+            logging.info(f"OUTPUT DATA: {output_oddrns}")
 
         return [
             map_connection(data, self.__oddrn_generator) for data in connections_data
@@ -56,6 +59,7 @@ class Adapter(AbstractAdapter):
         dataset_meta = await self.__airbyte_api.get_dataset_definition(
             is_source, dataset_id
         )
-        deg_oddrn = generate_deg_oddrn(is_source, dataset_meta)
+        deg_oddrn = generate_dataset_oddrn(is_source, dataset_meta)
         dataset_oddrns = await self.__odd_api.get_data_entities_oddrns(deg_oddrn)
+        logging.info(f"DATASET_ODDRNS: {dataset_oddrns}")
         return filter_dataset_oddrn(connection, dataset_oddrns)

@@ -50,6 +50,7 @@ class AirbyteApi:
     async def get_dataset_definition(self, is_source: bool, dataset_id: str) -> dict:
         field_name = "sourceId" if is_source else "destinationId"
         body = {field_name: dataset_id}
+        # logger.info(f"REQUEST BODY: {body}")
         url = "/api/v1/sources/get" if is_source else "/api/v1/destinations/get"
         async with aiohttp.ClientSession(self.__base_url, auth=self.__auth) as session:
             try:
@@ -59,8 +60,8 @@ class AirbyteApi:
                 ) as resp:
                     result = await resp.json()
                     return result
-            except TypeError:
-                logger.warning("Dataset endpoint response is not returned")
+            except TypeError as e:
+                logger.warning(f"Dataset endpoint response is not returned. {e}")
                 return {}
 
 
@@ -73,17 +74,24 @@ class OddPlatformApi:
         self.__base_url = host_url
 
     async def get_data_entities_oddrns(self, deg_oddrn: str) -> List[Optional[str]]:
+        url = "/ingestion/entities/degs/children"
         params = {"oddrn": deg_oddrn}
         entities = []
         async with aiohttp.ClientSession(self.__base_url) as session:
             try:
                 async with session.get(
-                    "/ingestion/entities/degs/children", params=params
+                    url=url, params=params
                 ) as resp:
                     result = await resp.json()
-                    for item in result["items"]:
-                        entities.append(item["oddrn"])
-                    return entities
-            except TypeError:
-                logger.warning("Dataset endpoint response is not returned")
+                    logger.info(f"RESPONSE: {result}")
+                    if result["items"][0]["type"] == "DATABASE_SERVICE":
+                        oddrn = result["items"][0]["oddrn"]
+                        return await self.get_data_entities_oddrns(oddrn)
+                    else:
+                        for item in result["items"]:
+                            entities.append(item["oddrn"])
+                        logger.info(f"Result entities: {entities}")
+                        return entities
+            except TypeError as e:
+                logger.warning(f"Dataset endpoint response is not returned. {e}")
                 return entities

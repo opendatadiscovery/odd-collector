@@ -119,9 +119,7 @@ def map_connection(
             "sourceCatalogId": "b524ea8e-ec73-4bba-b5a5-ba162e5e23f5"
         }
     """
-    connection_meta = conn_data[0]
-    inputs = conn_data[1]
-    outputs = conn_data[2]
+    connection_meta, inputs, outputs = conn_data
     conn_id = connection_meta.get("connectionId")
     name = connection_meta.get("name")
 
