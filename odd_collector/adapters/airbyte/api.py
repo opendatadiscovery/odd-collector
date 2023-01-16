@@ -18,9 +18,10 @@ class AirbyteApi:
         self.__auth = aiohttp.BasicAuth(login=user, password=password)
 
     async def get_workspaces(self) -> List[str]:
+        url = "/api/v1/workspaces/list"
         async with aiohttp.ClientSession(self.__base_url, auth=self.__auth) as session:
             try:
-                async with session.post("/api/v1/workspaces/list") as resp:
+                async with session.post(url) as resp:
                     result = await resp.json()
                     workspaces = result["workspaces"]
                 return [workspace["workspaceId"] for workspace in workspaces]
@@ -29,6 +30,7 @@ class AirbyteApi:
                 return []
 
     async def get_connections(self, workspace_ids: List[str]) -> List[dict]:
+        url = "/api/v1/connections/list"
         connections = []
         async with aiohttp.ClientSession(self.__base_url, auth=self.__auth) as session:
             try:
@@ -36,9 +38,7 @@ class AirbyteApi:
                     workspaces_dict = {"workspaceId": workspace_id}
                     request_body = json.dumps(workspaces_dict)
                     async with session.post(
-                        "/api/v1/connections/list",
-                        data=request_body,
-                        headers=self.__headers,
+                        url, data=request_body, headers=self.__headers
                     ) as resp:
                         result = await resp.json()
                         connections.extend(result["connections"])
@@ -48,10 +48,9 @@ class AirbyteApi:
                 return []
 
     async def get_dataset_definition(self, is_source: bool, dataset_id: str) -> dict:
+        url = "/api/v1/sources/get" if is_source else "/api/v1/destinations/get"
         field_name = "sourceId" if is_source else "destinationId"
         body = {field_name: dataset_id}
-        # logger.info(f"REQUEST BODY: {body}")
-        url = "/api/v1/sources/get" if is_source else "/api/v1/destinations/get"
         async with aiohttp.ClientSession(self.__base_url, auth=self.__auth) as session:
             try:
                 request_body = json.dumps(body)
@@ -79,17 +78,16 @@ class OddPlatformApi:
         entities = []
         async with aiohttp.ClientSession(self.__base_url) as session:
             try:
-                async with session.get(url=url, params=params) as resp:
+                async with session.get(url, params=params) as resp:
                     result = await resp.json()
-                    logger.info(f"RESPONSE: {result}")
-                    if result["items"][0]["type"] == "DATABASE_SERVICE":
-                        oddrn = result["items"][0]["oddrn"]
-                        return await self.get_data_entities_oddrns(oddrn)
-                    else:
-                        for item in result["items"]:
+                    logger.info(f"ODD_API response: {result}")
+                    for item in result["items"]:
+                        if item["type"] == "DATABASE_SERVICE":
+                            oddrn = item["oddrn"]
+                            return await self.get_data_entities_oddrns(oddrn)
+                        else:
                             entities.append(item["oddrn"])
-                        logger.info(f"Result entities: {entities}")
-                        return entities
+                    return entities
             except TypeError as e:
                 logger.warning(f"Dataset endpoint response is not returned. {e}")
                 return entities

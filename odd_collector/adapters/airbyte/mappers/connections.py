@@ -7,8 +7,11 @@ from odd_models.models import (
     MetadataExtension,
 )
 from oddrn_generator import AirbyteGenerator
-from .oddrn import generate_connection_oddrn
 from ..logger import logger
+
+
+def generate_connection_oddrn(conn_id: str, oddrn_gen: AirbyteGenerator) -> str:
+    return oddrn_gen.get_oddrn_by_path("connections", new_value=conn_id)
 
 
 def __extract_metadata(data: dict[str, Any]) -> list[MetadataExtension]:
