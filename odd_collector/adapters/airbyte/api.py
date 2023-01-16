@@ -79,9 +79,7 @@ class OddPlatformApi:
         entities = []
         async with aiohttp.ClientSession(self.__base_url) as session:
             try:
-                async with session.get(
-                    url=url, params=params
-                ) as resp:
+                async with session.get(url=url, params=params) as resp:
                     result = await resp.json()
                     logger.info(f"RESPONSE: {result}")
                     if result["items"][0]["type"] == "DATABASE_SERVICE":

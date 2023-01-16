@@ -41,9 +41,7 @@ class Adapter(AbstractAdapter):
                 table_with_entity[1] for table_with_entity in tables_with_data_entities
             ]
             schemas_entities = self._get_schemas_entities(tables_with_data_entities)
-            database_entity: DataEntity = self._get_database_entity(
-                schemas_entities
-            )
+            database_entity: DataEntity = self._get_database_entity(schemas_entities)
 
             all_entities = [*tables_entities, *schemas_entities, database_entity]
 
@@ -73,7 +71,5 @@ class Adapter(AbstractAdapter):
     ) -> List[DataEntity]:
         return map_schemas(tables_with_entities, self._generator)
 
-    def _get_database_entity(
-        self, schemas: List[DataEntity]
-    ) -> DataEntity:
+    def _get_database_entity(self, schemas: List[DataEntity]) -> DataEntity:
         return map_database(self._database_name, schemas, self._generator)
