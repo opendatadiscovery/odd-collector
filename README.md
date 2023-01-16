@@ -41,7 +41,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | ODBC          | [config](config_examples/odbc.yaml), [README.md](odd_collector/adapters/odbc/README.md) |
 | Cube          | [config](config_examples/cubejs.yaml)                                                   |
 | ODD Adapter   | [config](config_examples/odd_adapter.yaml)                                              |
-| Druid Adapter | [config](config_examples/druid.yaml)                                                    |
+| Apache Druid  | [config](config_examples/druid.yaml)                                                    |
 | Oracle        | [config](config_examples/oracle.yaml)                                                   |
 
 

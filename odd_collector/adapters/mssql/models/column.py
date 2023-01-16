@@ -11,6 +11,7 @@ class Column:
     ordinal_position: int
     column_default: str
     is_nullable: bool
+    is_primary_key: bool
     data_type: str
     character_maximum_length: int
     character_octet_length: int
@@ -31,3 +32,6 @@ class Column:
     @property
     def metadata(self) -> Dict[str, str]:
         return self.__dict__
+
+    def __post_init__(self):
+        self.is_primary_key = bool(self.is_primary_key)
