@@ -1,5 +1,5 @@
-from collections.abc import MutableMapping
 from typing import Any
+from flatdict import FlatterDict
 from odd_models.models import (
     DataEntity,
     DataEntityType,
@@ -15,26 +15,12 @@ def generate_connection_oddrn(conn_id: str, oddrn_gen: AirbyteGenerator) -> str:
 
 
 def __extract_metadata(data: dict[str, Any]) -> list[MetadataExtension]:
-    def _flatten_dict_gen(d, parent_key, sep):
-        for k, v in d.items():
-            new_key = parent_key + sep + k if parent_key else k
-            if isinstance(v, MutableMapping):
-                yield from flatten_dict(v, new_key, sep=sep).items()
-            elif isinstance(v, list) and isinstance(v[0], str):
-                v = ", ".join(item for item in v)
-                yield new_key, v
-            else:
-                yield new_key, v
-
-    def flatten_dict(d: MutableMapping, parent_key: str = "", sep: str = "."):
-        return dict(_flatten_dict_gen(d, parent_key, sep))
-
     data.pop("syncCatalog", None)
-    metadata = flatten_dict(data)
+    metadata = FlatterDict(data)
 
     return [
         MetadataExtension(
-            schema_url="https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/kubeflow.json#/definitions/Pipeline",
+            schema_url="https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/airbyte.json#/definitions/DataTransformer",
             metadata=metadata,
         )
     ]
@@ -131,14 +117,8 @@ def map_connection(
             oddrn=generate_connection_oddrn(conn_id, oddrn_gen),
             name=name,
             type=DataEntityType.JOB,
-            owner=None,
-            updated_at=None,
-            created_at=None,
             metadata=__extract_metadata(connection_meta),
             data_transformer=DataTransformer(
-                description=None,
-                source_code_url=None,
-                sql=None,
                 inputs=inputs,
                 outputs=outputs,
                 subtype="DATATRANSFORMER_JOB",
