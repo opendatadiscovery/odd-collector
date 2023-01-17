@@ -1,4 +1,3 @@
-import json
 import aiohttp
 from typing import List, Optional
 from .logger import logger
@@ -11,10 +10,6 @@ class AirbyteApi:
 
     def __init__(self, host: str, port: str, user: str, password: str) -> None:
         self.__base_url = f"http://{host}:{port}"
-        self.__headers = {
-            "Content-type": "application/json",
-            "Accept": "application/json",
-        }
         self.__auth = aiohttp.BasicAuth(login=user, password=password)
 
     async def get_workspaces(self) -> List[str]:
@@ -35,13 +30,11 @@ class AirbyteApi:
         async with aiohttp.ClientSession(self.__base_url, auth=self.__auth) as session:
             try:
                 for workspace_id in workspace_ids:
-                    workspaces_dict = {"workspaceId": workspace_id}
-                    request_body = json.dumps(workspaces_dict)
-                    async with session.post(
-                        url, data=request_body, headers=self.__headers
-                    ) as resp:
+                    workspace_dict = {"workspaceId": workspace_id}
+                    async with session.post(url, json=workspace_dict) as resp:
                         result = await resp.json()
                         connections.extend(result["connections"])
+                logger.info(f"Connections found: {connections}")
                 return connections
             except TypeError:
                 logger.warning("Connections endpoint response is not returned")
@@ -53,10 +46,7 @@ class AirbyteApi:
         body = {field_name: dataset_id}
         async with aiohttp.ClientSession(self.__base_url, auth=self.__auth) as session:
             try:
-                request_body = json.dumps(body)
-                async with session.post(
-                    url, data=request_body, headers=self.__headers
-                ) as resp:
+                async with session.post(url, json=body) as resp:
                     result = await resp.json()
                     return result
             except TypeError as e:

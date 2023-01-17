@@ -59,5 +59,4 @@ class Adapter(AbstractAdapter):
         )
         deg_oddrn = generate_dataset_oddrn(is_source, dataset_meta)
         dataset_oddrns = await self.__odd_api.get_data_entities_oddrns(deg_oddrn)
-        logger.info(f"DATASET_ODDRNS: {dataset_oddrns}")
         return filter_dataset_oddrn(connection, dataset_oddrns)
