@@ -58,7 +58,7 @@ def generate_dataset_oddrn(is_source: bool, dataset_meta: dict) -> Optional[str]
 
 
 def filter_dataset_oddrn(
-    connection_meta: dict, dataset_oddrns: list[str]
+    connection_meta: dict, dataset_oddrns: list[str], raw_tables: bool
 ) -> list[Optional[str]]:
     """
     Function to filter only replicated data sources
@@ -72,14 +72,16 @@ def filter_dataset_oddrn(
     for oddrn in dataset_oddrns:
         # search for table names in oddrns
         res1 = (
-            search(r"\w+$", oddrn).group().lower() if search(r"\w+$", oddrn) else None
+            search_1.group().lower() if (search_1 := search(r"\w+$", oddrn)) else None
         )
+
         # search for _airbyte_raw tables in oddrns
         res2 = (
-            search(r"_([^_]+$)", oddrn).group(1).lower()
-            if search(r"_([^_]+$)", oddrn)
+            search_2.group(1).lower()
+            if raw_tables and (search_2 := search(r"_([^_]+$)", oddrn))
             else None
         )
+
         if res1 in replicated_tables or res2 in replicated_tables:
             entities.append(oddrn)
     return entities

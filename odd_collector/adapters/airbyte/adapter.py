@@ -4,7 +4,6 @@ from odd_collector.domain.plugin import AirbytePlugin
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import AirbyteGenerator
 from .api import AirbyteApi, OddPlatformApi
-from .logger import logger
 from .mappers.connections import map_connection
 from .mappers.datasets import filter_dataset_oddrn, generate_dataset_oddrn
 
@@ -19,6 +18,7 @@ class Adapter(AbstractAdapter):
         )
         self.__odd_api = OddPlatformApi(host_url=config.platform_host_url)
         self.__oddrn_generator = AirbyteGenerator(host_settings=config.host)
+        self.__store_raw_tables = config.store_raw_tables
 
     async def get_data_entity_list(self) -> DataEntityList:
         return DataEntityList(
@@ -59,4 +59,4 @@ class Adapter(AbstractAdapter):
         )
         deg_oddrn = generate_dataset_oddrn(is_source, dataset_meta)
         dataset_oddrns = await self.__odd_api.get_data_entities_oddrns(deg_oddrn)
-        return filter_dataset_oddrn(connection, dataset_oddrns)
+        return filter_dataset_oddrn(connection, dataset_oddrns, self.__store_raw_tables)

@@ -222,6 +222,7 @@ class AirbytePlugin(WithHost, WithPort):
     user: Optional[str]
     password: Optional[str]
     platform_host_url: str
+    store_raw_tables: bool = True
 
 
 PLUGIN_FACTORY: PluginFactory = {
