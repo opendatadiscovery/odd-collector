@@ -1,5 +1,4 @@
 from typing import Any
-from flatdict import FlatterDict
 from odd_models.models import (
     DataEntity,
     DataEntityType,
@@ -8,6 +7,7 @@ from odd_models.models import (
 )
 from oddrn_generator import AirbyteGenerator
 from ..logger import logger
+from odd_collector.helpers.flatdict import FlatDict
 
 
 def generate_connection_oddrn(conn_id: str, oddrn_gen: AirbyteGenerator) -> str:
@@ -16,8 +16,7 @@ def generate_connection_oddrn(conn_id: str, oddrn_gen: AirbyteGenerator) -> str:
 
 def __extract_metadata(data: dict[str, Any]) -> list[MetadataExtension]:
     data.pop("syncCatalog", None)
-    metadata = FlatterDict(data)
-
+    metadata = FlatDict(data)
     return [
         MetadataExtension(
             schema_url="https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/airbyte.json#/definitions/DataTransformer",
@@ -124,6 +123,8 @@ def map_connection(
                 subtype="DATATRANSFORMER_JOB",
             ),
         )
-    except (TypeError, KeyError, ValueError):
-        logger.warning("Problems with DataEntity JSON serialization. " "Returning: {}.")
+    except (TypeError, KeyError, ValueError) as e:
+        logger.warning(
+            f"Problems with DataEntity JSON serialization. Error message: {e}"
+        )
         return {}

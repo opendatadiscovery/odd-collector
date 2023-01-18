@@ -73,7 +73,7 @@ class OddPlatformApi:
                     result = await resp.json()
                     logger.info(f"ODD_API response: {result}")
                     for item in result["items"]:
-                        if item["type"] == DataEntityType.DATABASE_SERVICE:
+                        if item["type"] == DataEntityType.DATABASE_SERVICE.value:
                             oddrn = item["oddrn"]
                             return await self.get_data_entities_oddrns(oddrn)
                         else:
