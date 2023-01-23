@@ -217,6 +217,14 @@ class MlflowPlugin(BasePlugin):
     ] = None  # List of pipeline names to filter, if omit fetch all pipelines
 
 
+class AirbytePlugin(WithHost, WithPort):
+    type: Literal["airbyte"]
+    user: Optional[str]
+    password: Optional[str]
+    platform_host_url: str
+    store_raw_tables: bool = True
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -247,4 +255,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "metabase": MetabasePlugin,
     "oracle": OraclePlugin,
     "mlflow": MlflowPlugin,
+    "airbyte": AirbytePlugin,
 }
