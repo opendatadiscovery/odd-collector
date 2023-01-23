@@ -45,4 +45,3 @@ class Adapter(AbstractAdapter):
             data_source_oddrn=self.get_data_source_oddrn(),
             items=self.get_data_entities(),
         )
-

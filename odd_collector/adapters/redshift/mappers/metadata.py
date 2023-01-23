@@ -10,7 +10,7 @@ from odd_collector.adapters.redshift.mappers.models import (
     MetadataColumnBase,
     MetadataColumnRedshift,
     MetadataColumnExternal,
-    RedshiftAdapterMetadata
+    RedshiftAdapterMetadata,
 )
 
 
