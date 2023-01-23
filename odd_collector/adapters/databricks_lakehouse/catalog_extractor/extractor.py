@@ -42,16 +42,20 @@ class CatalogExtractor:
     def run(self):
         if "azuredatabricks.net" in self.drc.api_client.url:
             cluster_config_file_name = "azure_cluster.json"
+        elif "cloud.databricks.com" in self.drc.api_client.url:
+            cluster_config_file_name = "aws_cluster.json"
+        elif "gcp.databricks.com" in self.drc.api_client.url:
+            cluster_config_file_name = "gcp_cluster.json"
         else:
             raise NotImplementedError
-        ROOT_PATH = "odd_collector/adapters/databricks_lakehouse/catalog_extractor/"
-        LOCAL_PATH = ROOT_PATH + "odd_job"
-        DBFS_PATH = "dbfs:/odd_job.py"
-        RUN_NAME = "odd"
-        JOB_TIMEOUT = 600
+        root_path = "odd_collector/adapters/databricks_lakehouse/catalog_extractor/"
+        local_path = root_path + "odd_job"
+        dbfs_path = "dbfs:/odd_job.py"
+        run_name = "odd"
+        job_timeout = 600
 
-        self.drc.put_file(LOCAL_PATH, DBFS_PATH)
+        self.drc.put_file(local_path, dbfs_path)
         run_id = self.drc.submit_run_and_get_id(
-            DBFS_PATH, ROOT_PATH + cluster_config_file_name, JOB_TIMEOUT, RUN_NAME
+            dbfs_path, root_path + cluster_config_file_name, job_timeout, run_name
         )
         return self.get_catalog(run_id)
