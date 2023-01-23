@@ -1,0 +1,11 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: airbyte
+    name: airbyte_adapter
+    host: host
+    port: 8000
+    platform_host_url: http://localhost:8080
+    user: airbyte
+    password: password
