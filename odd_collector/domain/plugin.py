@@ -186,6 +186,16 @@ class PrestoPlugin(BasePlugin):
     password: Optional[str]
 
 
+class DatabricksPlugin(BasePlugin):
+    type: Literal["databricks"]
+    workspace: str
+    token: str
+
+
+class DatabricksLakehousePlugin(DatabricksPlugin):
+    type: Literal["databricks_lakehouse"]
+
+
 class TrinoPlugin(BasePlugin):
     type: Literal["trino"]
     host: str
@@ -222,6 +232,7 @@ PLUGIN_FACTORY: PluginFactory = {
     "mysql": MySQLPlugin,
     "mssql": MSSQLPlugin,
     "clickhouse": ClickhousePlugin,
+    "databricks_lakehouse": DatabricksLakehousePlugin,
     "redshift": RedshiftPlugin,
     "mongodb": MongoDBPlugin,
     "kafka": KafkaPlugin,
