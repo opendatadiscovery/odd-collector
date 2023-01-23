@@ -37,9 +37,9 @@ def map_column(
         is_sort_key=bool(mcolumn.redshift.sortkey),
     )
     _append_metadata_extension(
-        dsf.metadata,
-        _data_set_field_metadata_schema_url_redshift,
-        mcolumn.redshift,
-        _data_set_field_metadata_excluded_keys_redshift,
+        metadata_list=dsf.metadata,
+        schema_url=_data_set_field_metadata_schema_url_redshift,
+        metadata_dataclass=mcolumn.redshift,
+        excluded_keys=_data_set_field_metadata_excluded_keys_redshift,
     )
     return dsf
