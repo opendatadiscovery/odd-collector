@@ -5,9 +5,9 @@ from typing import Dict
 
 
 def map_database(
-        oddrn_generator: DatabricksLakehouseGenerator,
-        database_node_name: str,
-        tables_node: Dict[str, dict],
+    oddrn_generator: DatabricksLakehouseGenerator,
+    database_node_name: str,
+    tables_node: Dict[str, dict],
 ) -> DataEntity:
     return DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path("databases", database_node_name),

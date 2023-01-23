@@ -3,7 +3,9 @@ from typing import Dict, Any
 from odd_models.models import DataSetField, DataSetFieldType, Type
 
 
-def map_column(oddrn_generator: DatabricksLakehouseGenerator, column_node: Dict[str, Any]):
+def map_column(
+    oddrn_generator: DatabricksLakehouseGenerator, column_node: Dict[str, Any]
+):
     name = column_node.get("columnName")
     _type = column_node.get("columnDataType")
     return DataSetField(

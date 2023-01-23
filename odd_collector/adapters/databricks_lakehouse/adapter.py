@@ -7,23 +7,26 @@ from oddrn_generator import DatabricksLakehouseGenerator
 from .mappers.database import map_database
 from .mappers.table import map_table
 from .client import DatabricksRestClient
+from odd_collector.adapters.databricks_lakehouse.catalog_extractor.extractor import (
+    CatalogExtractor,
+)
 
 
 class Adapter(AbstractAdapter):
     def __init__(
-            self,
-            config: DatabricksLakehousePlugin, client: Type[DatabricksRestClient] = None
+        self,
+        config: DatabricksLakehousePlugin,
+        extractor: Type[CatalogExtractor] = None,
     ) -> None:
-        client = client or DatabricksRestClient
-        self.client = client(config)
+        extractor = extractor or CatalogExtractor
+        self.extractor = extractor(DatabricksRestClient(config))
 
         self.__oddrn_generator = DatabricksLakehouseGenerator(
-            host_settings=self.client.get_server_host()
+            host_settings=self.extractor.drc.get_server_host()
         )
 
-    def get_tables_df(self):
-        return DataFrame({'databaseName': ['test_database', 'test_database'], 'tableName': ['test_table', 'test_table'],
-                          'columnName': ['id', 'value'], 'columnDataType': ['int', 'string']})
+    def get_tables_df(self) -> DataFrame:
+        return self.extractor.run()
 
     @staticmethod
     def get_nested_columns_nodes(tables_df: DataFrame):
@@ -50,17 +53,11 @@ class Adapter(AbstractAdapter):
                 map_database(self.__oddrn_generator, database_node_name, tables_node)
             )
 
-            self.__oddrn_generator.set_oddrn_paths(
-                databases=database_node_name
-            )
+            self.__oddrn_generator.set_oddrn_paths(databases=database_node_name)
 
             for table_node_name, columns_nodes in tables_node.items():
                 tables_entities.append(
-                    map_table(
-                        self.__oddrn_generator,
-                        table_node_name,
-                        columns_nodes
-                    )
+                    map_table(self.__oddrn_generator, table_node_name, columns_nodes)
                 )
 
         return DataEntityList(

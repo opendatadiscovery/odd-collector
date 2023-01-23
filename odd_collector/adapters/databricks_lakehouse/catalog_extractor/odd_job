@@ -1,0 +1,16 @@
+cls = []
+
+for db in spark.sql("show databases").collect():
+    for table in spark.catalog.listTables(f"{db.databaseName}"):
+        for column in spark.catalog.listColumns(table.name, table.database):
+            cls.append([table.database, table.name, column.name, column.dataType])
+
+spark_df = spark.createDataFrame(cls, schema=['databaseName', 'tableName', 'columnName',
+                                              'columnDataType'])
+pdf = spark_df.toPandas()
+
+
+print('ttt' + str(pdf.to_dict("list")) + 'ttt')
+
+
+

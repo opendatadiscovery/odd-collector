@@ -6,9 +6,9 @@ from .column import map_column
 
 
 def map_table(
-        oddrn_generator: DatabricksLakehouseGenerator,
-        table_node_name: str,
-        columns_nodes: List[Dict[str, Any]],
+    oddrn_generator: DatabricksLakehouseGenerator,
+    table_node_name: str,
+    columns_nodes: List[Dict[str, Any]],
 ) -> DataEntity:
     return DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path("tables", table_node_name),

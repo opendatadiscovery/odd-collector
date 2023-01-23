@@ -10,10 +10,7 @@ from urllib.parse import urlparse
 class DatabricksRestClient:
     def __init__(self, config: DatabricksPlugin):
         self.__host = f"https://{config.workspace}"
-        self.api_client = ApiClient(
-            host=self.__host,
-            token=config.token
-        )
+        self.api_client = ApiClient(host=self.__host, token=config.token)
 
     def get_server_host(self) -> str:
         return urlparse(self.__host).netloc
@@ -28,16 +25,24 @@ class DatabricksRestClient:
 
     @staticmethod
     def __get_cluster_config_from_file(cluster_config_local_json_path: str) -> dict:
-        with open(cluster_config_local_json_path, 'rb') as file:
+        with open(cluster_config_local_json_path, "rb") as file:
             return load(file)
 
-    def submit_run_and_get_id(self,
-                              dbfs_script_path: str, cluster_config_local_json_path: str,
-                              run_name=None) -> int:
-        resp = self.jobs_api.client.submit_run(run_name=run_name,
-                                               new_cluster=self.__get_cluster_config_from_file(
-                                                   cluster_config_local_json_path),
-                                               spark_python_task={
-                                                   "python_file": dbfs_script_path,
-                                               })
-        return resp['run_id']
+    def submit_run_and_get_id(
+        self,
+        dbfs_script_path: str,
+        cluster_config_local_json_path: str,
+        timeout: int,
+        run_name=None,
+    ) -> int:
+        resp = self.jobs_api.client.submit_run(
+            run_name=run_name,
+            timeout_seconds=timeout,
+            new_cluster=self.__get_cluster_config_from_file(
+                cluster_config_local_json_path
+            ),
+            spark_python_task={
+                "python_file": dbfs_script_path,
+            },
+        )
+        return resp["run_id"]
