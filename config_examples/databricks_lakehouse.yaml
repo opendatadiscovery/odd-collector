@@ -1,0 +1,9 @@
+default_pulling_interval: 10
+token: ""
+platform_host_url: http://localhost:8080
+chunk_size: 1000
+plugins:
+  - type: databricks_lakehouse
+    name: databricks_lakehouse
+    workspace: ""
+    token: ""

@@ -146,6 +146,11 @@ type: Literal["hive"]
 WithHost <|-- HivePlugin
 WithPort <|-- HivePlugin
 
+class DatabricksLakehousePlugin{
+type: Literal["databricks_lakehouse"]
+}
+WithHost <|-- DatabricksLakehousePlugin
+
 class FeastPlugin{
 type: Literal["feast"]
 repo_path: str
