@@ -1,2 +1,0 @@
-class DBRedshiftException(Exception):
-    pass

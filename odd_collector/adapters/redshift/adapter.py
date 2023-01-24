@@ -10,9 +10,6 @@ from .mappers.tables import map_table
 
 
 class Adapter(AbstractAdapter):
-    __connection = None
-    __cursor = None
-
     def __init__(self, config: RedshiftPlugin) -> None:
         self.__database = config.database
         self.__repository = RedshiftRepository(config)

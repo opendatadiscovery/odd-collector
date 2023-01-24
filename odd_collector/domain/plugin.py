@@ -55,6 +55,7 @@ class RedshiftPlugin(DatabasePlugin):
     type: Literal["redshift"]
     schemas: Optional[List[str]] = None
     password: SecretStr
+    connection_timeout: int
 
 
 class MongoDBPlugin(DatabasePlugin):
