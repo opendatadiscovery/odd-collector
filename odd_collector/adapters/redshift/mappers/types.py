@@ -72,19 +72,11 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "time": Type.TYPE_TIME,
     "timetz": Type.TYPE_TIME,
     "bit": Type.TYPE_BINARY,  # BITOID recheck
-    # 'boolean': Type.TYPE_BOOLEAN,  # BOOLOID
     "character": Type.TYPE_CHAR,  # BPCHAROID recheck
-    # 'real': Type.TYPE_NUMBER,  # FLOAT4OID
-    # 'double precision': Type.TYPE_NUMBER,  # FLOAT8OID
-    # 'smallint': Type.TYPE_INTEGER,  # INT2OID
-    # 'integer': Type.TYPE_INTEGER,  # INT4OID
-    # 'bigint': Type.TYPE_NUMBER,  # INT8OID recheck
     "numeric": Type.TYPE_NUMBER,  # NUMERICOID
     "interval": Type.TYPE_DURATION,  # INTERVALOID recheck
-    # 'time': Type.TYPE_TIME,  # TIMEOID, TIMETZOID
     "time without time zone": Type.TYPE_TIME,  # TIMEOID
     "time with time zone": Type.TYPE_TIME,  # TIMETZOID
-    # 'timestamp': Type.TYPE_DATETIME,  # TIMESTAMPOID, TIMESTAMPTZOID
     "timestamp without time zone": Type.TYPE_DATETIME,  # TIMESTAMPOID
     "timestamp with time zone": Type.TYPE_DATETIME,  # TIMESTAMPTZOID
     "bit varying": Type.TYPE_BINARY,  # VARBITOID recheck
@@ -103,15 +95,4 @@ TABLE_TYPES_SQL_TO_ODD: Dict[str, DataEntityType] = {
     "MATERIALIZED VIEW": DataEntityType.VIEW,
     "EXTERNAL VIEW": DataEntityType.VIEW,
     "EXTERNAL MATERIALIZED VIEW": DataEntityType.VIEW,
-    # '': 'DATASET_UNKNOWN'
-    # 'LOCAL TEMPORARY': Type.DATASET_TABLE,
-    # 'BASE TABLE': Type.DATASET_TABLE,
-    # 'EXTERNAL TABLE': Type.DATASET_EXTERNAL_TABLE,
-    # 'EXTERNAL VIEW': Type.DATASET_EXTERNAL_VIEW,
-    # 'EXTERNAL MATERIALIZED VIEW': Type.DATASET_EXTERNAL_MATERIALIZED_VIEW,
-    # 'SHARED TABLE': Type.DATASET_SHARED_TABLE,
-    # 'LOCAL TEMPORARY': Type.DATASET_TEMPORARY_TABLE,
-    # 'VIEW': Type.DATASET_VIEW,
-    # 'MATERIALIZED VIEW': Type.DATASET_MATERIALIZED_VIEW,
-    # '': 'DATASET_UNKNOWN'
 }
