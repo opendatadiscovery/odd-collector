@@ -172,13 +172,19 @@ order by
 
 PIPES_QUERY = """
 
+SELECT *
+FROM (SELECT DEFINITION,
+             PIPE_NAME                                          as name,
+             REPLACE(CONCAT_WS('.', TRIM(SUBSTR(DEFINITION, 10, POSITION(' ', DEFINITION, 11) - 10)), 'TABLE'),
+                     CHR(10))                                   as DOWNSTREAM,
+             SPLIT_PART(SPLIT_PART(DEFINITION, '@', 2), '.', 1) AS STAGE_CATALOG,
+             SPLIT_PART(SPLIT_PART(DEFINITION, '@', 2), '.', 2) AS STAGE_SCHEMA,
+             SPLIT_PART(SPLIT_PART(DEFINITION, '@', 2), '.', 3) AS STAGE_NAME
+      FROM INFORMATION_SCHEMA.PIPES) pipes
 
-select definition,
-       PIPE_NAME       as name,
-       replace(concat_ws('.', trim(substr(definition, 10, position(' ', definition, 11) - 10)), 'TABLE'),
-               chr(10))   as downstream //length('copy into ') = 10
-from information_schema.pipes
-;
+         LEFT JOIN (SELECT STAGE_URL, STAGE_CATALOG, STAGE_SCHEMA, STAGE_NAME, STAGE_TYPE
+                    FROM INFORMATION_SCHEMA.STAGES) stages
+USING (STAGE_CATALOG, STAGE_SCHEMA, STAGE_NAME)
 
 """
 
