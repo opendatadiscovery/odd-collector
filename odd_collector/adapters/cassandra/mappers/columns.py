@@ -2,9 +2,10 @@ from typing import Union
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
 
-from oddrn_generator import CassandraGenerator
-from . import (
-    ColumnMetadata,
+from odd_collector.adapters.cassandra.generator import CassandraGenerator
+
+from .models import ColumnMetadata
+from ..config import (
     _data_set_field_metadata_excluded_keys,
     _data_set_field_metadata_schema_url,
 )
@@ -14,6 +15,7 @@ from .types import TYPES_CASSANDRA_TO_ODD
 
 def map_column(
     column_metadata: ColumnMetadata,
+    column_path: str,
     oddrn_generator: CassandraGenerator,
     owner: Union[str, None],
 ) -> DataSetField:
@@ -21,6 +23,7 @@ def map_column(
     A method to map a column to a dataset field. It extracts the necessary information and generates the required
     dataset field.
     :param column_metadata: the column's information like name, type, etc.
+    :param column_path: parent type 'tables_column' | 'views_column'
     :param oddrn_generator: the database generator.
     :param owner: the owner of the column.
     :return:
@@ -33,8 +36,9 @@ def map_column(
         column_metadata,
         _data_set_field_metadata_excluded_keys,
     )
+    oddrn_generator.set_oddrn_paths(**{column_path: name})
     dsf: DataSetField = DataSetField(
-        oddrn=oddrn_generator.get_oddrn_by_path(f"columns", name),
+        oddrn=oddrn_generator.get_oddrn_by_path(column_path),
         name=name,
         owner=owner,
         metadata=[metadata_extension] if metadata_extension else [],

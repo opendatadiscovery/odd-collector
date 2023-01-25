@@ -1,5 +1,6 @@
 import logging
 from collections import namedtuple
+from funcy import concat, lpluck_attr
 from typing import List
 
 import cassandra
@@ -8,10 +9,13 @@ from cassandra.cluster import EXEC_PROFILE_DEFAULT, Cluster, ExecutionProfile
 from cassandra.query import tuple_factory
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
-from oddrn_generator import CassandraGenerator
+from odd_collector.adapters.cassandra.generator import CassandraGenerator
+from .mappers.keyspaces import map_database
+from .mappers.models import TableMetadata, ColumnMetadata, ViewMetadata
 
-from .mappers import _column_select, _table_select
-from .mappers.tables import map_tables
+from .mappers.tables import map_tables, filter_data
+from .mappers.views import map_views
+from .repository import CassandraRepository
 
 
 class Adapter(AbstractAdapter):
@@ -26,6 +30,7 @@ class Adapter(AbstractAdapter):
         self.__password = config.password
         self.__contact_points = config.contact_points or [config.host]
         # self.__execution_profile = config['execution_profile'] TODO To be added.
+        self.__repo = CassandraRepository(config)
         self.__oddrn_generator = CassandraGenerator(
             host_settings=f"{self.__host}", keyspaces=self.__keyspace
         )
@@ -41,15 +46,28 @@ class Adapter(AbstractAdapter):
         :return: list of data entities describing the keyspace and all its tables.
         """
         try:
-            self.__connect()
+            with self.__repo.connection():
+                tables = self.__repo.get_tables()
+                columns = self.__repo.get_columns()
+                views = self.__repo.get_views()
 
-            tables = self.__execute(_table_select, {"keyspace": self.__keyspace})
-            columns = self.__execute(_column_select, {"keyspace": self.__keyspace})
+            tables = [TableMetadata(*filter_data(table)) for table in tables]
+            columns = [ColumnMetadata(*filter_data(column)) for column in columns]
+            views = [ViewMetadata(*filter_data(view)) for view in views]
 
-            return map_tables(self.__oddrn_generator, tables, columns, self.__keyspace)
+            tables_entities = map_tables(
+                self.__oddrn_generator, tables, columns, self.__keyspace
+            )
+            views_entities = map_views(self.__oddrn_generator, views, columns)
+
+            oddrns = lpluck_attr("oddrn", concat(tables_entities, views_entities))
+            keyspace_entity = map_database(
+                self.__oddrn_generator, self.__keyspace, oddrns
+            )
+            return tables_entities + views_entities + [keyspace_entity]
 
         except Exception as e:
-            logging.error("Failed to load metadata for tables")
+            logging.error("Failed to load Cassandra data entities")
             logging.exception(e)
 
     def get_data_entity_list(self) -> DataEntityList:
