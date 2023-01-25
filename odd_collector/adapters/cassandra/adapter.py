@@ -10,7 +10,7 @@ from cassandra.query import tuple_factory
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from odd_collector.adapters.cassandra.generator import CassandraGenerator
-from .mappers.keyspaces import map_database
+from .mappers.keyspaces import map_keyspace
 from .mappers.models import TableMetadata, ColumnMetadata, ViewMetadata
 
 from .mappers.tables import map_tables, filter_data
@@ -61,7 +61,7 @@ class Adapter(AbstractAdapter):
             views_entities = map_views(self.__oddrn_generator, views, columns)
 
             oddrns = lpluck_attr("oddrn", concat(tables_entities, views_entities))
-            keyspace_entity = map_database(
+            keyspace_entity = map_keyspace(
                 self.__oddrn_generator, self.__keyspace, oddrns
             )
             return tables_entities + views_entities + [keyspace_entity]

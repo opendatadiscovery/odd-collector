@@ -5,7 +5,7 @@ from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from ..generator import CassandraGenerator
 
 
-def map_database(
+def map_keyspace(
     generator: CassandraGenerator, service_name: str, entities: List[str]
 ) -> DataEntity:
     """
