@@ -3,13 +3,13 @@ from typing import List, Optional, Tuple, Type
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity, DataEntityList
+from oddrn_generator import SnowflakeGenerator
 
 from odd_collector.domain.plugin import SnowflakePlugin
 
 from .client import SnowflakeClient, SnowflakeClientBase
 from .domain import Table
-from .generator import SnowflakeGenerator
-from .map import map_database, map_schemas, map_table, map_view, map_pipe
+from .map import map_database, map_pipe, map_schemas, map_table, map_view
 
 
 class Adapter(AbstractAdapter):

@@ -2,10 +2,10 @@ from copy import deepcopy
 
 import sqlparse
 from odd_models.models import DataEntity, DataEntityType, DataTransformer
+from oddrn_generator import SnowflakeGenerator
 
 from odd_collector.adapters.snowflake.domain import Pipe
 
-from ..generator import SnowflakeGenerator
 from .view import _map_connection
 
 

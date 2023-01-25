@@ -11,7 +11,7 @@ from snowflake.connector.errors import DataError, ProgrammingError
 from odd_collector.domain.plugin import SnowflakePlugin
 from odd_collector.helpers import LowerKeyDict
 
-from .domain import Column, Table, View, Pipe
+from .domain import Column, Pipe, Table, View
 
 TABLES_VIEWS_QUERY = """
 with recursive cte as (
