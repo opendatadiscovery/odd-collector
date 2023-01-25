@@ -20,17 +20,16 @@ class Adapter(AbstractAdapter):
     ):
         self._client = client(config)
         self._config = config
-
+        self._database_name = config.database.upper()
         self._generator = SnowflakeGenerator(
             host_settings=config.host,
-            databases=config.database,
+            databases=self._database_name,
         )
 
     def get_data_source_oddrn(self) -> str:
         return self._generator.get_data_source_oddrn()
 
     def get_data_entity_list(self) -> DataEntityList:
-        db_name = self._config.database
         tables = self._client.get_tables()
 
         tables_with_data_entities: List[
@@ -42,9 +41,7 @@ class Adapter(AbstractAdapter):
                 table_with_entity[1] for table_with_entity in tables_with_data_entities
             ]
             schemas_entities = self._get_schemas_entities(tables_with_data_entities)
-            database_entity: DataEntity = self._get_database_entity(
-                db_name, schemas_entities
-            )
+            database_entity: DataEntity = self._get_database_entity(schemas_entities)
 
             all_entities = [*tables_entities, *schemas_entities, database_entity]
 
@@ -74,7 +71,5 @@ class Adapter(AbstractAdapter):
     ) -> List[DataEntity]:
         return map_schemas(tables_with_entities, self._generator)
 
-    def _get_database_entity(
-        self, database_name: str, schemas: List[DataEntity]
-    ) -> DataEntity:
-        return map_database(database_name, schemas, self._generator)
+    def _get_database_entity(self, schemas: List[DataEntity]) -> DataEntity:
+        return map_database(self._database_name, schemas, self._generator)

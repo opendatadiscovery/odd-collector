@@ -1,5 +1,4 @@
 from copy import deepcopy
-from typing import List
 
 from odd_models.models import DataTransformer
 from odd_models.utils import SqlParser
@@ -18,7 +17,7 @@ def extract_transformer_data(
     )
 
 
-def get_oddrn_list(tables, oddrn_generator: RedshiftGenerator) -> List[str]:
+def get_oddrn_list(tables, oddrn_generator: RedshiftGenerator) -> list[str]:
     response = []
     oddrn_generator = deepcopy(oddrn_generator)
     for table in tables:
