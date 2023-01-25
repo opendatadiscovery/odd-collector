@@ -11,7 +11,7 @@ from snowflake.connector.errors import DataError, ProgrammingError
 from odd_collector.domain.plugin import SnowflakePlugin
 from odd_collector.helpers import LowerKeyDict
 
-from .domain import Column, Table, View
+from .domain import Column, Table, View, Pipe
 
 TABLES_VIEWS_QUERY = """
 with recursive cte as (
@@ -170,6 +170,18 @@ order by
     c.ordinal_position
 """
 
+PIPES_QUERY = """
+
+
+select definition,
+       PIPE_NAME       as name,
+       replace(concat_ws('.', trim(substr(definition, 10, position(' ', definition, 11) - 10)), 'TABLE'),
+               chr(10))   as downstream //length('copy into ') = 10
+from information_schema.pipes
+;
+
+"""
+
 
 class SnowflakeClientBase(ABC):
     def __init__(self, config: SnowflakePlugin):
@@ -177,6 +189,10 @@ class SnowflakeClientBase(ABC):
 
     @abstractmethod
     def get_tables(self) -> List[Table]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_pipes(self) -> List[Pipe]:
         raise NotImplementedError
 
 
@@ -228,6 +244,10 @@ class SnowflakeClient(SnowflakeClientBase):
 
             return tables
 
+    def get_pipes(self) -> List[Pipe]:
+        with self.connect() as cursor:
+            return self._fetch_pipes(cursor)
+
     def _fetch_tables(self, cursor: DictCursor) -> List[Table]:
         result: List[Table] = []
 
@@ -239,6 +259,14 @@ class SnowflakeClient(SnowflakeClientBase):
             elif raw_object.get("TABLE_TYPE") == "VIEW":
                 result.append(View.parse_obj(LowerKeyDict(raw_object)))
 
+        return result
+
+    @staticmethod
+    def _fetch_pipes(cursor: DictCursor) -> List[Pipe]:
+        result: List[Pipe] = []
+        cursor.execute(PIPES_QUERY)
+        for raw_object in cursor.fetchall():
+            result.append(Pipe.parse_obj(LowerKeyDict(raw_object)))
         return result
 
     def _fetch_columns(self, cursor: DictCursor) -> List[Column]:

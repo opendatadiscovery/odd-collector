@@ -9,7 +9,7 @@ from odd_collector.domain.plugin import SnowflakePlugin
 from .client import SnowflakeClient, SnowflakeClientBase
 from .domain import Table
 from .generator import SnowflakeGenerator
-from .map import map_database, map_schemas, map_table, map_view
+from .map import map_database, map_schemas, map_table, map_view, map_pipe
 
 
 class Adapter(AbstractAdapter):
@@ -30,6 +30,8 @@ class Adapter(AbstractAdapter):
         return self._generator.get_data_source_oddrn()
 
     def get_data_entity_list(self) -> DataEntityList:
+        pipes = self._client.get_pipes()
+        pipes_entities = [map_pipe(pipe, self._generator) for pipe in pipes]
         tables = self._client.get_tables()
 
         tables_with_data_entities: List[
@@ -43,7 +45,12 @@ class Adapter(AbstractAdapter):
             schemas_entities = self._get_schemas_entities(tables_with_data_entities)
             database_entity: DataEntity = self._get_database_entity(schemas_entities)
 
-            all_entities = [*tables_entities, *schemas_entities, database_entity]
+            all_entities = [
+                *tables_entities,
+                *schemas_entities,
+                database_entity,
+                *pipes_entities,
+            ]
 
             dels = DataEntityList(
                 data_source_oddrn=self.get_data_source_oddrn(), items=all_entities
