@@ -1,12 +1,20 @@
 import contextlib
 import logging
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Tuple, Any
 
 import cassandra
 from cassandra.auth import PlainTextAuthProvider
 from cassandra.cluster import EXEC_PROFILE_DEFAULT, Cluster, ExecutionProfile
 from cassandra.query import tuple_factory
+from cassandra.util import OrderedMapSerializedKey, SortedSet
+from odd_collector_sdk.errors import DataSourceConnectionError
+
+from odd_collector.adapters.cassandra.mappers.models import (
+    ColumnMetadata,
+    ViewMetadata,
+    TableMetadata,
+)
 
 
 TABLE_METADATA_QUERY: str = """
@@ -27,15 +35,15 @@ VIEWS_METADATA_QUERY: str = """
 
 class AbstractRepository(ABC):
     @abstractmethod
-    def get_tables(self):
+    def get_tables(self) -> List[TableMetadata]:
         pass
 
     @abstractmethod
-    def get_columns(self):
+    def get_columns(self) -> List[ColumnMetadata]:
         pass
 
     @abstractmethod
-    def get_views(self):
+    def get_views(self) -> List[ViewMetadata]:
         pass
 
 
@@ -74,36 +82,53 @@ class CassandraRepository(AbstractRepository):
 
         except cassandra.DriverException as err:
             logging.error(err)
-            raise DBException("Can't connect to Cassandra database!")
+            raise DataSourceConnectionError("Can't connect to Cassandra database!")
 
     def __disconnect(self):
         try:
             self.__cluster.shutdown()
         except cassandra.DriverException as err:
             logging.error(err)
-            raise DBException("Error while disconnecting from Cassandra database!")
+            raise DataSourceConnectionError(
+                "Error while disconnecting from Cassandra database!"
+            )
 
-    def get_columns(self) -> List[tuple]:
-        return self.__session.execute(
+    def get_columns(self) -> List[ColumnMetadata]:
+        columns = self.__session.execute(
             COLUMNS_METADATA_QUERY, {"keyspace": self.__keyspace}
         )
+        return [ColumnMetadata(*self.__filter_data(column)) for column in columns]
 
-    def get_tables(self) -> List[tuple]:
-        return self.__session.execute(
+    def get_tables(self) -> List[TableMetadata]:
+        tables = self.__session.execute(
             TABLE_METADATA_QUERY, {"keyspace": self.__keyspace}
         )
+        return [TableMetadata(*self.__filter_data(table)) for table in tables]
 
-    def get_views(self) -> List[tuple]:
+    def get_views(self) -> List[ViewMetadata]:
         views = self.__session.execute(
             VIEWS_METADATA_QUERY, {"keyspace": self.__keyspace}
         )
         res = []
         metadata = self.__cluster.metadata.keyspaces[self.__keyspace]
         for view in views:
-            res.append((*view, metadata.views[view[1]].as_cql_query()))
-
+            view = (*view, metadata.views[view[1]].as_cql_query())
+            res.append(ViewMetadata(*self.__filter_data(view)))
         return res
 
-
-class DBException(Exception):
-    pass
+    def __filter_data(self, data: Tuple[Any, Any]) -> Tuple[Any]:
+        """
+        A method to filter the data obtained from the Cassandra database. It converts the Cassandra types
+        OrderedMapSerializedKey, SortedSet to usual Python dictionary and list, respectively
+        :param data: the data obtained from the Cassandra database.
+        :return: the same data after filtering the types.
+        """
+        filtered = []
+        for value in data:
+            if type(value) is OrderedMapSerializedKey:
+                filtered.append(dict(value))
+            elif type(value) is SortedSet:
+                filtered.append(list(value))
+            else:
+                filtered.append(value)
+        return tuple(filtered)

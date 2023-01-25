@@ -6,10 +6,13 @@ from odd_models.utils import SqlParser
 
 from odd_collector.adapters.cassandra.generator import CassandraGenerator
 from odd_collector.adapters.cassandra.mappers.columns import map_column
+from odd_collector.adapters.cassandra.mappers.models import ViewMetadata, ColumnMetadata
 
 
 def map_views(
-    generator: CassandraGenerator, views: List, columns: List
+    generator: CassandraGenerator,
+    views: List[ViewMetadata],
+    columns: List[ColumnMetadata],
 ) -> List[DataEntity]:
     data_entities = []
     for view in views:

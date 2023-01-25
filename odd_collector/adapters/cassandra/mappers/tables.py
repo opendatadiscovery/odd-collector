@@ -85,24 +85,6 @@ def get_data_entity(
     return data_entity
 
 
-def filter_data(data: Tuple[Any]) -> Tuple[Any]:
-    """
-    A method to filter the data obtained from the Cassandra database. It converts the Cassandra types
-    OrderedMapSerializedKey, SortedSet to usual Python dictionary and list, respectively
-    :param data: the data obtained from the Cassandra database.
-    :return: the same data after filtering the types.
-    """
-    filtered = []
-    for value in data:
-        if type(value) is OrderedMapSerializedKey:
-            filtered.append(dict(value))
-        elif type(value) is SortedSet:
-            filtered.append(list(value))
-        else:
-            filtered.append(value)
-    return tuple(filtered)
-
-
 def map_tables(
     oddrn_generator: CassandraGenerator,
     tables: List[TableMetadata],
