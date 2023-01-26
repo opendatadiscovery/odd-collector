@@ -1,12 +1,11 @@
 import pytz
-from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import SingleStoreGenerator
 
 from .columns import map_column
 from .metadata import append_metadata_extension, _data_set_metadata_schema_url
 from .models import ColumnMetadata, TableMetadata
 from .types import TABLE_TYPES_SQL_TO_ODD
-from .views import extract_transformer_data
 
 _data_set_metadata_excluded_keys: set = {
     "table_catalog",
@@ -36,7 +35,7 @@ def map_tables(
         data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
             metadata.table_type, DataEntityType.UNKNOWN
         )
-        oddrn_path = "views" if data_entity_type == DataEntityType.VIEW else "tables"
+        oddrn_path = "tables"
 
         # DataEntity
         data_entity: DataEntity = DataEntity(
@@ -49,14 +48,12 @@ def map_tables(
         )
         data_entities.append(data_entity)
 
-        if metadata.table_type == "BASE TABLE":
-            # it is for full tables only
-            append_metadata_extension(
-                data_entity.metadata,
-                _data_set_metadata_schema_url,
-                metadata,
-                _data_set_metadata_excluded_keys,
-            )
+        append_metadata_extension(
+            data_entity.metadata,
+            _data_set_metadata_schema_url,
+            metadata,
+            _data_set_metadata_excluded_keys,
+        )
 
         if metadata.create_time is not None:
             data_entity.created_at = metadata.create_time.replace(
@@ -70,28 +67,10 @@ def map_tables(
         # Dataset
         data_entity.dataset = DataSet(rows_number=metadata.table_rows, field_list=[])
 
-        # DataTransformer
-        if data_entity_type == DataEntityType.VIEW:
-            data_entity.data_transformer = extract_transformer_data(
-                metadata.view_definition, oddrn_generator
-            )
-
         for column in column_metadata:
             if column.table_name == table_name and column.table_schema == database:
                 data_entity.dataset.field_list.append(
                     map_column(column, oddrn_generator, data_entity.owner, oddrn_path)
                 )
-
-    data_entities.append(
-        DataEntity(
-            oddrn=oddrn_generator.get_oddrn_by_path("databases"),
-            name=database,
-            type=DataEntityType.DATABASE_SERVICE,
-            metadata=[],
-            data_entity_group=DataEntityGroup(
-                entities_list=[de.oddrn for de in data_entities]
-            ),
-        )
-    )
 
     return data_entities

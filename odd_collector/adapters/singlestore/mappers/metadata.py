@@ -1,9 +1,8 @@
 from dataclasses import asdict
 from typing import Optional
-
 from odd_models.models import MetadataExtension
 
-from odd_collector.adapters.singlestore.mappers.models import SingleStoreMetadata
+from .models import SingleStoreMetadata
 
 _data_set_metadata_schema_url: str = (
     "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"

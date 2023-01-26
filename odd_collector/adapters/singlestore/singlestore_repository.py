@@ -26,6 +26,10 @@ class SingleStoreRepository(SingleStoreRepositoryBase):
         tables = self.__execute(self.__generate_table_metadata_query())
         return tables
 
+    def get_views(self):
+        views = self.__execute(self.__generate_view_metadata_query())
+        return views
+
     def get_columns(self):
         columns = self.__query(
             ColumnMetadata.get_str_fields(), self._column_table, self._column_order_by
@@ -102,6 +106,45 @@ class SingleStoreRepository(SingleStoreRepositoryBase):
                        t.TABLE_NAME = v.TABLE_NAME
                 left join row_counts rc
                     on t.TABLE_NAME = rc.TABLE_NAME
-        where t.table_schema = '{self.__database}'
+        where t.table_schema = '{self.__database}' and t.table_type = 'BASE TABLE'
+        order by t.table_catalog, t.table_schema, t.table_name
+        """
+
+    def __generate_view_metadata_query(self):
+        return f"""
+        select t.table_catalog,
+               t.table_schema,
+               t.table_name,
+               t.table_type,
+               t.engine,
+               t.version,
+               t.row_format,
+               t.table_rows,
+               t.avg_row_length,
+               t.data_length,
+               t.max_data_length,
+               t.index_length,
+               t.data_free,
+               t.auto_increment,
+               t.create_time,
+               t.update_time,
+               t.check_time,
+               t.table_collation,
+               t.checksum,
+               t.create_options,
+               t.table_comment,
+               t.distributed,
+               t.storage_type,
+               t.alter_time,
+               t.create_user,
+               t.alter_user,
+               t.flags,
+               v.view_definition
+        from information_schema.tables t
+                left join information_schema.views v
+                    on t.TABLE_CATALOG = v.TABLE_CATALOG and
+                       t.TABLE_SCHEMA = v.TABLE_SCHEMA and
+                       t.TABLE_NAME = v.TABLE_NAME
+        where t.table_schema = '{self.__database}' and t.table_type = 'VIEW'
         order by t.table_catalog, t.table_schema, t.table_name
         """
