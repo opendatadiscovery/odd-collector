@@ -2,12 +2,23 @@ import pytz
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
 from oddrn_generator import SingleStoreGenerator
 
-from . import _data_set_metadata_excluded_keys, _data_set_metadata_schema_url
 from .columns import map_column
-from .metadata import append_metadata_extension
+from .metadata import append_metadata_extension, _data_set_metadata_schema_url
 from .models import ColumnMetadata, TableMetadata
 from .types import TABLE_TYPES_SQL_TO_ODD
 from .views import extract_transformer_data
+
+_data_set_metadata_excluded_keys: set = {
+    "table_catalog",
+    "table_schema",
+    "table_name",
+    "table_type",
+    "table_rows",
+    "create_time",
+    "update_time",
+    "table_comment",
+    "view_definition",
+}
 
 
 def map_tables(

@@ -5,6 +5,15 @@ from odd_models.models import MetadataExtension
 
 from odd_collector.adapters.singlestore.mappers.models import SingleStoreMetadata
 
+_data_set_metadata_schema_url: str = (
+    "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"
+    "extensions/singlestore.json#/definitions/SingleStoreDataSetExtension"
+)
+_data_set_field_metadata_schema_url: str = (
+    "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"
+    "extensions/singlestore.json#/definitions/SingleStoreDataSetFieldExtension"
+)
+
 
 def append_metadata_extension(
     metadata_list: list[MetadataExtension],

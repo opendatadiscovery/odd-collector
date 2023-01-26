@@ -2,13 +2,18 @@ from .logger import logger
 import mysql.connector
 from mysql.connector import errorcode
 
-from .mappers import _column_order_by, _column_table
 from .mappers.models import ColumnMetadata
 from .singlestore_repository_base import SingleStoreRepositoryBase
 from odd_collector_sdk.errors import DataSourceError
 
 
 class SingleStoreRepository(SingleStoreRepositoryBase):
+    _column_table: str = (
+        "information_schema.columns "
+        "where table_schema not in ('information_schema', 'mysql', 'performance_schema', 'sys')"
+    )
+    _column_order_by: str = "table_catalog, table_schema, table_name, ordinal_position"
+
     def __init__(self, config):
         self.__host = config.host
         self.__port = config.port
@@ -23,7 +28,7 @@ class SingleStoreRepository(SingleStoreRepositoryBase):
 
     def get_columns(self):
         columns = self.__query(
-            ColumnMetadata.get_str_fields(), _column_table, _column_order_by
+            ColumnMetadata.get_str_fields(), self._column_table, self._column_order_by
         )
         return columns
 
