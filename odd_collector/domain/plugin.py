@@ -226,6 +226,11 @@ class AirbytePlugin(WithHost, WithPort):
     store_raw_tables: bool = True
 
 
+class SingleStoreDBPlugin(DatabasePlugin):
+    type: Literal["singlestore"]
+    ssl_disabled: Optional[bool] = False
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -257,4 +262,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "oracle": OraclePlugin,
     "mlflow": MlflowPlugin,
     "airbyte": AirbytePlugin,
+    "singlestore": SingleStoreDBPlugin,
 }
