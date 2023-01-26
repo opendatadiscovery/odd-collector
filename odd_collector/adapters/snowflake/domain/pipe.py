@@ -7,4 +7,3 @@ class Pipe(Connectable):
     definition: str
     stage_url: Optional[str]
     stage_type: str
-
