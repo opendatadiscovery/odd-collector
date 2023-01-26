@@ -1,17 +1,28 @@
-from dataclasses import dataclass
-from typing import Dict, Any, Optional
+from pydantic import BaseModel
+from sql_metadata import Parser
+
+from typing import Dict, Any, Optional, List, Union
+
+from .datasource import DataSource
+from .query import Query
 from ..generator import Generator
 
 
-@dataclass
-class Report:
+class TableSource:
+    def __init__(self, table_path):
+        split_table_name = table_path.split(".")
+        self.table = split_table_name[-1]
+        self.schema = split_table_name[-2]
+        self.database = split_table_name[-3] if len(split_table_name) >= 3 else None
+        self.server = split_table_name[-4] if len(split_table_name) >= 4 else None
 
+
+class Report(BaseModel):
     token: str
     id: int
     name: str
     created_at: str
     updated_at: str
-    published_at: str
     edited_at: str
     type: str
     last_saved_at: str
@@ -31,11 +42,12 @@ class Report:
     runs_count: int
     query_preview: str
     view_count: int
-    _links: dict
+    links: dict
 
+    published_at: Optional[str]
     description: Optional[str] = None
     theme_id: Optional[int] = None
-    color_mappings: Optional[dict] = None
+    color_mappings: Optional[Union[str, dict]] = None
     last_successful_sync_at: Optional[str] = None
     space_token: Optional[str] = None
     full_width: Optional[bool] = None
@@ -48,55 +60,33 @@ class Report:
     github_link: Optional[str] = None
     chart_count: Optional[int] = None
     schedules_count: Optional[int] = None
+    queries: Optional[List[Query]] = None
+
+    host: Optional[str] = None
+    database: Optional[str] = None
+    adapter: Optional[str] = None
 
     @staticmethod
     def from_response(response: Dict[str, Any]):
-        report = Report(
-            token=response.get("token"),
-            id=response.get("id"),
-            name=response.get("name"),
-            created_at=response.get("created_at"),
-            updated_at=response.get("updated_at"),
-            published_at=response.get("published_at"),
-            edited_at=response.get("edited_at"),
-            type=response.get("type"),
-            last_saved_at=response.get("last_saved_at"),
-            archived=response.get("archived"),
-            account_id=response.get("account_id"),
-            account_username=response.get("account_username"),
-            public=response.get("public"),
-            manual_run_disabled=response.get("manual_run_disabled"),
-            run_privately=response.get("run_privately"),
-            drilldowns_enabled=response.get("drilldowns_enabled"),
-            expected_runtime=response.get("expected_runtime"),
-            last_successfully_run_at=response.get("last_successfully_run_at"),
-            last_run_at=response.get("last_run_at"),
-            last_successful_run_token=response.get("last_successful_run_token"),
-            query_count=response.get("query_count"),
-            max_query_count=response.get("max_query_count"),
-            runs_count=response.get("runs_count"),
-            query_preview=response.get("query_preview"),
-            view_count=response.get("view_count"),
-            _links=response.get("_links"),
+        response["links"] = response.pop("_links")
+        return Report.parse_obj(response)
 
-            description=response.get("description"),
-            theme_id=response.get("theme_id"),
-            color_mappings=response.get("color_mappings"),
-            last_successful_sync_at=response.get("last_successful_sync_at"),
-            space_token=response.get("space_token"),
-            full_width=response.get("full_width"),
-            layout=response.get("layout"),
-            is_embedded=response.get("is_embedded"),
-            is_signed=response.get("is_signed"),
-            shared=response.get("shared"),
-            web_preview_image=response.get("web_preview_image"),
-            flamingo_signature=response.get("flamingo_signature"),
-            github_link=response.get("github_link"),
-            chart_count=response.get("chart_count"),
-            schedules_count=response.get("schedules_count"),
-        )
-        return report
+    def set_db_setting(self, data_source: DataSource):
+        self.host = data_source.host
+        self.database = data_source.database
+        self.adapter = data_source.adapter
+        return self
 
     def get_oddrn(self, oddrn_generator: Generator):
         oddrn_generator.get_oddrn_by_path("reports", self.name)
         return oddrn_generator.get_oddrn_by_path("reports")
+
+    def get_report_db_sources(self) -> List[TableSource]:
+        tables = set()
+        queries_str = [query.raw_query for query in self.queries]
+        for query_str in queries_str:
+            parser = Parser(query_str)
+            tables.update(parser.tables)
+
+        report_sources = [TableSource(table) for table in tables]
+        return report_sources
