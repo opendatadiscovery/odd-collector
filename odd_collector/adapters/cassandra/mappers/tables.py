@@ -1,16 +1,19 @@
 from collections import defaultdict
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List
 
-from cassandra.util import OrderedMapSerializedKey, SortedSet
-from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from odd_collector.adapters.cassandra.generator import CassandraGenerator
 
 from .columns import map_column
 from .metadata import get_metadata_extension
-from .models import ColumnMetadata, TableMetadata, ViewMetadata
-from ..config import (
-    _data_set_metadata_excluded_keys,
-    _data_set_metadata_schema_url,
+from .models import ColumnMetadata, TableMetadata
+
+
+_data_set_metadata_excluded_keys: set
+_data_set_metadata_schema_url: str = (
+    "https://raw.githubusercontent.com/opendatadiscovery/"
+    "opendatadiscovery-specification/main/specification/extensions/cassandra.json#/"
+    "definitions/CassandraDataSetExtension"
 )
 
 

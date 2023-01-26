@@ -5,12 +5,16 @@ from odd_models.models import DataSetField, DataSetFieldType, Type
 from odd_collector.adapters.cassandra.generator import CassandraGenerator
 
 from .models import ColumnMetadata
-from ..config import (
-    _data_set_field_metadata_excluded_keys,
-    _data_set_field_metadata_schema_url,
-)
 from .metadata import get_metadata_extension
 from .types import TYPES_CASSANDRA_TO_ODD
+
+
+_data_set_field_metadata_excluded_keys: set
+_data_set_field_metadata_schema_url: str = (
+    "https://raw.githubusercontent.com/opendatadiscovery/"
+    "opendatadiscovery-specification/main/specification/extensions/cassandra.json"
+    "#/definitions/CassandraDataSetFieldExtension"
+)
 
 
 def map_column(
