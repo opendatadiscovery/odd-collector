@@ -7,6 +7,7 @@ class ModePathModel(BasePathsModel):
     # TODO: clarify this class
     reports: str = ""
 
+    # TODO: clarify this class
     class Config:
         dependencies_map = {"reports": ("reports",)}
 

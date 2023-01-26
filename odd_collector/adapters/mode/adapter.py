@@ -1,3 +1,5 @@
+import re
+
 from typing import Type
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
@@ -16,16 +18,24 @@ class Adapter(AbstractAdapter):
                  repo: Type[ModeRepositoryBase] = ModeRepository):
         self.config = config
         self.repo = repo(config)
-        self.generator = ModeGenerator(host_settings=config.host)
+        re_host = re.sub(r'https?://', '', config.host)
+        self.generator = ModeGenerator(host_settings=re_host)
 
     def get_data_source_oddrn(self) -> str:
         return self.generator.get_data_source_oddrn()
 
     # TODO: complete this function
     async def get_data_entity_list(self) -> DataEntityList:
-        reports = await self.repo.get_reports()
+        collections = await self.repo.get_collections()
 
-        entities = [map_report(self.generator, report) for report in reports]
-        return DataEntityList(
+        data_sources = await self.repo.get_data_sources()
+        reports_result = []
+        for data_source in data_sources:
+            result = await self.repo.get_reports_for_data_source(data_source)
+            reports_result.extend(result)
+
+        entities = [map_report(self.generator, report) for report in reports_result]
+        result = DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(), items=entities
         )
+        return result
