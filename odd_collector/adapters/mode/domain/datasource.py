@@ -25,12 +25,12 @@ class DataSource(BaseModel):
     provider: str
     vendor: str
     ldap: bool
-    warehouse: str
     bridged: bool
     adapter_version: str
     custom_attributes: dict
     links: dict
 
+    warehouse: Optional[str]
     account_id: Optional[int]
     account_username: Optional[str]
     organization_token: Optional[str]
