@@ -24,17 +24,12 @@ class Adapter(AbstractAdapter):
     def get_data_source_oddrn(self) -> str:
         return self.generator.get_data_source_oddrn()
 
-    # TODO: complete this function
     async def get_data_entity_list(self) -> DataEntityList:
-        collections = await self.repo.get_collections()
+        # collections = await self.repo.get_collections()
 
         data_sources = await self.repo.get_data_sources()
-        reports_result = []
-        for data_source in data_sources:
-            result = await self.repo.get_reports_for_data_source(data_source)
-            reports_result.extend(result)
-
-        entities = [map_report(self.generator, report) for report in reports_result]
+        reports = await self.repo.get_reports_for_data_sources(data_sources)
+        entities = [map_report(self.generator, report) for report in reports]
         result = DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(), items=entities
         )
