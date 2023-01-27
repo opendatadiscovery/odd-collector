@@ -15,9 +15,8 @@ def map_report_metadata(report: Report) -> MetadataExtension:
     for field in already_used_fields + unnecessary_fields:
         report_fields.pop(field)
 
-    report_fields["queries"] = ";\n\n".join([r.raw_query.strip("; \n") for r in report.queries]) + ";"
-
-    return MetadataExtension(
-        schema_url=SCHEMA_URL,
-        metadata=report_fields
+    report_fields["queries"] = (
+        ";\n\n".join([r.raw_query.strip("; \n") for r in report.queries]) + ";"
     )
+
+    return MetadataExtension(schema_url=SCHEMA_URL, metadata=report_fields)

@@ -32,10 +32,14 @@ class ModeRepositoryBase(ABC):
     async def get_collections(self) -> List[Collection]:
         raise NotImplementedError
 
-    async def get_reports_for_data_source(self, data_source: DataSource) -> List[Report]:
+    async def get_reports_for_data_source(
+        self, data_source: DataSource
+    ) -> List[Report]:
         raise NotImplementedError
 
-    async def get_reports_for_data_sources(self, data_sources: List[DataSource]) -> List[Report]:
+    async def get_reports_for_data_sources(
+        self, data_sources: List[DataSource]
+    ) -> List[Report]:
         raise NotImplementedError
 
     async def get_reports_for_space(self, spaces: Collection) -> List[Report]:
@@ -46,7 +50,6 @@ class ModeRepositoryBase(ABC):
 
 
 class ModeRepository(ModeRepositoryBase):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.api_path = f"{self._host}/api/{self._account}"
@@ -54,11 +57,13 @@ class ModeRepository(ModeRepositoryBase):
 
     async def _get_requests(self, path: str) -> Dict:
         path = path[1:] if path.startswith("/") else path
-        auth = BasicAuth(self._token.get_secret_value(), self._password.get_secret_value())
+        auth = BasicAuth(
+            self._token.get_secret_value(), self._password.get_secret_value()
+        )
         request_args = RequestArgs(
             method="GET",
             url=posixpath.join(self.api_path, path),
-            headers={f"Authorization": auth.encode()}
+            headers={f"Authorization": auth.encode()},
         )
         async with ClientSession() as session:
             result = await self.rest_client.fetch_async_response(session, request_args)
@@ -82,7 +87,9 @@ class ModeRepository(ModeRepositoryBase):
         queries = await self.get_queries_for_reports(report.token)
         report.queries = queries
 
-    async def get_reports_for_data_source(self, data_source: DataSource) -> List[Report]:
+    async def get_reports_for_data_source(
+        self, data_source: DataSource
+    ) -> List[Report]:
         path = f"data_sources/{data_source.token}/reports"
         results = await self._get_requests(path)
 
@@ -95,21 +102,31 @@ class ModeRepository(ModeRepositoryBase):
                 unique_results.append(report_json)
                 reports_tokens.add(report_json["token"])
 
-        reports = [Report.from_response(report_json).set_db_setting(data_source) for report_json in unique_results]
+        reports = [
+            Report.from_response(report_json).set_db_setting(data_source)
+            for report_json in unique_results
+        ]
         await asyncio.gather(*map(self._map_reports_with_queries, reports))
         return reports
 
-    async def get_reports_for_data_sources(self, data_sources: List[DataSource]) -> List[Report]:
+    async def get_reports_for_data_sources(
+        self, data_sources: List[DataSource]
+    ) -> List[Report]:
         inputs = map(self.get_reports_for_data_source, data_sources)
         reports_lists = await asyncio.gather(*inputs)
-        reports_flat_list = [report for report_list in reports_lists for report in report_list]
+        reports_flat_list = [
+            report for report_list in reports_lists for report in report_list
+        ]
         return reports_flat_list
 
     async def get_reports_for_space(self, collection: Collection) -> List[Collection]:
         # this method doesn't set up db setting for reports as get_reports_for_data_source
         path = f"spaces/{collection.token}/reports"
         result = await self._get_requests(path)
-        reports = [Report.from_response(report_json) for report_json in result.get("_embedded").get("reports")]
+        reports = [
+            Report.from_response(report_json)
+            for report_json in result.get("_embedded").get("reports")
+        ]
         await asyncio.gather(*map(self._map_reports_with_queries, reports))
         return reports
 

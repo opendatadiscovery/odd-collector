@@ -28,15 +28,15 @@ DRIVER_MAPPING = {
 }
 
 
-def map_report(
-        oddrn_generator: ModeGenerator, report: Report
-) -> DataEntity:
+def map_report(oddrn_generator: ModeGenerator, report: Report) -> DataEntity:
     inputs = set()
     for source in report.get_report_db_sources():
         host = source.server if source.server else report.host
         database = source.database if source.database else report.database
         driver = DRIVER_MAPPING[report.adapter]
-        inputs.add(f"//{driver}/host/{host}/databases/{database}/schemas/{source.schema}/tables/{source.table}")
+        inputs.add(
+            f"//{driver}/host/{host}/databases/{database}/schemas/{source.schema}/tables/{source.table}"
+        )
 
     entity = DataEntity(
         oddrn=report.get_oddrn(oddrn_generator),
@@ -46,6 +46,6 @@ def map_report(
         type=DataEntityType.DASHBOARD,
         updated_at=report.updated_at,
         created_at=report.created_at,
-        data_consumer=DataConsumer(inputs=inputs)
+        data_consumer=DataConsumer(inputs=inputs),
     )
     return entity

@@ -13,12 +13,12 @@ from .mappers.report import map_report
 
 
 class Adapter(AbstractAdapter):
-    def __init__(self,
-                 config: ModePlugin,
-                 repo: Type[ModeRepositoryBase] = ModeRepository):
+    def __init__(
+        self, config: ModePlugin, repo: Type[ModeRepositoryBase] = ModeRepository
+    ):
         self.config = config
         self.repo = repo(config)
-        re_host = re.sub(r'https?://', '', config.host)
+        re_host = re.sub(r"https?://", "", config.host)
         self.generator = ModeGenerator(host_settings=re_host)
 
     def get_data_source_oddrn(self) -> str:
