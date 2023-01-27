@@ -1264,7 +1264,7 @@ sqlparse = "0.4.2"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.58"
+version = "0.1.67"
 description = "Open Data Discovery Resource Name Generator"
 category = "main"
 optional = false
@@ -2317,7 +2317,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9.1"
-content-hash = "fceff3793128ae58f421df8d0ab182cd50ae5ba98d8078931926e025b40a855c"
+content-hash = "0e881ed9fd854e574087f4441869fad2eb9bf15abbe2b2113e67b2eeeabb8b36"
 
 [metadata.files]
 aiohttp = []

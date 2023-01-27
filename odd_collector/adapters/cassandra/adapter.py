@@ -4,7 +4,7 @@ from typing import List
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
-from odd_collector.adapters.cassandra.generator import CassandraGenerator
+from oddrn_generator import CassandraGenerator
 from .mappers.keyspaces import map_keyspace
 
 from .mappers.tables import map_tables

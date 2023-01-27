@@ -4,7 +4,7 @@ from typing import List
 from odd_models.models import DataTransformer, DataEntity, DataEntityType, DataSet
 from odd_models.utils import SqlParser
 
-from odd_collector.adapters.cassandra.generator import CassandraGenerator
+from oddrn_generator import CassandraGenerator
 from odd_collector.adapters.cassandra.mappers.columns import map_column
 from odd_collector.adapters.cassandra.mappers.models import ViewMetadata, ColumnMetadata
 

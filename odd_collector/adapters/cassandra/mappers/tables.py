@@ -2,14 +2,14 @@ from collections import defaultdict
 from typing import Dict, List
 
 from odd_models.models import DataEntity, DataEntityType, DataSet
-from odd_collector.adapters.cassandra.generator import CassandraGenerator
+from oddrn_generator import CassandraGenerator
 
 from .columns import map_column
 from .metadata import get_metadata_extension
 from .models import ColumnMetadata, TableMetadata
 
 
-_data_set_metadata_excluded_keys: set
+_data_set_metadata_excluded_keys: set = set()
 _data_set_metadata_schema_url: str = (
     "https://raw.githubusercontent.com/opendatadiscovery/"
     "opendatadiscovery-specification/main/specification/extensions/cassandra.json#/"
