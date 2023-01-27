@@ -1,3 +1,4 @@
+import asyncio
 import posixpath
 
 from abc import ABC
@@ -31,10 +32,13 @@ class ModeRepositoryBase(ABC):
     async def get_collections(self) -> List[Collection]:
         raise NotImplementedError
 
-    async def get_reports_for_data_source(self, data_source) -> List[Report]:
+    async def get_reports_for_data_source(self, data_source: DataSource) -> List[Report]:
         raise NotImplementedError
 
-    async def get_reports_for_space(self, data_source) -> List[Report]:
+    async def get_reports_for_data_sources(self, data_sources: List[DataSource]) -> List[Report]:
+        raise NotImplementedError
+
+    async def get_reports_for_space(self, spaces: Collection) -> List[Report]:
         raise NotImplementedError
 
     async def get_queries_for_reports(self, report) -> List[Query]:
@@ -74,33 +78,39 @@ class ModeRepository(ModeRepositoryBase):
         collections = [Collection.from_response(collection) for collection in result]
         return collections
 
+    async def _map_reports_with_queries(self, report: Report):
+        queries = await self.get_queries_for_reports(report.token)
+        report.queries = queries
+
     async def get_reports_for_data_source(self, data_source: DataSource) -> List[Report]:
         path = f"data_sources/{data_source.token}/reports"
-        result = await self._get_requests(path)
+        results = await self._get_requests(path)
+
+        # there is a bug from MODE side: MODE returns duplicates
+        # of reports in API response for unknown reason.
         reports_tokens = set()
-        reports = []
-        for report_json in result.get("_embedded").get("reports"):
-            report = Report.from_response(report_json)
-            report = report.set_db_setting(data_source)
+        unique_results = []
+        for report_json in results.get("_embedded").get("reports"):
+            if report_json["token"] not in reports_tokens:
+                unique_results.append(report_json)
+                reports_tokens.add(report_json["token"])
 
-            # there is a bug from MODE side: MODE returns duplicates
-            # of reports in API response for unknown reason.
-            if report.token not in reports_tokens:
-                queries = await self.get_queries_for_reports(report.token)
-                report.queries = queries
-                reports.append(report)
-                reports_tokens.add(report.token)
-
+        reports = [Report.from_response(report_json).set_db_setting(data_source) for report_json in unique_results]
+        await asyncio.gather(*map(self._map_reports_with_queries, reports))
         return reports
 
+    async def get_reports_for_data_sources(self, data_sources: List[DataSource]) -> List[Report]:
+        inputs = map(self.get_reports_for_data_source, data_sources)
+        reports_lists = await asyncio.gather(*inputs)
+        reports_flat_list = [report for report_list in reports_lists for report in report_list]
+        return reports_flat_list
+
     async def get_reports_for_space(self, collection: Collection) -> List[Collection]:
-        # this method doesn't set up db setting for reports as
+        # this method doesn't set up db setting for reports as get_reports_for_data_source
         path = f"spaces/{collection.token}/reports"
         result = await self._get_requests(path)
-        reports = []
-        for report_json in result.get("_embedded").get("reports"):
-            report = Report.from_response(report_json)
-            reports.append(report)
+        reports = [Report.from_response(report_json) for report_json in result.get("_embedded").get("reports")]
+        await asyncio.gather(*map(self._map_reports_with_queries, reports))
         return reports
 
     async def get_queries_for_reports(self, report: str) -> List[Query]:
