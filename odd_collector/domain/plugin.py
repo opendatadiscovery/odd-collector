@@ -217,6 +217,15 @@ class MlflowPlugin(BasePlugin):
     ] = None  # List of pipeline names to filter, if omit fetch all pipelines
 
 
+class ModePlugin(BasePlugin):
+    type: Literal["mode"]
+    host: str
+    account: str
+    data_source: str
+    token: Optional[SecretStr]
+    password: Optional[SecretStr]
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -247,4 +256,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "metabase": MetabasePlugin,
     "oracle": OraclePlugin,
     "mlflow": MlflowPlugin,
+    "mode": ModePlugin,
 }
