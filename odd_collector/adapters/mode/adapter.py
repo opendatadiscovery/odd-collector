@@ -25,6 +25,7 @@ class Adapter(AbstractAdapter):
         return self.generator.get_data_source_oddrn()
 
     async def get_data_entity_list(self) -> DataEntityList:
+        # mode collections(spaces) are not used in the current version of the adapter
         # collections = await self.repo.get_collections()
 
         data_sources = await self.repo.get_data_sources()
