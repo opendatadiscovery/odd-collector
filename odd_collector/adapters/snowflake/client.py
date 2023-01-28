@@ -1,6 +1,6 @@
 import contextlib
 from abc import ABC, abstractmethod
-from typing import Callable, List, Union
+from typing import Callable, List, Union, Type
 
 from funcy import lsplit
 from odd_collector_sdk.errors import DataSourceError
@@ -11,7 +11,7 @@ from snowflake.connector.errors import DataError, ProgrammingError
 from odd_collector.domain.plugin import SnowflakePlugin
 from odd_collector.helpers import LowerKeyDict
 
-from .domain import Column, Pipe, Table, View
+from .domain import Column, Pipe, Table, View, RawPipe, RawStage
 
 TABLES_VIEWS_QUERY = """
 with recursive cte as (
@@ -170,24 +170,20 @@ order by
     c.ordinal_position
 """
 
-PIPES_QUERY = """
 
-SELECT NAME, DEFINITION, DOWNSTREAM, STAGE_URL, STAGE_TYPE
-FROM(
-SELECT *
-FROM (SELECT DEFINITION,
-             PIPE_NAME                                          as name,
-             CONCAT_WS('.', SPLIT_PART(REPLACE(TRIM(SUBSTR(DEFINITION, 10, POSITION(' ', DEFINITION, 11) - 10)),
-                     CHR(10)), '(', 1), 'TABLE' )                                 as DOWNSTREAM,
-             SPLIT_PART(SPLIT_PART(DEFINITION, '@', 2), '.', 1) AS STAGE_CATALOG,
-             SPLIT_PART(SPLIT_PART(DEFINITION, '@', 2), '.', 2) AS STAGE_SCHEMA,
-             SPLIT_PART(SPLIT_PART(SPLIT_PART(DEFINITION, '@', 2), '.', 3), ')', 1) AS STAGE_NAME
-      FROM INFORMATION_SCHEMA.PIPES) pipes
+RAW_PIPES_QUERY = """
 
-         LEFT JOIN (SELECT STAGE_URL, STAGE_CATALOG, STAGE_SCHEMA, STAGE_NAME, STAGE_TYPE
-                    FROM INFORMATION_SCHEMA.STAGES) stages
-USING (STAGE_CATALOG, STAGE_SCHEMA, STAGE_NAME)
-)
+SELECT PIPE_CATALOG, PIPE_SCHEMA, PIPE_NAME, DEFINITION
+FROM INFORMATION_SCHEMA.PIPES
+;
+
+"""
+
+RAW_STAGES_QUERY = """
+
+SELECT STAGE_NAME, STAGE_CATALOG, STAGE_SCHEMA, STAGE_URL, STAGE_TYPE
+FROM INFORMATION_SCHEMA.STAGES
+;
 
 """
 
@@ -202,6 +198,14 @@ class SnowflakeClientBase(ABC):
 
     @abstractmethod
     def get_pipes(self) -> List[Pipe]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_raw_pipes(self) -> List[RawPipe]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_raw_stages(self) -> List[RawStage]:
         raise NotImplementedError
 
 
@@ -253,9 +257,13 @@ class SnowflakeClient(SnowflakeClientBase):
 
             return tables
 
-    def get_pipes(self) -> List[Pipe]:
+    def get_raw_pipes(self) -> List[RawPipe]:
         with self.connect() as cursor:
-            return self._fetch_pipes(cursor)
+            return self._fetch_something(RAW_PIPES_QUERY, cursor, RawPipe)
+
+    def get_raw_stages(self) -> List[RawStage]:
+        with self.connect() as cursor:
+            return self._fetch_something(RAW_STAGES_QUERY, cursor, RawStage)
 
     def _fetch_tables(self, cursor: DictCursor) -> List[Table]:
         result: List[Table] = []
@@ -271,11 +279,15 @@ class SnowflakeClient(SnowflakeClientBase):
         return result
 
     @staticmethod
-    def _fetch_pipes(cursor: DictCursor) -> List[Pipe]:
-        result: List[Pipe] = []
-        cursor.execute(PIPES_QUERY)
+    def _fetch_something(
+        query: str,
+        cursor: DictCursor,
+        entity_type: Type[Union[Pipe, RawPipe, RawStage]],
+    ) -> List[Union[Pipe, RawPipe, RawStage]]:
+        result: List[entity_type] = []
+        cursor.execute(query)
         for raw_object in cursor.fetchall():
-            result.append(Pipe.parse_obj(LowerKeyDict(raw_object)))
+            result.append(entity_type.parse_obj(LowerKeyDict(raw_object)))
         return result
 
     def _fetch_columns(self, cursor: DictCursor) -> List[Column]:
