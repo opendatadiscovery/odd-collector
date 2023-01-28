@@ -170,7 +170,6 @@ order by
     c.ordinal_position
 """
 
-
 RAW_PIPES_QUERY = """
 
 SELECT PIPE_CATALOG, PIPE_SCHEMA, PIPE_NAME, DEFINITION
@@ -194,10 +193,6 @@ class SnowflakeClientBase(ABC):
 
     @abstractmethod
     def get_tables(self) -> List[Table]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_pipes(self) -> List[Pipe]:
         raise NotImplementedError
 
     @abstractmethod
