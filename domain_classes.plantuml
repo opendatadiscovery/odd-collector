@@ -50,6 +50,39 @@ port: str
 }
 odd_collector_sdk.domain.plugin.Plugin <|-- WithPort
 
+class ElasticsearchPlugin{
+type: Literal["elasticsearch"]
+http_auth: str
+use_ssl: bool
+verify_certs: bool
+ca_certs: str
+}
+WithHost <|-- ElasticsearchPlugin
+WithPort <|-- ElasticsearchPlugin
+
+class HivePlugin{
+type: Literal["hive"]
+}
+WithHost <|-- HivePlugin
+WithPort <|-- HivePlugin
+
+class FeastPlugin{
+type: Literal["feast"]
+repo_path: str
+}
+WithHost <|-- FeastPlugin
+
+class DbtPlugin{
+type: Literal["dbt"]
+odd_catalog_url: str
+}
+WithHost <|-- DbtPlugin
+
+class AirbytePlugin{
+type: Literal["airbyte"]
+}
+WithHost <|-- AirbytePlugin
+WithPort <|-- AirbytePlugin
 
 abstract class DatabasePlugin {
 database: Optional[str]
@@ -127,37 +160,14 @@ type: Literal["neo4j"]
 }
 DatabasePlugin <|-- Neo4jPlugin
 
+class SingleStorePlugin {
+type: Literal["singlestore"]
+}
+DatabasePlugin <|-- SingleStorePlugin
 
 TarantoolPlugin -[hidden]> PostgreSQLPlugin
+}
 
-class ElasticsearchPlugin{
-type: Literal["elasticsearch"]
-http_auth: str
-use_ssl: bool
-verify_certs: bool
-ca_certs: str
-}
-WithHost <|-- ElasticsearchPlugin
-WithPort <|-- ElasticsearchPlugin
-
-class HivePlugin{
-type: Literal["hive"]
-}
-WithHost <|-- HivePlugin
-WithPort <|-- HivePlugin
-
-class FeastPlugin{
-type: Literal["feast"]
-repo_path: str
-}
-WithHost <|-- FeastPlugin
-
-class DbtPlugin{
-type: Literal["dbt"]
-odd_catalog_url: str
-}
-WithHost <|-- DbtPlugin
-}
 @enduml
 
 
