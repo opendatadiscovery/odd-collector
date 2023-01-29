@@ -1,6 +1,6 @@
 default_pulling_interval: 10
 token: ""
-platform_host_url: http://localhost:8081
+platform_host_url: http://localhost:8080
 chunk_size: 1000
 plugins:
   - type: hive
