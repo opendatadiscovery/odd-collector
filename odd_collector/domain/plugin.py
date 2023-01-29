@@ -82,6 +82,7 @@ class SnowflakePlugin(DatabasePlugin):
 class HivePlugin(WithHost, WithPort):
     type: Literal["hive"]
     database: str
+    port: int
 
 
 class ElasticsearchPlugin(WithHost, WithPort):

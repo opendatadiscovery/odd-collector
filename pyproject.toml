@@ -43,6 +43,7 @@ vertica-python = "1.1.1"
 pyaml-env = "^1.2.1"
 pytz = "^2022.7"
 odd-collector-sdk = "0.3.10"
+loguru = "^0.6.0"
 
 [tool.isort]
 profile = "black"

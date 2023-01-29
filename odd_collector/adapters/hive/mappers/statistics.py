@@ -1,5 +1,3 @@
-from typing import Any, Dict
-
 from odd_models.models import (
     BinaryFieldStat,
     BooleanFieldStat,
@@ -7,13 +5,16 @@ from odd_models.models import (
     NumberFieldStat,
     StringFieldStat,
 )
+from thrift_files.libraries.thrift_hive_metastore_client.ttypes import (
+    ColumnStatisticsData,
+)
 
 DEFAULT_VALUE = -1
 
 
-def _mapper_numeric(stats_data: Dict[str, Any]):
+def _mapper_numeric(stats_data: ColumnStatisticsData):
     columns_stat_type = (
-        stats_data.longStats or stats_data.doubleStats or stats_data.dateStats
+            stats_data.longStats or stats_data.doubleStats or stats_data.dateStats
     )
     return {
         "low_value": _digit_checker(columns_stat_type.lowValue, float),
@@ -25,7 +26,7 @@ def _mapper_numeric(stats_data: Dict[str, Any]):
     }
 
 
-def _mapper_decimal(stats_data: Dict[str, Any]):
+def _mapper_decimal(stats_data: ColumnStatisticsData):
     return {
         "low_value": _digit_checker(stats_data.decimalStats.lowValue, int),
         "high_value": _digit_checker(stats_data.decimalStats.highValue, int),
@@ -36,8 +37,7 @@ def _mapper_decimal(stats_data: Dict[str, Any]):
     }
 
 
-def _mapper_bytes(stats_data: Dict[str, Any]):
-
+def _mapper_bytes(stats_data: ColumnStatisticsData):
     columns_stat_type = stats_data.stringStats or stats_data.binaryStats
     return {
         "max_length": _digit_checker(columns_stat_type.maxColLen, int),
@@ -47,7 +47,7 @@ def _mapper_bytes(stats_data: Dict[str, Any]):
     }
 
 
-def _mapper_boolean(stats_data: Dict[str, Any]):
+def _mapper_boolean(stats_data: ColumnStatisticsData):
     return {
         "true_count": _digit_checker(stats_data.booleanStats.numTrues, int),
         "false_count": _digit_checker(stats_data.booleanStats.numFalses, int),

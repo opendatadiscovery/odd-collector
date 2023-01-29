@@ -3,7 +3,6 @@ import logging
 import os
 
 from odd_collector_sdk.collector import Collector
-
 from odd_collector.domain.plugin import PLUGIN_FACTORY
 
 logging.basicConfig(
