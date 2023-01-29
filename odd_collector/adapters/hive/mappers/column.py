@@ -4,17 +4,17 @@ from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import HiveGenerator
 
 from odd_collector.adapters.hive.logger import logger
+from odd_collector.adapters.hive.mappers.columm_type import map_column_type
 from odd_collector.adapters.hive.mappers.statistics import FIELD_TYPE_SCHEMA
 from odd_collector.adapters.hive.models.column import Column
 from odd_collector.adapters.hive.models.column_types import (
-    MapColumnType,
-    StructColumnType,
     ArrayColumnType,
-    PrimitiveColumnType,
     ColumnType,
+    MapColumnType,
+    PrimitiveColumnType,
+    StructColumnType,
     UnionColumnType,
 )
-from odd_collector.adapters.hive.mappers.columm_type import map_column_type
 
 
 @dataclass

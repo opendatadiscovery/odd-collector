@@ -1,10 +1,10 @@
-from .logger import logger
 import mysql.connector
 from mysql.connector import errorcode
+from odd_collector_sdk.errors import DataSourceError
 
+from .logger import logger
 from .mappers.models import ColumnMetadata
 from .singlestore_repository_base import SingleStoreRepositoryBase
-from odd_collector_sdk.errors import DataSourceError
 
 
 class SingleStoreRepository(SingleStoreRepositoryBase):

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Union, Optional, Any
+from typing import Any, Optional, Union
 
 from psycopg2 import sql
 from psycopg2.extensions import AsIs
@@ -7,8 +7,8 @@ from psycopg2.extensions import AsIs
 from odd_collector.adapters.redshift.connector import RedshiftConnector
 from odd_collector.adapters.redshift.logger import logger
 from odd_collector.adapters.redshift.mappers.metadata import (
-    MetadataTables,
     MetadataColumns,
+    MetadataTables,
 )
 
 

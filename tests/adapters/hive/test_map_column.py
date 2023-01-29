@@ -6,8 +6,8 @@ from odd_collector.adapters.hive.mappers.column import map_column
 from odd_collector.adapters.hive.models.column import Column
 from odd_collector.adapters.hive.models.column_types import (
     MapColumnType,
-    StructColumnType,
     PrimitiveColumnType,
+    StructColumnType,
 )
 
 

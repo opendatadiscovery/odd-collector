@@ -1,4 +1,5 @@
 from typing import Any
+
 from odd_models.models import (
     DataEntity,
     DataEntityType,
@@ -6,8 +7,10 @@ from odd_models.models import (
     MetadataExtension,
 )
 from oddrn_generator import AirbyteGenerator
-from ..logger import logger
+
 from odd_collector.helpers.flatdict import FlatDict
+
+from ..logger import logger
 
 
 def generate_connection_oddrn(conn_id: str, oddrn_gen: AirbyteGenerator) -> str:

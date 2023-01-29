@@ -1,11 +1,11 @@
 from lark import Token, Transformer
 
 from odd_collector.adapters.hive.models.column_types import (
-    ColumnType,
     ArrayColumnType,
+    ColumnType,
     MapColumnType,
-    StructColumnType,
     PrimitiveColumnType,
+    StructColumnType,
     UnionColumnType,
 )
 

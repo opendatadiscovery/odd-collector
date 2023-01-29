@@ -1,12 +1,12 @@
 import logging
-from funcy import concat, lpluck_attr
 from typing import List
 
+from funcy import concat, lpluck_attr
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import CassandraGenerator
-from .mappers.keyspaces import map_keyspace
 
+from .mappers.keyspaces import map_keyspace
 from .mappers.tables import map_tables
 from .mappers.views import map_views
 from .repository import CassandraRepository

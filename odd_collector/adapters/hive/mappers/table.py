@@ -2,10 +2,9 @@ from funcy import lflatten
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import HiveGenerator
 
-from odd_collector.adapters.hive.mappers.column import map_column
+from odd_collector.adapters.hive.mappers.column import TABLE_CONTEXT, map_column
 from odd_collector.adapters.hive.mappers.metadata import map_metadata
 from odd_collector.adapters.hive.models.table import Table
-from odd_collector.adapters.hive.mappers.column import TABLE_CONTEXT
 
 
 def map_table(table: Table, generator: HiveGenerator) -> DataEntity:

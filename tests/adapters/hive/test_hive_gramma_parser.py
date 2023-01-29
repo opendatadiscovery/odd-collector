@@ -3,10 +3,10 @@ import unittest
 from odd_collector.adapters.hive.grammar_parser.parser import parser
 from odd_collector.adapters.hive.grammar_parser.transformer import transformer
 from odd_collector.adapters.hive.models.column_types import (
-    StructColumnType,
+    ArrayColumnType,
     ColumnType,
     MapColumnType,
-    ArrayColumnType,
+    StructColumnType,
 )
 
 

@@ -1,13 +1,12 @@
 from typing import Any, Optional
 
 from hive_metastore_client.builders.table_builder import Table as HTable
+from sql_metadata.parser import Parser
 
 from odd_collector.adapters.hive.logger import logger
 from odd_collector.adapters.hive.models.base_table import BaseTable
-from odd_collector.helpers.flatdict import FlatDict
-from sql_metadata.parser import Parser
-
 from odd_collector.helpers.datatime_from_timestamp import datetime_from_timestamp
+from odd_collector.helpers.flatdict import FlatDict
 
 
 class View(BaseTable):

@@ -1,14 +1,14 @@
 import json
 from contextlib import contextmanager
-from typing import Protocol, Optional
+from typing import Optional, Protocol
 
 from hive_metastore_client import HiveMetastoreClient
 from hive_metastore_client.builders.table_builder import Table as HiveTable
 from thrift_files.libraries.thrift_hive_metastore_client.ttypes import (
+    ColumnStatistics,
+    FieldSchema,
     PrimaryKeysRequest,
     StorageDescriptor,
-    FieldSchema,
-    ColumnStatistics,
 )
 
 from odd_collector.adapters.hive.grammar_parser.parser import parser

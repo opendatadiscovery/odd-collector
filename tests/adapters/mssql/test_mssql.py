@@ -1,11 +1,11 @@
-from typing import List, Iterable
+from typing import Iterable, List
 
 import pytest
 from odd_models.models import DataEntityType
 
 from odd_collector.adapters.mssql.adapter import Adapter
 from odd_collector.adapters.mssql.models import Table, View
-from odd_collector.adapters.mssql.repository import DefaultConnector, Columns
+from odd_collector.adapters.mssql.repository import Columns, DefaultConnector
 from odd_collector.domain.plugin import MSSQLPlugin
 
 

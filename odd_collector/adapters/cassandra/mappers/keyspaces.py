@@ -1,7 +1,6 @@
 from typing import List
 
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
-
 from oddrn_generator import CassandraGenerator
 
 

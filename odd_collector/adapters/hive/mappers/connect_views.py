@@ -1,6 +1,7 @@
 from odd_models.models import DataEntity, DataEntityType
-from odd_collector.adapters.hive.models.view import View
+
 from odd_collector.adapters.hive.logger import logger
+from odd_collector.adapters.hive.models.view import View
 
 
 def connect_views(views: list[View], data_entities: list[DataEntity]) -> None:

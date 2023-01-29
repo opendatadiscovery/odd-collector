@@ -14,7 +14,7 @@ DEFAULT_VALUE = -1
 
 def _mapper_numeric(stats_data: ColumnStatisticsData):
     columns_stat_type = (
-            stats_data.longStats or stats_data.doubleStats or stats_data.dateStats
+        stats_data.longStats or stats_data.doubleStats or stats_data.dateStats
     )
     return {
         "low_value": _digit_checker(columns_stat_type.lowValue, float),
