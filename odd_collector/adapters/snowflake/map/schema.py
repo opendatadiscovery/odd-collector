@@ -3,9 +3,9 @@ from copy import deepcopy
 from typing import Dict, List, Tuple
 
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
+from oddrn_generator import SnowflakeGenerator
 
 from ..domain import Table
-from ..generator import SnowflakeGenerator
 
 
 def map_schemas(

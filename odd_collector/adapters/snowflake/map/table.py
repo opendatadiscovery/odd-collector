@@ -1,10 +1,10 @@
 from copy import deepcopy
 
 from odd_models.models import DataEntity, DataEntityType, DataSet
+from oddrn_generator import SnowflakeGenerator
 
 from odd_collector.adapters.snowflake.domain import Table
 
-from ..generator import SnowflakeGenerator
 from ..helpers import transform_datetime
 from .column import map_columns
 from .entity_type_path_key import EntityTypePathKey
