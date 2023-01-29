@@ -1,18 +1,20 @@
 from collections import defaultdict
-from typing import Any, Dict, List, Tuple, Union
+from typing import Dict, List
 
-from cassandra.util import OrderedMapSerializedKey, SortedSet
-from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
-
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import CassandraGenerator
-from . import (
-    ColumnMetadata,
-    TableMetadata,
-    _data_set_metadata_excluded_keys,
-    _data_set_metadata_schema_url,
-)
+
 from .columns import map_column
 from .metadata import get_metadata_extension
+from .models import ColumnMetadata, TableMetadata
+
+
+_data_set_metadata_excluded_keys: set = set()
+_data_set_metadata_schema_url: str = (
+    "https://raw.githubusercontent.com/opendatadiscovery/"
+    "opendatadiscovery-specification/main/specification/extensions/cassandra.json#/"
+    "definitions/CassandraDataSetExtension"
+)
 
 
 def get_table_name_to_columns(
@@ -44,7 +46,8 @@ def get_dataset(
     """
     dataset = DataSet(
         field_list=[
-            map_column(column, oddrn_generator, None) for column in table_columns
+            map_column(column, "tables_columns", oddrn_generator, None)
+            for column in table_columns
         ]
     )
     return dataset
@@ -85,46 +88,22 @@ def get_data_entity(
     return data_entity
 
 
-def filter_data(data: Tuple[Any]) -> Tuple[Any]:
-    """
-    A method to filter the data obtained from the Cassandra database. It converts the Cassandra types
-    OrderedMapSerializedKey, SortedSet to usual Python dictionary and list, respectively
-    :param data: the data obtained from the Cassandra database.
-    :return: the same data after filtering the types.
-    """
-    filtered = []
-    for value in data:
-        if type(value) is OrderedMapSerializedKey:
-            filtered.append(dict(value))
-        elif type(value) is SortedSet:
-            filtered.append(list(value))
-        else:
-            filtered.append(value)
-    return tuple(filtered)
-
-
 def map_tables(
     oddrn_generator: CassandraGenerator,
-    tables: List[Tuple],
-    columns: List[Tuple],
+    tables: List[TableMetadata],
+    columns: List[ColumnMetadata],
     keyspace: str,
 ) -> List[DataEntity]:
     """
     A method to map tables in a keyspace to a list of data entities. This is done by filtering the data, and then
     generating a data entity for each of the tables given. And finally by adding a data entity for the whole keyspace.
     :param oddrn_generator: the database generator.
-    :param tables: a tuple of the tables.
-    :param columns: a tuple of the columns.
+    :param tables: a list of the tables.
+    :param columns: a list of the columns.
     :param keyspace: the name of the keyspace.
     :return: a list of data entities describing the tables given.
     """
     data_entities: List[DataEntity] = []
-
-    tables = [filter_data(table) for table in tables]
-    columns = [filter_data(column) for column in columns]
-
-    tables = [TableMetadata(*table) for table in tables]
-    columns = [ColumnMetadata(*column) for column in columns]
 
     table_name_to_columns: Dict[str, List[ColumnMetadata]] = get_table_name_to_columns(
         columns
@@ -134,17 +113,5 @@ def map_tables(
         table_columns = table_name_to_columns.get(table.table_name, [])
         data_entity = get_data_entity(table, oddrn_generator, keyspace, table_columns)
         data_entities.append(data_entity)
-
-    data_entities.append(
-        DataEntity(
-            oddrn=oddrn_generator.get_oddrn_by_path("keyspaces"),
-            name=keyspace,
-            type=DataEntityType.DATABASE_SERVICE,
-            metadata=[],
-            data_entity_group=DataEntityGroup(
-                entities_list=[de.oddrn for de in data_entities]
-            ),
-        )
-    )
 
     return data_entities

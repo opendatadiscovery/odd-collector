@@ -4,11 +4,10 @@ from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import SnowflakeGenerator
-
 from odd_collector.domain.plugin import SnowflakePlugin
 
 from .client import SnowflakeClient, SnowflakeClientBase
-from .domain import Table
+from .domain import Table, Pipe
 from .map import map_database, map_pipe, map_schemas, map_table, map_view
 
 
@@ -30,7 +29,21 @@ class Adapter(AbstractAdapter):
         return self._generator.get_data_source_oddrn()
 
     def get_data_entity_list(self) -> DataEntityList:
-        pipes = self._client.get_pipes()
+        raw_pipes = self._client.get_raw_pipes()
+        raw_stages = self._client.get_raw_stages()
+        pipes: List[Pipe] = []
+        for raw_pipe in raw_pipes:
+            for raw_stage in raw_stages:
+                if raw_pipe.stage_full_name == raw_stage.stage_full_name:
+                    pipes.append(
+                        Pipe(
+                            name=raw_pipe.pipe_name,
+                            definition=raw_pipe.definition,
+                            stage_url=raw_stage.stage_url,
+                            stage_type=raw_stage.stage_type,
+                            downstream=raw_pipe.downstream,
+                        )
+                    )
         pipes_entities = [map_pipe(pipe, self._generator) for pipe in pipes]
         tables = self._client.get_tables()
 
