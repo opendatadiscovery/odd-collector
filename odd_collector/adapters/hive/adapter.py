@@ -1,127 +1,49 @@
-import logging
-from time import perf_counter
-from typing import Dict, List
-
-from hive_metastore_client import HiveMetastoreClient
-from more_itertools import flatten
 from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntity, DataEntityList
+from odd_models.models import DataEntityList
 from oddrn_generator import HiveGenerator
-from thrift_files.libraries.thrift_hive_metastore_client.ttypes import (
-    PrimaryKeysRequest,
-)
 
-from .mappers.columns.main import map_column_stats
-from .mappers.tables import map_hive_table
+from odd_collector.adapters.hive.client import HiveClient
+from odd_collector.adapters.hive.logger import logger
+from odd_collector.adapters.hive.mappers.base_table import map_base_table
+from odd_collector.adapters.hive.mappers.connect_views import connect_views
+from odd_collector.adapters.hive.mappers.database import map_database
+from odd_collector.adapters.hive.models.view import View
+from odd_collector.domain.plugin import HivePlugin
 
 
 class Adapter(AbstractAdapter):
-    __connection = None
-    __cursor = None
+    def __init__(self, config: HivePlugin) -> None:
+        self.client = HiveClient(config.host, config.port)
+        self.database = config.database
 
-    def __init__(self, config) -> None:
-        self.__host = config.host
-        self.__port = config.port
-        self.__oddrn_generator = HiveGenerator(
-            host_settings=f"{self.__host}", databases=config.database
+        # TODO: netloc
+        self._generator = HiveGenerator(
+            host_settings=f"{config.host}", databases=config.database
         )
 
     def get_data_source_oddrn(self) -> str:
-        return self.__oddrn_generator.get_data_source_oddrn()
+        return self._generator.get_data_source_oddrn()
 
     def get_data_entity_list(self) -> DataEntityList:
-        data_entities = self.get_data_entities()
+        logger.info(f"Start collecting metadata for {self.database} database")
+        tables = []
+
+        with self.client.connect() as client:
+            tables.extend(self.client.get_all_tables(self.database, client))
+
+        table_entities = [map_base_table(table, self._generator) for table in tables]
+        database_entity = map_database(
+            self.database, self._generator, [tbl.oddrn for tbl in table_entities]
+        )
+
+        views = [view for view in tables if isinstance(view, View)]
+        all_entities = [database_entity, *table_entities]
+
+        connect_views(views, table_entities)
+
+        logger.success(f"Collected {len(all_entities)} entities.")
+
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=data_entities,
+            items=all_entities,
         )
-
-    def get_data_entities(self) -> List[DataEntity]:
-        try:
-            self.__connect()
-            logging.info(f"Hive adapter connected to {self.__host}:{self.__port}")
-        except Exception as e:
-            logging.warning(f"Hive adapter connect failed: {e}")
-            return []
-        try:
-            start = perf_counter()
-            database_list = self.__cursor.get_all_databases()
-            tables_list = list(flatten(self.__get_tables(db) for db in database_list))
-            self.__disconnect()
-            logging.info(
-                f"Hive adapter loaded {len(tables_list)} DataEntity(s) from database"
-                f" in {perf_counter() - start} seconds"
-            )
-            return tables_list
-        except Exception as e:
-            logging.warning(f"Hive adapter no datasets found: {e}")
-        return []
-
-    def __get_tables(self, db: str) -> List[DataEntity]:
-        tables_list = self.__cursor.get_all_tables(db)
-        if tables_list:
-            aggregated_table_stats = [
-                self.__cursor.get_table(db, table) for table in tables_list
-            ]
-            output = [
-                self.__process_table_raw_data(table_stats)
-                for table_stats in aggregated_table_stats
-            ]
-            return output
-        else:
-            return []
-
-    def __process_table_raw_data(self, table_stats) -> DataEntity:
-        pk = self.__get_primary_keys(table_stats)
-        columns = {
-            c.name: {"type": c.type, "is_primary_key": c.name in pk}
-            for c in table_stats.sd.cols
-        }
-        unmapped_stats = self.__get_columns_stats(table_stats, columns)
-        stats = map_column_stats(unmapped_stats) or None
-        result = map_hive_table(self.__host, table_stats, columns, stats)
-        return result
-
-    def __get_columns_stats(self, table_stats, columns: Dict) -> List:
-        if table_stats.parameters.get("COLUMN_STATS_ACCURATE", None):
-            stats = []
-            for column_name in columns.keys():
-                try:
-                    result = self.__cursor.get_table_column_statistics(
-                        table_stats.dbName, table_stats.tableName, column_name
-                    )
-                except Exception as e:
-                    logging.warning(
-                        f"Hive adapter can't retrieve statistics for '{column_name}' in '{table_stats.tableName}'. "
-                        f"Generated an exception: {e}. "
-                        f"May be the type: array, struct, map, union"
-                    )
-                else:
-                    stats.append(result)
-            return stats
-        else:
-            logging.info(
-                f"Hive adapter table statistics for '{table_stats.tableName}' is not available. "
-                f"Stats has not been gathered. "
-            )
-            return []
-
-    def __get_primary_keys(self, table_stats):
-        pr_request = PrimaryKeysRequest(
-            table_stats.dbName, table_stats.tableName, table_stats.catName
-        )
-        pr_response = self.__cursor.get_primary_keys(pr_request)
-        keys = [key.column_name for key in pr_response.primaryKeys]
-        return keys
-
-    def __connect(self):
-        self.__connection = HiveMetastoreClient(self.__host, self.__port)
-        self.__cursor = self.__connection.open()
-
-    def __disconnect(self):
-        try:
-            if self.__cursor:
-                self.__cursor.close()
-                logging.info("Hive adapter connection is closed")
-        except Exception as e:
-            logging.warning(f"Hive adapter disconnect failed: {e}")

@@ -2,11 +2,11 @@ from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import RedshiftGenerator
 
-from .repository import RedshiftRepository
 from ...domain.plugin import RedshiftPlugin
 from .logger import logger
-from .mappers.metadata import MetadataTables, MetadataColumns
+from .mappers.metadata import MetadataColumns, MetadataTables
 from .mappers.tables import map_table
+from .repository import RedshiftRepository
 
 
 class Adapter(AbstractAdapter):

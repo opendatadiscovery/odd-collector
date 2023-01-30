@@ -1,7 +1,10 @@
-from .entity import Connectable
+from typing import NamedTuple, Optional
+
 from pydantic import BaseModel
-from typing import Optional, NamedTuple
+
 from odd_collector.domain.utils import AnotherSqlParser
+
+from .entity import Connectable
 
 
 class DbSchemaEntity(NamedTuple):

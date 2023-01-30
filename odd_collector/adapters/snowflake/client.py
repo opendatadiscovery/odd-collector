@@ -1,6 +1,6 @@
 import contextlib
 from abc import ABC, abstractmethod
-from typing import Callable, List, Union, Type
+from typing import Callable, List, Type, Union
 
 from funcy import lsplit
 from odd_collector_sdk.errors import DataSourceError
@@ -11,7 +11,7 @@ from snowflake.connector.errors import DataError, ProgrammingError
 from odd_collector.domain.plugin import SnowflakePlugin
 from odd_collector.helpers import LowerKeyDict
 
-from .domain import Column, Pipe, Table, View, RawPipe, RawStage
+from .domain import Column, Pipe, RawPipe, RawStage, Table, View
 
 TABLES_VIEWS_QUERY = """
 with recursive cte as (

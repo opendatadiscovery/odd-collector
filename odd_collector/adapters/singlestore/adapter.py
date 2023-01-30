@@ -1,16 +1,16 @@
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import (
     DataEntity,
+    DataEntityGroup,
     DataEntityList,
     DataEntityType,
-    DataEntityGroup,
 )
 from oddrn_generator import SingleStoreGenerator
 
+from .logger import logger
 from .mappers.tables import map_tables
 from .mappers.views import map_views
 from .singlestore_repository import SingleStoreRepository
-from .logger import logger
 
 
 class Adapter(AbstractAdapter):
