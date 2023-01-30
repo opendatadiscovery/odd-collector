@@ -1,4 +1,4 @@
-import re
+from urllib.parse import urlparse
 
 from typing import Type
 
@@ -18,8 +18,8 @@ class Adapter(AbstractAdapter):
     ):
         self.config = config
         self.repo = repo(config)
-        re_host = re.sub(r"https?://", "", config.host)
-        self.generator = ModeGenerator(host_settings=re_host)
+        host = urlparse(config.host).hostname
+        self.generator = ModeGenerator(host_settings=host)
 
     def get_data_source_oddrn(self) -> str:
         return self.generator.get_data_source_oddrn()
