@@ -56,7 +56,7 @@ class ModeRepository(ModeRepositoryBase):
         self.rest_client = RestClient()
 
     async def _get_requests(self, path: str) -> Dict:
-        path = path[1:] if path.startswith("/") else path
+        path = path.strip("/")
         auth = BasicAuth(
             self._token.get_secret_value(), self._password.get_secret_value()
         )
