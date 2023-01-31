@@ -4,10 +4,8 @@ from oddrn_generator.server_models import HostnameModel
 
 
 class ModePathModel(BasePathsModel):
-    # TODO: clarify this class
     reports: str = ""
 
-    # TODO: clarify this class
     class Config:
         dependencies_map = {"reports": ("reports",)}
 
