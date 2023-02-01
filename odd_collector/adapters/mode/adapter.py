@@ -7,6 +7,7 @@ from odd_models.models import DataEntityList
 
 from odd_collector.domain.plugin import ModePlugin
 
+from .logger import logger
 from .repository import ModeRepositoryBase, ModeRepository
 from .generator import ModeGenerator
 from .mappers.report import map_report
@@ -28,8 +29,10 @@ class Adapter(AbstractAdapter):
         # mode collections(spaces) are not used in the current version of the adapter
         # collections = await self.repo.get_collections()
 
+        logger.debug("Start collecting mode data")
         data_sources = await self.repo.get_data_sources()
         reports = await self.repo.get_reports_for_data_sources(data_sources)
+        logger.debug("End collecting of mode data")
         entities = [map_report(self.generator, report) for report in reports]
         result = DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(), items=entities

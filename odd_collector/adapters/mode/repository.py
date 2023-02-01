@@ -7,6 +7,7 @@ from typing import List, Dict
 from aiohttp import ClientSession, BasicAuth
 
 from .domain.query import Query
+from .logger import logger
 from ...domain.plugin import ModePlugin
 from .domain.report import Report
 from .domain.datasource import DataSource
@@ -60,13 +61,17 @@ class ModeRepository(ModeRepositoryBase):
         auth = BasicAuth(
             self._token.get_secret_value(), self._password.get_secret_value()
         )
+
+        request_url = posixpath.join(self.api_path, path)
         request_args = RequestArgs(
             method="GET",
-            url=posixpath.join(self.api_path, path),
+            url=request_url,
             headers={f"Authorization": auth.encode()},
         )
+        logger.debug(f"Sending of GET request {request_url}")
         async with ClientSession() as session:
             result = await self.rest_client.fetch_async_response(session, request_args)
+        logger.debug(f"Response for GET request {request_url}: {result}")
         return result
 
     async def get_data_sources(self) -> List[DataSource]:
