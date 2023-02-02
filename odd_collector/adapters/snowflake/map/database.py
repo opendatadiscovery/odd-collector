@@ -3,8 +3,7 @@ from typing import List
 
 from funcy import lpluck_attr
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
-
-from ..generator import SnowflakeGenerator
+from oddrn_generator import SnowflakeGenerator
 
 
 def map_database(

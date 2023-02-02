@@ -55,6 +55,7 @@ class RedshiftPlugin(DatabasePlugin):
     type: Literal["redshift"]
     schemas: Optional[List[str]] = None
     password: SecretStr
+    connection_timeout: Optional[int] = 10
 
 
 class MongoDBPlugin(DatabasePlugin):
@@ -81,6 +82,7 @@ class SnowflakePlugin(DatabasePlugin):
 class HivePlugin(WithHost, WithPort):
     type: Literal["hive"]
     database: str
+    port: int
 
 
 class ElasticsearchPlugin(WithHost, WithPort):
@@ -217,6 +219,19 @@ class MlflowPlugin(BasePlugin):
     ] = None  # List of pipeline names to filter, if omit fetch all pipelines
 
 
+class AirbytePlugin(WithHost, WithPort):
+    type: Literal["airbyte"]
+    user: Optional[str]
+    password: Optional[str]
+    platform_host_url: str
+    store_raw_tables: bool = True
+
+
+class SingleStorePlugin(DatabasePlugin):
+    type: Literal["singlestore"]
+    ssl_disabled: Optional[bool] = False
+
+
 class ModePlugin(BasePlugin):
     type: Literal["mode"]
     host: str
@@ -256,5 +271,7 @@ PLUGIN_FACTORY: PluginFactory = {
     "metabase": MetabasePlugin,
     "oracle": OraclePlugin,
     "mlflow": MlflowPlugin,
+    "airbyte": AirbytePlugin,
+    "singlestore": SingleStorePlugin,
     "mode": ModePlugin,
 }

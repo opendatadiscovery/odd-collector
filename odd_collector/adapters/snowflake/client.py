@@ -1,6 +1,6 @@
 import contextlib
 from abc import ABC, abstractmethod
-from typing import Callable, List, Union
+from typing import Callable, List, Type, Union
 
 from funcy import lsplit
 from odd_collector_sdk.errors import DataSourceError
@@ -11,7 +11,7 @@ from snowflake.connector.errors import DataError, ProgrammingError
 from odd_collector.domain.plugin import SnowflakePlugin
 from odd_collector.helpers import LowerKeyDict
 
-from .domain import Column, Table, View
+from .domain import Column, Pipe, RawPipe, RawStage, Table, View
 
 TABLES_VIEWS_QUERY = """
 with recursive cte as (
@@ -170,6 +170,22 @@ order by
     c.ordinal_position
 """
 
+RAW_PIPES_QUERY = """
+
+SELECT PIPE_CATALOG, PIPE_SCHEMA, PIPE_NAME, DEFINITION
+FROM INFORMATION_SCHEMA.PIPES
+;
+
+"""
+
+RAW_STAGES_QUERY = """
+
+SELECT STAGE_NAME, STAGE_CATALOG, STAGE_SCHEMA, STAGE_URL, STAGE_TYPE
+FROM INFORMATION_SCHEMA.STAGES
+;
+
+"""
+
 
 class SnowflakeClientBase(ABC):
     def __init__(self, config: SnowflakePlugin):
@@ -177,6 +193,14 @@ class SnowflakeClientBase(ABC):
 
     @abstractmethod
     def get_tables(self) -> List[Table]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_raw_pipes(self) -> List[RawPipe]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_raw_stages(self) -> List[RawStage]:
         raise NotImplementedError
 
 
@@ -228,6 +252,14 @@ class SnowflakeClient(SnowflakeClientBase):
 
             return tables
 
+    def get_raw_pipes(self) -> List[RawPipe]:
+        with self.connect() as cursor:
+            return self._fetch_something(RAW_PIPES_QUERY, cursor, RawPipe)
+
+    def get_raw_stages(self) -> List[RawStage]:
+        with self.connect() as cursor:
+            return self._fetch_something(RAW_STAGES_QUERY, cursor, RawStage)
+
     def _fetch_tables(self, cursor: DictCursor) -> List[Table]:
         result: List[Table] = []
 
@@ -239,6 +271,18 @@ class SnowflakeClient(SnowflakeClientBase):
             elif raw_object.get("TABLE_TYPE") == "VIEW":
                 result.append(View.parse_obj(LowerKeyDict(raw_object)))
 
+        return result
+
+    @staticmethod
+    def _fetch_something(
+        query: str,
+        cursor: DictCursor,
+        entity_type: Type[Union[Pipe, RawPipe, RawStage]],
+    ) -> List[Union[Pipe, RawPipe, RawStage]]:
+        result: List[entity_type] = []
+        cursor.execute(query)
+        for raw_object in cursor.fetchall():
+            result.append(entity_type.parse_obj(LowerKeyDict(raw_object)))
         return result
 
     def _fetch_columns(self, cursor: DictCursor) -> List[Column]:

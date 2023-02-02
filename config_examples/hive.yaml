@@ -1,10 +1,11 @@
-platform_host_url: http://localhost:8080
 default_pulling_interval: 10
 token: ""
+platform_host_url: http://localhost:8080
+chunk_size: 1000
 plugins:
   - type: hive
-    name: hive_adapter
+    name: hive_adapter_new
     description: "" # Optional string
-    host: host
-    port: 0000
-    database: database_name
+    host: localhost
+    port: 9083
+    database: default

@@ -1,11 +1,15 @@
+start: type+
+
 FIELD_NAME: ("A".."z" | "1".."9" | "-" | "_")+
+
+CHAR_TYPE: "varchar"i
+        | "char"i
 
 SIMPLE_TYPE: "int"i
            | "string"i
            | "bigint"i
            | "binary"i
            | "boolean"i
-           | "char"i
            | "date"i
            | "decimal"i
            | "double"i
@@ -15,14 +19,16 @@ SIMPLE_TYPE: "int"i
            | "timestamp"i
            | "date"i
            | "tinyint"i
-           | "varchar"i
-           | "char"i
+
 
 type: SIMPLE_TYPE
+    | CHAR_TYPE
     | iterable_type
     | struct_type
     | union_type
     | map_type
+    | decimal_type
+    | char_with_length_type
 
 field_definition: FIELD_NAME ":" type
 
@@ -33,6 +39,9 @@ struct_type: "struct"i "<" [field_definition ("," field_definition)*]+ ">"
 union_type: "uniontype"i "<" [type ("," type)*] ">"
 
 map_type: "map"i "<" type "," type ">"
+decimal_type: "decimal"i "(" NUMBER "," NUMBER ")"
+char_with_length_type: CHAR_TYPE "(" NUMBER ")"
 
 %import common.WS
+%import common.NUMBER
 %ignore WS

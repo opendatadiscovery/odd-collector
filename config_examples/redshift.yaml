@@ -11,3 +11,4 @@ plugins:
     user: user
     password: password
     schemas: ['some_schema_name'] # Optional List[str], when ommitted parse all schemas (except system schemas)
+    connection_timeout: 10
