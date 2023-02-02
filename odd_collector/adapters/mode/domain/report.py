@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from sql_metadata import Parser
 
 from typing import Dict, Any, Optional, List, Union
@@ -20,7 +20,6 @@ class TableSource:
 class Report(BaseModel):
     token: str
     id: int
-    name: str
     created_at: str
     updated_at: str
     edited_at: str
@@ -44,6 +43,7 @@ class Report(BaseModel):
     view_count: int
     links: dict
 
+    name: Optional[str] = ""
     published_at: Optional[str]
     description: Optional[str] = None
     theme_id: Optional[int] = None
@@ -77,8 +77,12 @@ class Report(BaseModel):
         self.adapter = data_source.adapter
         return self
 
+    @validator('name')
+    def set_name(cls, name):
+        return name or 'Untitled Report'
+
     def get_oddrn(self, oddrn_generator: Generator):
-        oddrn_generator.get_oddrn_by_path("reports", self.name)
+        oddrn_generator.get_oddrn_by_path("reports", self.id)
         return oddrn_generator.get_oddrn_by_path("reports")
 
     def get_report_db_sources(self) -> List[TableSource]:

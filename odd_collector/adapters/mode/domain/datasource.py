@@ -45,5 +45,5 @@ class DataSource(BaseModel):
         return DataSource.parse_obj(response)
 
     def get_oddrn(self, oddrn_generator: Generator):
-        oddrn_generator.get_oddrn_by_path("datasource", self.name)
+        oddrn_generator.get_oddrn_by_path("datasource", self.id)
         return oddrn_generator.get_oddrn_by_path("datasource")
