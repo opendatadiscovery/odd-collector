@@ -77,9 +77,9 @@ class Report(BaseModel):
         self.adapter = data_source.adapter
         return self
 
-    @validator('name')
+    @validator("name")
     def set_name(cls, name):
-        return name or 'Untitled Report'
+        return name or "Untitled Report"
 
     def get_oddrn(self, oddrn_generator: Generator):
         oddrn_generator.get_oddrn_by_path("reports", self.id)
