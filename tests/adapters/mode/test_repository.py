@@ -41,7 +41,6 @@ def compare_dict_with_object(dict_object, class_object):
 
 @pytest.mark.asyncio
 async def test_get_data_sources(setup_repository):
-    # repo = setup_repository()
     result = await setup_repository.get_data_sources()
     expected_ds_list = setup_repository.rest_client.data_sources["_embedded"][
         "data_sources"
@@ -54,7 +53,6 @@ async def test_get_data_sources(setup_repository):
 
 @pytest.mark.asyncio
 async def test_get_collections(setup_repository):
-    # repo = setup_repository()
     result = await setup_repository.get_collections()
     expected_ds_list = setup_repository.rest_client.collections["_embedded"]["spaces"]
     collection = result[0]
@@ -65,7 +63,6 @@ async def test_get_collections(setup_repository):
 
 @pytest.mark.asyncio
 async def test_get_queries_for_reports(setup_repository):
-    # repo = setup_repository()
     report_token = setup_repository.rest_client.reports["_embedded"]["reports"][0][
         "token"
     ]
@@ -79,7 +76,6 @@ async def test_get_queries_for_reports(setup_repository):
 
 @pytest.mark.asyncio
 async def test_get_reports_for_data_source(setup_repository):
-    # repo = setup_repository()
     ds = DataSource.from_response(
         setup_repository.rest_client.data_sources["_embedded"]["data_sources"][0]
     )
