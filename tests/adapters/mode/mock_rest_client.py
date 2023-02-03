@@ -29,7 +29,7 @@ class TestRestClient:
                         "organization_token": "70615b238569",
                         "organization_plan_code": "free",
                         "database": "AdventureWorks",
-                        "host": "ec2-54-190-97-226.us-west-2.compute.amazonaws.com",
+                        "host": "test-host.compute.amazonaws.com",
                         "port": 1433,
                         "ssl": True,
                         "username": "SA",
