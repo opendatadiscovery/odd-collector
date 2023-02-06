@@ -232,6 +232,15 @@ class SingleStorePlugin(DatabasePlugin):
     ssl_disabled: Optional[bool] = False
 
 
+class ModePlugin(BasePlugin):
+    type: Literal["mode"]
+    host: str
+    account: str
+    data_source: str
+    token: Optional[SecretStr]
+    password: Optional[SecretStr]
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -264,4 +273,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "mlflow": MlflowPlugin,
     "airbyte": AirbytePlugin,
     "singlestore": SingleStorePlugin,
+    "mode": ModePlugin,
 }
