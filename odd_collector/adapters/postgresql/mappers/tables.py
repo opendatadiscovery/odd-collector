@@ -8,8 +8,7 @@ from odd_collector.adapters.postgresql.config import (
     _data_set_metadata_excluded_keys,
     _data_set_metadata_schema_url,
 )
-
-from ..exceptions import MappingException
+from odd_collector_sdk.errors import MappingDataError
 from .columns import map_column
 from .metadata import append_metadata_extension
 from .models import ColumnMetadata, PrimaryKey, TableMetadata
@@ -106,8 +105,7 @@ def map_table(
                 else:
                     break
         except Exception as err:
-            logging.error("Error in map_table", exc_info=True)
-            raise MappingException(err) from err
+            raise MappingDataError() from err
 
     data_entities.append(
         DataEntity(
