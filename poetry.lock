@@ -1975,6 +1975,25 @@ files = [
 ]
 
 [[package]]
+name = "loguru"
+version = "0.6.0"
+description = "Python logging made (stupidly) simple"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "loguru-0.6.0-py3-none-any.whl", hash = "sha256:4e2414d534a2ab57573365b3e6d0234dfb1d84b68b7f3b948e6fb743860a77c3"},
+    {file = "loguru-0.6.0.tar.gz", hash = "sha256:066bd06758d0a513e9836fd9c6b5a75bfb3fd36841f4b996bc60b547a309d41c"},
+]
+
+[package.dependencies]
+colorama = {version = ">=0.3.4", markers = "sys_platform == \"win32\""}
+win32-setctime = {version = ">=1.0.0", markers = "sys_platform == \"win32\""}
+
+[package.extras]
+dev = ["Sphinx (>=4.1.1)", "black (>=19.10b0)", "colorama (>=0.3.4)", "docutils (==0.16)", "flake8 (>=3.7.7)", "isort (>=5.1.1)", "pytest (>=4.6.2)", "pytest-cov (>=2.7.1)", "sphinx-autobuild (>=0.7.1)", "sphinx-rtd-theme (>=0.4.3)", "tox (>=3.9.0)"]
+
+[[package]]
 name = "mako"
 version = "1.2.4"
 description = "A super-fast templating language that borrows the best ideas from the existing templating languages."
@@ -2609,14 +2628,14 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.10"
+version = "0.3.11"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.10-py3-none-any.whl", hash = "sha256:3887a6f996a9300134ee86ba6bd90c59be1bf1e27b62944e2e0337cd81174936"},
-    {file = "odd_collector_sdk-0.3.10.tar.gz", hash = "sha256:54295f302dce6345263b6c63ddece8bf055537376358965fc2f791d5ad2e3f26"},
+    {file = "odd_collector_sdk-0.3.11-py3-none-any.whl", hash = "sha256:146026200e3512221ebbc65a3f2742964c8952b79d07b28ad999af0bc12150c6"},
+    {file = "odd_collector_sdk-0.3.11.tar.gz", hash = "sha256:a0b95e7249825720e3700de16d86bbb8c3ff47fd3fdea9197ddd32b9b801245e"},
 ]
 
 [package.dependencies]
@@ -2626,6 +2645,7 @@ black = "22.3.0"
 funcy = ">=1.17,<2.0"
 importlib-metadata = ">=5.1.0,<6.0.0"
 isort = ">=5.11.4,<6.0.0"
+loguru = ">=0.6.0,<0.7.0"
 odd-models = ">=2.0.0,<3.0.0"
 pyaml-env = ">=1.1.5,<2.0.0"
 pydantic = ">=1.8.2,<2.0.0"
@@ -4714,6 +4734,21 @@ MarkupSafe = ">=2.1.1"
 watchdog = ["watchdog"]
 
 [[package]]
+name = "win32-setctime"
+version = "1.1.0"
+description = "A small Python utility to set file creation time on Windows"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "win32_setctime-1.1.0-py3-none-any.whl", hash = "sha256:231db239e959c2fe7eb1d7dc129f11172354f98361c4fa2d6d2d7e278baa8aad"},
+    {file = "win32_setctime-1.1.0.tar.gz", hash = "sha256:15cf5750465118d6929ae4de4eb46e8edae9a5634350c01ba582df868e932cb2"},
+]
+
+[package.extras]
+dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
+
+[[package]]
 name = "yarl"
 version = "1.8.2"
 description = "Yet another URL library"
@@ -4820,4 +4855,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9.1"
-content-hash = "48df88db0e0b4b63f34b285b9afd38a5dc468586a69b7ceb6cf333083ff2106b"
+content-hash = "05b11feabc021033058e11885c9a42e67fea872cff9649b3a93983766024d6a4"
