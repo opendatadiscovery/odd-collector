@@ -139,6 +139,6 @@ async def test_get_data_entity_list():
     assert len(data_entity_list.items) == 1
     assert data_entity_list.items[0].type == DataEntityType.DASHBOARD
     assert data_entity_list.items[0].data_consumer.inputs == [
-        "//mssql/host/ec2-54-190-97-226.us-west-2.compute.amazonaws.com/databases/"
+        "//mssql/host/test-host.compute.amazonaws.com/databases/"
         "AdventureWorks/schemas/Person/tables/StateProvince"
     ]
