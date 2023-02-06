@@ -1,6 +1,6 @@
 from odd_models.models import MetadataExtension
-from ..domain.report import Report
 
+from ..domain.report import Report
 
 SCHEMA_URL = (
     "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/"

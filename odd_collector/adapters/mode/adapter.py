@@ -1,16 +1,15 @@
-from urllib.parse import urlparse
-
 from typing import Type
+from urllib.parse import urlparse
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntityList
 
 from odd_collector.domain.plugin import ModePlugin
 
-from .logger import logger
-from .repository import ModeRepositoryBase, ModeRepository
 from .generator import ModeGenerator
+from .logger import logger
 from .mappers.report import map_report
+from .repository import ModeRepository, ModeRepositoryBase
 
 
 class Adapter(AbstractAdapter):

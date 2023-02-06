@@ -1,11 +1,11 @@
+from typing import Any, Dict, List, Optional, Union
+
 from pydantic import BaseModel, validator
 from sql_metadata import Parser
 
-from typing import Dict, Any, Optional, List, Union
-
+from ..generator import Generator
 from .datasource import DataSource
 from .query import Query
-from ..generator import Generator
 
 
 class TableSource:

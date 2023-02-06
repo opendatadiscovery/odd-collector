@@ -1,8 +1,8 @@
-from odd_models.models import DataEntity, DataEntityType, DataConsumer
+from odd_models.models import DataConsumer, DataEntity, DataEntityType
 
-from .metadata import map_report_metadata
 from ..domain.report import Report
 from ..generator import ModeGenerator
+from .metadata import map_report_metadata
 
 # list of returned values of adapter:
 # https://mode.com/developer/api-reference/management/data-sources/

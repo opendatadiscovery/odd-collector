@@ -1,5 +1,5 @@
-import re
 import copy
+import re
 
 from odd_collector.domain.rest_client.client import RequestArgs
 

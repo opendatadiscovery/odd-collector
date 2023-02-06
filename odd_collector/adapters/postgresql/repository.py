@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import Union
 
 from psycopg2 import sql
 
@@ -8,29 +8,33 @@ from odd_collector.adapters.postgresql.connectors import PostgreSQLConnector
 
 class AbstractRepository(ABC):
     @abstractmethod
-    def get_tables(self):
+    def get_tables(self) -> list[tuple]:
         pass
 
     @abstractmethod
-    def get_columns(self):
+    def get_columns(self) -> list[tuple]:
+        pass
+
+    @abstractmethod
+    def get_primary_keys(self) -> list[tuple]:
         pass
 
 
 class PostgreSQLRepository(AbstractRepository):
     def __init__(self, config):
-        self.__postgres_connector = PostgreSQLConnector(config)
+        self.connector = PostgreSQLConnector(config)
 
-    def get_columns(self) -> List[tuple]:
-        return self.__execute(self.column_metadata_query)
+    def get_columns(self) -> list[tuple]:
+        return self.execute(self.column_metadata_query)
 
-    def get_tables(self) -> List[tuple]:
-        return self.__execute(self.table_metadata_query)
+    def get_tables(self) -> list[tuple]:
+        return self.execute(self.table_metadata_query)
 
-    def get_primary_keys(self) -> List[tuple]:
-        return self.__execute(self.primary_key_query)
+    def get_primary_keys(self) -> list[tuple]:
+        return self.execute(self.primary_key_query)
 
-    def __execute(self, query: Union[str, sql.Composed]) -> List[tuple]:
-        with self.__postgres_connector.connection() as cursor:
+    def execute(self, query: Union[str, sql.Composed]) -> list[tuple]:
+        with self.connector.connection() as cursor:
             cursor.execute(query)
             return cursor.fetchall()
 

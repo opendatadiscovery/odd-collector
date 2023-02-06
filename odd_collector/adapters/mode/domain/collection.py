@@ -1,5 +1,7 @@
+from typing import Any, Dict, Optional, Union
+
 from pydantic import BaseModel
-from typing import Optional, Dict, Any, Union
+
 from ..generator import Generator
 
 

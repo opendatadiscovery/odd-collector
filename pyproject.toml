@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector"
-version = "0.1.6"
+version = "0.1.18"
 description = "ODD Collector"
 authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
 homepage = "https://github.com/opendatadiscovery/odd-collector"
@@ -41,7 +41,7 @@ trino = "0.315.0"
 vertica-python = "1.1.1"
 pyaml-env = "^1.2.1"
 pytz = "^2022.7"
-odd-collector-sdk = "0.3.10"
+odd-collector-sdk = "0.3.11"
 fastavro = "^1.7.1"
 llvmlite = "^0.39.1"
 numba = "^0.56.4"

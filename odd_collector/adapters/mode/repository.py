@@ -1,18 +1,17 @@
 import asyncio
 import posixpath
-
 from abc import ABC
-from typing import List, Dict
+from typing import Dict, List
 
-from aiohttp import ClientSession, BasicAuth
+from aiohttp import BasicAuth, ClientSession
 
-from .domain.query import Query
-from .logger import logger
 from ...domain.plugin import ModePlugin
-from .domain.report import Report
-from .domain.datasource import DataSource
+from ...domain.rest_client.client import RequestArgs, RestClient
 from .domain.collection import Collection
-from ...domain.rest_client.client import RestClient, RequestArgs
+from .domain.datasource import DataSource
+from .domain.query import Query
+from .domain.report import Report
+from .logger import logger
 
 
 class ModeRepositoryBase(ABC):
