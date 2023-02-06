@@ -8,7 +8,20 @@ from odd_collector_sdk.shutdown import shutdown
 
 from odd_collector.domain.plugin import PLUGIN_FACTORY
 
+
+def version():
+    import subprocess
+
+    try:
+        logger.info(
+            subprocess.run(["poetry", "version"], capture_output=True).stdout.decode()
+        )
+    except Exception:
+        pass
+
+
 try:
+    version()
     loop = asyncio.get_event_loop()
 
     signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
