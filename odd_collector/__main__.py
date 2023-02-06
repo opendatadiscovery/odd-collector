@@ -1,13 +1,12 @@
 import asyncio
 import signal
+from pathlib import Path
 
 from odd_collector_sdk.collector import Collector
 from odd_collector_sdk.logger import logger
 from odd_collector_sdk.shutdown import shutdown
 
 from odd_collector.domain.plugin import PLUGIN_FACTORY
-from pathlib import Path
-
 
 try:
     loop = asyncio.get_event_loop()

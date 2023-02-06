@@ -24,9 +24,7 @@ class Adapter(AbstractAdapter):
         columns = self._repository.get_columns()
         primary_keys = self._repository.get_primary_keys()
 
-        return map_table(
-            self._generator, tables, columns, primary_keys, self._database
-        )
+        return map_table(self._generator, tables, columns, primary_keys, self._database)
 
     def get_data_entity_list(self) -> DataEntityList:
         return DataEntityList(

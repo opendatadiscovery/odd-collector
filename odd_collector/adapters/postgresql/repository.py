@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Union
 
 from psycopg2 import sql
+
 from odd_collector.adapters.postgresql.connectors import PostgreSQLConnector
 
 
