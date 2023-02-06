@@ -3,6 +3,7 @@ name = "odd-collector"
 version = "0.1.18"
 description = "ODD Collector"
 authors = ["Open Data Discovery <pypi@opendatadiscovery.org>"]
+keywords = ["Open Data Discovery", "Metadata", "Data Discovery", "Data Observability"]
 homepage = "https://github.com/opendatadiscovery/odd-collector"
 repository = "https://github.com/opendatadiscovery/odd-collector"
 
