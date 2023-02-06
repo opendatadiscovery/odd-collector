@@ -1,7 +1,7 @@
 import contextlib
 import logging
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Any
+from typing import Any, List, Tuple
 
 import cassandra
 from cassandra.auth import PlainTextAuthProvider
@@ -12,10 +12,9 @@ from odd_collector_sdk.errors import DataSourceConnectionError
 
 from odd_collector.adapters.cassandra.mappers.models import (
     ColumnMetadata,
-    ViewMetadata,
     TableMetadata,
+    ViewMetadata,
 )
-
 
 TABLE_METADATA_QUERY: str = """
     SELECT * FROM system_schema.tables 

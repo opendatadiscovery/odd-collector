@@ -1,11 +1,12 @@
 import logging
+from abc import abstractmethod
 from copy import deepcopy
 from typing import List
+
 import sqlparse
-from abc import abstractmethod
-from oddrn_generator.generators import S3Generator
 from odd_models.models import DataEntity, DataEntityType, DataTransformer
 from oddrn_generator import SnowflakeGenerator
+from oddrn_generator.generators import S3Generator
 
 from odd_collector.adapters.snowflake.domain import Pipe
 

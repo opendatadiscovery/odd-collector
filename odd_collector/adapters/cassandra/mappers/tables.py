@@ -8,7 +8,6 @@ from .columns import map_column
 from .metadata import get_metadata_extension
 from .models import ColumnMetadata, TableMetadata
 
-
 _data_set_metadata_excluded_keys: set = set()
 _data_set_metadata_schema_url: str = (
     "https://raw.githubusercontent.com/opendatadiscovery/"

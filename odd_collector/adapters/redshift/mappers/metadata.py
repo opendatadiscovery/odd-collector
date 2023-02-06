@@ -1,15 +1,16 @@
 from dataclasses import asdict
+
 from odd_models.models import MetadataExtension
 
 from odd_collector.adapters.redshift.mappers.models import (
-    MetadataTableBase,
+    MetadataColumnBase,
+    MetadataColumnExternal,
+    MetadataColumnRedshift,
     MetadataTableAll,
-    MetadataTableRedshift,
+    MetadataTableBase,
     MetadataTableExternal,
     MetadataTableInfo,
-    MetadataColumnBase,
-    MetadataColumnRedshift,
-    MetadataColumnExternal,
+    MetadataTableRedshift,
     RedshiftAdapterMetadata,
 )
 

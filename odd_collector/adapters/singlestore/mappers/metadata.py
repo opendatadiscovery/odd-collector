@@ -1,5 +1,6 @@
 from dataclasses import asdict
 from typing import Optional
+
 from odd_models.models import MetadataExtension
 
 from .models import SingleStoreMetadata

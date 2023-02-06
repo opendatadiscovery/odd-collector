@@ -1,18 +1,13 @@
 from copy import deepcopy
 
-from odd_models.models import (
-    DataTransformer,
-    DataEntity,
-    DataEntityType,
-    DataSet,
-)
+from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransformer
 from odd_models.utils import SqlParser
 from oddrn_generator import SingleStoreGenerator
 
+from ..logger import logger
 from .columns import map_column
 from .models import ColumnMetadata, TableMetadata
 from .types import TABLE_TYPES_SQL_TO_ODD
-from ..logger import logger
 
 
 def map_views(

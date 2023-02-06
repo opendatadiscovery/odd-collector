@@ -6,8 +6,8 @@ from . import _data_set_metadata_excluded_keys_info, _data_set_metadata_schema_u
 from .columns import map_column
 from .metadata import (
     MetadataColumn,
-    MetadataTables,
     MetadataColumns,
+    MetadataTables,
     _append_metadata_extension,
 )
 from .types import TABLE_TYPES_SQL_TO_ODD

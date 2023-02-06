@@ -1,6 +1,8 @@
-import oddrn_generator
-from typing import Optional
 from re import search
+from typing import Optional
+
+import oddrn_generator
+
 from ..logger import logger
 
 

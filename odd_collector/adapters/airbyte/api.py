@@ -1,7 +1,9 @@
-import aiohttp
 from typing import List, Optional
-from .logger import logger
+
+import aiohttp
 from odd_models.models import DataEntityType
+
+from .logger import logger
 
 
 class AirbyteApi:

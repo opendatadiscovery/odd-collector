@@ -1,8 +1,11 @@
 from typing import Optional
+
 from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_collector.domain.plugin import AirbytePlugin
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import AirbyteGenerator
+
+from odd_collector.domain.plugin import AirbytePlugin
+
 from .api import AirbyteApi, OddPlatformApi
 from .mappers.connections import map_connection
 from .mappers.datasets import filter_dataset_oddrn, generate_dataset_oddrn

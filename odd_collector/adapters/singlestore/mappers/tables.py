@@ -3,7 +3,7 @@ from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import SingleStoreGenerator
 
 from .columns import map_column
-from .metadata import append_metadata_extension, _data_set_metadata_schema_url
+from .metadata import _data_set_metadata_schema_url, append_metadata_extension
 from .models import ColumnMetadata, TableMetadata
 from .types import TABLE_TYPES_SQL_TO_ODD
 

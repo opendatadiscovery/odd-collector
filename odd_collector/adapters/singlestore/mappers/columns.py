@@ -2,9 +2,9 @@ from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import SingleStoreGenerator
 
 from .metadata import (
+    _data_set_field_metadata_schema_url,
     append_metadata_extension,
     convert_bytes_to_str,
-    _data_set_field_metadata_schema_url,
 )
 from .models import ColumnMetadata
 from .types import TYPES_SQL_TO_ODD

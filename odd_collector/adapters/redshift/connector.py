@@ -1,7 +1,7 @@
 import contextlib
-import psycopg2
+from abc import ABC, abstractmethod
 
-from abc import abstractmethod, ABC
+import psycopg2
 
 
 class AbstractConnector(ABC):  # TODO: Create one abstract connector for all adapters
