@@ -2681,14 +2681,14 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.13"
+version = "0.3.14"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.13-py3-none-any.whl", hash = "sha256:40aecfb8e866bef5a543d907af7eacb6583118e4c1e2cb45b4e27641764d074e"},
-    {file = "odd_collector_sdk-0.3.13.tar.gz", hash = "sha256:2336fbd1d88afb909e045c1cfdf06e60ab8c6e2d388736ad74c3c8d92cbee9bf"},
+    {file = "odd_collector_sdk-0.3.14-py3-none-any.whl", hash = "sha256:2db960db0dd0b9ff1cc69776d420c4417b1ac7a15542b3a9b009a833f7f82439"},
+    {file = "odd_collector_sdk-0.3.14.tar.gz", hash = "sha256:19b7374bd32d0fab3d390cffa1e9fa31dc4612caaf1a0233201a0edb19c67224"},
 ]
 
 [package.dependencies]
@@ -4982,4 +4982,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9.1"
-content-hash = "fbd4c1afcb6a4c3547c0cdc7cf821ec26b4f3960e05983550569a09aa4ce9382"
+content-hash = "85ea3c152783bb67d440cd37eca7702b4a70b365045dba6844c8c219b6f523be"
