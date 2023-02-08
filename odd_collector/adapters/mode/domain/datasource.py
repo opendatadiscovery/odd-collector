@@ -6,7 +6,6 @@ from ..generator import Generator
 
 
 class DataSource(BaseModel):
-
     id: int
     name: str
     description: str
