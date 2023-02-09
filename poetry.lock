@@ -2788,18 +2788,18 @@ sqlparse = "0.4.2"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.67"
+version = "0.1.68"
 description = "Open Data Discovery Resource Name Generator"
 category = "main"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.9,<4.0"
 files = [
-    {file = "oddrn_generator-0.1.67-py3-none-any.whl", hash = "sha256:283d5ecc89c0e12d241e5f14c757ac13a49d584141286e7309964cf9c589e4ee"},
-    {file = "oddrn_generator-0.1.67.tar.gz", hash = "sha256:27120df073013a13f16c1e84638be32f2bf8d4a923e5d5986a725810cbf7331a"},
+    {file = "oddrn_generator-0.1.68-py3-none-any.whl", hash = "sha256:18863001a450a59a4c155a13de254751e714c0046af3c5ea6c6bad9e9f582801"},
+    {file = "oddrn_generator-0.1.68.tar.gz", hash = "sha256:68eafde151edd54a5c2ddde44c3ae0ff34d7513229f2c61bae475e04a0d3d01e"},
 ]
 
 [package.dependencies]
-pydantic = ">=1.8.2,<2.0.0"
+pydantic = ">=1.9.1,<2.0.0"
 
 [[package]]
 name = "oracledb"
@@ -5090,4 +5090,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "efb3b856d2b252142df82e7b351829b23bf035e307b0b39ced08ebca50d66158"
+content-hash = "ef4e0e9ef113be87301af4da62375aa07aef3108d870c1fc177d485cd0288211"
