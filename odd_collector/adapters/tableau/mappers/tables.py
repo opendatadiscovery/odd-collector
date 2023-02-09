@@ -16,7 +16,6 @@ extract_metadata = partial(
 
 
 def map_table(oddrn_generator: TableauGenerator, table: Table) -> DataEntity:
-
     # TODO: Now table model doesn't have metadata field, need to add it
     metadata = extract_metadata(metadata={})
     # Each database has multiple owners, by odd specification we can attach only 1 owner, take first owner or None

@@ -65,7 +65,6 @@ class AvroParser(AbstractParser):
         parent_node=None,
         inherited: Inherited = Inherited(),
     ):
-
         if isinstance(node_schema, str):
             name = inherited.name or node_schema
 

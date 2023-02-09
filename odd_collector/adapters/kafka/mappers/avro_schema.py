@@ -34,7 +34,6 @@ def __extract_referenced_nodes(
 def avro_schema(
     data: dict, oddrn_generator: Generator, schema_client: SchemaRegistryClient
 ) -> List[DataSetField]:
-
     references: List[Dict[str, Any]] = __extract_referenced_nodes(data, schema_client)
     if references:
         log.debug(
