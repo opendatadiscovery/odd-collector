@@ -43,7 +43,7 @@ class MySQLPlugin(DatabasePlugin):
 class MSSQLPlugin(DatabasePlugin):
     type: Literal["mssql"]
     password: SecretStr
-    port: str = 1433
+    port: int = 1433
 
 
 class ClickhousePlugin(DatabasePlugin):
@@ -73,7 +73,8 @@ class KafkaPlugin(BasePlugin):
 
 class SnowflakePlugin(DatabasePlugin):
     type: Literal["snowflake"]
-    port: Optional[str] = None
+    database: str
+    port: Optional[int] = None
     password: SecretStr
     account: Optional[str]
     warehouse: str  # active warehouse

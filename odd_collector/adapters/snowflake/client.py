@@ -214,7 +214,7 @@ class SnowflakeClient(SnowflakeClientBase):
             connection = connector.connect(
                 user=self._config.user,
                 password=self._config.password.get_secret_value(),
-                account=self._get_account(self._config.host),
+                account=self._get_account(),
                 database=self._config.database,
                 warehouse=self._config.warehouse,
             )
@@ -292,5 +292,8 @@ class SnowflakeClient(SnowflakeClientBase):
             for raw_column in cursor.fetchall()
         ]
 
-    def _get_account(self, host: str) -> str:
-        return host.split(".snowflakecomputing.com")[0]
+    def _get_account(self) -> str:
+        return (
+            self._config.account
+            or self._config.host.split(".snowflakecomputing.com")[0]
+        )
