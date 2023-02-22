@@ -254,7 +254,9 @@ class SnowflakeClient(SnowflakeClientBase):
                 column.is_clustering_key = False
                 if column.column_name in primary_keys.get(column.table_name, []):
                     column.is_primary_key = True
-                if column.column_name.lower() in clustering_keys.get(column.table_name, []):
+                if column.column_name.lower() in clustering_keys.get(
+                    column.table_name, []
+                ):
                     column.is_clustering_key = True
 
             for table in tables:
@@ -276,8 +278,8 @@ class SnowflakeClient(SnowflakeClientBase):
         regex = r"\(([^()]*)\)"
 
         for table in tables:
-            if getattr(table, 'clustering_key'):
-                matches = re.search(regex, getattr(table, 'clustering_key'))
+            if getattr(table, "clustering_key"):
+                matches = re.search(regex, getattr(table, "clustering_key"))
                 if matches:
                     res[table.table_name] = matches.group(1).split(", ")
         return res
@@ -299,10 +301,10 @@ class SnowflakeClient(SnowflakeClientBase):
         cursor.execute(PRIMARY_KEYS_QUERY)
         res = {}
         for pk in cursor.fetchall():
-            if pk['table_name'] in res:
-                res[pk['table_name']].append(pk['column_name'])
+            if pk["table_name"] in res:
+                res[pk["table_name"]].append(pk["column_name"])
             else:
-                res[pk['table_name']] = [pk['column_name']]
+                res[pk["table_name"]] = [pk["column_name"]]
         return res
 
     @staticmethod
