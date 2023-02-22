@@ -1,6 +1,7 @@
 import contextlib
+import re
 from abc import ABC, abstractmethod
-from typing import Callable, List, Type, Union
+from typing import Callable, List, Type, Union, Any, Dict
 
 from funcy import lsplit
 from odd_collector_sdk.errors import DataSourceError
@@ -186,6 +187,8 @@ FROM INFORMATION_SCHEMA.STAGES
 
 """
 
+PRIMARY_KEYS_QUERY = "SHOW PRIMARY KEYS IN DATABASE"
+
 
 class SnowflakeClientBase(ABC):
     def __init__(self, config: SnowflakePlugin):
@@ -209,7 +212,6 @@ class SnowflakeClient(SnowflakeClientBase):
     def connect(self):
         cursor = None
         connection = None
-
         try:
             connection = connector.connect(
                 user=self._config.user,
@@ -244,12 +246,21 @@ class SnowflakeClient(SnowflakeClientBase):
         with self.connect() as cursor:
             tables: List[Table] = self._fetch_tables(cursor)
             columns: List[Column] = self._fetch_columns(cursor)
+            primary_keys: Dict[Any] = self._fetch_primary_keys(cursor)
+            clustering_keys: Dict = self._get_clustering_keys(tables)
+
+            for column in columns:
+                column.is_primary_key = False
+                column.is_clustering_key = False
+                if column.column_name in primary_keys.get(column.table_name, []):
+                    column.is_primary_key = True
+                if column.column_name.lower() in clustering_keys.get(column.table_name, []):
+                    column.is_clustering_key = True
 
             for table in tables:
                 belongs, not_belongs = lsplit(is_belongs(table), columns)
                 table.columns.extend(belongs)
                 columns = not_belongs
-
             return tables
 
     def get_raw_pipes(self) -> List[RawPipe]:
@@ -259,6 +270,17 @@ class SnowflakeClient(SnowflakeClientBase):
     def get_raw_stages(self) -> List[RawStage]:
         with self.connect() as cursor:
             return self._fetch_something(RAW_STAGES_QUERY, cursor, RawStage)
+
+    def _get_clustering_keys(self, tables: List[Table]) -> Dict:
+        res = {}
+        regex = r"\(([^()]*)\)"
+
+        for table in tables:
+            if getattr(table, 'clustering_key'):
+                matches = re.search(regex, getattr(table, 'clustering_key'))
+                if matches:
+                    res[table.table_name] = matches.group(1).split(", ")
+        return res
 
     def _fetch_tables(self, cursor: DictCursor) -> List[Table]:
         result: List[Table] = []
@@ -272,6 +294,16 @@ class SnowflakeClient(SnowflakeClientBase):
                 result.append(View.parse_obj(LowerKeyDict(raw_object)))
 
         return result
+
+    def _fetch_primary_keys(self, cursor: DictCursor):
+        cursor.execute(PRIMARY_KEYS_QUERY)
+        res = {}
+        for pk in cursor.fetchall():
+            if pk['table_name'] in res:
+                res[pk['table_name']].append(pk['column_name'])
+            else:
+                res[pk['table_name']] = [pk['column_name']]
+        return res
 
     @staticmethod
     def _fetch_something(

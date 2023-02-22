@@ -12,7 +12,6 @@ def map_database(
     generator: SnowflakeGenerator,
 ) -> DataEntity:
     generator = deepcopy(generator)
-
     oddrn = generator.get_oddrn_by_path("databases", database_name)
     return DataEntity(
         type=DataEntityType.DATABASE_SERVICE,

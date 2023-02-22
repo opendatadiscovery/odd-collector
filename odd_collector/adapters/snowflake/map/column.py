@@ -56,14 +56,14 @@ def map_columns(
         column_oddrn_key = f"{parent_path.value}_columns"
         generator_params = {column_oddrn_key: column.column_name}
         generator.set_oddrn_paths(**generator_params)
-
         dataset_set_field = DataSetField(
             oddrn=generator.get_oddrn_by_path(column_oddrn_key),
             name=column.column_name,
             type=get_field_type(column),
             default_value=column.column_default,
+            is_sort_key=bool(column.is_clustering_key),
+            is_primary_key=column.is_primary_key
         )
-
         result.append(dataset_set_field)
 
     return result
