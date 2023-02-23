@@ -25,8 +25,8 @@ class Column(BaseModel):
     identity_increment: Any
     identity_cycle: Any
     comment: Any
-    is_primary_key: Any
-    is_clustering_key: Any
+    is_primary_key: bool = False
+    is_clustering_key: bool = False
 
     @property
     def metadata(self) -> Dict[str, Any]:

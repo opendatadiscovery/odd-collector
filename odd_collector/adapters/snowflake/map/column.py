@@ -61,7 +61,7 @@ def map_columns(
             name=column.column_name,
             type=get_field_type(column),
             default_value=column.column_default,
-            is_sort_key=bool(column.is_clustering_key),
+            is_sort_key=column.is_clustering_key,
             is_primary_key=column.is_primary_key,
         )
         result.append(dataset_set_field)

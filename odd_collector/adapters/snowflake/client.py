@@ -1,6 +1,7 @@
 import contextlib
 import re
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from typing import Callable, List, Type, Union, Any, Dict
 
 from funcy import lsplit
@@ -246,12 +247,10 @@ class SnowflakeClient(SnowflakeClientBase):
         with self.connect() as cursor:
             tables: List[Table] = self._fetch_tables(cursor)
             columns: List[Column] = self._fetch_columns(cursor)
-            primary_keys: Dict[Any] = self._fetch_primary_keys(cursor)
-            clustering_keys: Dict = self._get_clustering_keys(tables)
+            primary_keys: Dict[str, List] = self._fetch_primary_keys(cursor)
+            clustering_keys: Dict[str, List] = self._get_clustering_keys(tables)
 
             for column in columns:
-                column.is_primary_key = False
-                column.is_clustering_key = False
                 if column.column_name in primary_keys.get(column.table_name, []):
                     column.is_primary_key = True
                 if column.column_name.lower() in clustering_keys.get(
@@ -273,13 +272,16 @@ class SnowflakeClient(SnowflakeClientBase):
         with self.connect() as cursor:
             return self._fetch_something(RAW_STAGES_QUERY, cursor, RawStage)
 
-    def _get_clustering_keys(self, tables: List[Table]) -> Dict:
-        res = {}
+    def _get_clustering_keys(self, tables: List[Table]) -> Dict[str, List]:
+        res: Dict[str, List] = {}
+
+        # Snowflake clustering keys could look like: "LINEAR(to_date(post_timestamp))", "LINEAR(column2, column3)"
+        # regex below matches any parentheses and everything inside them that do not contain any parentheses.
         regex = r"\(([^()]*)\)"
 
         for table in tables:
-            if getattr(table, "clustering_key"):
-                matches = re.search(regex, getattr(table, "clustering_key"))
+            if table.clustering_key:
+                matches = re.search(regex, table.clustering_key)
                 if matches:
                     res[table.table_name] = matches.group(1).split(", ")
         return res
@@ -297,14 +299,11 @@ class SnowflakeClient(SnowflakeClientBase):
 
         return result
 
-    def _fetch_primary_keys(self, cursor: DictCursor):
+    def _fetch_primary_keys(self, cursor: DictCursor) -> Dict[str, List]:
         cursor.execute(PRIMARY_KEYS_QUERY)
-        res = {}
+        res = defaultdict(list)
         for pk in cursor.fetchall():
-            if pk["table_name"] in res:
-                res[pk["table_name"]].append(pk["column_name"])
-            else:
-                res[pk["table_name"]] = [pk["column_name"]]
+            res[pk["table_name"]].append(pk["column_name"])
         return res
 
     @staticmethod
