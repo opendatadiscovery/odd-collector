@@ -276,14 +276,14 @@ class SnowflakeClient(SnowflakeClientBase):
         res: Dict[str, List] = {}
 
         # Snowflake clustering keys could look like: "LINEAR(to_date(post_timestamp))", "LINEAR(column2, column3)"
-        # regex below matches any parentheses and everything inside them that do not contain any parentheses.
-        regex = r"\(([^()]*)\)"
+        # cl_keys matches any parentheses and everything inside them that do not contain any parentheses.
+        regex = r"\((?P<cl_keys>[^()]+)\)"
 
         for table in tables:
             if table.clustering_key:
                 matches = re.search(regex, table.clustering_key)
                 if matches:
-                    res[table.table_name] = matches.group(1).split(", ")
+                    res[table.table_name] = matches.group("cl_keys").split(", ")
         return res
 
     def _fetch_tables(self, cursor: DictCursor) -> List[Table]:
