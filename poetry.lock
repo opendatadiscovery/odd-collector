@@ -2747,14 +2747,14 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.15"
+version = "0.3.16"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.15-py3-none-any.whl", hash = "sha256:c440520ea8fe98f938e437eb7348cd80fce3480d537566b4e10b777f9f41d91c"},
-    {file = "odd_collector_sdk-0.3.15.tar.gz", hash = "sha256:572e840b7f1fc2335c67dd8106363f8570a1e27b8d784143dea7a517755661bb"},
+    {file = "odd_collector_sdk-0.3.16-py3-none-any.whl", hash = "sha256:298e68f5b3bcbe9d710577020d5aad7c2efe802e4cf278799ea49cf9579583b7"},
+    {file = "odd_collector_sdk-0.3.16.tar.gz", hash = "sha256:0b6128a02f80731ab210df299da54d0ffa8bee1d4db73b1df2990ffb0c34c253"},
 ]
 
 [package.dependencies]
@@ -2763,7 +2763,7 @@ APScheduler = ">=3.8.1,<4.0.0"
 funcy = ">=1.17,<2.0"
 importlib-metadata = ">=5.1.0,<6.0.0"
 loguru = ">=0.6.0,<0.7.0"
-odd-models = "2.0.11"
+odd-models = ">=2.0.11,<3.0.0"
 pyaml-env = ">=1.1.5,<2.0.0"
 pydantic = ">=1.8.2,<2.0.0"
 tqdm = ">=4.64.1,<5.0.0"
@@ -5090,4 +5090,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ef4e0e9ef113be87301af4da62375aa07aef3108d870c1fc177d485cd0288211"
+content-hash = "8eb58caccbd9e160917c78251180f15437e9ed8bdb4dcd4ec57bfb2231b387d4"
