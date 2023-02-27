@@ -20,11 +20,16 @@ class Adapter(AbstractAdapter):
         return self._generator.get_data_source_oddrn()
 
     def get_data_entities(self) -> List[DataEntity]:
-        tables = self._repository.get_tables()
-        columns = self._repository.get_columns()
-        primary_keys = self._repository.get_primary_keys()
+        tables, columns, primary_keys, enum_types = self._repository.get_metadata()
 
-        return map_table(self._generator, tables, columns, primary_keys, self._database)
+        return map_table(
+            oddrn_generator=self._generator,
+            tables=tables,
+            columns=columns,
+            primary_keys=primary_keys,
+            enum_type_labels=enum_types,
+            database=self._database,
+        )
 
     def get_data_entity_list(self) -> DataEntityList:
         return DataEntityList(

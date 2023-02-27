@@ -3,7 +3,7 @@ from typing import List, Union
 
 from odd_models.models import MetadataExtension
 
-from odd_collector.adapters.postgresql.mappers.models import (
+from ..models import (
     ColumnMetadata,
     TableMetadata,
 )

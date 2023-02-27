@@ -7,15 +7,12 @@ keywords = ["Open Data Discovery", "Metadata", "Data Discovery", "Data Observabi
 homepage = "https://github.com/opendatadiscovery/odd-collector"
 repository = "https://github.com/opendatadiscovery/odd-collector"
 
-
-
 [tool.poetry.dependencies]
 boto3 = "1.26.32"
 cassandra-driver = "3.25.0"
 clickhouse-driver = "0.2.5"
 confluent-kafka = "1.9.2"
 elasticsearch = "7.14.0"
-feast = "0.29.0"
 funcy = "1.17"
 flatdict = "4.0.1"
 hive-metastore-client = "1.0.9"
@@ -33,7 +30,6 @@ pytest = "7.1.2"
 pymongo = { extras = ["srv"], version = "4.0.2" }
 presto-python-client = "0.8.2"
 pymssql = "2.2.7"
-snowflake-connector-python = "2.8.1"
 sqlalchemy = "^1.4.45"
 tableauserverclient = "0.19.0"
 tarantool = "0.8.0"
@@ -42,12 +38,9 @@ vertica-python = "1.1.1"
 pyaml-env = "^1.2.1"
 pytz = "^2022.7"
 fastavro = "^1.7.1"
-llvmlite = "^0.39.1"
-numba = "^0.56.4"
-mlflow = "2.0.1"
 sql-metadata = "^2.6.0"
 pytest-asyncio = "^0.20.3"
-odd-collector-sdk = "0.3.16"
+odd-collector-sdk = "0.3.17"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.0.4"
