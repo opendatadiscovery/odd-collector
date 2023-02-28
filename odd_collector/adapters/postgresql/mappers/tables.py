@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 from typing import List
 
 from odd_collector_sdk.errors import MappingDataError
@@ -81,10 +82,8 @@ def map_table(
                     table.view_definition, oddrn_generator
                 )
 
-            etl_grouped = {}
+            etl_grouped = defaultdict(list)
             for etl in enum_type_labels:
-                if etl.type_oid not in etl_grouped:
-                    etl_grouped[etl.type_oid] = []
                 etl_grouped[etl.type_oid].append(etl)
 
             # DatasetField
