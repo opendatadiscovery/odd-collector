@@ -24,15 +24,15 @@ def map_column(
     name: str = column_metadata.column_name
 
     data_type: Type = TYPES_SQL_TO_ODD.get(column_metadata.data_type, Type.TYPE_UNKNOWN) \
-        if enum_type_labels is None or not len(enum_type_labels) \
+        if not enum_type_labels or not len(enum_type_labels) \
         else Type.TYPE_STRING
 
     logical_type: str = column_metadata.data_type \
-        if enum_type_labels is None or not len(enum_type_labels) \
+        if not enum_type_labels or not len(enum_type_labels) \
         else enum_type_labels[0].type_name
 
     enum_values = [DataSetFieldEnumValue(name=etl.label) for etl in enum_type_labels] \
-        if enum_type_labels is not None \
+        if enum_type_labels \
         else None
 
     dsf: DataSetField = DataSetField(
