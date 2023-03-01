@@ -10,3 +10,6 @@ plugins:
     database: database_name
     user: user
     password: password
+    secure: False
+    verify: True
+    server_hostname: None # Optional string
