@@ -5,6 +5,7 @@ from typing import Dict
 from clickhouse_driver import connect
 from odd_collector_sdk.errors import DataSourceError
 
+from ...domain.plugin import ClickhousePlugin
 from .domain import Column, IntegrationEngine, Records, Table
 from .logger import logger
 
@@ -71,12 +72,15 @@ class ClickHouseRepositoryBase(ABC):
 
 
 class ClickHouseRepository(ClickHouseRepositoryBase):
-    def __init__(self, config):
+    def __init__(self, config: ClickhousePlugin):
         self.__host = config.host
         self.__port = config.port
         self.__database = config.database
         self.__user = config.user
         self.__password = config.password
+        self.__secure = config.secure
+        self.__verify = config.verify
+        self.__server_hostname = config.server_hostname
 
     def get_records(self) -> Records:
         clickhouse_conn_params = {
@@ -85,6 +89,9 @@ class ClickHouseRepository(ClickHouseRepositoryBase):
             "database": self.__database,
             "user": self.__user,
             "password": self.__password,
+            "secure ": self.__secure,
+            "verify": self.__verify,
+            "server_hostname": self.__server_hostname,
         }
         with ClickHouseManagerConnection(clickhouse_conn_params) as cursor:
             query_params = {"database": clickhouse_conn_params["database"]}
