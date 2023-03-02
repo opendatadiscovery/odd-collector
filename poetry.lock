@@ -2747,14 +2747,14 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.16"
+version = "0.3.19"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.16-py3-none-any.whl", hash = "sha256:298e68f5b3bcbe9d710577020d5aad7c2efe802e4cf278799ea49cf9579583b7"},
-    {file = "odd_collector_sdk-0.3.16.tar.gz", hash = "sha256:0b6128a02f80731ab210df299da54d0ffa8bee1d4db73b1df2990ffb0c34c253"},
+    {file = "odd_collector_sdk-0.3.19-py3-none-any.whl", hash = "sha256:2f6e43b65cbb77cbce8c3ceeb91269dacdca1da737819398ee8de30bba2e606f"},
+    {file = "odd_collector_sdk-0.3.19.tar.gz", hash = "sha256:476cbdfb808afc4e1def3355ba185aee16bc9c0be0a3928d43035167978a8fb7"},
 ]
 
 [package.dependencies]
@@ -2763,26 +2763,27 @@ APScheduler = ">=3.8.1,<4.0.0"
 funcy = ">=1.17,<2.0"
 importlib-metadata = ">=5.1.0,<6.0.0"
 loguru = ">=0.6.0,<0.7.0"
-odd-models = ">=2.0.11,<3.0.0"
+odd-models = ">=2.0.21,<3.0.0"
 pyaml-env = ">=1.1.5,<2.0.0"
 pydantic = ">=1.8.2,<2.0.0"
 tqdm = ">=4.64.1,<5.0.0"
 
 [[package]]
 name = "odd-models"
-version = "2.0.11"
+version = "2.0.21"
 description = "Open Data Discovery Models"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_models-2.0.11-py3-none-any.whl", hash = "sha256:b4e52a8f6645d44bb1ef3c8ef53a5f46b7a35b3683534b0ff3e7d121c80034ea"},
-    {file = "odd_models-2.0.11.tar.gz", hash = "sha256:532397bee5f26c65bba96a45b9536a35182c63617a25157dcb5171c34509f6a5"},
+    {file = "odd_models-2.0.21-py3-none-any.whl", hash = "sha256:1762e1e36b14a05c37bb834007ef7a9a5b9ec501f51cee0d5929b6a9a0707c73"},
+    {file = "odd_models-2.0.21.tar.gz", hash = "sha256:e1da16e7dbc61cb4af13f6eb6c53ecae406fbe961099e031dff29149f17a7e4b"},
 ]
 
 [package.dependencies]
+loguru = ">=0.6.0,<0.7.0"
 pydantic = ">=1.9.1,<2.0.0"
-requests = "2.27.1"
+requests = "2.28.2"
 sql-metadata = ">=2.6.0,<3.0.0"
 sqlparse = "0.4.2"
 
@@ -2987,6 +2988,13 @@ files = [
     {file = "Pillow-9.4.0-1-cp39-cp39-macosx_10_10_x86_64.whl", hash = "sha256:b8c2f6eb0df979ee99433d8b3f6d193d9590f735cf12274c108bd954e30ca858"},
     {file = "Pillow-9.4.0-1-pp38-pypy38_pp73-macosx_10_10_x86_64.whl", hash = "sha256:b70756ec9417c34e097f987b4d8c510975216ad26ba6e57ccb53bc758f490dab"},
     {file = "Pillow-9.4.0-1-pp39-pypy39_pp73-macosx_10_10_x86_64.whl", hash = "sha256:43521ce2c4b865d385e78579a082b6ad1166ebed2b1a2293c3be1d68dd7ca3b9"},
+    {file = "Pillow-9.4.0-2-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:9d9a62576b68cd90f7075876f4e8444487db5eeea0e4df3ba298ee38a8d067b0"},
+    {file = "Pillow-9.4.0-2-cp311-cp311-macosx_10_10_x86_64.whl", hash = "sha256:87708d78a14d56a990fbf4f9cb350b7d89ee8988705e58e39bdf4d82c149210f"},
+    {file = "Pillow-9.4.0-2-cp37-cp37m-macosx_10_10_x86_64.whl", hash = "sha256:8a2b5874d17e72dfb80d917213abd55d7e1ed2479f38f001f264f7ce7bae757c"},
+    {file = "Pillow-9.4.0-2-cp38-cp38-macosx_10_10_x86_64.whl", hash = "sha256:83125753a60cfc8c412de5896d10a0a405e0bd88d0470ad82e0869ddf0cb3848"},
+    {file = "Pillow-9.4.0-2-cp39-cp39-macosx_10_10_x86_64.whl", hash = "sha256:9e5f94742033898bfe84c93c831a6f552bb629448d4072dd312306bab3bd96f1"},
+    {file = "Pillow-9.4.0-2-pp38-pypy38_pp73-macosx_10_10_x86_64.whl", hash = "sha256:013016af6b3a12a2f40b704677f8b51f72cb007dac785a9933d5c86a72a7fe33"},
+    {file = "Pillow-9.4.0-2-pp39-pypy39_pp73-macosx_10_10_x86_64.whl", hash = "sha256:99d92d148dd03fd19d16175b6d355cc1b01faf80dae93c6c3eb4163709edc0a9"},
     {file = "Pillow-9.4.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:2968c58feca624bb6c8502f9564dd187d0e1389964898f5e9e1fbc8533169157"},
     {file = "Pillow-9.4.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:c5c1362c14aee73f50143d74389b2c158707b4abce2cb055b7ad37ce60738d47"},
     {file = "Pillow-9.4.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bd752c5ff1b4a870b7661234694f24b1d2b9076b8bf337321a814c612665f343"},
@@ -3974,25 +3982,25 @@ six = "*"
 
 [[package]]
 name = "requests"
-version = "2.27.1"
+version = "2.28.2"
 description = "Python HTTP for Humans."
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+python-versions = ">=3.7, <4"
 files = [
-    {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},
-    {file = "requests-2.27.1.tar.gz", hash = "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61"},
+    {file = "requests-2.28.2-py3-none-any.whl", hash = "sha256:64299f4909223da747622c030b781c0d7811e359c37124b4bd368fb8c6518baa"},
+    {file = "requests-2.28.2.tar.gz", hash = "sha256:98b1b2782e3c6c4904938b84c0eb932721069dfdb9134313beff7c83c2df24bf"},
 ]
 
 [package.dependencies]
 certifi = ">=2017.4.17"
-charset-normalizer = {version = ">=2.0.0,<2.1.0", markers = "python_version >= \"3\""}
-idna = {version = ">=2.5,<4", markers = "python_version >= \"3\""}
+charset-normalizer = ">=2,<4"
+idna = ">=2.5,<4"
 urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
-socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
-use-chardet-on-py3 = ["chardet (>=3.0.2,<5)"]
+socks = ["PySocks (>=1.5.6,!=1.5.7)"]
+use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "rfc3986"
@@ -5090,4 +5098,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "8eb58caccbd9e160917c78251180f15437e9ed8bdb4dcd4ec57bfb2231b387d4"
+content-hash = "b2e7e15640d67ba4872f56380698bf5bdbb49d77f78878491297ca389f4a6699"
