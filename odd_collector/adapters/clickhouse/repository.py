@@ -71,30 +71,26 @@ class ClickHouseRepositoryBase(ABC):
         raise NotImplementedError
 
 
+class ConnectionParams:
+    def __init__(self, clickhouse_plugin: ClickhousePlugin):
+        self.host = clickhouse_plugin.host
+        self.port = clickhouse_plugin.port
+        self.database = clickhouse_plugin.database
+        self.user = clickhouse_plugin.user
+        self.password = clickhouse_plugin.password.get_secret_value()
+        self.secure = clickhouse_plugin.secure
+        self.verify = clickhouse_plugin.verify
+        self.server_hostname = (clickhouse_plugin.server_hostname,)
+
+
 class ClickHouseRepository(ClickHouseRepositoryBase):
     def __init__(self, config: ClickhousePlugin):
-        self.__host = config.host
-        self.__port = config.port
-        self.__database = config.database
-        self.__user = config.user
-        self.__password = config.password
-        self.__secure = config.secure
-        self.__verify = config.verify
-        self.__server_hostname = config.server_hostname
+        self._config = config
 
     def get_records(self) -> Records:
-        clickhouse_conn_params = {
-            "host": self.__host,
-            "port": self.__port,
-            "database": self.__database,
-            "user": self.__user,
-            "password": self.__password,
-            "secure ": self.__secure,
-            "verify": self.__verify,
-            "server_hostname": self.__server_hostname,
-        }
+        clickhouse_conn_params = ConnectionParams(self._config)
         with ClickHouseManagerConnection(clickhouse_conn_params) as cursor:
-            query_params = {"database": clickhouse_conn_params["database"]}
+            query_params = {"database": clickhouse_conn_params.database}
 
             logger.debug("Get tables")
             cursor.execute(TABLE_SELECT, query_params)
@@ -114,8 +110,8 @@ class ClickHouseRepository(ClickHouseRepositoryBase):
 
 
 class ClickHouseManagerConnection:
-    def __init__(self, conn_params: Dict[str, str]):
-        self.__conn_params = conn_params
+    def __init__(self, conn_params: ConnectionParams):
+        self.__conn_params = conn_params.__dict__
 
     def __enter__(self):
         self.__clickhouse_conn = connect(**self.__conn_params)
