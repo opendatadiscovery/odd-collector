@@ -80,7 +80,7 @@ class ConnectionParams:
         self.password = clickhouse_plugin.password.get_secret_value()
         self.secure = clickhouse_plugin.secure
         self.verify = clickhouse_plugin.verify
-        self.server_hostname = (clickhouse_plugin.server_hostname,)
+        self.server_hostname = clickhouse_plugin.server_hostname
 
 
 class ClickHouseRepository(ClickHouseRepositoryBase):
