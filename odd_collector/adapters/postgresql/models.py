@@ -81,3 +81,11 @@ class ColumnMetadata:
     generation_expression: Any
     is_updatable: Any
     description: Any
+    type_oid: int
+
+
+@dataclass(frozen=True)
+class EnumTypeLabel:
+    type_oid: int
+    type_name: str
+    label: str
