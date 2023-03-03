@@ -1,6 +1,11 @@
 from typing import List, Optional, Tuple
 
-from odd_models.models import DataSetField, DataSetFieldType, Type, DataSetFieldEnumValue
+from odd_models.models import (
+    DataSetField,
+    DataSetFieldEnumValue,
+    DataSetFieldType,
+    Type,
+)
 from oddrn_generator import PostgresqlGenerator
 
 from odd_collector.adapters.postgresql.config import (
@@ -8,8 +13,8 @@ from odd_collector.adapters.postgresql.config import (
     _data_set_field_metadata_schema_url,
 )
 
-from .metadata import append_metadata_extension
 from ..models import ColumnMetadata, EnumTypeLabel
+from .metadata import append_metadata_extension
 from .types import TYPES_SQL_TO_ODD
 
 
@@ -19,21 +24,27 @@ def map_column(
     owner: str,
     parent_oddrn_path: str,
     enum_type_labels: Optional[List[EnumTypeLabel]],
-    is_primary: bool = False
+    is_primary: bool = False,
 ) -> DataSetField:
     name: str = column_metadata.column_name
 
-    data_type: Type = TYPES_SQL_TO_ODD.get(column_metadata.data_type, Type.TYPE_UNKNOWN) \
-        if not enum_type_labels or not len(enum_type_labels) \
+    data_type: Type = (
+        TYPES_SQL_TO_ODD.get(column_metadata.data_type, Type.TYPE_UNKNOWN)
+        if not enum_type_labels or not len(enum_type_labels)
         else Type.TYPE_STRING
+    )
 
-    logical_type: str = column_metadata.data_type \
-        if not enum_type_labels or not len(enum_type_labels) \
+    logical_type: str = (
+        column_metadata.data_type
+        if not enum_type_labels or not len(enum_type_labels)
         else enum_type_labels[0].type_name
+    )
 
-    enum_values = [DataSetFieldEnumValue(name=etl.label) for etl in enum_type_labels] \
-        if enum_type_labels \
+    enum_values = (
+        [DataSetFieldEnumValue(name=etl.label) for etl in enum_type_labels]
+        if enum_type_labels
         else None
+    )
 
     dsf: DataSetField = DataSetField(
         oddrn=oddrn_generator.get_oddrn_by_path(
@@ -50,7 +61,7 @@ def map_column(
         ),
         default_value=column_metadata.column_default,
         description=column_metadata.description,
-        enum_values=enum_values
+        enum_values=enum_values,
     )
 
     append_metadata_extension(

@@ -4,16 +4,20 @@ from typing import Union
 from psycopg2 import sql
 
 from odd_collector.adapters.postgresql.connectors import PostgreSQLConnector
-from odd_collector.adapters.postgresql.models import TableMetadata, ColumnMetadata, PrimaryKey, EnumTypeLabel
+from odd_collector.adapters.postgresql.models import (
+    ColumnMetadata,
+    EnumTypeLabel,
+    PrimaryKey,
+    TableMetadata,
+)
 
 
 class AbstractRepository(ABC):
     @abstractmethod
-    def get_metadata(self) -> tuple[
-        list[TableMetadata],
-        list[ColumnMetadata],
-        list[PrimaryKey],
-        list[EnumTypeLabel]
+    def get_metadata(
+        self,
+    ) -> tuple[
+        list[TableMetadata], list[ColumnMetadata], list[PrimaryKey], list[EnumTypeLabel]
     ]:
         pass
 
@@ -27,18 +31,30 @@ class PostgreSQLRepository(AbstractRepository):
     def __init__(self, config):
         self.connector = PostgreSQLConnector(config)
 
-    def get_metadata(self) -> tuple[
-        list[TableMetadata],
-        list[ColumnMetadata],
-        list[PrimaryKey],
-        list[EnumTypeLabel]
+    def get_metadata(
+        self,
+    ) -> tuple[
+        list[TableMetadata], list[ColumnMetadata], list[PrimaryKey], list[EnumTypeLabel]
     ]:
         with self.connector.connection() as cursor:
-            return \
-                [TableMetadata(*raw) for raw in self.execute(self.table_metadata_query, cursor)], \
-                [ColumnMetadata(*raw) for raw in self.execute(self.column_metadata_query, cursor)], \
-                [PrimaryKey(*raw) for raw in self.execute(self.primary_key_query, cursor)], \
-                [EnumTypeLabel(*raw) for raw in self.execute(self.enum_types_query, cursor)]
+            return (
+                [
+                    TableMetadata(*raw)
+                    for raw in self.execute(self.table_metadata_query, cursor)
+                ],
+                [
+                    ColumnMetadata(*raw)
+                    for raw in self.execute(self.column_metadata_query, cursor)
+                ],
+                [
+                    PrimaryKey(*raw)
+                    for raw in self.execute(self.primary_key_query, cursor)
+                ],
+                [
+                    EnumTypeLabel(*raw)
+                    for raw in self.execute(self.enum_types_query, cursor)
+                ],
+            )
 
     @property
     def primary_key_query(self):

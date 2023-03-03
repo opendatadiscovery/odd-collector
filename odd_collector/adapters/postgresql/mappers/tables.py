@@ -11,11 +11,11 @@ from odd_collector.adapters.postgresql.config import (
     _data_set_metadata_schema_url,
 )
 
+from ..models import ColumnMetadata, EnumTypeLabel, PrimaryKey, TableMetadata
 from .columns import map_column
 from .metadata import append_metadata_extension
 from .types import TABLE_TYPES_SQL_TO_ODD
 from .views import extract_transformer_data
-from ..models import TableMetadata, PrimaryKey, ColumnMetadata, EnumTypeLabel
 
 
 def map_table(
@@ -95,9 +95,11 @@ def map_table(
                 ):
                     is_pk = column_metadata.column_name in primary_key_columns
 
-                    enum_values = [e for e in etl_grouped[column_metadata.type_oid]] \
-                        if column_metadata.type_oid in etl_grouped \
+                    enum_values = (
+                        [e for e in etl_grouped[column_metadata.type_oid]]
+                        if column_metadata.type_oid in etl_grouped
                         else None
+                    )
 
                     data_entity.dataset.field_list.append(
                         map_column(
@@ -106,7 +108,7 @@ def map_table(
                             data_entity.owner,
                             oddrn_path,
                             enum_values,
-                            is_pk
+                            is_pk,
                         )
                     )
                     column_index += 1

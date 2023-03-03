@@ -3,10 +3,7 @@ from typing import List, Union
 
 from odd_models.models import MetadataExtension
 
-from ..models import (
-    ColumnMetadata,
-    TableMetadata,
-)
+from ..models import ColumnMetadata, TableMetadata
 
 
 def append_metadata_extension(

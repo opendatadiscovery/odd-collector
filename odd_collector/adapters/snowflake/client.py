@@ -2,7 +2,7 @@ import contextlib
 import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Callable, List, Type, Union, Any, Dict
+from typing import Any, Callable, Dict, List, Type, Union
 
 from funcy import lsplit
 from odd_collector_sdk.errors import DataSourceError
