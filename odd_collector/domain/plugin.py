@@ -53,6 +53,7 @@ class ClickhousePlugin(DatabasePlugin):
     secure: bool = False
     verify: bool = True
     server_hostname: Optional[str] = None
+    max_block_size: Optional[int] = 10000
 
 
 class RedshiftPlugin(DatabasePlugin):

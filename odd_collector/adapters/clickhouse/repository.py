@@ -2,7 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Dict
 
-from clickhouse_driver import connect
+from clickhouse_driver import Client
 from odd_collector_sdk.errors import DataSourceError
 
 from ...domain.plugin import ClickhousePlugin
@@ -89,48 +89,27 @@ class ClickHouseRepository(ClickHouseRepositoryBase):
 
     def get_records(self) -> Records:
         clickhouse_conn_params = ConnectionParams(self._config)
-        with ClickHouseManagerConnection(clickhouse_conn_params) as cursor:
-            query_params = {"database": clickhouse_conn_params.database}
+        query_params = {"database": self._config.database}
+        settings = {"max_block_size": self._config.max_block_size}
 
+        with Client(settings=settings, **clickhouse_conn_params.__dict__) as client:
+            logger.debug(f"Start fetching data {query_params=} {settings=}")
             logger.debug("Get tables")
-            cursor.execute(TABLE_SELECT, query_params)
-            tables = [Table(*row) for row in cursor.fetchall()]
+            tables = [
+                Table(*row) for row in client.execute_iter(TABLE_SELECT, query_params)
+            ]
 
             logger.debug("Get columns")
-            cursor.execute(COLUMN_SELECT, query_params)
-            columns = [Column(*row) for row in cursor.fetchall()]
+            columns = [
+                Column(*row) for row in client.execute_iter(COLUMN_SELECT, query_params)
+            ]
 
             logging.debug("Get integration engines")
-            cursor.execute(INTEGRATION_ENGINES_SELECT, query_params)
-            integration_engines = [IntegrationEngine(*res) for res in cursor.fetchall()]
-
+            integration_engines = [
+                IntegrationEngine(*res)
+                for res in client.execute_iter(INTEGRATION_ENGINES_SELECT, query_params)
+            ]
+            logging.debug("Got records")
             return Records(
                 tables=tables, columns=columns, integration_engines=integration_engines
             )
-
-
-class ClickHouseManagerConnection:
-    def __init__(self, conn_params: ConnectionParams):
-        self.__conn_params = conn_params.__dict__
-
-    def __enter__(self):
-        self.__clickhouse_conn = connect(**self.__conn_params)
-        self.clickhouse_cursor = self.__clickhouse_conn.cursor()
-        return self.clickhouse_cursor
-
-    def __exit__(self, *args):
-        logger.debug("Try to close cursor")
-        try:
-            if self.clickhouse_cursor:
-                self.clickhouse_cursor.close()
-        except Exception as exc:
-            raise DataSourceError("Could not close clickhouse cursor") from exc
-
-        logger.debug("Try to close connection")
-        try:
-            if self.__clickhouse_conn:
-                self.__clickhouse_conn.close()
-        except Exception as exc:
-            raise DataSourceError("Could not close clickhouse connection") from exc
-
-        logging.debug("ClickHouse resource has been released")
