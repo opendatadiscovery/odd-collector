@@ -5,12 +5,11 @@ plugins:
   - type: clickhouse
     name: clickhouse_adapter
     description: "" # Optional string
-    host: host
-    port: 0000
-    database: database_name
-    user: user
-    password: password
+    host: localhost
+    port: 8123
+    database: default
+    user: default
+    password:
     secure: False
     verify: True
-    server_hostname: None # Optional string
-    max_block_size: 10000
+    query_limit: 0 # Optional string, default 0

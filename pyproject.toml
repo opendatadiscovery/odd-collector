@@ -12,7 +12,6 @@ repository = "https://github.com/opendatadiscovery/odd-collector"
 [tool.poetry.dependencies]
 boto3 = "1.26.32"
 cassandra-driver = "3.25.0"
-clickhouse-driver = "0.2.5"
 confluent-kafka = "1.9.2"
 elasticsearch = "7.14.0"
 feast = "0.29.0"
@@ -48,6 +47,7 @@ mlflow = "2.0.1"
 sql-metadata = "^2.6.0"
 pytest-asyncio = "^0.20.3"
 odd-collector-sdk = "^0.3.20"
+clickhouse-connect = "^0.5.14"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.0.4"

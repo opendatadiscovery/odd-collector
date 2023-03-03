@@ -1,9 +1,8 @@
-import logging
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Type, Union
 
-from clickhouse_driver import Client
-from odd_collector_sdk.errors import DataSourceError
+from clickhouse_connect import get_client
+from clickhouse_connect.driver import Client
 
 from ...domain.plugin import ClickhousePlugin
 from .domain import Column, IntegrationEngine, Records, Table
@@ -80,7 +79,7 @@ class ConnectionParams:
         self.password = clickhouse_plugin.password.get_secret_value()
         self.secure = clickhouse_plugin.secure
         self.verify = clickhouse_plugin.verify
-        self.server_hostname = clickhouse_plugin.server_hostname
+        self.query_limit = clickhouse_plugin.query_limit
 
 
 class ClickHouseRepository(ClickHouseRepositoryBase):
@@ -88,28 +87,34 @@ class ClickHouseRepository(ClickHouseRepositoryBase):
         self._config = config
 
     def get_records(self) -> Records:
-        clickhouse_conn_params = ConnectionParams(self._config)
+        params = ConnectionParams(self._config)
         query_params = {"database": self._config.database}
-        settings = {"max_block_size": self._config.max_block_size}
+        logger.debug("Connecting to ClickHouse")
 
-        with Client(settings=settings, **clickhouse_conn_params.__dict__) as client:
-            logger.debug(f"Start fetching data {query_params=} {settings=}")
-            logger.debug("Get tables")
-            tables = [
-                Table(*row) for row in client.execute_iter(TABLE_SELECT, query_params)
-            ]
-
-            logger.debug("Get columns")
-            columns = [
-                Column(*row) for row in client.execute_iter(COLUMN_SELECT, query_params)
-            ]
-
-            logging.debug("Get integration engines")
-            integration_engines = [
-                IntegrationEngine(*res)
-                for res in client.execute_iter(INTEGRATION_ENGINES_SELECT, query_params)
-            ]
-            logging.debug("Got records")
-            return Records(
-                tables=tables, columns=columns, integration_engines=integration_engines
+        with get_client(**params.__dict__) as client:
+            logger.debug("Retrieving tables")
+            tables = self._execute(client, TABLE_SELECT, query_params, Table)
+            logger.debug("Retrieving columns")
+            columns = self._execute(client, COLUMN_SELECT, query_params, Column)
+            logger.debug("Retrieving integration_engines")
+            integration_engines = self._execute(
+                client, INTEGRATION_ENGINES_SELECT, query_params, IntegrationEngine
             )
+
+            return Records(
+                tables=list(tables),
+                columns=list(columns),
+                integration_engines=list(integration_engines),
+            )
+
+    def _execute(
+        self,
+        client: Client,
+        query: str,
+        query_params: dict,
+        map_to: Type[Union[Column, Table, IntegrationEngine]],
+    ) -> list:
+        with client.query_row_block_stream(query, query_params) as stream:
+            for block in stream:
+                for row in block:
+                    yield map_to(*row)
