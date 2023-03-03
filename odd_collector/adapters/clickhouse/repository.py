@@ -2,9 +2,10 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Dict
 
-from clickhouse_driver import connect
+from clickhouse_driver import Client
 from odd_collector_sdk.errors import DataSourceError
 
+from ...domain.plugin import ClickhousePlugin
 from .domain import Column, IntegrationEngine, Records, Table
 from .logger import logger
 
@@ -70,64 +71,45 @@ class ClickHouseRepositoryBase(ABC):
         raise NotImplementedError
 
 
+class ConnectionParams:
+    def __init__(self, clickhouse_plugin: ClickhousePlugin):
+        self.host = clickhouse_plugin.host
+        self.port = clickhouse_plugin.port
+        self.database = clickhouse_plugin.database
+        self.user = clickhouse_plugin.user
+        self.password = clickhouse_plugin.password.get_secret_value()
+        self.secure = clickhouse_plugin.secure
+        self.verify = clickhouse_plugin.verify
+        self.server_hostname = clickhouse_plugin.server_hostname
+
+
 class ClickHouseRepository(ClickHouseRepositoryBase):
-    def __init__(self, config):
-        self.__host = config.host
-        self.__port = config.port
-        self.__database = config.database
-        self.__user = config.user
-        self.__password = config.password
+    def __init__(self, config: ClickhousePlugin):
+        self._config = config
 
     def get_records(self) -> Records:
-        clickhouse_conn_params = {
-            "host": self.__host,
-            "port": self.__port,
-            "database": self.__database,
-            "user": self.__user,
-            "password": self.__password,
-        }
-        with ClickHouseManagerConnection(clickhouse_conn_params) as cursor:
-            query_params = {"database": clickhouse_conn_params["database"]}
+        clickhouse_conn_params = ConnectionParams(self._config)
+        query_params = {"database": self._config.database}
+        settings = {"max_block_size": self._config.max_block_size}
 
+        with Client(settings=settings, **clickhouse_conn_params.__dict__) as client:
+            logger.debug(f"Start fetching data {query_params=} {settings=}")
             logger.debug("Get tables")
-            cursor.execute(TABLE_SELECT, query_params)
-            tables = [Table(*row) for row in cursor.fetchall()]
+            tables = [
+                Table(*row) for row in client.execute_iter(TABLE_SELECT, query_params)
+            ]
 
             logger.debug("Get columns")
-            cursor.execute(COLUMN_SELECT, query_params)
-            columns = [Column(*row) for row in cursor.fetchall()]
+            columns = [
+                Column(*row) for row in client.execute_iter(COLUMN_SELECT, query_params)
+            ]
 
             logging.debug("Get integration engines")
-            cursor.execute(INTEGRATION_ENGINES_SELECT, query_params)
-            integration_engines = [IntegrationEngine(*res) for res in cursor.fetchall()]
-
+            integration_engines = [
+                IntegrationEngine(*res)
+                for res in client.execute_iter(INTEGRATION_ENGINES_SELECT, query_params)
+            ]
+            logging.debug("Got records")
             return Records(
                 tables=tables, columns=columns, integration_engines=integration_engines
             )
-
-
-class ClickHouseManagerConnection:
-    def __init__(self, conn_params: Dict[str, str]):
-        self.__conn_params = conn_params
-
-    def __enter__(self):
-        self.__clickhouse_conn = connect(**self.__conn_params)
-        self.clickhouse_cursor = self.__clickhouse_conn.cursor()
-        return self.clickhouse_cursor
-
-    def __exit__(self, *args):
-        logger.debug("Try to close cursor")
-        try:
-            if self.clickhouse_cursor:
-                self.clickhouse_cursor.close()
-        except Exception as exc:
-            raise DataSourceError("Could not close clickhouse cursor") from exc
-
-        logger.debug("Try to close connection")
-        try:
-            if self.__clickhouse_conn:
-                self.__clickhouse_conn.close()
-        except Exception as exc:
-            raise DataSourceError("Could not close clickhouse connection") from exc
-
-        logging.debug("ClickHouse resource has been released")
