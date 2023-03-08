@@ -1,4 +1,4 @@
-name: ODD Collector release
+name: ODD Collector test/dev image
 
 on:
   workflow_dispatch:
