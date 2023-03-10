@@ -28,7 +28,7 @@ class Adapter(AbstractAdapter):
         # Get data entities
         tables_entities = await self.get_data_entities()
 
-        # Create data set group
+        # Create entity group
         oddrns = lpluck_attr("oddrn", tables_entities)
         database_entity = map_database(self.__oddrn_generator, "druid", oddrns)
 
