@@ -56,7 +56,6 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "bit varying": Type.TYPE_BINARY,  # VARBITOID recheck
     "character varying": Type.TYPE_STRING,  # VARCHAROID
     "ARRAY": Type.TYPE_LIST,  # view information_schema.columns recheck
-    "USER-DEFINED": Type.TYPE_STRUCT,  # view information_schema.columns recheck
 }
 
 TABLE_TYPES_SQL_TO_ODD: Dict[str, DataEntityType] = {

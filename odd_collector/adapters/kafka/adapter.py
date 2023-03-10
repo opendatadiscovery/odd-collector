@@ -92,7 +92,6 @@ class Adapter(AbstractAdapter):
         return res
 
     def retrieve_schemas(self):
-
         try:
             topics = self.admin_client.list_topics()
 

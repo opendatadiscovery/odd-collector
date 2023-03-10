@@ -7,7 +7,6 @@ from .fields import map_field
 
 
 def map_index(index_meta: Dict[str, Any], mapping, oddrn_generator) -> DataEntity:
-
     oddrn_generator.set_oddrn_paths(indexes=index_meta["index"])
     index_oddrn = oddrn_generator.get_oddrn_by_path("indexes")
 

@@ -25,7 +25,6 @@ class Adapter(AbstractAdapter):
 
     def get_datasets(self) -> list[DataEntity]:
         try:
-
             with urllib.request.urlopen(f"{self.__url}catalog.json") as catalog_file:
                 catalog_json: dict = json.load(catalog_file)
 

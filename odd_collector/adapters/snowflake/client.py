@@ -1,6 +1,8 @@
 import contextlib
+import re
 from abc import ABC, abstractmethod
-from typing import Callable, List, Union
+from collections import defaultdict
+from typing import Any, Callable, Dict, List, Type, Union
 
 from funcy import lsplit
 from odd_collector_sdk.errors import DataSourceError
@@ -11,7 +13,7 @@ from snowflake.connector.errors import DataError, ProgrammingError
 from odd_collector.domain.plugin import SnowflakePlugin
 from odd_collector.helpers import LowerKeyDict
 
-from .domain import Column, Table, View
+from .domain import Column, Pipe, RawPipe, RawStage, Table, View
 
 TABLES_VIEWS_QUERY = """
 with recursive cte as (
@@ -170,6 +172,24 @@ order by
     c.ordinal_position
 """
 
+RAW_PIPES_QUERY = """
+
+SELECT PIPE_CATALOG, PIPE_SCHEMA, PIPE_NAME, DEFINITION
+FROM INFORMATION_SCHEMA.PIPES
+;
+
+"""
+
+RAW_STAGES_QUERY = """
+
+SELECT STAGE_NAME, STAGE_CATALOG, STAGE_SCHEMA, STAGE_URL, STAGE_TYPE
+FROM INFORMATION_SCHEMA.STAGES
+;
+
+"""
+
+PRIMARY_KEYS_QUERY = "SHOW PRIMARY KEYS IN DATABASE"
+
 
 class SnowflakeClientBase(ABC):
     def __init__(self, config: SnowflakePlugin):
@@ -179,18 +199,25 @@ class SnowflakeClientBase(ABC):
     def get_tables(self) -> List[Table]:
         raise NotImplementedError
 
+    @abstractmethod
+    def get_raw_pipes(self) -> List[RawPipe]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_raw_stages(self) -> List[RawStage]:
+        raise NotImplementedError
+
 
 class SnowflakeClient(SnowflakeClientBase):
     @contextlib.contextmanager
     def connect(self):
         cursor = None
         connection = None
-
         try:
             connection = connector.connect(
                 user=self._config.user,
                 password=self._config.password.get_secret_value(),
-                account=self._get_account(self._config.host),
+                account=self._get_account(),
                 database=self._config.database,
                 warehouse=self._config.warehouse,
             )
@@ -220,13 +247,44 @@ class SnowflakeClient(SnowflakeClientBase):
         with self.connect() as cursor:
             tables: List[Table] = self._fetch_tables(cursor)
             columns: List[Column] = self._fetch_columns(cursor)
+            primary_keys: Dict[str, List] = self._fetch_primary_keys(cursor)
+            clustering_keys: Dict[str, List] = self._get_clustering_keys(tables)
+
+            for column in columns:
+                if column.column_name in primary_keys.get(column.table_name, []):
+                    column.is_primary_key = True
+                if column.column_name.lower() in clustering_keys.get(
+                    column.table_name, []
+                ):
+                    column.is_clustering_key = True
 
             for table in tables:
                 belongs, not_belongs = lsplit(is_belongs(table), columns)
                 table.columns.extend(belongs)
                 columns = not_belongs
-
             return tables
+
+    def get_raw_pipes(self) -> List[RawPipe]:
+        with self.connect() as cursor:
+            return self._fetch_something(RAW_PIPES_QUERY, cursor, RawPipe)
+
+    def get_raw_stages(self) -> List[RawStage]:
+        with self.connect() as cursor:
+            return self._fetch_something(RAW_STAGES_QUERY, cursor, RawStage)
+
+    def _get_clustering_keys(self, tables: List[Table]) -> Dict[str, List]:
+        res: Dict[str, List] = {}
+
+        # Snowflake clustering keys could look like: "LINEAR(to_date(post_timestamp))", "LINEAR(column2, column3)"
+        # cl_keys matches any parentheses and everything inside them that do not contain any parentheses.
+        regex = r"\((?P<cl_keys>[^()]+)\)"
+
+        for table in tables:
+            if table.clustering_key:
+                matches = re.search(regex, table.clustering_key)
+                if matches:
+                    res[table.table_name] = matches.group("cl_keys").split(", ")
+        return res
 
     def _fetch_tables(self, cursor: DictCursor) -> List[Table]:
         result: List[Table] = []
@@ -241,6 +299,25 @@ class SnowflakeClient(SnowflakeClientBase):
 
         return result
 
+    def _fetch_primary_keys(self, cursor: DictCursor) -> Dict[str, List]:
+        cursor.execute(PRIMARY_KEYS_QUERY)
+        res = defaultdict(list)
+        for pk in cursor.fetchall():
+            res[pk["table_name"]].append(pk["column_name"])
+        return res
+
+    @staticmethod
+    def _fetch_something(
+        query: str,
+        cursor: DictCursor,
+        entity_type: Type[Union[Pipe, RawPipe, RawStage]],
+    ) -> List[Union[Pipe, RawPipe, RawStage]]:
+        result: List[entity_type] = []
+        cursor.execute(query)
+        for raw_object in cursor.fetchall():
+            result.append(entity_type.parse_obj(LowerKeyDict(raw_object)))
+        return result
+
     def _fetch_columns(self, cursor: DictCursor) -> List[Column]:
         cursor.execute(COLUMNS_QUERY)
         return [
@@ -248,5 +325,8 @@ class SnowflakeClient(SnowflakeClientBase):
             for raw_column in cursor.fetchall()
         ]
 
-    def _get_account(self, host: str) -> str:
-        return host.split(".snowflakecomputing.com")[0]
+    def _get_account(self) -> str:
+        return (
+            self._config.account
+            or self._config.host.split(".snowflakecomputing.com")[0]
+        )

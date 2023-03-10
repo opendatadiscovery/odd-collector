@@ -76,7 +76,6 @@ class Adapter(AbstractAdapter):
         return views_entities_dict, datasets_oddrns_dict
 
     async def get_data_entity_list(self) -> DataEntityList:
-
         datasets = await self._get_datasets()
         databases_dict = await self._get_databases_dict()
         dashboards = await self.client.get_dashboards()

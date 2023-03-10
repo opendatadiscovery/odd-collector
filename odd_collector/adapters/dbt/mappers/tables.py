@@ -21,7 +21,6 @@ def map_table(
     data_entities: list[DataEntity] = []
 
     for key, table in tables.items():
-
         table_catalog: str = table["metadata"]["database"]
         table_schema: str = table["metadata"]["schema"]
         table_name: str = table["metadata"]["name"]

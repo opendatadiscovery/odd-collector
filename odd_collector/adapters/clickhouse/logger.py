@@ -1,3 +1,1 @@
-import logging
-
-logger = logging.getLogger("clickhouse")
+from odd_collector_sdk.logger import logger

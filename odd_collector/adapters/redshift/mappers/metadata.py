@@ -1,17 +1,17 @@
-from collections import namedtuple
-from typing import List
+from dataclasses import asdict
 
 from odd_models.models import MetadataExtension
 
-from odd_collector.adapters.redshift.mappers import (
-    ColumnMetadataNamedtuple,
-    ColumnMetadataNamedtupleExternal,
-    ColumnMetadataNamedtupleRedshift,
-    MetadataNamedtuple,
-    MetadataNamedtupleAll,
-    MetadataNamedtupleExternal,
-    MetadataNamedtupleInfo,
-    MetadataNamedtupleRedshift,
+from odd_collector.adapters.redshift.mappers.models import (
+    MetadataColumnBase,
+    MetadataColumnExternal,
+    MetadataColumnRedshift,
+    MetadataTableAll,
+    MetadataTableBase,
+    MetadataTableExternal,
+    MetadataTableInfo,
+    MetadataTableRedshift,
+    RedshiftAdapterMetadata,
 )
 
 
@@ -19,11 +19,11 @@ class MetadataTable:
     database_name: str
     schema_name: str
     table_name: str
-    base: MetadataNamedtuple = None
-    all: MetadataNamedtupleAll = None
-    redshift: MetadataNamedtupleRedshift = None
-    external: MetadataNamedtupleExternal = None
-    info: MetadataNamedtupleInfo = None
+    base: MetadataTableBase = None
+    all: MetadataTableAll = None
+    redshift: MetadataTableRedshift = None
+    external: MetadataTableExternal = None
+    info: MetadataTableInfo = None
 
 
 class MetadataColumn:
@@ -31,21 +31,21 @@ class MetadataColumn:
     schema_name: str
     table_name: str
     ordinal_position: int
-    base: ColumnMetadataNamedtuple = None
-    redshift: ColumnMetadataNamedtupleRedshift = None
-    external: ColumnMetadataNamedtupleExternal = None
+    base: MetadataColumnBase = None
+    redshift: MetadataColumnRedshift = None
+    external: MetadataColumnExternal = None
 
 
 class MetadataTables:
-    items: List[MetadataTable]
+    items: list[MetadataTable]
 
     def __init__(
         self,
-        tables: List[tuple],
-        tables_all: List[tuple],
-        tables_redshift: List[tuple],
-        tables_external: List[tuple],
-        tables_info: List[tuple],
+        tables_base: list[tuple],
+        tables_all: list[tuple],
+        tables_redshift: list[tuple],
+        tables_external: list[tuple],
+        tables_info: list[tuple],
     ) -> None:
         ms: list[MetadataTable] = []
         all_index: int = 0
@@ -53,18 +53,16 @@ class MetadataTables:
         external_index: int = 0
         info_index: int = 0
 
-        for table in tables:
+        for table in tables_base:
             m: MetadataTable = MetadataTable()
             ms.append(m)
-            m.base = MetadataNamedtuple(*table)
+            m.base = MetadataTableBase(*table)
             m.database_name = m.base.table_catalog
             m.schema_name = m.base.table_schema
             m.table_name = m.base.table_name
 
             if all_index < len(tables_all):
-                mall: MetadataNamedtupleAll = MetadataNamedtupleAll(
-                    *tables_all[all_index]
-                )
+                mall: MetadataTableAll = MetadataTableAll(*tables_all[all_index])
                 if (
                     mall.database_name == m.database_name
                     and mall.schema_name == m.schema_name
@@ -74,7 +72,7 @@ class MetadataTables:
                     all_index += 1
 
             if redshift_index < len(tables_redshift):
-                mredshift: MetadataNamedtupleRedshift = MetadataNamedtupleRedshift(
+                mredshift: MetadataTableRedshift = MetadataTableRedshift(
                     *tables_redshift[redshift_index]
                 )
                 if (
@@ -86,7 +84,7 @@ class MetadataTables:
                     redshift_index += 1
 
             if external_index < len(tables_external):
-                mexternal: MetadataNamedtupleExternal = MetadataNamedtupleExternal(
+                mexternal: MetadataTableExternal = MetadataTableExternal(
                     *tables_external[external_index]
                 )
                 if (
@@ -98,9 +96,7 @@ class MetadataTables:
                     external_index += 1
 
             if info_index < len(tables_info):
-                minfo: MetadataNamedtupleInfo = MetadataNamedtupleInfo(
-                    *tables_info[info_index]
-                )
+                minfo: MetadataTableInfo = MetadataTableInfo(*tables_info[info_index])
                 if (
                     minfo.database == m.database_name
                     and minfo.schema == m.schema_name
@@ -113,13 +109,13 @@ class MetadataTables:
 
 
 class MetadataColumns:
-    items: List[MetadataColumn]
+    items: list[MetadataColumn]
 
     def __init__(
         self,
-        columns: List[tuple],
-        columns_redshift: List[tuple],
-        columns_external: List[tuple],
+        columns: list[tuple],
+        columns_redshift: list[tuple],
+        columns_external: list[tuple],
     ) -> None:
         ms: list[MetadataColumn] = []
         redshift_index: int = 0
@@ -128,15 +124,15 @@ class MetadataColumns:
         for column in columns:
             m: MetadataColumn = MetadataColumn()
             ms.append(m)
-            m.base = ColumnMetadataNamedtuple(*column)
+            m.base = MetadataColumnBase(*column)
             m.database_name = m.base.database_name
             m.schema_name = m.base.schema_name
             m.table_name = m.base.table_name
             m.ordinal_position = m.base.ordinal_position
 
             if redshift_index < len(columns_redshift):
-                mredshift: ColumnMetadataNamedtupleRedshift = (
-                    ColumnMetadataNamedtupleRedshift(*columns_redshift[redshift_index])
+                mredshift: MetadataColumnRedshift = MetadataColumnRedshift(
+                    *columns_redshift[redshift_index]
                 )
                 if (
                     mredshift.database_name == m.database_name
@@ -148,8 +144,8 @@ class MetadataColumns:
                     redshift_index += 1
 
             if external_index < len(columns_external):
-                mexternal: ColumnMetadataNamedtupleExternal = (
-                    ColumnMetadataNamedtupleExternal(*columns_external[external_index])
+                mexternal: MetadataColumnExternal = MetadataColumnExternal(
+                    *columns_external[external_index]
                 )
                 if (
                     mexternal.databasename == m.database_name
@@ -164,13 +160,13 @@ class MetadataColumns:
 
 
 def _append_metadata_extension(
-    metadata_list: List[MetadataExtension],
+    metadata_list: list[MetadataExtension],
     schema_url: str,
-    named_tuple: namedtuple,
+    metadata_dataclass: RedshiftAdapterMetadata,
     excluded_keys: set = None,
 ):
-    if named_tuple is not None and len(named_tuple) > 0:
-        metadata: dict = named_tuple._asdict()
+    if metadata_dataclass:
+        metadata: dict = asdict(metadata_dataclass)
         if excluded_keys is not None:
             for key in excluded_keys:
                 metadata.pop(key)

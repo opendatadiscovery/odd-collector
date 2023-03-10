@@ -43,18 +43,24 @@ class MySQLPlugin(DatabasePlugin):
 class MSSQLPlugin(DatabasePlugin):
     type: Literal["mssql"]
     password: SecretStr
-    port: str = 1433
+    port: int = 1433
 
 
 class ClickhousePlugin(DatabasePlugin):
     type: Literal["clickhouse"]
     port: Optional[int]
+    password: SecretStr
+    secure: bool = False
+    verify: bool = True
+    server_hostname: Optional[str] = None
+    query_limit: Optional[int] = 0
 
 
 class RedshiftPlugin(DatabasePlugin):
     type: Literal["redshift"]
     schemas: Optional[List[str]] = None
     password: SecretStr
+    connection_timeout: Optional[int] = 10
 
 
 class MongoDBPlugin(DatabasePlugin):
@@ -72,7 +78,8 @@ class KafkaPlugin(BasePlugin):
 
 class SnowflakePlugin(DatabasePlugin):
     type: Literal["snowflake"]
-    port: Optional[str] = None
+    database: str
+    port: Optional[int] = None
     password: SecretStr
     account: Optional[str]
     warehouse: str  # active warehouse
@@ -81,6 +88,7 @@ class SnowflakePlugin(DatabasePlugin):
 class HivePlugin(WithHost, WithPort):
     type: Literal["hive"]
     database: str
+    port: int
 
 
 class ElasticsearchPlugin(WithHost, WithPort):
@@ -207,6 +215,38 @@ class OraclePlugin(WithHost, WithPort):
     password: SecretStr
 
 
+class MlflowPlugin(BasePlugin):
+    type: Literal["mlflow"]
+    dev_mode: bool = False
+    tracking_uri: str
+    registry_uri: str
+    filter_experiments: Optional[
+        List[str]
+    ] = None  # List of pipeline names to filter, if omit fetch all pipelines
+
+
+class AirbytePlugin(WithHost, WithPort):
+    type: Literal["airbyte"]
+    user: Optional[str]
+    password: Optional[str]
+    platform_host_url: str
+    store_raw_tables: bool = True
+
+
+class SingleStorePlugin(DatabasePlugin):
+    type: Literal["singlestore"]
+    ssl_disabled: Optional[bool] = False
+
+
+class ModePlugin(BasePlugin):
+    type: Literal["mode"]
+    host: str
+    account: str
+    data_source: str
+    token: Optional[SecretStr]
+    password: Optional[SecretStr]
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -236,4 +276,8 @@ PLUGIN_FACTORY: PluginFactory = {
     "odd_adapter": OddAdapterPlugin,
     "metabase": MetabasePlugin,
     "oracle": OraclePlugin,
+    "mlflow": MlflowPlugin,
+    "airbyte": AirbytePlugin,
+    "singlestore": SingleStorePlugin,
+    "mode": ModePlugin,
 }

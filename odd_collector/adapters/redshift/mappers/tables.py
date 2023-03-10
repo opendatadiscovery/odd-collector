@@ -1,5 +1,3 @@
-from typing import List
-
 import pytz
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
 from oddrn_generator import RedshiftGenerator
@@ -20,13 +18,13 @@ def map_table(
     oddrn_generator: RedshiftGenerator,
     mtables: MetadataTables,
     mcolumns: MetadataColumns,
-    primary_keys: List[tuple],
+    primary_keys: list[tuple],
     database: str,
-) -> List[DataEntity]:
-    data_entities: List[DataEntity] = []
+) -> list[DataEntity]:
+    data_entities: list[DataEntity] = []
     column_index: int = 0
 
-    primary_keys: List[dict] = [
+    primary_keys: list[dict] = [
         {"table_name": pk[0], "column_name": pk[1]} for pk in primary_keys
     ]
 
@@ -60,15 +58,14 @@ def map_table(
         )
         data_entities.append(data_entity)
 
-        if (
-            mtable.all.table_type == "TABLE"
-        ):  # data_entity.dataset.subtype == 'DATASET_TABLE'
+        if mtable.all.table_type == "TABLE":
+            # data_entity.dataset.subtype == 'DATASET_TABLE'
             # it is for full tables only
             _append_metadata_extension(
-                data_entity.metadata,
-                _data_set_metadata_schema_url_info,
-                mtable.info,
-                _data_set_metadata_excluded_keys_info,
+                metadata_list=data_entity.metadata,
+                schema_url=_data_set_metadata_schema_url_info,
+                metadata_dataclass=mtable.info,
+                excluded_keys=_data_set_metadata_excluded_keys_info,
             )
 
         if mtable.all.table_creation_time is not None:

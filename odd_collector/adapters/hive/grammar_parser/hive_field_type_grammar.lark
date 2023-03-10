@@ -1,0 +1,47 @@
+start: type+
+
+FIELD_NAME: ("A".."z" | "1".."9" | "-" | "_")+
+
+CHAR_TYPE: "varchar"i
+        | "char"i
+
+SIMPLE_TYPE: "int"i
+           | "string"i
+           | "bigint"i
+           | "binary"i
+           | "boolean"i
+           | "date"i
+           | "decimal"i
+           | "double"i
+           | "double precision"i
+           | "float"i
+           | "smallint"i
+           | "timestamp"i
+           | "date"i
+           | "tinyint"i
+
+
+type: SIMPLE_TYPE
+    | CHAR_TYPE
+    | iterable_type
+    | struct_type
+    | union_type
+    | map_type
+    | decimal_type
+    | char_with_length_type
+
+field_definition: FIELD_NAME ":" type
+
+iterable_type: ("array"i | "set"i) "<" (type) ">"
+
+struct_type: "struct"i "<" [field_definition ("," field_definition)*]+ ">"
+
+union_type: "uniontype"i "<" [type ("," type)*] ">"
+
+map_type: "map"i "<" type "," type ">"
+decimal_type: "decimal"i "(" NUMBER "," NUMBER ")"
+char_with_length_type: CHAR_TYPE "(" NUMBER ")"
+
+%import common.WS
+%import common.NUMBER
+%ignore WS

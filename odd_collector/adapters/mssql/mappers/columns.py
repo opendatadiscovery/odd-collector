@@ -27,4 +27,5 @@ def map_column(
         stats=DataSetFieldStat(),
         is_key=False,
         is_value=False,
+        is_primary_key=column.is_primary_key,
     )
