@@ -6,14 +6,14 @@ from odd_models.models import DataEntity, DataEntityList
 
 from odd_collector.adapters.druid.client import DruidBaseClient, DruidClient
 from odd_collector.adapters.druid.generator import DruidGenerator
-from odd_collector.adapters.druid.mappers.database import map_database
+from odd_collector.adapters.druid.mappers.database import to_data_entity_group
 from odd_collector.adapters.druid.mappers.tables import table_to_data_entity
 from odd_collector.domain.plugin import DruidPlugin
 
 
 class Adapter(AbstractAdapter):
     def __init__(
-            self, config: DruidPlugin, client: Type[DruidBaseClient] = None
+        self, config: DruidPlugin, client: Type[DruidBaseClient] = None
     ) -> None:
         self.__host = config.host
         self.__port = config.port
@@ -30,7 +30,7 @@ class Adapter(AbstractAdapter):
 
         # Create entity group
         oddrns = lpluck_attr("oddrn", tables_entities)
-        database_entity = map_database(self.__oddrn_generator, "druid", oddrns)
+        database_entity = to_data_entity_group(self.__oddrn_generator, "druid", oddrns)
 
         # Return
         return DataEntityList(

@@ -1,12 +1,16 @@
 from typing import List
 
-from odd_models.models import DataEntity, DataEntityType, DataEntityGroup
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 
 from odd_collector.adapters.druid.generator import DruidGenerator
 
 
-def map_database(generator: DruidGenerator, service_name: str, entities: List[str]) -> DataEntity:
+def to_data_entity_group(
+    generator: DruidGenerator, service_name: str, entities: List[str]
+) -> DataEntity:
     """
+    :param service_name:
+    :param generator:
     :param entities - list of Table | View oddrn
     """
     return DataEntity(
