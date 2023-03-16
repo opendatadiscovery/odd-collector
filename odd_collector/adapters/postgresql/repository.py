@@ -4,39 +4,57 @@ from typing import Union
 from psycopg2 import sql
 
 from odd_collector.adapters.postgresql.connectors import PostgreSQLConnector
+from odd_collector.adapters.postgresql.models import (
+    ColumnMetadata,
+    EnumTypeLabel,
+    PrimaryKey,
+    TableMetadata,
+)
 
 
 class AbstractRepository(ABC):
     @abstractmethod
-    def get_tables(self) -> list[tuple]:
+    def get_metadata(
+        self,
+    ) -> tuple[
+        list[TableMetadata], list[ColumnMetadata], list[PrimaryKey], list[EnumTypeLabel]
+    ]:
         pass
 
-    @abstractmethod
-    def get_columns(self) -> list[tuple]:
-        pass
-
-    @abstractmethod
-    def get_primary_keys(self) -> list[tuple]:
-        pass
+    @staticmethod
+    def execute(query: Union[str, sql.Composed], cursor) -> list[tuple]:
+        cursor.execute(query)
+        return cursor.fetchall()
 
 
 class PostgreSQLRepository(AbstractRepository):
     def __init__(self, config):
         self.connector = PostgreSQLConnector(config)
 
-    def get_columns(self) -> list[tuple]:
-        return self.execute(self.column_metadata_query)
-
-    def get_tables(self) -> list[tuple]:
-        return self.execute(self.table_metadata_query)
-
-    def get_primary_keys(self) -> list[tuple]:
-        return self.execute(self.primary_key_query)
-
-    def execute(self, query: Union[str, sql.Composed]) -> list[tuple]:
+    def get_metadata(
+        self,
+    ) -> tuple[
+        list[TableMetadata], list[ColumnMetadata], list[PrimaryKey], list[EnumTypeLabel]
+    ]:
         with self.connector.connection() as cursor:
-            cursor.execute(query)
-            return cursor.fetchall()
+            return (
+                [
+                    TableMetadata(*raw)
+                    for raw in self.execute(self.table_metadata_query, cursor)
+                ],
+                [
+                    ColumnMetadata(*raw)
+                    for raw in self.execute(self.column_metadata_query, cursor)
+                ],
+                [
+                    PrimaryKey(*raw)
+                    for raw in self.execute(self.primary_key_query, cursor)
+                ],
+                [
+                    EnumTypeLabel(*raw)
+                    for raw in self.execute(self.enum_types_query, cursor)
+                ],
+            )
 
     @property
     def primary_key_query(self):
@@ -136,6 +154,7 @@ class PostgreSQLRepository(AbstractRepository):
                 , ic.generation_expression
                 , ic.is_updatable
                 , pg_catalog.col_description(c.oid, a.attnum) as description
+                , a.atttypid as type_oid
             from pg_catalog.pg_attribute a
                     join pg_catalog.pg_class c on c.oid = a.attrelid
                     join pg_catalog.pg_namespace n on n.oid = c.relnamespace
@@ -145,5 +164,17 @@ class PostgreSQLRepository(AbstractRepository):
             and a.attnum > 0
             and n.nspname not like 'pg_temp_%'
             and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
+            and a.attisdropped is false
             order by n.nspname, c.relname, a.attnum
+        """
+
+    @property
+    def enum_types_query(self):
+        return """
+            select pe.enumtypid as type_oid 
+                , pt.typname as type_name
+                , pe.enumlabel as label
+            from pg_enum pe
+            join pg_type pt on pt.oid = pe.enumtypid
+            order by pe.enumsortorder
         """

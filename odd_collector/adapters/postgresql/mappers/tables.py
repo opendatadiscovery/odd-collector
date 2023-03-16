@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 from typing import List
 
 from odd_collector_sdk.errors import MappingDataError
@@ -10,43 +11,41 @@ from odd_collector.adapters.postgresql.config import (
     _data_set_metadata_schema_url,
 )
 
+from ..models import ColumnMetadata, EnumTypeLabel, PrimaryKey, TableMetadata
 from .columns import map_column
 from .metadata import append_metadata_extension
-from .models import ColumnMetadata, PrimaryKey, TableMetadata
 from .types import TABLE_TYPES_SQL_TO_ODD
 from .views import extract_transformer_data
 
 
 def map_table(
     oddrn_generator: PostgresqlGenerator,
-    tables: List[tuple],
-    columns: List[tuple],
-    primary_keys: List[tuple],
+    tables: List[TableMetadata],
+    columns: List[ColumnMetadata],
+    primary_keys: List[PrimaryKey],
+    enum_type_labels: List[EnumTypeLabel],
     database: str,
 ) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
     column_index: int = 0
 
-    primary_keys: List[PrimaryKey] = [PrimaryKey(*pk) for pk in primary_keys]
-
     for table in tables:
         try:
-            metadata: TableMetadata = TableMetadata(*table)
             primary_key_columns = [
                 pk.column_name
                 for pk in primary_keys
-                if pk.table_name == metadata.table_name
+                if pk.table_name == table.table_name
             ]
 
             data_entity_type = TABLE_TYPES_SQL_TO_ODD.get(
-                metadata.table_type, DataEntityType.UNKNOWN
+                table.table_type, DataEntityType.UNKNOWN
             )
             oddrn_path = (
                 "views" if data_entity_type == DataEntityType.VIEW else "tables"
             )
 
-            table_schema: str = metadata.table_schema
-            table_name: str = metadata.table_name
+            table_schema: str = table.table_schema
+            table_name: str = table.table_name
 
             oddrn_generator.set_oddrn_paths(
                 **{"schemas": table_schema, oddrn_path: table_name}
@@ -57,8 +56,8 @@ def map_table(
                 oddrn=oddrn_generator.get_oddrn_by_path(oddrn_path),
                 name=table_name,
                 type=data_entity_type,
-                owner=metadata.table_owner,
-                description=metadata.description,
+                owner=table.table_owner,
+                description=table.description,
                 metadata=[],
             )
             data_entities.append(data_entity)
@@ -66,13 +65,13 @@ def map_table(
             append_metadata_extension(
                 data_entity.metadata,
                 _data_set_metadata_schema_url,
-                metadata,
+                table,
                 _data_set_metadata_excluded_keys,
             )
 
             data_entity.dataset = DataSet(
-                rows_number=int(metadata.table_rows)
-                if metadata.table_rows is not None
+                rows_number=int(table.table_rows)
+                if table.table_rows is not None
                 else None,
                 field_list=[],
             )
@@ -80,18 +79,27 @@ def map_table(
             # DataTransformer
             if data_entity_type == DataEntityType.VIEW:
                 data_entity.data_transformer = extract_transformer_data(
-                    metadata.view_definition, oddrn_generator
+                    table.view_definition, oddrn_generator
                 )
+
+            etl_grouped = defaultdict(list)
+            for etl in enum_type_labels:
+                etl_grouped[etl.type_oid].append(etl)
 
             # DatasetField
             while column_index < len(columns):
-                column: tuple = columns[column_index]
-                column_metadata: ColumnMetadata = ColumnMetadata(*column)
+                column_metadata: ColumnMetadata = columns[column_index]
                 if (
                     column_metadata.table_schema == table_schema
                     and column_metadata.table_name == table_name
                 ):
                     is_pk = column_metadata.column_name in primary_key_columns
+
+                    enum_values = (
+                        [e for e in etl_grouped[column_metadata.type_oid]]
+                        if column_metadata.type_oid in etl_grouped
+                        else None
+                    )
 
                     data_entity.dataset.field_list.append(
                         map_column(
@@ -99,6 +107,7 @@ def map_table(
                             oddrn_generator,
                             data_entity.owner,
                             oddrn_path,
+                            enum_values,
                             is_pk,
                         )
                     )
@@ -106,7 +115,7 @@ def map_table(
                 else:
                     break
         except Exception as err:
-            raise MappingDataError() from err
+            raise MappingDataError(err)
 
     data_entities.append(
         DataEntity(

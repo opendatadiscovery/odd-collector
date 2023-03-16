@@ -49,6 +49,11 @@ class MSSQLPlugin(DatabasePlugin):
 class ClickhousePlugin(DatabasePlugin):
     type: Literal["clickhouse"]
     port: Optional[int]
+    password: SecretStr
+    secure: bool = False
+    verify: bool = True
+    server_hostname: Optional[str] = None
+    query_limit: Optional[int] = 0
 
 
 class RedshiftPlugin(DatabasePlugin):

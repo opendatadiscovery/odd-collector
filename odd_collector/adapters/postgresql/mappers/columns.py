@@ -1,4 +1,11 @@
-from odd_models.models import DataSetField, DataSetFieldType, Type
+from typing import List, Optional, Tuple
+
+from odd_models.models import (
+    DataSetField,
+    DataSetFieldEnumValue,
+    DataSetFieldType,
+    Type,
+)
 from oddrn_generator import PostgresqlGenerator
 
 from odd_collector.adapters.postgresql.config import (
@@ -6,8 +13,8 @@ from odd_collector.adapters.postgresql.config import (
     _data_set_field_metadata_schema_url,
 )
 
+from ..models import ColumnMetadata, EnumTypeLabel
 from .metadata import append_metadata_extension
-from .models import ColumnMetadata
 from .types import TYPES_SQL_TO_ODD
 
 
@@ -16,10 +23,28 @@ def map_column(
     oddrn_generator: PostgresqlGenerator,
     owner: str,
     parent_oddrn_path: str,
+    enum_type_labels: Optional[List[EnumTypeLabel]],
     is_primary: bool = False,
 ) -> DataSetField:
     name: str = column_metadata.column_name
-    data_type: str = column_metadata.data_type
+
+    data_type: Type = (
+        TYPES_SQL_TO_ODD.get(column_metadata.data_type, Type.TYPE_UNKNOWN)
+        if not enum_type_labels or not len(enum_type_labels)
+        else Type.TYPE_STRING
+    )
+
+    logical_type: str = (
+        column_metadata.data_type
+        if not enum_type_labels or not len(enum_type_labels)
+        else enum_type_labels[0].type_name
+    )
+
+    enum_values = (
+        [DataSetFieldEnumValue(name=etl.label) for etl in enum_type_labels]
+        if enum_type_labels
+        else None
+    )
 
     dsf: DataSetField = DataSetField(
         oddrn=oddrn_generator.get_oddrn_by_path(
@@ -30,12 +55,13 @@ def map_column(
         metadata=[],
         is_primary_key=is_primary,
         type=DataSetFieldType(
-            type=TYPES_SQL_TO_ODD.get(data_type, Type.TYPE_UNKNOWN),
-            logical_type=column_metadata.data_type,
+            type=data_type,
+            logical_type=logical_type,
             is_nullable=column_metadata.is_nullable == "YES",
         ),
         default_value=column_metadata.column_default,
         description=column_metadata.description,
+        enum_values=enum_values,
     )
 
     append_metadata_extension(

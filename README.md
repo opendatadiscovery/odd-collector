@@ -87,7 +87,7 @@ export LDFLAGS="-L/opt/homebrew/lib  -L/opt/homebrew/Cellar/unixodbc/2.3.11/incl
 export CFLAGS="-I/opt/homebrew/Cellar/unixodbc/2.3.11/include -I/opt/homebrew/opt/freetds/include"
 export CPPFLAGS="-I/opt/homebrew/include -I/opt/homebrew/Cellar/unixodbc/2.3.11/include -I/opt/homebrew/opt/openssl@3/include"
 
-# cunfluent-kafka
+# confluent-kafka
 brew install librdkafka
 
 export C_INCLUDE_PATH=/opt/homebrew/Cellar/librdkafka/1.9.0/include
