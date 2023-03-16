@@ -2,7 +2,7 @@ from typing import List, Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
-from pydantic import SecretStr, validator
+from pydantic import SecretStr, validator, Field
 
 from odd_collector.domain.predefined_data_source import PredefinedDatasourceParams
 
@@ -242,6 +242,15 @@ class ModePlugin(BasePlugin):
     password: Optional[SecretStr]
 
 
+class FivetranPlugin(BasePlugin):
+    type: Literal["fivetran"]
+    base_url: str = "https://api.fivetran.com"
+    api_key: str
+    api_secret: SecretStr
+    connector_id: str
+    schema_name: str = Field("public", alias="schema")
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -275,4 +284,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "airbyte": AirbytePlugin,
     "singlestore": SingleStorePlugin,
     "mode": ModePlugin,
+    "fivetran": FivetranPlugin,
 }
