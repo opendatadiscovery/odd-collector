@@ -2,7 +2,7 @@ from typing import List
 
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 
-from ..generator import FivetranGenerator
+from oddrn_generator import FivetranGenerator
 
 
 def map_database(
