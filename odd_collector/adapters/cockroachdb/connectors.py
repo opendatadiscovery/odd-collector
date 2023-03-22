@@ -1,9 +1,11 @@
 import contextlib
-import logging
 from abc import ABC, abstractmethod
 
 import psycopg2
 from odd_collector_sdk.errors import DataSourceConnectionError, DataSourceError
+
+from odd_collector.adapters.cockroachdb.logger import logger
+from odd_collector.domain.plugin import CockroachDBPlugin
 
 
 class AbstractConnector(ABC):  # TODO: Create one abstract connector for all adapters
@@ -16,7 +18,7 @@ class CockroachDbSQLConnector(AbstractConnector):
     __connection = None
     __cursor = None
 
-    def __init__(self, config) -> None:
+    def __init__(self, config: CockroachDBPlugin) -> None:
         self.__host = config.host
         self.__port = config.port
         self.__database = config.database
@@ -31,10 +33,11 @@ class CockroachDbSQLConnector(AbstractConnector):
 
     def __connect(self):
         try:
+            logger.debug("Connecting to CockroachDb")
             self.__connection = psycopg2.connect(
                 dbname=self.__database,
                 user=self.__user,
-                password=self.__password,
+                password=self.__password.get_secret_value(),
                 host=self.__host,
                 port=self.__port,
             )
@@ -44,6 +47,7 @@ class CockroachDbSQLConnector(AbstractConnector):
 
     def __disconnect(self) -> None:
         try:
+            logger.debug("Disconnecting from CockroachDb")
             if self.__cursor:
                 self.__cursor.close()
             if self.__connection:

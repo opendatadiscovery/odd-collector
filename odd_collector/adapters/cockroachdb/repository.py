@@ -4,6 +4,7 @@ from typing import Union
 from psycopg2 import sql
 
 from odd_collector.adapters.cockroachdb.connectors import CockroachDbSQLConnector
+from odd_collector.adapters.cockroachdb.logger import logger
 
 
 class AbstractRepository(ABC):
@@ -25,12 +26,15 @@ class CockroachDbSQLRepository(AbstractRepository):
         self.connector = CockroachDbSQLConnector(config)
 
     def get_columns(self) -> list[tuple]:
+        logger.debug("Getting columns")
         return self.execute(self.column_metadata_query)
 
     def get_tables(self) -> list[tuple]:
+        logger.debug("Getting tables")
         return self.execute(self.table_metadata_query)
 
     def get_primary_keys(self) -> list[tuple]:
+        logger.debug("Getting primary keys")
         return self.execute(self.primary_key_query)
 
     def execute(self, query: Union[str, sql.Composed]) -> list[tuple]:

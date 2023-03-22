@@ -47,6 +47,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | Oracle        | [config](config_examples/oracle.yaml)                                                   |
 | Airbyte       | [config](config_examples/airbyte.yaml)                                                  |
 | SingleStore   | [config](config_examples/singlestore.yaml)                                              |
+| cockroachdb   | [config](config_examples/cockroachdb.yaml)                                              |
 
 ## Class diagram of adapter class hierarchy
 This may help you to understand which fields you need for each adapter in `collector_config.yaml` and also may be helpful for a new adapter developer.
@@ -147,7 +148,7 @@ services:
     ...
   odd-platform:
     ...
-  
+
   odd-collector:
     image: ghcr.io/opendatadiscovery/odd-collector:latest
     restart: always
