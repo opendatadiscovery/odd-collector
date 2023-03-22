@@ -93,10 +93,10 @@ class HivePlugin(WithHost, WithPort):
 
 class ElasticsearchPlugin(WithHost, WithPort):
     type: Literal["elasticsearch"]
-    http_auth: str = None
-    use_ssl: bool = None
-    verify_certs: bool = None
-    ca_certs: str = None
+    http_auth: Optional[str] = None
+    use_ssl: Optional[bool] = None
+    verify_certs: Optional[bool] = None
+    ca_certs: Optional[str] = None
 
 
 class FeastPlugin(WithHost):
@@ -247,6 +247,12 @@ class ModePlugin(BasePlugin):
     password: Optional[SecretStr]
 
 
+class CockroachDBPlugin(PostgreSQLPlugin):
+    type: Literal["cockroachdb"]
+    database: str
+    password: SecretStr = SecretStr("")
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -280,4 +286,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "airbyte": AirbytePlugin,
     "singlestore": SingleStorePlugin,
     "mode": ModePlugin,
+    "cockroachdb": CockroachDBPlugin,
 }
