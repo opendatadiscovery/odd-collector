@@ -46,12 +46,13 @@ numba = "^0.56.4"
 mlflow = "2.0.1"
 sql-metadata = "^2.6.0"
 pytest-asyncio = "^0.20.3"
-odd-collector-sdk = "^0.3.21"
+odd-collector-sdk = "^0.3.22"
 clickhouse-connect = "^0.5.14"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.0.4"
 black = "^22.1.0"
+testcontainers = {version = "^3.7.1", extras = ["postgres"]}
 
 [tool.isort]
 profile = "black"
@@ -62,3 +63,8 @@ isort = "^5.10.1"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+markers = [
+    "integration",
+]
