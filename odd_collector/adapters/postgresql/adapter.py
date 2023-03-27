@@ -1,38 +1,35 @@
-from typing import List
-
-from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntity, DataEntityList
+from funcy import lpluck_attr
+from odd_collector_sdk.domain.adapter import BaseAdapter
+from odd_models.models import DataEntityList
 from oddrn_generator import PostgresqlGenerator
 
+from odd_collector.domain.plugin import PostgreSQLPlugin
+
+from .mappers.database import map_database
 from .mappers.tables import map_table
 from .repository import PostgreSQLRepository
 
 
-class Adapter(AbstractAdapter):
-    def __init__(self, config) -> None:
-        self._database = config.database
+class Adapter(BaseAdapter):
+    def __init__(self, config: PostgreSQLPlugin) -> None:
+        super().__init__(config)
         self._repository = PostgreSQLRepository(config)
-        self._generator = PostgresqlGenerator(
-            host_settings=f"{config.host}", databases=self._database
-        )
 
-    def get_data_source_oddrn(self) -> str:
-        return self._generator.get_data_source_oddrn()
-
-    def get_data_entities(self) -> List[DataEntity]:
-        tables, columns, primary_keys, enum_types = self._repository.get_metadata()
-
-        return map_table(
-            oddrn_generator=self._generator,
-            tables=tables,
-            columns=columns,
-            primary_keys=primary_keys,
-            enum_type_labels=enum_types,
-            database=self._database,
+    def create_generator(self) -> PostgresqlGenerator:
+        return PostgresqlGenerator(
+            host_settings=self.config.host, databases=self.config.database
         )
 
     def get_data_entity_list(self) -> DataEntityList:
+        tables = self._repository.get_tables()
+
+        table_entities = map_table(generator=self.generator, tables=tables)
+
+        database_entity = map_database(
+            self.generator, self.config.database, lpluck_attr("oddrn", table_entities)
+        )
+
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=self.get_data_entities(),
+            items=[*table_entities, database_entity],
         )

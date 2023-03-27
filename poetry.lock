@@ -2799,14 +2799,14 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.22"
+version = "0.3.23"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.22-py3-none-any.whl", hash = "sha256:fc2ef3ea5018f85810ea6bf1658105cdde6ce84254474e6e28500f00c8cbc8c6"},
-    {file = "odd_collector_sdk-0.3.22.tar.gz", hash = "sha256:66496a2f5446a59f3ae30c164b0cb35359c45171b927bc917781c5a3cc4fdc51"},
+    {file = "odd_collector_sdk-0.3.23-py3-none-any.whl", hash = "sha256:b56c588091aedf499cd578802f28875bbe822682408a0af327f415d9a109bf69"},
+    {file = "odd_collector_sdk-0.3.23.tar.gz", hash = "sha256:c7d8ec579cabd69781d35dae7d6f307f6f346425b14a5d2a41c83a8cd802b951"},
 ]
 
 [package.dependencies]
@@ -2816,6 +2816,7 @@ funcy = ">=1.17,<2.0"
 importlib-metadata = ">=5.1.0,<6.0.0"
 loguru = ">=0.6.0,<0.7.0"
 odd-models = ">=2.0.24,<3.0.0"
+oddrn-generator = ">=0.1.73,<0.2.0"
 pyaml-env = ">=1.1.5,<2.0.0"
 pydantic = ">=1.8.2,<2.0.0"
 tqdm = ">=4.64.1,<5.0.0"
@@ -2841,14 +2842,14 @@ sqlparse = "0.4.2"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.68"
+version = "0.1.73"
 description = "Open Data Discovery Resource Name Generator"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "oddrn_generator-0.1.68-py3-none-any.whl", hash = "sha256:18863001a450a59a4c155a13de254751e714c0046af3c5ea6c6bad9e9f582801"},
-    {file = "oddrn_generator-0.1.68.tar.gz", hash = "sha256:68eafde151edd54a5c2ddde44c3ae0ff34d7513229f2c61bae475e04a0d3d01e"},
+    {file = "oddrn_generator-0.1.73-py3-none-any.whl", hash = "sha256:bc9dec65f7b11f8d0bb4a7072cc988183f0ac9128c0306783708f9eb66cec510"},
+    {file = "oddrn_generator-0.1.73.tar.gz", hash = "sha256:a78455e795faf69a7974d13587c086011f8bbbb409fe566a6c0e3b0a6a5dec49"},
 ]
 
 [package.dependencies]
@@ -5335,4 +5336,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "bc07df4944b47cdf8289aeb5b026a4a2d7c75e7720186cc244f10a2dbccd3b83"
+content-hash = "6896193ce4c7548123988db95dd59e1f6c1e0eacf8305fdba56924fa7c9419e9"
