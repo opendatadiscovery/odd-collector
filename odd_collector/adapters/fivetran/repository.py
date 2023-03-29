@@ -39,4 +39,6 @@ class FivetranRepository:
         return ConnectorMetadata(**self._request(f"/v1/connectors/{self.connector_id}"))
 
     def get_destination_details(self) -> DestinationMetadata:
-        return DestinationMetadata(**self._request(f"/v1/destinations/{self.destination_id}"))
+        return DestinationMetadata(
+            **self._request(f"/v1/destinations/{self.destination_id}")
+        )
