@@ -43,13 +43,13 @@ class Adapter(AbstractAdapter):
 
         return list(datasets_by_id.values())
 
-    async def _get_databases_dict(self) -> Dict[str, Database]:
+    async def _get_databases_dict(self) -> dict[str, Database]:
         databases = await self.client.get_databases()
         return {database.id: database for database in databases}
 
     def _split_views_and_tables(
         self, datasets: List[Dataset], databases: Dict[str, Database]
-    ) -> (Dict[int, DataEntity], Dict[int, str]):
+    ) -> (dict[int, DataEntity], dict[int, str]):
         views_entities_dict: Dict[int, DataEntity] = {}
         datasets_oddrns_dict: Dict[int, str] = {}
         for dataset in datasets:
@@ -60,6 +60,7 @@ class Adapter(AbstractAdapter):
             if backend_cls is None:
                 raise ExternalGeneratorMappingError(backend_name)
             backend = backend_cls(database).get_external_generator()
+
             if isinstance(backend, ExternalSnowflakeGenerator):
                 dataset.name = dataset.name.upper()
                 dataset.schema = dataset.schema.upper()
@@ -73,6 +74,7 @@ class Adapter(AbstractAdapter):
                 gen.get_oddrn_by_path(backend.table_path_name, dataset.name)
                 oddrn = gen.get_oddrn_by_path(backend.table_path_name)
                 datasets_oddrns_dict.update({dataset.id: oddrn})
+
         return views_entities_dict, datasets_oddrns_dict
 
     async def get_data_entity_list(self) -> DataEntityList:

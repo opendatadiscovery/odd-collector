@@ -16,6 +16,10 @@ def test_map_dashboard():
         cards=[],
         creator=Creator(email="abs@mail.com", id=1, common_name="Some Name"),
         collection_id=1,
+        archived=False,
+        collection_position=0,
+        enable_embedding=True,
+        show_in_getting_started=False,
     )
 
     data_entity = map_dashboard(dashboard, generator, [])
