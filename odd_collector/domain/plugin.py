@@ -253,7 +253,7 @@ class FivetranPlugin(BasePlugin):
     api_key: str
     api_secret: SecretStr
     connector_id: str
-    schema_name: str = Field("public", alias="schema")
+    destination_id: str
 
 
 PLUGIN_FACTORY: PluginFactory = {

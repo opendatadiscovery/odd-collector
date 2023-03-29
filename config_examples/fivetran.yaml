@@ -1,0 +1,9 @@
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: fivetran
+    name: fivetran
+    api_key: api_key
+    api_secret: api_secret
+    connector_id: connector_id
+    destination_id: destination_id

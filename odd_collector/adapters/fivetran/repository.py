@@ -4,27 +4,28 @@ from urllib.parse import urljoin
 
 import requests
 
-from odd_collector.adapters.fivetran.domain.table import TableMetadata
-from odd_collector.adapters.fivetran.domain.column import ColumnMetadata
 from requests.auth import HTTPBasicAuth
+
+from odd_collector.adapters.fivetran.domain.connector import ConnectorMetadata
+from odd_collector.adapters.fivetran.domain.destination import DestinationMetadata
 
 
 class AbstractRepository(ABC):
     @abstractmethod
-    def get_tables(self, *args, **kwargs) -> List[TableMetadata]:
+    def get_connector_details(self, *args, **kwargs) -> ConnectorMetadata:
         pass
 
     @abstractmethod
-    def get_columns(self, *args, **kwargs) -> List[ColumnMetadata]:
+    def get_destination_details(self, *args, **kwargs) -> DestinationMetadata:
         pass
 
 
-class FivetranRepository(AbstractRepository):
+class FivetranRepository:
     def __init__(self, config):
         self.base_url = config.base_url
-        self.auth = HTTPBasicAuth(config.api_key, config.api_secret.get_secret_value())
+        self.destination_id = config.destination_id
         self.connector_id = config.connector_id
-        self.schema = config.schema
+        self.auth = HTTPBasicAuth(config.api_key, config.api_secret.get_secret_value())
 
     def _request(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         url = urljoin(self.base_url, endpoint)
@@ -34,15 +35,8 @@ class FivetranRepository(AbstractRepository):
                 response.raise_for_status()
         return response.json()["data"]
 
-    def get_db_name(self) -> str:
-        res = self._request(f"/v1/connectors/{self.connector_id}")
-        return res["config"]["database"]
+    def get_connector_details(self) -> ConnectorMetadata:
+        return ConnectorMetadata(**self._request(f"/v1/connectors/{self.connector_id}"))
 
-    # We can only get metadata if Fivetran initial sync between connector and destination was performed.
-    def get_tables(self) -> List[TableMetadata]:
-        res = self._request(f"/v1/metadata/connectors/{self.connector_id}/tables")
-        return [TableMetadata(**table) for table in res["items"]]
-
-    def get_columns(self) -> List[ColumnMetadata]:
-        res = self._request(f"/v1/metadata/connectors/{self.connector_id}/columns")
-        return [ColumnMetadata(**column) for column in res["items"]]
+    def get_destination_details(self) -> DestinationMetadata:
+        return DestinationMetadata(**self._request(f"/v1/destinations/{self.destination_id}"))
