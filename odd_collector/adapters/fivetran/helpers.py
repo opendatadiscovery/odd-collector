@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel, validator, Field
 import oddrn_generator
 
-from odd_collector.adapters.fivetran.logger import logger
+from odd_collector.logger import logger
 
 
 # TODO: update this module as fivetran constantly updates connectors/destinations options.

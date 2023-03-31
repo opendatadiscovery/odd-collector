@@ -2799,14 +2799,14 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.22"
+version = "0.3.25"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.22-py3-none-any.whl", hash = "sha256:fc2ef3ea5018f85810ea6bf1658105cdde6ce84254474e6e28500f00c8cbc8c6"},
-    {file = "odd_collector_sdk-0.3.22.tar.gz", hash = "sha256:66496a2f5446a59f3ae30c164b0cb35359c45171b927bc917781c5a3cc4fdc51"},
+    {file = "odd_collector_sdk-0.3.25-py3-none-any.whl", hash = "sha256:52c56dc7b0930208df98c250bd9bb461c7155b9a98e2097d84c55001333f3522"},
+    {file = "odd_collector_sdk-0.3.25.tar.gz", hash = "sha256:f318c1674469adf412e548ca708508891e21261e16fd8156f436221a6c6b107a"},
 ]
 
 [package.dependencies]
@@ -2816,6 +2816,7 @@ funcy = ">=1.17,<2.0"
 importlib-metadata = ">=5.1.0,<6.0.0"
 loguru = ">=0.6.0,<0.7.0"
 odd-models = ">=2.0.24,<3.0.0"
+oddrn-generator = ">=0.1.73,<0.2.0"
 pyaml-env = ">=1.1.5,<2.0.0"
 pydantic = ">=1.8.2,<2.0.0"
 tqdm = ">=4.64.1,<5.0.0"
@@ -5335,4 +5336,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ee993ab85166ae77e472da80a9af1f992b8aa9f32933b8661608696a38684e30"
+content-hash = "b7b9b4ba0c6946a4c67d729a558209ccd47ddd277d0bf87e54db17de8d2cd781"

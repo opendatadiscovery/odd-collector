@@ -1,13 +1,13 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Dict
 
 
 @dataclass
 class DestinationMetadata:
-    id: Any
-    group_id: Any
-    service: Any
-    region: Any
-    time_zone_offset: Any
-    setup_status: Any
-    config: Any
+    id: str
+    group_id: str
+    service: str
+    region: str
+    time_zone_offset: str
+    setup_status: str
+    config: Dict[str, str]
