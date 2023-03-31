@@ -1,65 +1,64 @@
 from abc import ABC, abstractmethod
-from typing import Union
+from operator import attrgetter
+from typing import Protocol, Union
 
+from funcy.seqs import group_by
 from psycopg2 import sql
 
-from odd_collector.adapters.postgresql.connectors import PostgreSQLConnector
 from odd_collector.adapters.postgresql.models import (
-    ColumnMetadata,
+    Column,
     EnumTypeLabel,
     PrimaryKey,
-    TableMetadata,
+    Table,
 )
+from odd_collector.domain.plugin import PostgreSQLPlugin
+
+from .connectors import connect
 
 
-class AbstractRepository(ABC):
-    @abstractmethod
-    def get_metadata(
-        self,
-    ) -> tuple[
-        list[TableMetadata], list[ColumnMetadata], list[PrimaryKey], list[EnumTypeLabel]
-    ]:
+class AbstractRepository(Protocol):
+    def get_tables(self) -> list[Table]:
         pass
-
-    @staticmethod
-    def execute(query: Union[str, sql.Composed], cursor) -> list[tuple]:
-        cursor.execute(query)
-        return cursor.fetchall()
 
 
 class PostgreSQLRepository(AbstractRepository):
-    def __init__(self, config):
-        self.connector = PostgreSQLConnector(config)
+    def __init__(self, config: PostgreSQLPlugin):
+        self.config = config
 
-    def get_metadata(
+    def get_tables(
         self,
-    ) -> tuple[
-        list[TableMetadata], list[ColumnMetadata], list[PrimaryKey], list[EnumTypeLabel]
-    ]:
-        with self.connector.connection() as cursor:
-            return (
-                [
-                    TableMetadata(*raw)
-                    for raw in self.execute(self.table_metadata_query, cursor)
-                ],
-                [
-                    ColumnMetadata(*raw)
-                    for raw in self.execute(self.column_metadata_query, cursor)
-                ],
-                [
-                    PrimaryKey(*raw)
-                    for raw in self.execute(self.primary_key_query, cursor)
-                ],
-                [
-                    EnumTypeLabel(*raw)
-                    for raw in self.execute(self.enum_types_query, cursor)
-                ],
-            )
+    ) -> list[Table]:
+        with connect(self.config) as cur:
+            columns = [Column(*raw) for raw in self.execute(self.columns_query, cur)]
+            tables = [Table(*raw) for raw in self.execute(self.tables_query, cur)]
+            enums = [EnumTypeLabel(*raw) for raw in self.execute(self.enums_query, cur)]
+
+            primary_keys = [
+                PrimaryKey(*raw) for raw in self.execute(self.pks_query, cur)
+            ]
+
+            grouped_enums = group_by(attrgetter("type_oid"), enums)
+            grouped_pks = group_by(attrgetter("attrelid", "column_name"), primary_keys)
+            grouped_columns = group_by(attrgetter("attrelid"), columns)
+
+            for column in columns:
+                if enums := grouped_enums[column.type_oid]:
+                    column.enums.extend(enums)
+                if (column.attrelid, column.column_name) in grouped_pks:
+                    column.is_primary = True
+
+            for table in tables:
+                if columns := grouped_columns[table.oid]:
+                    table.columns.extend(columns)
+
+            # View depends on?
+
+            return tables
 
     @property
-    def primary_key_query(self):
+    def pks_query(self):
         return """
-            select c.relname, a.attname
+            select c.relname, a.attname, a.attrelid
             from pg_index i
                 join pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
                 join pg_catalog.pg_class c on c.oid = a.attrelid
@@ -72,9 +71,10 @@ class PostgreSQLRepository(AbstractRepository):
         """
 
     @property
-    def table_metadata_query(self):
+    def tables_query(self):
         return """
-            select it.table_catalog
+            select c.oid
+                , it.table_catalog
                 , it.table_schema
                 , it.table_name
                 , it.table_type
@@ -107,9 +107,11 @@ class PostgreSQLRepository(AbstractRepository):
         """
 
     @property
-    def column_metadata_query(self):
+    def columns_query(self):
         return """
-            select ic.table_catalog
+            select
+                a.attrelid  
+                , ic.table_catalog
                 , ic.table_schema
                 , ic.table_name
                 , ic.column_name
@@ -169,7 +171,7 @@ class PostgreSQLRepository(AbstractRepository):
         """
 
     @property
-    def enum_types_query(self):
+    def enums_query(self):
         return """
             select pe.enumtypid as type_oid 
                 , pt.typname as type_name
@@ -178,3 +180,8 @@ class PostgreSQLRepository(AbstractRepository):
             join pg_type pt on pt.oid = pe.enumtypid
             order by pe.enumsortorder
         """
+
+    @staticmethod
+    def execute(query: Union[str, sql.Composed], cursor) -> list[tuple]:
+        cursor.execute(query)
+        return cursor.fetchall()

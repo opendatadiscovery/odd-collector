@@ -10,7 +10,7 @@ class Dataset:
         self,
         id: int,
         name: str,
-        db_id: str,
+        db_id: int,
         db_name: str,
         kind: str,
         schema: str,

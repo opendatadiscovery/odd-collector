@@ -27,6 +27,7 @@ class DatabasePlugin(WithHost, WithPort):
 
 class PostgreSQLPlugin(DatabasePlugin):
     type: Literal["postgresql"]
+    password: SecretStr = SecretStr("")
 
 
 class OdbcPlugin(DatabasePlugin):

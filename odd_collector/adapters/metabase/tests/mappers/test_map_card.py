@@ -23,6 +23,13 @@ def test_map_card():
         entity_id="some_id",
         archived=False,
         collection_id=1,
+        collection_position=1,
+        result_metadata=None,
+        can_write=True,
+        enable_embedding=True,
+        dashboard_count=0,
+        average_query_time=0,
+        collection_preview=None,
     )
     data_entity = map_card(card=card, table=None, generator=generator)
 
