@@ -2799,14 +2799,14 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.22"
+version = "0.3.25"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.22-py3-none-any.whl", hash = "sha256:fc2ef3ea5018f85810ea6bf1658105cdde6ce84254474e6e28500f00c8cbc8c6"},
-    {file = "odd_collector_sdk-0.3.22.tar.gz", hash = "sha256:66496a2f5446a59f3ae30c164b0cb35359c45171b927bc917781c5a3cc4fdc51"},
+    {file = "odd_collector_sdk-0.3.25-py3-none-any.whl", hash = "sha256:52c56dc7b0930208df98c250bd9bb461c7155b9a98e2097d84c55001333f3522"},
+    {file = "odd_collector_sdk-0.3.25.tar.gz", hash = "sha256:f318c1674469adf412e548ca708508891e21261e16fd8156f436221a6c6b107a"},
 ]
 
 [package.dependencies]
@@ -2816,6 +2816,7 @@ funcy = ">=1.17,<2.0"
 importlib-metadata = ">=5.1.0,<6.0.0"
 loguru = ">=0.6.0,<0.7.0"
 odd-models = ">=2.0.24,<3.0.0"
+oddrn-generator = ">=0.1.73,<0.2.0"
 pyaml-env = ">=1.1.5,<2.0.0"
 pydantic = ">=1.8.2,<2.0.0"
 tqdm = ">=4.64.1,<5.0.0"
@@ -2841,14 +2842,14 @@ sqlparse = "0.4.2"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.68"
+version = "0.1.73"
 description = "Open Data Discovery Resource Name Generator"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "oddrn_generator-0.1.68-py3-none-any.whl", hash = "sha256:18863001a450a59a4c155a13de254751e714c0046af3c5ea6c6bad9e9f582801"},
-    {file = "oddrn_generator-0.1.68.tar.gz", hash = "sha256:68eafde151edd54a5c2ddde44c3ae0ff34d7513229f2c61bae475e04a0d3d01e"},
+    {file = "oddrn_generator-0.1.73-py3-none-any.whl", hash = "sha256:bc9dec65f7b11f8d0bb4a7072cc988183f0ac9128c0306783708f9eb66cec510"},
+    {file = "oddrn_generator-0.1.73.tar.gz", hash = "sha256:a78455e795faf69a7974d13587c086011f8bbbb409fe566a6c0e3b0a6a5dec49"},
 ]
 
 [package.dependencies]
@@ -3728,6 +3729,22 @@ files = [
     {file = "pymssql-2.2.7-cp39-cp39-win_amd64.whl", hash = "sha256:cfa2bf7b8f7f462f72b2fa78b7753fc6c86a660dbea57d663993716afbb05072"},
     {file = "pymssql-2.2.7.tar.gz", hash = "sha256:ff95b910532ec7b02e4322231c117d3d6af0abab667e6fbf15442db873943045"},
 ]
+
+[[package]]
+name = "pymysql"
+version = "1.0.3"
+description = "Pure Python MySQL Driver"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "PyMySQL-1.0.3-py3-none-any.whl", hash = "sha256:89fc6ae41c0aeb6e1f7710cdd623702ea2c54d040565767a78b00a5ebb12f4e5"},
+    {file = "PyMySQL-1.0.3.tar.gz", hash = "sha256:3dda943ef3694068a75d69d071755dbecacee1adf9a1fc5b206830d2b67d25e8"},
+]
+
+[package.extras]
+ed25519 = ["PyNaCl (>=1.4.0)"]
+rsa = ["cryptography"]
 
 [[package]]
 name = "pyodbc"
@@ -5335,4 +5352,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "bc07df4944b47cdf8289aeb5b026a4a2d7c75e7720186cc244f10a2dbccd3b83"
+content-hash = "74a14103062a061da18119da7238d4174a9b56de05a5c8af0ec8aa814a5852e9"

@@ -15,6 +15,7 @@ def test_collection():
         archived=False,
         cards_id=[1],
         dashboards_id=[2],
+        can_write=True,
     )
 
     data_entity = map_collection(collection, generator)

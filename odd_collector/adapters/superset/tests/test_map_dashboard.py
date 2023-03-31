@@ -17,23 +17,18 @@ def generator():
 def test_create_dashboards_entities(generator):
     charts = [
         Chart(
-            id=chart_node.get("id"),
-            dataset_id=chart_node.get("datasource_id"),
-            dashboards_ids_names=nodes_with_chart_ids.get(chart_node.get("id")),
+            id=chart_node["id"],
+            dataset_id=chart_node["datasource_id"],
+            dashboards_ids_names=nodes_with_chart_ids[chart_node["id"]],
         )
         for chart_node in chart_nodes
     ]
-
-    datasets = [
-        Dataset(
-            id=dataset.get("id"),
-            name=dataset.get("table_name"),
-            db_id=dataset.get("database").get("id"),
-            db_name=dataset.get("database").get("database_name"),
-            kind=dataset.get("kind"),
-        )
+    datasets = {
+        dataset[
+            "id"
+        ]: f"//superset/host/host/databases/{dataset['database']['database_name']}/datasets/{dataset['table_name']}"
         for dataset in datasets_nodes
-    ]
+    }
     dashboards = SupersetClient.extract_dashboards_from_charts(charts)
 
     dashboards_entities = [

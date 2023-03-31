@@ -53,7 +53,7 @@ datasets_nodes = [
         "kind": "virtual",
         "owners": [],
         "schema": "public",
-        "sql": None,
+        "sql": "SELECT 1",
         "table_name": "channels",
     },
     {

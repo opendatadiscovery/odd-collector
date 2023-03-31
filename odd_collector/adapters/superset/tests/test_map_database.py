@@ -17,16 +17,17 @@ def generator():
 def test_create_databases_entities(generator):
     datasets = [
         Dataset(
-            id=dataset.get("id"),
-            name=dataset.get("table_name"),
-            db_id=dataset.get("database").get("id"),
-            db_name=dataset.get("database").get("database_name"),
-            kind=dataset.get("kind"),
+            id=dataset["id"],
+            name=dataset["table_name"],
+            db_id=dataset.get("database", {})["id"],
+            db_name=dataset.get("database", {})["database_name"],
+            kind=dataset["kind"],
+            schema="schema",
         )
         for dataset in datasets_nodes
     ]
 
-    databases_ids_names: Dict[int, str] = {
+    databases_ids_names: dict[int, str] = {
         dataset.database_id: dataset.database_name for dataset in datasets
     }
     databases_entities = [

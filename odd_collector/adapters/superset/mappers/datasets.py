@@ -34,7 +34,11 @@ def map_table(
     )
 
     if dataset.kind == "virtual":
-        query: str = dataset.metadata[0].metadata.get("sql")
+        if dataset.metadata and dataset.metadata[0].metadata:
+            query: str = dataset.metadata[0].metadata.get("sql")
+        else:
+            query = ""
+
         if isinstance(external_backend, ExternalSnowflakeGenerator):
             query = query.upper()
         if external_backend is not None:
@@ -44,6 +48,7 @@ def map_table(
         else:
             view_gen = oddrn_generator
             table_path = "datasets"
+
         data_entity.type = DataEntityType.VIEW
         data_entity.data_transformer = extract_transformer_data(
             query, view_gen, table_path

@@ -9,6 +9,7 @@ from pydantic import SecretStr
 from odd_collector.adapters.snowflake.adapter import Adapter
 from odd_collector.adapters.snowflake.client import SnowflakeClientBase
 from odd_collector.adapters.snowflake.domain import Column, Connection, Table, View
+from odd_collector.adapters.snowflake.domain.pipe import RawPipe, RawStage
 from odd_collector.domain.plugin import SnowflakePlugin
 
 DATABASE_NAME = "TEST_DB"
@@ -19,6 +20,12 @@ SECOND_VIEW = "SECOND_VIEW"
 
 
 class TestClient(SnowflakeClientBase):
+    def get_raw_pipes(self) -> List[RawPipe]:
+        return []
+
+    def get_raw_stages(self) -> List[RawStage]:
+        return []
+
     def get_tables(self) -> List[Table]:
         tables = [
             Table(
