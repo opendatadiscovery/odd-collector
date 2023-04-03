@@ -48,6 +48,8 @@ sql-metadata = "^2.6.0"
 pytest-asyncio = "^0.20.3"
 odd-collector-sdk = "^0.3.25"
 clickhouse-connect = "^0.5.14"
+pymysql = "^1.0.3"
+odd-models = "^2.0.24"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.0.4"

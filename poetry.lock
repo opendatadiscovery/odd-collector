@@ -3731,6 +3731,22 @@ files = [
 ]
 
 [[package]]
+name = "pymysql"
+version = "1.0.3"
+description = "Pure Python MySQL Driver"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "PyMySQL-1.0.3-py3-none-any.whl", hash = "sha256:89fc6ae41c0aeb6e1f7710cdd623702ea2c54d040565767a78b00a5ebb12f4e5"},
+    {file = "PyMySQL-1.0.3.tar.gz", hash = "sha256:3dda943ef3694068a75d69d071755dbecacee1adf9a1fc5b206830d2b67d25e8"},
+]
+
+[package.extras]
+ed25519 = ["PyNaCl (>=1.4.0)"]
+rsa = ["cryptography"]
+
+[[package]]
 name = "pyodbc"
 version = "4.0.35"
 description = "DB API Module for ODBC"
@@ -5336,4 +5352,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "b7b9b4ba0c6946a4c67d729a558209ccd47ddd277d0bf87e54db17de8d2cd781"
+content-hash = "14a7074454da117e5d79f97c155e5b0db3ddcc3d14cc3888b3bd070d4da8d5e5"
