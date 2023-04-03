@@ -56,7 +56,8 @@ black = "^22.1.0"
 testcontainers = {version = "^3.7.1", extras = ["postgres"]}
 
 
-[tool.poetry.group.test.dependencies]
+
+[tool.poetry.group.tests.dependencies]
 pymysql = "^1.0.3"
 
 [tool.isort]
