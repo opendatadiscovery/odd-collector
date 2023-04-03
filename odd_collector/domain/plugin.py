@@ -248,6 +248,15 @@ class ModePlugin(BasePlugin):
     password: Optional[SecretStr]
 
 
+class FivetranPlugin(BasePlugin):
+    type: Literal["fivetran"]
+    base_url: str = "https://api.fivetran.com"
+    api_key: str
+    api_secret: SecretStr
+    connector_id: str
+    destination_id: str
+
+
 class CockroachDBPlugin(PostgreSQLPlugin):
     type: Literal["cockroachdb"]
     database: str
@@ -287,5 +296,6 @@ PLUGIN_FACTORY: PluginFactory = {
     "airbyte": AirbytePlugin,
     "singlestore": SingleStorePlugin,
     "mode": ModePlugin,
+    "fivetran": FivetranPlugin,
     "cockroachdb": CockroachDBPlugin,
 }
