@@ -3734,7 +3734,7 @@ files = [
 name = "pymysql"
 version = "1.0.3"
 description = "Pure Python MySQL Driver"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -5352,4 +5352,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "14a7074454da117e5d79f97c155e5b0db3ddcc3d14cc3888b3bd070d4da8d5e5"
+content-hash = "74eab391ee39b6623e7266143ba01c55a29a5d231d26c46adbfef70e43e0b6bb"
