@@ -101,6 +101,7 @@ class PostgreSQLRepository(AbstractRepository):
                     join information_schema.tables it on it.table_schema = n.nspname and it.table_name = c.relname
                     left join information_schema.views iw on iw.table_schema = n.nspname and iw.table_name = c.relname
             where c.relkind in ('r', 'v')
+            and it.table_type <> 'SYSTEM VIEW'
             and n.nspname not like 'pg_temp_%'
             and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
             order by n.nspname, c.relname
@@ -173,7 +174,7 @@ class PostgreSQLRepository(AbstractRepository):
     @property
     def enums_query(self):
         return """
-            select pe.enumtypid as type_oid 
+            select pe.enumtypid as type_oid
                 , pt.typname as type_name
                 , pe.enumlabel as label
             from pg_enum pe
