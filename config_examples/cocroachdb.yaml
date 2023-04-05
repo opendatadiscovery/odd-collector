@@ -2,8 +2,8 @@ platform_host_url: http://localhost:8080
 default_pulling_interval: 10
 token: ""
 plugins:
-  - type: cocrachdb
-    name: cocrachdb_adapter
+  - type: cockroachdb
+    name: cockroachdb_adapter
     description: "" # Optional string
     database: database
     host: host
