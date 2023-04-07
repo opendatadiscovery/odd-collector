@@ -11,6 +11,9 @@ from .repository import PostgreSQLRepository
 
 
 class Adapter(BaseAdapter):
+    config: PostgreSQLPlugin
+    generator: PostgresqlGenerator
+
     def __init__(self, config: PostgreSQLPlugin) -> None:
         super().__init__(config)
         self._repository = PostgreSQLRepository(config)

@@ -1,13 +1,13 @@
 default_pulling_interval: 10
-token: ""
+token: "NGOrDGRHzuDjVZ5xSzCD5wUpiFHQ8AKzhKSqDK90"
 platform_host_url: http://localhost:8080
 chunk_size: 1000
 plugins:
-  - type: mssql
-    name: mssql_adapter
+  - type: mysql
+    name: mysql_adapter
     description: "" # Optional string
-    database: <DB_NAME> # my_database
-    host: <DB_HOST> # localhost
-    port: <DB_PORT> # 1433
-    user: <USER> # sa
-    password: <PASSWORD>
+    database: sakila
+    host: localhost
+    port: 3306
+    user: root
+    ssl_disabled: False # Optional, default: False

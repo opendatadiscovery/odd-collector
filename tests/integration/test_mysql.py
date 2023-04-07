@@ -2,6 +2,7 @@ import pytest
 import sqlalchemy
 from odd_models import DataEntity
 from odd_models.models import DataEntityType
+from pydantic import SecretStr
 from testcontainers.mysql import MySqlContainer
 
 from tests.integration.helpers import find_by_type
@@ -39,7 +40,7 @@ def test_mysql():
             type="mysql",
             name="test_mysql",
             database="test",
-            password="test",
+            password=SecretStr("test"),
             user="test",
             host=mysql.get_container_host_ip(),
             port=mysql.get_exposed_port(3306),
