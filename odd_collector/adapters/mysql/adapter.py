@@ -7,7 +7,7 @@ from odd_collector.domain.plugin import MySQLPlugin
 
 from .mappers.database import map_database
 from .mappers.tables import map_tables
-from .repository import Repository
+from .repository import ConnectionParams, Repository
 
 
 class Adapter(BaseAdapter):
@@ -21,17 +21,19 @@ class Adapter(BaseAdapter):
 
     def __init__(self, config: MySQLPlugin) -> None:
         super().__init__(config)
-        self.repository = Repository(config)
 
     def get_data_entity_list(self) -> DataEntityList:
-        tables = self.repository.get_tables()
+        with Repository(ConnectionParams.from_config(self.config)) as repository:
+            tables = repository.get_tables(self.config.database)
 
-        tables_entities = map_tables(self.generator, tables)
-        database_entity = map_database(
-            self.generator, self.config.database, lpluck_attr("oddrn", tables_entities)
-        )
+            tables_entities = map_tables(self.generator, tables)
+            database_entity = map_database(
+                self.generator,
+                self.config.database,
+                lpluck_attr("oddrn", tables_entities),
+            )
 
-        return DataEntityList(
-            data_source_oddrn=self.get_data_source_oddrn(),
-            items=[*tables_entities, database_entity],
-        )
+            return DataEntityList(
+                data_source_oddrn=self.get_data_source_oddrn(),
+                items=[*tables_entities, database_entity],
+            )

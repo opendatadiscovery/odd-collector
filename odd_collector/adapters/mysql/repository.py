@@ -1,8 +1,8 @@
 from dataclasses import asdict, dataclass
-from typing import Any
 
 import mysql.connector
-from odd_collector_sdk.errors import DataSourceError
+from odd_collector_sdk.errors import DataSourceConnectionError
+from odd_collector_sdk.logger import logger
 
 from odd_collector.domain.plugin import MySQLPlugin
 from odd_collector.helpers.bytes_to_str import convert_bytes_to_str
@@ -10,7 +10,7 @@ from odd_collector.helpers.datetime import Datetime
 from odd_collector.models import Column, Table
 
 
-@dataclass
+@dataclass(frozen=True)
 class ConnectionParams:
     host: str
     port: int
@@ -32,14 +32,36 @@ class ConnectionParams:
 
 
 class Repository:
-    def __init__(self, config: MySQLPlugin):
-        self.config = config
+    def __init__(self, conn_params: ConnectionParams):
+        """
+        :param conn_params: Connection parameters
+        """
+        self.conn_params = conn_params
 
-    def get_tables(self) -> list[Table]:
+    def __enter__(self):
+        logger.debug("Connecting to MySQL")
+        try:
+            self.conn = mysql.connector.connect(**asdict(self.conn_params))
+            self.cursor = self.conn.cursor(dictionary=True)
+            return self
+        except mysql.connector.Error as err:
+            raise DataSourceConnectionError(
+                f"Error connecting to MySQL: {err}"
+            ) from err
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        logger.debug("Closing connection to MySQL")
+        self.cursor.close()
+        self.conn.close()
+
+    def get_tables(self, database: str) -> list[Table]:
         columns: list[Column] = self.get_columns()
-        tables = []
 
-        for raw in self.__execute(self.tables_query):
+        self.cursor.execute(self.tables_query, (database,))
+        raw_tables: list[dict] = self.cursor.fetchall()
+
+        tables = []
+        for raw in raw_tables:
             table = Table(
                 catalog=raw.pop("TABLE_CATALOG"),
                 schema=raw.pop("TABLE_SCHEMA"),
@@ -60,9 +82,11 @@ class Repository:
         return tables
 
     def get_columns(self) -> list[Column]:
+        self.cursor.execute(self.columns_query)
+        raw_columns: list[dict] = self.cursor.fetchall()
         columns = []
 
-        for raw in self.__execute(self.columns_query):
+        for raw in raw_columns:
             column = Column(
                 table_catalog=raw.pop("TABLE_CATALOG"),
                 table_name=raw.pop("TABLE_NAME"),
@@ -77,21 +101,6 @@ class Repository:
             columns.append(column)
 
         return columns
-
-    def __execute(self, query: str) -> list[dict[str, Any]]:
-        assert query is not None
-
-        try:
-            with mysql.connector.connect(
-                **asdict(ConnectionParams.from_config(config=self.config))
-            ) as mysql_conn:
-                with mysql_conn.cursor(dictionary=True) as mysql_cur:
-                    mysql_cur.execute(query)
-                    return mysql_cur.fetchall()
-        except mysql.connector.Error as err:
-            raise DataSourceError(
-                f"Failed to connect to MySQL database, {err}"
-            ) from err
 
     @property
     def tables_query(self):
@@ -123,7 +132,7 @@ class Repository:
                            on t.TABLE_CATALOG = v.TABLE_CATALOG and
                               t.TABLE_SCHEMA = v.TABLE_SCHEMA and
                               t.TABLE_NAME = v.TABLE_NAME
-        where t.table_schema = '{self.config.database}'
+        where t.table_schema = %s
         order by t.table_catalog, t.table_schema, t.table_name
         """
 
