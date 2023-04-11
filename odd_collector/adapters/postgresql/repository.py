@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod
+from dataclasses import asdict, dataclass
 from operator import attrgetter
-from typing import Protocol, Union
+from typing import Union
 
+import psycopg2
 from funcy.seqs import group_by
 from psycopg2 import sql
 
@@ -13,33 +14,59 @@ from odd_collector.adapters.postgresql.models import (
 )
 from odd_collector.domain.plugin import PostgreSQLPlugin
 
-from .connectors import connect
+
+@dataclass(frozen=True)
+class ConnectionParams:
+    host: str
+    port: str
+    dbname: str
+    user: str
+    password: str
+
+    @classmethod
+    def from_config(cls, config: PostgreSQLPlugin):
+        return cls(
+            dbname=config.database,
+            user=config.user,
+            password=config.password.get_secret_value(),
+            host=config.host,
+            port=config.port,
+        )
 
 
-class AbstractRepository(Protocol):
-    def get_tables(self) -> list[Table]:
-        pass
+class PostgreSQLRepository:
+    def __init__(self, conn_params: ConnectionParams):
+        self.conn_params = conn_params
 
+    def __enter__(self):
+        self.conn = psycopg2.connect(**asdict(self.conn_params))
+        return self
 
-class PostgreSQLRepository(AbstractRepository):
-    def __init__(self, config: PostgreSQLPlugin):
-        self.config = config
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.conn.close()
 
     def get_tables(
         self,
     ) -> list[Table]:
-        with connect(self.config) as cur:
-            columns = [Column(*raw) for raw in self.execute(self.columns_query, cur)]
+        with self.conn.cursor() as cur:
             tables = [Table(*raw) for raw in self.execute(self.tables_query, cur)]
-            enums = [EnumTypeLabel(*raw) for raw in self.execute(self.enums_query, cur)]
+            grouped_columns = group_by(attrgetter("attrelid"), self.get_columns())
 
-            primary_keys = [
-                PrimaryKey(*raw) for raw in self.execute(self.pks_query, cur)
-            ]
+            for table in tables:
+                if columns := grouped_columns[table.oid]:
+                    table.columns.extend(columns)
+
+            return tables
+
+    def get_columns(self):
+        with self.conn.cursor() as cur:
+            enums = self.get_enums()
+            primary_keys = self.get_primary_keys()
 
             grouped_enums = group_by(attrgetter("type_oid"), enums)
             grouped_pks = group_by(attrgetter("attrelid", "column_name"), primary_keys)
-            grouped_columns = group_by(attrgetter("attrelid"), columns)
+
+            columns = [Column(*raw) for raw in self.execute(self.columns_query, cur)]
 
             for column in columns:
                 if enums := grouped_enums[column.type_oid]:
@@ -47,13 +74,15 @@ class PostgreSQLRepository(AbstractRepository):
                 if (column.attrelid, column.column_name) in grouped_pks:
                     column.is_primary = True
 
-            for table in tables:
-                if columns := grouped_columns[table.oid]:
-                    table.columns.extend(columns)
+            return columns
 
-            # View depends on?
+    def get_enums(self):
+        with self.conn.cursor() as cur:
+            return [EnumTypeLabel(*raw) for raw in self.execute(self.enums_query, cur)]
 
-            return tables
+    def get_primary_keys(self):
+        with self.conn.cursor() as cur:
+            return [PrimaryKey(*raw) for raw in self.execute(self.pks_query, cur)]
 
     @property
     def pks_query(self):

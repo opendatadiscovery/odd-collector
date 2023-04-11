@@ -27,6 +27,7 @@ class DatabasePlugin(WithHost, WithPort):
 
 class PostgreSQLPlugin(DatabasePlugin):
     type: Literal["postgresql"]
+    database: str
     password: SecretStr = SecretStr("")
 
 
@@ -38,7 +39,10 @@ class OdbcPlugin(DatabasePlugin):
 
 class MySQLPlugin(DatabasePlugin):
     type: Literal["mysql"]
-    ssl_disabled: Optional[bool] = False
+    port: int
+    database: str
+    password: Optional[SecretStr] = SecretStr("")
+    ssl_disabled: bool = False
 
 
 class MSSQLPlugin(DatabasePlugin):

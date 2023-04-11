@@ -3,11 +3,11 @@ token: ""
 platform_host_url: http://localhost:8080
 chunk_size: 1000
 plugins:
-  - type: mssql
-    name: mssql_adapter
-    description: "" # Optional string
-    database: <DB_NAME> # my_database
-    host: <DB_HOST> # localhost
-    port: <DB_PORT> # 1433
-    user: <USER> # sa
-    password: <PASSWORD>
+  - type: mysql
+    name: mysql_adapter
+    description: "Retrieve data from MySQL"
+    database: <database>
+    host: <host>
+    port: <port>
+    user: <user>
+    ssl_disabled: False
