@@ -20,7 +20,7 @@ flatdict = "4.0.1"
 hive-metastore-client = "1.0.9"
 lark-parser = "0.11.1"
 more-itertools = "8.13.0"
-mysql-connector-python = "8.0.28"
+mysql-connector-python = "^8.0.32"
 neo4j = "4.3.7"
 oracledb = "1.2.1"
 oddrn-generator = "^0.1.74"
@@ -28,11 +28,10 @@ psycopg2-binary = "2.9.3"
 python = "^3.9"
 pyhumps = "3.0.2"
 pyodbc = "4.0.35"
-pytest = "7.1.2"
 pymongo = { extras = ["srv"], version = "4.0.2" }
 presto-python-client = "0.8.2"
 pymssql = "2.2.7"
-snowflake-connector-python = "2.8.1"
+snowflake-connector-python = "^2.9"
 sqlalchemy = "^1.4.45"
 tableauserverclient = "0.19.0"
 tarantool = "0.8.0"
@@ -43,9 +42,8 @@ pytz = "^2022.7"
 fastavro = "^1.7.1"
 llvmlite = "^0.39.1"
 numba = "^0.56.4"
-mlflow = "2.0.1"
+mlflow = "^2.2.2"
 sql-metadata = "^2.6.0"
-pytest-asyncio = "^0.20.3"
 odd-collector-sdk = "^0.3.25"
 clickhouse-connect = "^0.5.14"
 odd-models = "^2.0.24"
@@ -53,18 +51,15 @@ odd-models = "^2.0.24"
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.0.4"
 black = "^22.1.0"
-testcontainers = {version = "^3.7.1", extras = ["postgres"]}
-
-
-
-[tool.poetry.group.tests.dependencies]
+testcontainers = { version = "^3.7.1", extras = ["postgres"] }
+pytest = "^7.2.2"
+pytest-asyncio = "^0.21.0"
 pymysql = "^1.0.3"
+isort = "^5.12.0"
+
 
 [tool.isort]
 profile = "black"
-
-[tool.poetry.dev-dependencies]
-isort = "^5.10.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

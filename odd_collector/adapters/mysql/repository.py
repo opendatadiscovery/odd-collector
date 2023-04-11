@@ -1,8 +1,8 @@
 from dataclasses import asdict, dataclass
-from typing import Any
 
 import mysql.connector
-from odd_collector_sdk.errors import DataSourceError
+from odd_collector_sdk.errors import DataSourceConnectionError
+from odd_collector_sdk.logger import logger
 
 from odd_collector.domain.plugin import MySQLPlugin
 from odd_collector.helpers.bytes_to_str import convert_bytes_to_str
@@ -10,7 +10,7 @@ from odd_collector.helpers.datetime import Datetime
 from odd_collector.models import Column, Table
 
 
-@dataclass
+@dataclass(frozen=True)
 class ConnectionParams:
     host: str
     port: int
@@ -32,66 +32,73 @@ class ConnectionParams:
 
 
 class Repository:
-    def __init__(self, config: MySQLPlugin):
-        self.config = config
+    def __init__(self, conn_params: ConnectionParams):
+        """
+        :param conn_params: MySql Connection parameters
+        """
+        self.conn_params = conn_params
 
-    def get_tables(self) -> list[Table]:
+    def __enter__(self):
+        logger.debug("Connecting to MySQL")
+        try:
+            self.conn = mysql.connector.connect(**asdict(self.conn_params))
+            return self
+        except mysql.connector.Error as err:
+            raise DataSourceConnectionError(
+                f"Error connecting to MySQL: {err}"
+            ) from err
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        logger.debug("Closing connection to MySQL")
+        self.conn.close()
+
+    def get_tables(self, database: str) -> list[Table]:
         columns: list[Column] = self.get_columns()
-        tables = []
 
-        for raw in self.__execute(self.tables_query):
-            table = Table(
-                catalog=raw.pop("TABLE_CATALOG"),
-                schema=raw.pop("TABLE_SCHEMA"),
-                comment=raw.pop("TABLE_COMMENT"),
-                create_time=Datetime(raw.pop("CREATE_TIME")),
-                update_time=Datetime(raw.pop("UPDATE_TIME")),
-                name=(table_name := raw.pop("TABLE_NAME")),
-                type=raw.pop("TABLE_TYPE"),
-                sql_definition=raw.pop("VIEW_DEFINITION"),
-                table_rows=raw.pop("TABLE_ROWS"),
-                metadata=raw,
-                columns=[
-                    column for column in columns if column.table_name == table_name
-                ],
-            )
-            tables.append(table)
+        with self.conn.cursor(dictionary=True) as cursor:
+            cursor.execute(self.tables_query, (database,))
 
-        return tables
+            tables = []
+            for raw in cursor.fetchall():
+                table = Table(
+                    catalog=raw.pop("TABLE_CATALOG"),
+                    schema=raw.pop("TABLE_SCHEMA"),
+                    comment=raw.pop("TABLE_COMMENT"),
+                    create_time=Datetime(raw.pop("CREATE_TIME")),
+                    update_time=Datetime(raw.pop("UPDATE_TIME")),
+                    name=(table_name := raw.pop("TABLE_NAME")),
+                    type=raw.pop("TABLE_TYPE"),
+                    sql_definition=raw.pop("VIEW_DEFINITION"),
+                    table_rows=raw.pop("TABLE_ROWS"),
+                    metadata=raw,
+                    columns=[
+                        column for column in columns if column.table_name == table_name
+                    ],
+                )
+                tables.append(table)
+
+            return tables
 
     def get_columns(self) -> list[Column]:
-        columns = []
+        with self.conn.cursor(dictionary=True) as cursor:
+            cursor.execute(self.columns_query)
+            columns = []
 
-        for raw in self.__execute(self.columns_query):
-            column = Column(
-                table_catalog=raw.pop("TABLE_CATALOG"),
-                table_name=raw.pop("TABLE_NAME"),
-                table_schema=raw.pop("TABLE_SCHEMA"),
-                name=raw.pop("COLUMN_NAME"),
-                type=convert_bytes_to_str(raw.pop("DATA_TYPE")),
-                is_nullable=raw.pop("IS_NULLABLE"),
-                comment=convert_bytes_to_str(raw.pop("COLUMN_COMMENT")),
-                default=raw.pop("COLUMN_DEFAULT"),
-                metadata=raw,
-            )
-            columns.append(column)
+            for raw in cursor.fetchall():
+                column = Column(
+                    table_catalog=raw.pop("TABLE_CATALOG"),
+                    table_name=raw.pop("TABLE_NAME"),
+                    table_schema=raw.pop("TABLE_SCHEMA"),
+                    name=raw.pop("COLUMN_NAME"),
+                    type=convert_bytes_to_str(raw.pop("DATA_TYPE")),
+                    is_nullable=raw.pop("IS_NULLABLE"),
+                    comment=convert_bytes_to_str(raw.pop("COLUMN_COMMENT")),
+                    default=raw.pop("COLUMN_DEFAULT"),
+                    metadata=raw,
+                )
+                columns.append(column)
 
-        return columns
-
-    def __execute(self, query: str) -> list[dict[str, Any]]:
-        assert query is not None
-
-        try:
-            with mysql.connector.connect(
-                **asdict(ConnectionParams.from_config(config=self.config))
-            ) as mysql_conn:
-                with mysql_conn.cursor(dictionary=True) as mysql_cur:
-                    mysql_cur.execute(query)
-                    return mysql_cur.fetchall()
-        except mysql.connector.Error as err:
-            raise DataSourceError(
-                f"Failed to connect to MySQL database, {err}"
-            ) from err
+            return columns
 
     @property
     def tables_query(self):
@@ -123,7 +130,7 @@ class Repository:
                            on t.TABLE_CATALOG = v.TABLE_CATALOG and
                               t.TABLE_SCHEMA = v.TABLE_SCHEMA and
                               t.TABLE_NAME = v.TABLE_NAME
-        where t.table_schema = '{self.config.database}'
+        where t.table_schema = %s
         order by t.table_catalog, t.table_schema, t.table_name
         """
 

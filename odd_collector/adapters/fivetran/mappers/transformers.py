@@ -1,4 +1,4 @@
-from odd_models.models import DataEntity, DataTransformer, DataEntityType
+from odd_models.models import DataEntity, DataEntityType, DataTransformer
 from oddrn_generator import FivetranGenerator
 
 
