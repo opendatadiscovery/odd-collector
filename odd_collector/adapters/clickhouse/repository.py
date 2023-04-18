@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Type, Union
+from typing import Iterable, Type, Union
 
 from clickhouse_connect import get_client
 from clickhouse_connect.driver import Client
+
+from odd_collector.adapters.clickhouse.domain.column import ColumnType
+from odd_collector.adapters.clickhouse.domain.column_type import NestedColumnType
 
 from ...domain.plugin import ClickhousePlugin
 from .domain import Column, IntegrationEngine, Records, Table
@@ -113,7 +116,7 @@ class ClickHouseRepository(ClickHouseRepositoryBase):
         query: str,
         query_params: dict,
         map_to: Type[Union[Column, Table, IntegrationEngine]],
-    ) -> list:
+    ) -> Iterable:
         with client.query_row_block_stream(query, query_params) as stream:
             for block in stream:
                 for row in block:

@@ -1,13 +1,15 @@
 from dataclasses import dataclass
 from typing import Any
 
+from odd_collector.adapters.clickhouse.domain.column_type import ColumnType
+
 
 @dataclass
 class Column:
     database: str
     table: str
     name: str
-    type: str
+    type: ColumnType
     position: Any
     default_kind: str
     default_expression: str
@@ -20,3 +22,4 @@ class Column:
     is_in_primary_key: bool
     is_in_sampling_key: bool
     compression_codec: Any
+
