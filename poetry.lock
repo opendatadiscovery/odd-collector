@@ -1366,14 +1366,14 @@ tqdm = ["tqdm"]
 
 [[package]]
 name = "funcy"
-version = "1.17"
+version = "2.0"
 description = "A fancy and practical functional tools"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "funcy-1.17-py2.py3-none-any.whl", hash = "sha256:ba7af5e58bfc69321aaf860a1547f18d35e145706b95d1b3c966abc4f0b60309"},
-    {file = "funcy-1.17.tar.gz", hash = "sha256:40b9b9a88141ae6a174df1a95861f2b82f2fdc17669080788b73a3ed9370e968"},
+    {file = "funcy-2.0-py2.py3-none-any.whl", hash = "sha256:53df23c8bb1651b12f095df764bfb057935d49537a56de211b098f4c79614bb0"},
+    {file = "funcy-2.0.tar.gz", hash = "sha256:3963315d59d41c6f30c04bc910e10ab50a3ac4a225868bfa96feed133df075cb"},
 ]
 
 [[package]]
@@ -2838,23 +2838,23 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.25"
+version = "0.3.27"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.25-py3-none-any.whl", hash = "sha256:52c56dc7b0930208df98c250bd9bb461c7155b9a98e2097d84c55001333f3522"},
-    {file = "odd_collector_sdk-0.3.25.tar.gz", hash = "sha256:f318c1674469adf412e548ca708508891e21261e16fd8156f436221a6c6b107a"},
+    {file = "odd_collector_sdk-0.3.27-py3-none-any.whl", hash = "sha256:8cd0ca283587224342e15c2c66d79d5563a65dd44147fd55412c9d17e42918d3"},
+    {file = "odd_collector_sdk-0.3.27.tar.gz", hash = "sha256:2330bd221f33dfc7e6c7d93da8a611fb23355d2c2de840a39af62535f9c875cf"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.8.1,<4.0.0"
 APScheduler = ">=3.8.1,<4.0.0"
-funcy = ">=1.17,<2.0"
+funcy = ">=2.0,<3.0"
 importlib-metadata = ">=5.1.0,<6.0.0"
 loguru = ">=0.6.0,<0.7.0"
-odd-models = ">=2.0.24,<3.0.0"
+odd-models = ">=2.0.28,<3.0.0"
 oddrn-generator = ">=0.1.73,<0.2.0"
 pyaml-env = ">=1.1.5,<2.0.0"
 pydantic = ">=1.8.2,<2.0.0"
@@ -2862,18 +2862,20 @@ tqdm = ">=4.64.1,<5.0.0"
 
 [[package]]
 name = "odd-models"
-version = "2.0.24"
+version = "2.0.28"
 description = "Open Data Discovery Models"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_models-2.0.24-py3-none-any.whl", hash = "sha256:f593d7c5300b95389fa5e12d091ef79cbb88b1002825855788e882ea19e14608"},
-    {file = "odd_models-2.0.24.tar.gz", hash = "sha256:2235a9c53e3fa615ee7542619723eac2e0e5b255d8fe22d3bd4a6d993da439f8"},
+    {file = "odd_models-2.0.28-py3-none-any.whl", hash = "sha256:85ba13d3885c6542fc4bf801ad7958a0b3bd4643ee9bf5ef056fd3c552cf7cfd"},
+    {file = "odd_models-2.0.28.tar.gz", hash = "sha256:36cb1a8fc13eab911f3a9892e1f290693361839eafd7ee46f4d8eeb2ae3cb349"},
 ]
 
 [package.dependencies]
+funcy = ">=2.0,<3.0"
 loguru = ">=0.6.0,<0.7.0"
+oddrn-generator = ">=0.1.75,<0.2.0"
 pydantic = ">=1.9.1,<2.0.0"
 requests = "2.28.2"
 sql-metadata = ">=2.6.0,<3.0.0"
@@ -2881,14 +2883,14 @@ sqlparse = "0.4.2"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.74"
+version = "0.1.75"
 description = "Open Data Discovery Resource Name Generator"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "oddrn_generator-0.1.74-py3-none-any.whl", hash = "sha256:3211cb88664a6e4429cc7b33154d300e3aa636d70f5fbf8ec203261196e12b51"},
-    {file = "oddrn_generator-0.1.74.tar.gz", hash = "sha256:9c752eb3b26e002c879a15668f9a05e1e908c715cf620920b97cafa4a6a8728a"},
+    {file = "oddrn_generator-0.1.75-py3-none-any.whl", hash = "sha256:e804f3d7f0135cf3d512fae61f651e3652fc81a5b628fdcad0bc4043ff7fd143"},
+    {file = "oddrn_generator-0.1.75.tar.gz", hash = "sha256:54b17fe235b1ce7ef182acb80e6cd1ff8c302a3014fe8cf414efd68fc90bb6a9"},
 ]
 
 [package.dependencies]
@@ -5381,4 +5383,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "e32c168a676aaa795eef4524ff743836cff77a1de58cba5e67b613ee86b1b7b7"
+content-hash = "07fd340bd9e4a8af67db8ab43769a2d018bb3f0706fdfbf7148adae852d34fe5"
