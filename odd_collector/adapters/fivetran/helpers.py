@@ -1,6 +1,7 @@
 from typing import Optional
-from pydantic import BaseModel, validator, Field
+
 import oddrn_generator
+from pydantic import BaseModel, Field, validator
 
 from odd_collector.logger import logger
 
