@@ -1,40 +1,39 @@
-import logging
-from typing import List
+from funcy import lpluck_attr
+from odd_collector_sdk.domain.adapter import BaseAdapter
+from odd_models.models import DataEntityList
+from oddrn_generator import Generator, MysqlGenerator
 
-from odd_collector_sdk.domain.adapter import AbstractAdapter
-from odd_models.models import DataEntity, DataEntityList
-from oddrn_generator import MysqlGenerator
+from odd_collector.domain.plugin import MySQLPlugin
 
+from .mappers.database import map_database
 from .mappers.tables import map_tables
-from .mysql_repository import MysqlRepository
+from .repository import ConnectionParams, Repository
 
 
-class Adapter(AbstractAdapter):
-    def __init__(self, config) -> None:
-        self.__config = config
-        self.__mysql_repository = MysqlRepository(config)
-        self.__oddrn_generator = MysqlGenerator(
-            host_settings=f"{self.__config.host}", databases=self.__config.database
+class Adapter(BaseAdapter):
+    config: MySQLPlugin
+    generator: MysqlGenerator
+
+    def create_generator(self) -> Generator:
+        return MysqlGenerator(
+            host_settings=self.config.host, databases=self.config.database
         )
 
-    def get_data_source_oddrn(self) -> str:
-        return self.__oddrn_generator.get_data_source_oddrn()
-
-    def get_data_entities(self) -> List[DataEntity]:
-        try:
-            tables = self.__mysql_repository.get_tables()
-            columns = self.__mysql_repository.get_columns()
-            logging.info(f"Load {len(tables)} Datasets DataEntities from database")
-            return map_tables(
-                self.__oddrn_generator, tables, columns, self.__config.database
-            )
-        except Exception:
-            logging.error("Failed to load metadata for tables")
-            logging.exception(Exception)
-        return []
+    def __init__(self, config: MySQLPlugin) -> None:
+        super().__init__(config)
 
     def get_data_entity_list(self) -> DataEntityList:
-        return DataEntityList(
-            data_source_oddrn=self.get_data_source_oddrn(),
-            items=(self.get_data_entities()),
-        )
+        with Repository(ConnectionParams.from_config(self.config)) as repository:
+            tables = repository.get_tables(self.config.database)
+
+            tables_entities = map_tables(self.generator, tables)
+            database_entity = map_database(
+                self.generator,
+                self.config.database,
+                lpluck_attr("oddrn", tables_entities),
+            )
+
+            return DataEntityList(
+                data_source_oddrn=self.get_data_source_oddrn(),
+                items=[*tables_entities, database_entity],
+            )

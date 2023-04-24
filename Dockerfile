@@ -1,4 +1,4 @@
-FROM python:3.9.12-slim-buster as base
+FROM python:3.9.16-slim-buster as base
 
 ENV POETRY_HOME=/etc/poetry \
     POETRY_VERSION=1.3.1

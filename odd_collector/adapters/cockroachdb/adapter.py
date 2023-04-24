@@ -1,12 +1,13 @@
 from typing import List
 
-from mappers.tables import map_table
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import PostgresqlGenerator
-from repository import CockroachDbSQLRepository
 
 from odd_collector.domain.plugin import CockroachDBPlugin
+
+from .mappers.tables import map_table
+from .repository import CockroachDbSQLRepository
 
 
 class Adapter(AbstractAdapter):

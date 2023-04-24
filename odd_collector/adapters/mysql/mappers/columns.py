@@ -1,47 +1,64 @@
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import MysqlGenerator
 
-from . import (
-    _data_set_field_metadata_excluded_keys,
-    _data_set_field_metadata_schema_url,
-)
-from .metadata import append_metadata_extension, convert_bytes_to_str
-from .models import ColumnMetadata
-from .types import TYPES_SQL_TO_ODD
+from odd_collector.models import Column
+
+TYPES_SQL_TO_ODD: dict[str, Type] = {
+    "tinyint": Type.TYPE_INTEGER,
+    "smallint": Type.TYPE_INTEGER,
+    "mediumint": Type.TYPE_INTEGER,
+    "int": Type.TYPE_INTEGER,
+    "integer": Type.TYPE_INTEGER,
+    "bigint": Type.TYPE_INTEGER,
+    "float": Type.TYPE_NUMBER,
+    "real": Type.TYPE_NUMBER,
+    "double": Type.TYPE_NUMBER,
+    "double precision": Type.TYPE_NUMBER,
+    "decimal": Type.TYPE_NUMBER,
+    "numeric": Type.TYPE_NUMBER,
+    "bit": Type.TYPE_BINARY,
+    "boolean": Type.TYPE_BOOLEAN,
+    "char": Type.TYPE_CHAR,
+    "varchar": Type.TYPE_STRING,
+    "tinytext": Type.TYPE_STRING,
+    "mediumtext": Type.TYPE_STRING,
+    "longtext": Type.TYPE_STRING,
+    "text": Type.TYPE_STRING,
+    "interval": Type.TYPE_DURATION,
+    "date": Type.TYPE_DATETIME,
+    "time": Type.TYPE_DATETIME,
+    "datetime": Type.TYPE_DATETIME,
+    "timestamp": Type.TYPE_DATETIME,
+    "year": Type.TYPE_INTEGER,
+    "binary": Type.TYPE_BINARY,
+    "varbinary": Type.TYPE_BINARY,
+    "tinyblob": Type.TYPE_BINARY,
+    "mediumblob": Type.TYPE_BINARY,
+    "longblob": Type.TYPE_BINARY,
+    "blob": Type.TYPE_BINARY,
+    "json": Type.TYPE_STRING,
+    "enum": Type.TYPE_UNION,
+    "set": Type.TYPE_LIST,
+}
 
 
 def map_column(
-    column_metadata: ColumnMetadata,
-    oddrn_generator: MysqlGenerator,
-    owner: str,
+    generator: MysqlGenerator,
+    column: Column,
     oddrn_path: str,
 ) -> DataSetField:
-    name: str = column_metadata.column_name
-    data_type: str = convert_bytes_to_str(column_metadata.data_type)
-    description = convert_bytes_to_str(column_metadata.column_comment)
-
-    dsf: DataSetField = DataSetField(
-        oddrn=oddrn_generator.get_oddrn_by_path(
-            f"{oddrn_path}_columns", name
-        ),  # getting tables_columns or views_columns
-        name=name,
-        owner=owner,
-        metadata=[],
+    return DataSetField(
+        oddrn=generator.get_oddrn_by_path(f"{oddrn_path}_columns", column.name),
+        name=column.name,
+        owner=None,
+        metadata=[extract_metadata("mysql", column, DefinitionType.DATASET_FIELD)],
         type=DataSetFieldType(
-            type=TYPES_SQL_TO_ODD.get(data_type, Type.TYPE_UNKNOWN),
-            logical_type=convert_bytes_to_str(column_metadata.data_type),
-            is_nullable=column_metadata.is_nullable == "YES",
+            type=TYPES_SQL_TO_ODD.get(column.type, Type.TYPE_UNKNOWN),
+            logical_type=column.type,
+            is_nullable=column.is_nullable == "YES",
         ),
-        default_value=convert_bytes_to_str(column_metadata.column_default),
-        description=description or None,
-        is_primary_key=bool(column_metadata.column_key),
+        default_value=str(column.default),
+        description=column.comment,
+        is_primary_key=False,
     )
-
-    append_metadata_extension(
-        dsf.metadata,
-        _data_set_field_metadata_schema_url,
-        column_metadata,
-        _data_set_field_metadata_excluded_keys,
-    )
-
-    return dsf

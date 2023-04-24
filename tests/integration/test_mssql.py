@@ -3,7 +3,7 @@ import sqlalchemy
 from odd_models import DataEntity
 from odd_models.models import DataEntityType
 from pydantic import SecretStr
-from testcontainers.mysql import MySqlContainer
+from testcontainers.mssql import SqlServerContainer
 
 from tests.integration.helpers import find_by_type
 
@@ -23,36 +23,40 @@ FROM Persons
 WHERE City = 'Sandnes';
 """
 
-from odd_collector.adapters.mysql.adapter import Adapter
-from odd_collector.domain.plugin import MySQLPlugin
+from odd_collector.adapters.mssql.adapter import Adapter
+from odd_collector.domain.plugin import MSSQLPlugin
 
 
 @pytest.mark.integration
-def test_mysql():
-    with MySqlContainer() as mysql:
-        engine = sqlalchemy.create_engine(mysql.get_connection_url())
+def test_mssql():
+    with SqlServerContainer(
+        image="mcr.microsoft.com/azure-sql-edge",
+        port=1433,
+        password="yourStrong(!)Password",
+    ) as mssql:
+        engine = sqlalchemy.create_engine(mssql.get_connection_url())
 
         with engine.connect() as connection:
             connection.exec_driver_sql(create_tables)
             connection.exec_driver_sql(create_view)
 
-        config = MySQLPlugin(
-            type="mysql",
+        config = MSSQLPlugin(
+            type="mssql",
             name="test_mysql",
-            database="test",
-            password=SecretStr("test"),
-            user="test",
-            host=mysql.get_container_host_ip(),
-            port=mysql.get_exposed_port(3306),
+            database="tempdb",
+            password=SecretStr("yourStrong(!)Password"),
+            user="SA",
+            host=mssql.get_container_host_ip(),
+            port=mssql.get_exposed_port(1433),
         )
 
         data_entities = Adapter(config).get_data_entity_list()
         database_services: list[DataEntity] = find_by_type(
             data_entities, DataEntityType.DATABASE_SERVICE
         )
-        assert len(database_services) == 1
-        database_service = database_services[0]
-        assert len(database_service.data_entity_group.entities_list) == 2
+        print(data_entities)
+
+        assert len(database_services) == 2  # 1 for the database, 1 for the schema
 
         tables = find_by_type(data_entities, DataEntityType.TABLE)
         assert len(tables) == 1
