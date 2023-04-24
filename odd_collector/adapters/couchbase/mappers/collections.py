@@ -1,61 +1,41 @@
-from typing import Dict, List
+from typing import List
 
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import (
     DataEntity,
-    DataEntityGroup,
     DataEntityType,
     DataSet,
-    MetadataExtension,
 )
-from oddrn_generator import Generator
+from oddrn_generator import CouchbaseGenerator
 
 from .columns import map_columns
-
-SCHEMA_FILE_URL = (
-    "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/"
-    "main/specification/extensions/couchbase.json"
-)
+from ..models import Collection
 
 
-def map_collection(
-    oddrn_generator: Generator, collections: List[Dict], bucket: str
+def _map_collection(generator: CouchbaseGenerator, collection: Collection):
+    generator.set_oddrn_paths(
+        **{
+            "buckets": collection.bucket,
+            "scopes": collection.scope,
+            "collections": collection.name,
+        }
+    )
+    return DataEntity(
+        oddrn=generator.get_oddrn_by_path("collections"),
+        name=collection.name,
+        type=DataEntityType.TABLE,
+        metadata=[extract_metadata("couchbase", collection, DefinitionType.DATASET)],
+        dataset=DataSet(field_list=map_columns(collection.columns, generator)),
+    )
+
+
+def map_collections(
+    generator: CouchbaseGenerator,
+    collections: List[Collection],
 ) -> List[DataEntity]:
     data_entities: List[DataEntity] = []
-    de_group = DataEntity(
-        oddrn=oddrn_generator.get_oddrn_by_path("buckets"),
-        name=bucket,
-        type=DataEntityType.DATABASE_SERVICE,
-        metadata=[],
-    )
 
     for collection in collections:
-        metadata: dict = collection["metadata"]
-        name: str = metadata["name"]
-        scope: str = metadata["scope"]
-
-        oddrn_generator.set_oddrn_paths(
-            **{"buckets": bucket, "scopes": scope, "collections": name}
-        )
-        data_entity: DataEntity = DataEntity(
-            oddrn=oddrn_generator.get_oddrn_by_path("collections"),
-            name=name,
-            type=DataEntityType.TABLE,
-            metadata=[
-                MetadataExtension(
-                    schema_url=f"{SCHEMA_FILE_URL}#/definitions/CouchbaseDataSetExtension",
-                    metadata=metadata,
-                ),
-            ],
-        )
-        data_entity.dataset = DataSet(
-            field_list=map_columns(collection["data"], oddrn_generator),
-            parent_oddrn=de_group.oddrn,
-        )
+        data_entity = _map_collection(generator, collection)
         data_entities.append(data_entity)
-
-    de_group.data_entity_group = DataEntityGroup(
-        entities_list=[de.oddrn for de in data_entities]
-    )
-    data_entities.append(de_group)
-
     return data_entities

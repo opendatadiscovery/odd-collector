@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, T
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
 
@@ -6,40 +6,43 @@ from oddrn_generator import Generator
 from odd_collector.adapters.couchbase.mappers.types import TYPES_COUCHBASE_TO_ODD
 
 
-def map_columns(data, oddrn_generator: Generator) -> List[DataSetField]:
-    collector = []
-    __map_columns(collector, data, oddrn_generator)
-    return collector
-
-
-def __map_columns(
-    collector: list, data: dict, oddrn_generator: Generator, parent_oddrn: str = None
+def map_columns(
+    data: Dict[str, Dict[str, T]],
+    oddrn_generator: Generator,
+    parent_oddrn: str = None,
+    columns: List[DataSetField] = None,
 ) -> List[DataSetField]:
-    for key, value in data.items():
+    """Takes row query result and map columns recursively."""
+    columns = columns if columns else []
+    # ('activity', {'#docs': 3523, '%docs': 100, 'samples': ['buy', 'do', 'drink', 'eat', 'listing', 'see'], 'type': 'string'})
+    for column_name, column_meta in data.items():
         # example of document content:
         # {'#docs': [916, 1], '%docs': [99.89, 0.1], 'samples': [[None], ['Les Rouges Gorges']], 'type': ['null', 'string']}
-        data_type = value["type"]
+        data_type = column_meta["type"]
         if isinstance(data_type, list):
             types = [t for t in data_type if t != "null"]
             data_type = "union" if len(types) > 1 else types[0]
-        if data_type == "number" and value.get("samples"):
+        if data_type == "number" and column_meta.get("samples"):
             # usually we will have list of samples {'samples': ['Les Rouges Gorges']}
-            sample = value["samples"][0]
+            sample = column_meta["samples"][0]
             # some docs have values of different types {'samples': [[None], ['Les Rouges Gorges']]}
             if isinstance(sample, list):
-                sample = [s for s in value["samples"] if s[0] is not None][0]
+                sample = [s for s in column_meta["samples"] if s[0] is not None][0]
             data_type = type(sample).__name__
-        column = __map_column(key, data_type, oddrn_generator, parent_oddrn)
-        collector.append(column)
+        column = map_column(column_name, data_type, oddrn_generator, parent_oddrn)
+        columns.append(column)
         if data_type == "object":
-            __map_columns(collector, value["properties"], oddrn_generator, column.oddrn)
-        if data_type == "array":
-            __map_columns(
-                collector, {"Values": value["items"]}, oddrn_generator, column.oddrn
+            map_columns(
+                column_meta["properties"], oddrn_generator, column.oddrn, columns
             )
+        if data_type == "array":
+            map_columns(
+                {"Values": column_meta["items"]}, oddrn_generator, column.oddrn, columns
+            )
+    return columns
 
 
-def __map_column(
+def map_column(
     name: str, data_type: str, oddrn_generator: Generator, parent_oddrn: str = None
 ) -> DataSetField:
     oddrn = (
