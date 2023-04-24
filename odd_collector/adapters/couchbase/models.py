@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, T
+from typing import Dict, Any
 
 from funcy import omit
 
@@ -14,7 +14,7 @@ class Collection:
     namespace_id: str
     path: str
     scope: str
-    columns: Dict[str, Dict[str, T]]
+    columns: Dict[str, Dict[str, Any]]
 
     @property
     def odd_metadata(self) -> dict:

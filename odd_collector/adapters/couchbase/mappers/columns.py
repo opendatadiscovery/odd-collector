@@ -1,4 +1,4 @@
-from typing import List, Dict, T
+from typing import List, Dict, Any
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
 
@@ -7,7 +7,7 @@ from odd_collector.adapters.couchbase.mappers.types import TYPES_COUCHBASE_TO_OD
 
 
 def map_columns(
-    data: Dict[str, Dict[str, T]],
+    data: Dict[str, Dict[str, Any]],
     oddrn_generator: Generator,
     parent_oddrn: str = None,
     columns: List[DataSetField] = None,
