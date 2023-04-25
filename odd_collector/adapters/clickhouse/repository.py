@@ -4,9 +4,6 @@ from typing import Iterable, Type, Union
 from clickhouse_connect import get_client
 from clickhouse_connect.driver import Client
 
-from odd_collector.adapters.clickhouse.domain.column import ColumnType
-from odd_collector.adapters.clickhouse.domain.column_type import NestedColumnType
-
 from ...domain.plugin import ClickhousePlugin
 from .domain import Column, IntegrationEngine, Records, Table
 from .logger import logger
