@@ -5,7 +5,21 @@
     | BASIC_TYPE
 
 BASIC_TYPE: "UInt64"
+          | "UInt32"
+          | "UInt8"
+          | "UInt128"
+          | "UInt256"
           | "String"
+          | "Float32"
+          | "Float64"
+          | "Map"
+          | "Tuple"
+          | "Array"
+          | "Nullable"
+          | "UUID"
+          | "Enum"
+          | "Low Cardinality"
+          | "Bool"
 
 array: "Array" "(" type ")"
 

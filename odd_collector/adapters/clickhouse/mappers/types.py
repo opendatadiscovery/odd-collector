@@ -22,4 +22,5 @@ TYPES_SQL_TO_ODD = {
     "UInt32": Type.TYPE_INTEGER,
     "UInt64": Type.TYPE_INTEGER,
     "Array": Type.TYPE_LIST,
+    "Map": Type.TYPE_MAP,
 }

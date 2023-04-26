@@ -10,6 +10,7 @@ from .columns import NestedColumnsTransformer, defaultdict
 from .metadata import extract_metadata
 from .transformer import extract_transformer_data
 from ..logger import logger
+from odd_collector.adapters.clickhouse.mappers import transformer
 
 
 def map_table(
@@ -62,9 +63,7 @@ def map_table(
                 table, oddrn_generator, integration_engines
             )
 
-        transformator = NestedColumnsTransformer(
-            oddrn_generator=oddrn_generator,
-            table_oddrn_path=oddrn_path,
+        transformer = NestedColumnsTransformer(
             owner=data_entity.owner
         )
 
@@ -74,7 +73,8 @@ def map_table(
                 required_columns.append(column)
 
         logger.info(required_columns)
-        column_data_fields = transformator.process_columns(required_columns)
+        nested_columns = transformer.build_nested_columns(required_columns)
+        column_data_fields = transformer.to_dataset_fields(oddrn_generator, oddrn_path, nested_columns)
 
         data_entity.dataset.field_list.extend(column_data_fields)
 
