@@ -1,9 +1,9 @@
 from typing import Iterable, List, Optional
 
 from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransformer
+from oddrn_generator import OracleGenerator
 
 from ..domain import Dependency, DependencyType, View
-from ..generator import OracleGenerator
 from .column import map_column
 
 

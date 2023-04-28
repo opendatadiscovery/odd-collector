@@ -6,3 +6,4 @@
   user: username # user == schema
   password: password
   service: service # i.e XEPDB1
+  thick_mode: false

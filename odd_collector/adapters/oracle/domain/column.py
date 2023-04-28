@@ -3,13 +3,13 @@ from typing import Any, Optional
 
 from funcy import omit
 
-from .column_type import ColumnType
+import sqlalchemy.sql.sqltypes as sqltype
 
 
 @dataclass
 class Column:
     name: str
-    type: ColumnType
+    type: sqltype
     is_literal: Optional[bool]
     primary_key: Optional[bool]
     nullable: Optional[bool]

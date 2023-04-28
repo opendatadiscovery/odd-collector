@@ -44,8 +44,16 @@ RUN apt-get update -y && apt-get install -y gnupg2 \
     && apt-get update -y \
     && apt-get install -y g++ unixodbc-dev \
     && apt-get install -y unixodbc-bin \
-    && apt-get install -y msodbcsql17 libgssapi-krb5-2 libpq-dev
+    && apt-get install -y msodbcsql17 libgssapi-krb5-2 libpq-dev \
+    && apt-get install -y libaio1 wget unzip
 
+
+WORKDIR /opt/oracle
+# Installing Oracle instant client
+RUN wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linuxx64.zip && \
+    unzip instantclient-basiclite-linuxx64.zip && rm -f instantclient-basiclite-linuxx64.zip && \
+    cd /opt/oracle/instantclient* && rm -f *jdbc* *occi* *mysql* *README *jar uidrvci genezi adrci && \
+    echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf && ldconfig
 
 RUN useradd --create-home --shell /bin/bash app
 USER app
