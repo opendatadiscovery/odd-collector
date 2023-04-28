@@ -1,8 +1,7 @@
 from typing import List
 
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
-
-from ..generator import OracleGenerator
+from oddrn_generator import OracleGenerator
 
 
 def map_database(

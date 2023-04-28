@@ -3,44 +3,22 @@ from typing import Any, Dict, Iterable, List
 
 import oracledb
 import sqlalchemy as db
-import sqlalchemy.sql.sqltypes as T
 from funcy import lmap
 from sqlalchemy.util import FacadeDict
 
 from odd_collector.domain.plugin import OraclePlugin
 
-from ..domain import Column, ColumnType, Dependency, DependencyType, Table, View
+from ..domain import Column, Dependency, DependencyType, Table, View
 from .base_repository import Repository
 
 oracledb.version = "8.3.0"
 sys.modules["cx_Oracle"] = oracledb
 
 
-def to_column_type(type_: Any) -> ColumnType:
-    if isinstance(type_, (T.REAL, T.FLOAT, T.NUMERIC, T.DECIMAL)):
-        return ColumnType.NUMBER
-    elif isinstance(type_, (T.INTEGER, T.SMALLINT, T.BIGINT)):
-        return ColumnType.INTEGER
-    elif isinstance(type_, (T.TIMESTAMP, T.DATETIME, T.DATE)):
-        return ColumnType.DATETIME
-    elif isinstance(type_, (T.Time,)):
-        return ColumnType.TIME
-    elif isinstance(type_, (T.TEXT, T.CLOB)):
-        return ColumnType.STRING
-    elif isinstance(type_, (T.VARCHAR, T.NVARCHAR, T.CHAR, T.NCHAR)):
-        return ColumnType.CHAR
-    elif isinstance(type_, (T.BLOB, T.BINARY, T.VARBINARY)):
-        return ColumnType.BINARY
-    elif isinstance(type_, (T.BOOLEAN,)):
-        return ColumnType.BOOLEAN
-    else:
-        return ColumnType.UNKNOWN
-
-
 def create_column(data: Dict[str, Any]) -> Column:
     return Column(
         name=data.get("name"),
-        type=to_column_type(data),
+        type=data["type"],
         is_literal=data.get("is_literal"),
         primary_key=data.get("primary_key"),
         nullable=data.get("nullable"),
@@ -101,7 +79,7 @@ class SqlAlchemyRepository(Repository):
         return iter(views.values())
 
     def _get_dependencies(self) -> Iterable[Dependency]:
-        """Get dependecies for views"""
+        """Get dependencies for views"""
         with self._eng.connect() as connection:
             cur = connection.execute(
                 """
@@ -126,5 +104,7 @@ class SqlAlchemyRepository(Repository):
 
     def _create_engine(self) -> db.engine.Engine:
         config = self._config
+        if config.thick_mode:
+            oracledb.init_oracle_client()
         connection_str = f"oracle+cx_oracle://{config.user}:{config.password.get_secret_value()}@{config.host}:{config.port}/?service_name={config.service}"
         return db.create_engine(connection_str)

@@ -1,7 +1,7 @@
 from odd_models.models import DataEntity, DataEntityType, DataSet
+from oddrn_generator import OracleGenerator
 
 from ..domain import Table
-from ..generator import OracleGenerator
 from .column import map_column
 
 

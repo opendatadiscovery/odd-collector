@@ -218,6 +218,7 @@ class OraclePlugin(WithHost, WithPort):
     service: str
     type: Literal["oracle"]
     password: SecretStr
+    thick_mode: Optional[bool] = False
 
 
 class MlflowPlugin(BasePlugin):
