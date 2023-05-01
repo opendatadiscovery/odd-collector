@@ -218,6 +218,7 @@ class OraclePlugin(WithHost, WithPort):
     service: str
     type: Literal["oracle"]
     password: SecretStr
+    thick_mode: Optional[bool] = False
 
 
 class MlflowPlugin(BasePlugin):
@@ -267,6 +268,16 @@ class CockroachDBPlugin(PostgreSQLPlugin):
     password: SecretStr = SecretStr("")
 
 
+class CouchbasePlugin(BasePlugin):
+    type: Literal["couchbase"]
+    host: str
+    bucket: str
+    user: str
+    password: SecretStr
+    sample_size: Optional[int] = 0
+    num_sample_values: Optional[int] = 10
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -302,4 +313,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "mode": ModePlugin,
     "fivetran": FivetranPlugin,
     "cockroachdb": CockroachDBPlugin,
+    "couchbase": CouchbasePlugin,
 }

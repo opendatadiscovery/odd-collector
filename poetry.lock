@@ -763,6 +763,41 @@ test = ["Pillow", "matplotlib", "pytest"]
 test-no-images = ["pytest"]
 
 [[package]]
+name = "couchbase"
+version = "4.1.3"
+description = "Python Client for Couchbase"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "couchbase-4.1.3-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:aead4f91cd63c6abb8437e3856d43be503c2e7a9e16495d4a0b8785ac30c6806"},
+    {file = "couchbase-4.1.3-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:d6f8f878320f3482eaad018f719a3c37b146213b853477a9e6768df60784da28"},
+    {file = "couchbase-4.1.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:cca11c7ea6a0449e0a25a589d7fc02f328c30ad6b0f57010ffdcde31d9bdc109"},
+    {file = "couchbase-4.1.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:a948ad9148d6728b5291cd84e369e3a9a12b9f00348410fa759cbfa5786a50b4"},
+    {file = "couchbase-4.1.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fb16e91549026bf54f7f030c0c667da84f667712b150c6e62f96b335b9b0f730"},
+    {file = "couchbase-4.1.3-cp310-cp310-win_amd64.whl", hash = "sha256:a4e9da1ad9e8191e6b5a4f65c1c1c16ec72c00cb49e2f7c09ac77d15a48fd7fa"},
+    {file = "couchbase-4.1.3-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:bf39b8fa8c04beba2520906403a880aabd4ada694188a575518b15b62f445f96"},
+    {file = "couchbase-4.1.3-cp37-cp37m-macosx_11_0_universal2.whl", hash = "sha256:e1d73b730e6d515aa01e9f59dabc67f884563ae75a12c804bd5f68885612e209"},
+    {file = "couchbase-4.1.3-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:026768f7508155d55fc0705465b3de4ac30d756f299d1f465b22d278f23bbc64"},
+    {file = "couchbase-4.1.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:50b3fd2d31ed2450f578c55e2c82a7294a7759cbfc72828c6568bf765ea11f26"},
+    {file = "couchbase-4.1.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:46ba5dbcedf9c2c78e9150901df67455ae74a16b5401f8b75e8708240920810d"},
+    {file = "couchbase-4.1.3-cp37-cp37m-win_amd64.whl", hash = "sha256:296aba5a8880393ab114b3b863bb672f50d93fd45e8cf4f0606ceca5843a9e25"},
+    {file = "couchbase-4.1.3-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:d82f6ee9ef18d2d6d8542aee21b39bb1bdcaa1dffb6efc779532d7ee80a0dcaa"},
+    {file = "couchbase-4.1.3-cp38-cp38-macosx_11_0_universal2.whl", hash = "sha256:0056f840342f0b4fded41710d4d381ad4f41b494b508f1729b985ea2acb79ba9"},
+    {file = "couchbase-4.1.3-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:9dd59988370a797ee279fb0b401a3fefda206a2571ba9fe2f53e748cf48df25f"},
+    {file = "couchbase-4.1.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:517128e9ac9c2a4d4607952b3ab6a01bd9a3fddfe563e2bd64eca7b7bcde84c5"},
+    {file = "couchbase-4.1.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1b3aec08631f79dd7ee17d2f0b86cdad3bdb073c3559d92ea7fa4469896e1d41"},
+    {file = "couchbase-4.1.3-cp38-cp38-win_amd64.whl", hash = "sha256:901b1f1711ba9f8f2d507a713beeb07ca8d4ff2ac065465cef74f54d1b593f5c"},
+    {file = "couchbase-4.1.3-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:d2422d0b46afd26a40642afc89abc97df86ed24f168728f04a5e58e213352ca2"},
+    {file = "couchbase-4.1.3-cp39-cp39-macosx_11_0_universal2.whl", hash = "sha256:e54e1ba3bb5e922732fed6b817228330c543f71e0da199529e8896e0d3877f07"},
+    {file = "couchbase-4.1.3-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:6474e877c5a6cf09313ee90e40c7c9acefbbcd0e7846c0bbea46f72d001995fd"},
+    {file = "couchbase-4.1.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:ca69f4548c8e8ec053104c791d618929e07687ab37d5508a0e2a30856e4ee48d"},
+    {file = "couchbase-4.1.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4507ad815d23adf43284b9532cc829aba3b80ec05b3fcb539b8c1082007bd7ed"},
+    {file = "couchbase-4.1.3-cp39-cp39-win_amd64.whl", hash = "sha256:19ab420f9a59ac1ceffa46cb1b86ec54a4ede5fd397229af16065fe0208a8673"},
+    {file = "couchbase-4.1.3.tar.gz", hash = "sha256:6a859b85d716306336633b371949178dc8f70de100695ab0fadd53af765852c9"},
+]
+
+[[package]]
 name = "cryptography"
 version = "38.0.4"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
@@ -1366,14 +1401,14 @@ tqdm = ["tqdm"]
 
 [[package]]
 name = "funcy"
-version = "1.17"
+version = "2.0"
 description = "A fancy and practical functional tools"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "funcy-1.17-py2.py3-none-any.whl", hash = "sha256:ba7af5e58bfc69321aaf860a1547f18d35e145706b95d1b3c966abc4f0b60309"},
-    {file = "funcy-1.17.tar.gz", hash = "sha256:40b9b9a88141ae6a174df1a95861f2b82f2fdc17669080788b73a3ed9370e968"},
+    {file = "funcy-2.0-py2.py3-none-any.whl", hash = "sha256:53df23c8bb1651b12f095df764bfb057935d49537a56de211b098f4c79614bb0"},
+    {file = "funcy-2.0.tar.gz", hash = "sha256:3963315d59d41c6f30c04bc910e10ab50a3ac4a225868bfa96feed133df075cb"},
 ]
 
 [[package]]
@@ -2838,23 +2873,23 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.25"
+version = "0.3.27"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.25-py3-none-any.whl", hash = "sha256:52c56dc7b0930208df98c250bd9bb461c7155b9a98e2097d84c55001333f3522"},
-    {file = "odd_collector_sdk-0.3.25.tar.gz", hash = "sha256:f318c1674469adf412e548ca708508891e21261e16fd8156f436221a6c6b107a"},
+    {file = "odd_collector_sdk-0.3.27-py3-none-any.whl", hash = "sha256:8cd0ca283587224342e15c2c66d79d5563a65dd44147fd55412c9d17e42918d3"},
+    {file = "odd_collector_sdk-0.3.27.tar.gz", hash = "sha256:2330bd221f33dfc7e6c7d93da8a611fb23355d2c2de840a39af62535f9c875cf"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.8.1,<4.0.0"
 APScheduler = ">=3.8.1,<4.0.0"
-funcy = ">=1.17,<2.0"
+funcy = ">=2.0,<3.0"
 importlib-metadata = ">=5.1.0,<6.0.0"
 loguru = ">=0.6.0,<0.7.0"
-odd-models = ">=2.0.24,<3.0.0"
+odd-models = ">=2.0.28,<3.0.0"
 oddrn-generator = ">=0.1.73,<0.2.0"
 pyaml-env = ">=1.1.5,<2.0.0"
 pydantic = ">=1.8.2,<2.0.0"
@@ -2862,18 +2897,20 @@ tqdm = ">=4.64.1,<5.0.0"
 
 [[package]]
 name = "odd-models"
-version = "2.0.24"
+version = "2.0.28"
 description = "Open Data Discovery Models"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_models-2.0.24-py3-none-any.whl", hash = "sha256:f593d7c5300b95389fa5e12d091ef79cbb88b1002825855788e882ea19e14608"},
-    {file = "odd_models-2.0.24.tar.gz", hash = "sha256:2235a9c53e3fa615ee7542619723eac2e0e5b255d8fe22d3bd4a6d993da439f8"},
+    {file = "odd_models-2.0.28-py3-none-any.whl", hash = "sha256:85ba13d3885c6542fc4bf801ad7958a0b3bd4643ee9bf5ef056fd3c552cf7cfd"},
+    {file = "odd_models-2.0.28.tar.gz", hash = "sha256:36cb1a8fc13eab911f3a9892e1f290693361839eafd7ee46f4d8eeb2ae3cb349"},
 ]
 
 [package.dependencies]
+funcy = ">=2.0,<3.0"
 loguru = ">=0.6.0,<0.7.0"
+oddrn-generator = ">=0.1.75,<0.2.0"
 pydantic = ">=1.9.1,<2.0.0"
 requests = "2.28.2"
 sql-metadata = ">=2.6.0,<3.0.0"
@@ -2881,14 +2918,14 @@ sqlparse = "0.4.2"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.74"
+version = "0.1.76"
 description = "Open Data Discovery Resource Name Generator"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "oddrn_generator-0.1.74-py3-none-any.whl", hash = "sha256:3211cb88664a6e4429cc7b33154d300e3aa636d70f5fbf8ec203261196e12b51"},
-    {file = "oddrn_generator-0.1.74.tar.gz", hash = "sha256:9c752eb3b26e002c879a15668f9a05e1e908c715cf620920b97cafa4a6a8728a"},
+    {file = "oddrn_generator-0.1.76-py3-none-any.whl", hash = "sha256:8036e02678ce495e1121a8cc6726f35d7acf38e1cc5fe431c6640bba745911b9"},
+    {file = "oddrn_generator-0.1.76.tar.gz", hash = "sha256:895cb3093c441cc41d9a23d4b1181eb71b4caa3fe56e5139bcf7765da7f10a9c"},
 ]
 
 [package.dependencies]
@@ -5381,4 +5418,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "e32c168a676aaa795eef4524ff743836cff77a1de58cba5e67b613ee86b1b7b7"
+content-hash = "41cbca135ea3f50a5c7c68df20593597f3266dbd52f9e5014af6a4f9d1b48bfd"

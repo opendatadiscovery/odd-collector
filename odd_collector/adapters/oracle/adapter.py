@@ -3,10 +3,10 @@ from typing import Optional
 from funcy import concat, lpluck_attr
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntityList
+from oddrn_generator import OracleGenerator
 
 from odd_collector.domain.plugin import OraclePlugin
 
-from .generator import OracleGenerator
 from .mappers.database import map_database
 from .mappers.table import map_table
 from .mappers.view import map_view
