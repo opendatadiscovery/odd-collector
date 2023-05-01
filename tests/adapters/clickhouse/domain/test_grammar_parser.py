@@ -1,15 +1,11 @@
 import unittest
 
-from odd_collector.adapters.clickhouse.grammar_parser.parser import parser
+from odd_collector.adapters.clickhouse.grammar_parser.parser import parser, traverse_tree
 from odd_collector.adapters.clickhouse.grammar_parser.column_type import (
-    ParseType,
     BasicType,
     Array,
     Nested,
-    Field
 )
-from odd_collector.adapters.clickhouse.mappers.columns import NestedColumnsTransformer
-from odd_collector.logger import logger
 
 
 class TestTypeParser(unittest.TestCase):
@@ -17,7 +13,7 @@ class TestTypeParser(unittest.TestCase):
         test_type = "Array(Nested(g String))"
         expected = Array(type=Nested(fields={"g": BasicType(type_name="String")}))
         tree = parser.parse(test_type)
-        result = NestedColumnsTransformer._traverse_tree(tree)
+        result = traverse_tree(tree)
 
         self.assertIsInstance(result, Array)
         self.assertIsInstance(result.type, Nested)
@@ -41,7 +37,7 @@ class TestTypeParser(unittest.TestCase):
             )
         )
         tree = parser.parse(test_type)
-        result = NestedColumnsTransformer._traverse_tree(tree)
+        result = traverse_tree(tree)
         self.assertIsInstance(result, Array)
         self.assertIsInstance(result.type, Nested)
         self.assertIsInstance(result.type.fields["Username"], Nested)

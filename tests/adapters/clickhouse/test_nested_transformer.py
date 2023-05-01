@@ -263,3 +263,32 @@ class TestColumnTransformator(unittest.TestCase):
         self.assertEqual(len(result[2].items[0].items[1].items), 2)
         self.assertEqual(result[2].items[0].items[1].items[0].name, "l")
         self.assertEqual(result[2].items[0].items[1].items[1].name, "m")
+
+    def test_type_shouldnt_processed(self):
+        column = Column(
+                database="test_database",
+                table="test_table",
+                name="a",
+                type="Array(Nested(b String))",
+                position=0,
+                default_kind="",
+                default_expression="",
+                data_compressed_bytes="",
+                data_uncompressed_bytes="",
+                marks_bytes="",
+                comment="",
+                is_in_partition_key=False,
+                is_in_sorting_key=False,
+                is_in_primary_key=False,
+                is_in_sampling_key=False,
+                compression_codec=False
+        )
+        columns = [column]
+        transformator = NestedColumnsTransformer()
+        result = transformator.build_nested_columns(columns)
+
+        self.assertEqual(len(result), 1)
+        self.assertIsInstance(result[0], NestedColumn)
+        self.assertEqual(result[0].name, "a")
+        # This is nested type, this is array. Column name should have '.' if type is Nested
+        self.assertEqual(result[0].type, "Array(Nested(b String))")
