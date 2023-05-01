@@ -72,11 +72,13 @@ def map_table(
         transformer = NestedColumnsTransformer(owner=data_entity.owner)
 
         required_columns = []
+        logger.debug("Filter columns by table")
         for column in columns:
             if column.table == table.name:
                 required_columns.append(column)
 
-        logger.info(required_columns)
+        logger.debug(f"Columns for table {table.name} are {required_columns}")
+
         nested_columns = transformer.build_nested_columns(required_columns)
 
         logger.debug(f"Nested columns: {nested_columns}")

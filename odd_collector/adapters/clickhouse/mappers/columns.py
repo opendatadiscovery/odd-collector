@@ -186,6 +186,7 @@ class NestedColumnsTransformer:
     def _get_column_type(self, data_type: str) -> Type:
         # trim Nullable
         trimmed = re.search("Nullable\((.+?)\)", data_type)
+
         if trimmed:
             data_type = trimmed.group(1)
 
@@ -196,10 +197,13 @@ class NestedColumnsTransformer:
 
         if data_type.startswith("Array") or data_type.startswith("Nested"):
             data_type = "Array"
+
         elif data_type.startswith("Tuple"):
             data_type = "Tuple"
+
         elif data_type.startswith("Enum8"):
             data_type = "Enum8"
+
         elif type := re.search("SimpleAggregateFunction\(\w+,\s(\w+)\)", data_type):
             data_type = type.group(1)
 
