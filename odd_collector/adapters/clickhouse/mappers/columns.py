@@ -1,5 +1,5 @@
 import re
-from typing import Optional, List, Union
+from typing import Optional, List
 from collections import OrderedDict
 
 
@@ -14,7 +14,7 @@ from . import (
 from .metadata import extract_metadata
 from .types import TYPES_SQL_TO_ODD
 from ..grammar_parser.parser import parser, traverse_tree
-from ..grammar_parser.column_type import Field, ParseType, BasicType, Array, Nested 
+from ..grammar_parser.column_type import ParseType, Array, Nested 
 
 
 class NestedColumnsTransformer:
@@ -121,8 +121,15 @@ class NestedColumnsTransformer:
                 type=DataSetFieldType(
                     type=column_type,
                     is_nullable=False,
-                    logical_type=str(column_type)
+                    logical_type=column.type
                 ),
+                metadata=[
+                    extract_metadata(
+                        _data_set_field_metadata_schema_url,
+                        _data_set_field_metadata_excluded_keys,
+                        column,
+                    )
+                ],
                 is_key=False,
                 parent_field_oddrn=parent_oddrn,
                 owner=self.owner
@@ -165,7 +172,14 @@ class NestedColumnsTransformer:
                         type=self._get_column_type(column.type),
                         is_nullable=column.type.startswith("Nullable"),
                         logical_type=column.type,
-                    )
+                    ),
+                    metadata=[
+                        extract_metadata(
+                            _data_set_field_metadata_schema_url,
+                            _data_set_field_metadata_excluded_keys,
+                            column,
+                        )
+                    ],
                 )
                 dataset_fields.append(dataset_field)
 
