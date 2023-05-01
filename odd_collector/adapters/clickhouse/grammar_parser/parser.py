@@ -5,16 +5,16 @@ from lark import Lark, Tree, Token
 from .column_type import ParseType, Field, Array, Tuple, Nested, BasicType
 
 
-parser = Lark.open(
-    "filed_types.lark", rel_to=__file__, parser="lalr", start="type"
-)
+parser = Lark.open("filed_types.lark", rel_to=__file__, parser="lalr", start="type")
 
 
 def traverse_tree(node) -> Union[ParseType, str, Field, None]:
     if isinstance(node, Tree):
         if node.data == "array":
             if len(node.children) != 1:
-                raise Exception(f"Invalid array structure: expected 1 child, got: {len(node.children)}")
+                raise Exception(
+                    f"Invalid array structure: expected 1 child, got: {len(node.children)}"
+                )
             child = node.children[0]
             child_value = traverse_tree(child)
             if not isinstance(child_value, ParseType):

@@ -7,6 +7,7 @@ class ParseType(ABC):
     def to_clickhouse_type(self) -> str:
         pass
 
+
 class BasicType(ParseType):
     def __init__(self, type_name: str):
         self.type_name = type_name
@@ -16,6 +17,7 @@ class BasicType(ParseType):
 
     def __repr__(self):
         return f"BasicType({self.type_name})"
+
 
 class Array(ParseType):
     def __init__(self, type: ParseType):
@@ -27,6 +29,7 @@ class Array(ParseType):
     def __repr__(self):
         return f"Array({self.type})"
 
+
 class Tuple(ParseType):
     def __init__(self, types: List[ParseType]):
         self.types = types
@@ -37,6 +40,7 @@ class Tuple(ParseType):
 
     def __repr__(self):
         return f"Tuple({self.types})"
+
 
 class Nested(ParseType):
     def __init__(self, fields: dict):
@@ -51,6 +55,7 @@ class Nested(ParseType):
 
     def __repr__(self):
         return f"Nested({self.fields})"
+
 
 class Field:
     def __init__(self, name: str, value: ParseType):

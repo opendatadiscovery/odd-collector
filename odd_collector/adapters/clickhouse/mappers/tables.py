@@ -1,7 +1,13 @@
 from typing import List
 
 import pytz
-from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet, DataSetField
+from odd_models.models import (
+    DataEntity,
+    DataEntityGroup,
+    DataEntityType,
+    DataSet,
+    DataSetField,
+)
 from oddrn_generator import ClickHouseGenerator
 
 from ..domain import Column, IntegrationEngine, Table
@@ -63,9 +69,7 @@ def map_table(
                 table, oddrn_generator, integration_engines
             )
 
-        transformer = NestedColumnsTransformer(
-            owner=data_entity.owner
-        )
+        transformer = NestedColumnsTransformer(owner=data_entity.owner)
 
         required_columns = []
         for column in columns:
@@ -76,7 +80,9 @@ def map_table(
         nested_columns = transformer.build_nested_columns(required_columns)
 
         logger.debug(f"Nested columns: {nested_columns}")
-        column_data_fields = transformer.to_dataset_fields(oddrn_generator, oddrn_path, nested_columns)
+        column_data_fields = transformer.to_dataset_fields(
+            oddrn_generator, oddrn_path, nested_columns
+        )
 
         data_entity.dataset.field_list.extend(column_data_fields)
 
@@ -89,7 +95,7 @@ def map_table(
             data_entity_group=DataEntityGroup(
                 entities_list=[de.oddrn for de in data_entities]
             ),
-            owner=None
+            owner=None,
         )
     )
 

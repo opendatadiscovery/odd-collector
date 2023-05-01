@@ -39,7 +39,7 @@ class Column:
             is_in_sorting_key=False,
             is_in_primary_key=False,
             is_in_sampling_key=False,
-            compression_codec=None
+            compression_codec=None,
         )
 
 
@@ -49,11 +49,11 @@ class NestedColumn(Column):
 
     @classmethod
     def from_column(
-            cls,
-            column: Column,
-            items: Optional[List["NestedColumn"]]=None,
-            new_name: Optional[str]=None,
-            new_type: Optional[str]=None,
+        cls,
+        column: Column,
+        items: Optional[List["NestedColumn"]] = None,
+        new_name: Optional[str] = None,
+        new_type: Optional[str] = None,
     ):
         if items is None:
             items = []
@@ -75,5 +75,5 @@ class NestedColumn(Column):
             is_in_primary_key=column.is_in_primary_key,
             is_in_sampling_key=column.is_in_sampling_key,
             compression_codec=column.compression_codec,
-            items=items
+            items=items,
         )

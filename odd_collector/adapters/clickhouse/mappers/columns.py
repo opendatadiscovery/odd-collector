@@ -14,15 +14,11 @@ from . import (
 from .metadata import extract_metadata
 from .types import TYPES_SQL_TO_ODD
 from ..grammar_parser.parser import parser, traverse_tree
-from ..grammar_parser.column_type import ParseType, Array, Nested 
+from ..grammar_parser.column_type import ParseType, Array, Nested
 
 
 class NestedColumnsTransformer:
-    
-    def __init__(
-        self,
-        owner: Optional[str] = None
-    ):
+    def __init__(self, owner: Optional[str] = None):
         self.owner = owner
 
     def build_nested_columns(self, columns: List[Column]):
@@ -30,7 +26,7 @@ class NestedColumnsTransformer:
         parent_columns = OrderedDict()
 
         for column in columns:
-            column_names = column.name.split('.')
+            column_names = column.name.split(".")
 
             if len(column_names) == 1:
                 logger.debug(f"Processing non-nested column {column_names[0]}")
@@ -73,7 +69,7 @@ class NestedColumnsTransformer:
                         for key, value in node.fields.items():
                             item_column = build_complex_nested_columns(value, key)
                             items.append(item_column)
-                            
+
                     return NestedColumn.from_column(
                         column,
                         items=items,
@@ -86,9 +82,8 @@ class NestedColumnsTransformer:
 
             else:
                 raise Exception(f"Unexpected column name format: {column.name}")
-            
-        return list(parent_columns.values())
 
+        return list(parent_columns.values())
 
     def to_dataset_fields(
         self,
@@ -97,31 +92,33 @@ class NestedColumnsTransformer:
         columns: List[NestedColumn],
     ):
         def process_nested_column_items(
-                column: NestedColumn,
-                parent_oddrn: Optional[str],
-                res: List,
-                first_time: bool=False
+            column: NestedColumn,
+            parent_oddrn: Optional[str],
+            res: List,
+            first_time: bool = False,
         ):
 
             # Unique oddrn for nested column
             oddrn = f"{parent_oddrn}/keys/{column.name}"
 
-            logger.debug(f"Column {column.name} has original clickhouse type {column.type}")
+            logger.debug(
+                f"Column {column.name} has original clickhouse type {column.type}"
+            )
             column_type = self._get_column_type(column.type)
 
             if first_time:
                 oddrn = oddrn_generator.get_oddrn_by_path(
                     f"{table_oddrn_path}_columns", column.name
-                ) 
-                logger.debug(f"Parse first order column {column.name} with oddrn {oddrn}")
+                )
+                logger.debug(
+                    f"Parse first order column {column.name} with oddrn {oddrn}"
+                )
 
             dataset_field = DataSetField(
                 oddrn=oddrn,
                 name=column.name,
                 type=DataSetFieldType(
-                    type=column_type,
-                    is_nullable=False,
-                    logical_type=column.type
+                    type=column_type, is_nullable=False, logical_type=column.type
                 ),
                 metadata=[
                     extract_metadata(
@@ -132,10 +129,12 @@ class NestedColumnsTransformer:
                 ],
                 is_key=False,
                 parent_field_oddrn=parent_oddrn,
-                owner=self.owner
+                owner=self.owner,
             )
 
-            logger.debug(f"Dataset field {column.name} has type {column_type} and oddrn {oddrn}")
+            logger.debug(
+                f"Dataset field {column.name} has type {column_type} and oddrn {oddrn}"
+            )
 
             res.append(dataset_field)
 
@@ -143,7 +142,9 @@ class NestedColumnsTransformer:
                 return dataset_field
             else:
                 for item in column.items:
-                    process_nested_column_items(column=item, parent_oddrn=oddrn, res=res)
+                    process_nested_column_items(
+                        column=item, parent_oddrn=oddrn, res=res
+                    )
             return res
 
         dataset_fields = []
@@ -151,15 +152,12 @@ class NestedColumnsTransformer:
         for column in columns:
             oddrn = oddrn_generator.get_oddrn_by_path(
                 f"{table_oddrn_path}_columns", column.name
-            ) 
+            )
             if column.items:
                 logger.debug(f"Column {column.name} has nested structure")
                 nested_columns = process_nested_column_items(
-                    column=column,
-                    parent_oddrn=None,
-                    res=[],
-                    first_time=True
-                    )
+                    column=column, parent_oddrn=None, res=[], first_time=True
+                )
                 dataset_fields.extend(nested_columns)
 
             else:
@@ -184,7 +182,6 @@ class NestedColumnsTransformer:
                 dataset_fields.append(dataset_field)
 
         return dataset_fields
-
 
     def _get_column_type(self, data_type: str) -> Type:
         # trim Nullable
