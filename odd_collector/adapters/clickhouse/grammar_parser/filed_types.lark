@@ -2,6 +2,7 @@
 
 ?type: nested
     | array
+    | tuple
     | BASIC_TYPE
 
 BASIC_TYPE: "UInt64"
@@ -13,7 +14,6 @@ BASIC_TYPE: "UInt64"
           | "Float32"
           | "Float64"
           | "Map"
-          | "Tuple"
           | "Array"
           | "Nullable"
           | "UUID"
@@ -22,6 +22,8 @@ BASIC_TYPE: "UInt64"
           | "Bool"
 
 array: "Array" "(" type ")"
+
+tuple: "Tuple" "(" type ("," WS type) ")"
 
 nested: "Nested" "(" field ("," WS field)* ")"
 field: FIELD_NAME WS type

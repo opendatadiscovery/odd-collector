@@ -2,7 +2,7 @@ from typing import Union
 
 from lark import Lark, Tree, Token
 
-from .column_type import ParseType, Field, Array, Nested, BasicType
+from .column_type import ParseType, Field, Array, Tuple, Nested, BasicType
 
 
 parser = Lark.open(
@@ -18,8 +18,19 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
             child = node.children[0]
             child_value = traverse_tree(child)
             if not isinstance(child_value, ParseType):
-                raise Exception(f"Array got no type: {node}")
+                raise Exception(f"Array got a non-type object: {child}")
             return Array(child_value)
+
+        elif node.data == "tuple":
+            subtypes = []
+            for child in node.children:
+                child_value = traverse_tree(child)
+                if child_value is None:
+                    continue
+                if not isinstance(child_value, ParseType):
+                    raise Exception(f"Tuple got a non-type object: {child}")
+                subtypes.append(child_value)
+            return Tuple(subtypes)
 
         elif node.data == "nested":
             fields = {}
@@ -44,6 +55,9 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
             if not isinstance(field_type, ParseType):
                 raise Exception(f"Unexpected field type type: {type(field_type)}")
             return Field(field_name, field_type)
+
+        else:
+            raise Exception(f"Unexpected tree type: {node.data}")
 
     elif isinstance(node, Token):
         if node.type == "BASIC_TYPE":

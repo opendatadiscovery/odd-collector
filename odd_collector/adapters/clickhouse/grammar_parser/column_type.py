@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 
 class ParseType(ABC):
@@ -25,6 +26,17 @@ class Array(ParseType):
 
     def __repr__(self):
         return f"Array({self.type})"
+
+class Tuple(ParseType):
+    def __init__(self, types: List[ParseType]):
+        self.types = types
+
+    def to_clickhouse_type(self) -> str:
+        subtypes = ", ".join(t.to_clickhouse_type() for t in self.types)
+        return f"Tuple({subtypes})"
+
+    def __repr__(self):
+        return f"Tuple({self.types})"
 
 class Nested(ParseType):
     def __init__(self, fields: dict):

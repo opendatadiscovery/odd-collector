@@ -199,6 +199,8 @@ class NestedColumnsTransformer:
 
         if data_type.startswith("Array") or data_type.startswith("Nested"):
             data_type = "Array"
+        elif data_type.startswith("Tuple"):
+            data_type = "Tuple"
         elif data_type.startswith("Enum8"):
             data_type = "Enum8"
         elif type := re.search("SimpleAggregateFunction\(\w+,\s(\w+)\)", data_type):
