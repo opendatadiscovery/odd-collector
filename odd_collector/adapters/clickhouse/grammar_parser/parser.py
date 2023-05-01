@@ -1,6 +1,59 @@
-from lark import Lark
+from typing import Union
+
+from lark import Lark, Tree, Token
+
+from .column_type import ParseType, Field, Array, Nested, BasicType
 
 
 parser = Lark.open(
     "filed_types.lark", rel_to=__file__, parser="lalr", start="type"
 )
+
+
+def traverse_tree(node) -> Union[ParseType, str, Field, None]:
+    if isinstance(node, Tree):
+        if node.data == "array":
+            if len(node.children) != 1:
+                raise Exception(f"Invalid array structure: expected 1 child, got: {len(node.children)}")
+            child = node.children[0]
+            child_value = traverse_tree(child)
+            if not isinstance(child_value, ParseType):
+                raise Exception(f"Array got no type: {node}")
+            return Array(child_value)
+
+        elif node.data == "nested":
+            fields = {}
+            for child in node.children:
+                value = traverse_tree(child)
+                if value is None:
+                    continue
+                elif isinstance(value, Field):
+                    fields[value.name] = value.value
+                else:
+                    raise Exception(f"Got an unexpected nested child: {value}")
+            return Nested(fields)
+
+        elif node.data == "field":
+            if len(node.children) != 3:
+                raise Exception(f"Unexpected field structure: {node}")
+            field_name_node, _, field_type_node = node.children
+            field_name = traverse_tree(field_name_node)
+            if not isinstance(field_name, str):
+                raise Exception(f"Unexpected field name type: {type(field_name)}")
+            field_type = traverse_tree(field_type_node)
+            if not isinstance(field_type, ParseType):
+                raise Exception(f"Unexpected field type type: {type(field_type)}")
+            return Field(field_name, field_type)
+
+    elif isinstance(node, Token):
+        if node.type == "BASIC_TYPE":
+            return BasicType(node.value)
+        elif node.type == "FIELD_NAME":
+            return node.value
+        elif node.type == "WS":
+            return None
+        else:
+            raise Exception(f"Unexpected token type: {node.type}")
+
+    else:
+        raise Exception(f"Unexpected node type: {type(node)}")

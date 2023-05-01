@@ -21,6 +21,27 @@ class Column:
     is_in_sampling_key: bool
     compression_codec: Any
 
+    @classmethod
+    def from_related(cls, related: "Column", name: str, type: str):
+        return cls(
+            database=related.database,
+            table=related.table,
+            name=name,
+            type=type,
+            position=related.position,
+            default_kind="",
+            default_expression="",
+            data_compressed_bytes=None,
+            data_uncompressed_bytes=None,
+            marks_bytes=None,
+            comment="Nested column",
+            is_in_partition_key=False,
+            is_in_sorting_key=False,
+            is_in_primary_key=False,
+            is_in_sampling_key=False,
+            compression_codec=None
+        )
+
 
 @dataclass
 class NestedColumn(Column):
@@ -30,10 +51,13 @@ class NestedColumn(Column):
     def from_column(
             cls,
             column: Column,
-            items: List["NestedColumn"]=[],
+            items: Optional[List["NestedColumn"]]=None,
             new_name: Optional[str]=None,
             new_type: Optional[str]=None,
     ):
+        if items is None:
+            items = []
+
         return cls(
             database=column.database,
             table=column.table,

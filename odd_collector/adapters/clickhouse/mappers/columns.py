@@ -1,8 +1,7 @@
 import re
 from typing import Optional, List, Union
-from collections import defaultdict
+from collections import OrderedDict
 
-from lark import Tree, Token
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import ClickHouseGenerator
@@ -14,7 +13,7 @@ from . import (
 )
 from .metadata import extract_metadata
 from .types import TYPES_SQL_TO_ODD
-from ..grammar_parser.parser import parser
+from ..grammar_parser.parser import parser, traverse_tree
 from ..grammar_parser.column_type import Field, ParseType, BasicType, Array, Nested 
 
 
@@ -28,72 +27,68 @@ class NestedColumnsTransformer:
 
     def build_nested_columns(self, columns: List[Column]):
 
-        def build_hierarchy():
-            hierarchy = defaultdict(list)
-            for column in columns:
-                column_names = column.name.split('.')
-                parent = column_names[0]
-                
-                # Rename nested column
-                if len(column_names) == 2:
-                    column.name = column_names[1]
+        parent_columns = OrderedDict()
 
-                hierarchy[parent].append(column)
+        for column in columns:
+            column_names = column.name.split('.')
 
-            return hierarchy
+            if len(column_names) == 1:
+                logger.debug(f"Processing non-nested column {column_names[0]}")
 
-        res: List[NestedColumn] = []
+                nested_column = NestedColumn.from_column(column)
+                parent_columns[column_names[0]] = nested_column
 
-        hierarchy = build_hierarchy()
-        logger.info(hierarchy)
+            elif len(column_names) == 2:
+                parent, child = column_names
 
-        for key, columns in hierarchy.items():
+                logger.debug(f"Processing nested columns {parent}: {child}")
 
-          # Crate first order columns
-            if len(columns) == 1 and columns[0].name == key:
-                new_column = NestedColumn.from_column(
-                    column=columns[0],
-                    items=[],
-                )
-                res.append(new_column)
-            else:
-                # Create nested columns
-                first_order_column = NestedColumn.from_column(
-                    column=columns[0],
-                    new_name=key,
-                    items=[]
-                )
-                for column in columns:
-                    nested_column = NestedColumn.from_column(
-                        column=column,
-                        items=[]
+                if parent not in parent_columns:
+                    logger.debug(f"Creating parent column {parent}")
+                    parent_column = Column.from_related(column, parent, "Nested")
+                    parent_nested_column = NestedColumn.from_column(parent_column)
+                    parent_columns[parent] = parent_nested_column
+
+                logger.debug(f"Creating child column {child}")
+
+                grammar_tree = parser.parse(column.type)
+                logger.debug(f"Parsed grammar tree: {grammar_tree}")
+
+                type_tree = traverse_tree(grammar_tree)
+                logger.debug(f"Parsed type tree: {type_tree}")
+                if not isinstance(type_tree, Array):
+                    raise Exception(
+                        f"Invalid _tranverse_tree result type "
+                        f"(should always be Array): {type(type_tree)}"
                     )
-                    if 'Nested' in nested_column.type:
-                        parsed = parser.parse(nested_column.type)
-                        array_type = self._traverse_tree(parsed)
-                        self.build_complex_nested_columns(
-                            parent_column=nested_column,
-                            node=array_type
-                        )
-                    first_order_column.items.append(nested_column)
-                res.append(first_order_column)
-        return res
 
+                type_tree = type_tree.type
 
-    def build_complex_nested_columns(
-        self,
-        parent_column: NestedColumn,
-        node: Union[ParseType, str, Field, None]  
-    ):
-        if isinstance(node, Array):
-            self.build_complex_nested_columns(parent_column, node.type)
-        elif isinstance(node, Nested):
-            for key, value in node.fields.items():
-                child_column = NestedColumn.from_column(parent_column, key)
-                parent_column.items.append(child_column)
-                self.build_complex_nested_columns(child_column, value)
-        elif isinstance(node, BasicType):
-            parent_column.type = node.type_name
+                def build_complex_nested_columns(
+                    node: ParseType,
+                    new_name: str,
+                ) -> NestedColumn:
+                    items = []
+                    if isinstance(node, Nested):
+                        for key, value in node.fields.items():
+                            item_column = build_complex_nested_columns(value, key)
+                            items.append(item_column)
+                            
+                    return NestedColumn.from_column(
+                        column,
+                        items=items,
+                        new_name=new_name,
+                        new_type=node.to_clickhouse_type(),
+                    )
+
+                child_nested_column = build_complex_nested_columns(type_tree, child)
+                parent_columns[parent].items.append(child_nested_column)
+
+            else:
+                raise Exception(f"Unexpected column name format: {column.name}")
+            
+        return list(parent_columns.values())
+
 
     def to_dataset_fields(
         self,
@@ -108,14 +103,17 @@ class NestedColumnsTransformer:
                 first_time: bool=False
         ):
 
+            # Unique oddrn for nested column
             oddrn = f"{parent_oddrn}/keys/{column.name}"
-            column_type = self._get_nested_column_type(column.type)
+
+            logger.debug(f"Column {column.name} has original clickhouse type {column.type}")
+            column_type = self._get_column_type(column.type)
+
             if first_time:
-                logger.info("Apllied first time")
                 oddrn = oddrn_generator.get_oddrn_by_path(
                     f"{table_oddrn_path}_columns", column.name
                 ) 
-                column_type = self._get_column_type(column.type)
+                logger.debug(f"Parse first order column {column.name} with oddrn {oddrn}")
 
             dataset_field = DataSetField(
                 oddrn=oddrn,
@@ -129,7 +127,11 @@ class NestedColumnsTransformer:
                 parent_field_oddrn=parent_oddrn,
                 owner=self.owner
             )
+
+            logger.debug(f"Dataset field {column.name} has type {column_type} and oddrn {oddrn}")
+
             res.append(dataset_field)
+
             if not column.items:
                 return dataset_field
             else:
@@ -137,49 +139,38 @@ class NestedColumnsTransformer:
                     process_nested_column_items(column=item, parent_oddrn=oddrn, res=res)
             return res
 
-        result = []
-        # Oddrn of first-order column
+        dataset_fields = []
+
         for column in columns:
             oddrn = oddrn_generator.get_oddrn_by_path(
                 f"{table_oddrn_path}_columns", column.name
             ) 
             if column.items:
+                logger.debug(f"Column {column.name} has nested structure")
                 nested_columns = process_nested_column_items(
                     column=column,
                     parent_oddrn=None,
                     res=[],
                     first_time=True
                     )
-                result.extend(nested_columns)
+                dataset_fields.extend(nested_columns)
+
             else:
+                logger.debug(f"Column {column.name} is basic column with oddrn {oddrn}")
                 dataset_field = DataSetField(
                     oddrn=oddrn,
                     name=column.name,
                     owner=self.owner,
                     type=DataSetFieldType(
-                        type=self._get_nested_column_type(column.type),
+                        type=self._get_column_type(column.type),
                         is_nullable=column.type.startswith("Nullable"),
                         logical_type=column.type,
                     )
                 )
-                result.append(dataset_field)
+                dataset_fields.append(dataset_field)
 
-        return result
+        return dataset_fields
 
-
-    def _get_nested_column_type(self, data_type: str) -> Type:
-
-        if 'Nested' in data_type:
-            logger.info("Convert complex nested data type")
-            nested_data_tree = parser.parse(data_type)
-            nested_data_type = self._traverse_tree(nested_data_tree)
-
-            if isinstance(nested_data_type, Array) or isinstance(nested_data_type, Nested):
-                return Type.TYPE_LIST
-
-        data_type = data_type.replace('Array', '').replace('(', '').replace(')', '')
-
-        return self._get_column_type(data_type)
 
     def _get_column_type(self, data_type: str) -> Type:
         # trim Nullable
@@ -192,7 +183,7 @@ class NestedColumnsTransformer:
         if trimmed:
             data_type = trimmed.group(1)
 
-        if data_type.startswith("Array"):
+        if data_type.startswith("Array") or data_type.startswith("Nested"):
             data_type = "Array"
         elif data_type.startswith("Enum8"):
             data_type = "Enum8"
@@ -201,53 +192,3 @@ class NestedColumnsTransformer:
 
         logger.debug(f"Data type after parsing: {data_type}")
         return TYPES_SQL_TO_ODD.get(data_type, Type.TYPE_UNKNOWN)
-
-    @classmethod
-    def _traverse_tree(cls, node) -> Union[ParseType, str, Field, None]:
-        if isinstance(node, Tree):
-            if node.data == "array":
-                if len(node.children) != 1:
-                    raise Exception(f"Invalid array structure: expected 1 child, got: {len(node.children)}")
-                child = node.children[0]
-                child_value = cls._traverse_tree(child)
-                if not isinstance(child_value, ParseType):
-                    raise Exception(f"Array got no type: {node}")
-                return Array(child_value)
-
-            elif node.data == "nested":
-                fields = {}
-                for child in node.children:
-                    value = cls._traverse_tree(child)
-                    if value is None:
-                        continue
-                    elif isinstance(value, Field):
-                        fields[value.name] = value.value
-                    else:
-                        raise Exception(f"Got an unexpected nested child: {value}")
-                return Nested(fields)
-
-            elif node.data == "field":
-                if len(node.children) != 3:
-                    raise Exception(f"Unexpected field structure: {node}")
-                field_name_node, _, field_type_node = node.children
-                field_name = cls._traverse_tree(field_name_node)
-                if not isinstance(field_name, str):
-                    raise Exception(f"Unexpected field name type: {type(field_name)}")
-                field_type = cls._traverse_tree(field_type_node)
-                if not isinstance(field_type, ParseType):
-                    raise Exception(f"Unexpected field type type: {type(field_type)}")
-                return Field(field_name, field_type)
-
-        elif isinstance(node, Token):
-            if node.type == "BASIC_TYPE":
-                return BasicType(node.value)
-            elif node.type == "FIELD_NAME":
-                return node.value
-            elif node.type == "WS":
-                return None
-            else:
-                raise Exception(f"Unexpected token type: {node.type}")
-
-        else:
-            raise Exception(f"Unexpected node type: {type(node)}")
-

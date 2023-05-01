@@ -6,7 +6,7 @@ from oddrn_generator import ClickHouseGenerator
 
 from ..domain import Column, IntegrationEngine, Table
 from . import _data_set_metadata_excluded_keys, _data_set_metadata_schema_url
-from .columns import NestedColumnsTransformer, defaultdict
+from .columns import NestedColumnsTransformer
 from .metadata import extract_metadata
 from .transformer import extract_transformer_data
 from ..logger import logger
@@ -74,6 +74,8 @@ def map_table(
 
         logger.info(required_columns)
         nested_columns = transformer.build_nested_columns(required_columns)
+
+        logger.debug(f"Nested columns: {nested_columns}")
         column_data_fields = transformer.to_dataset_fields(oddrn_generator, oddrn_path, nested_columns)
 
         data_entity.dataset.field_list.extend(column_data_fields)

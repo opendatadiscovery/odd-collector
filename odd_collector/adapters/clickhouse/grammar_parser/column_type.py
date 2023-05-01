@@ -1,12 +1,17 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class ParseType(ABC):
-    pass
+    @abstractmethod
+    def to_clickhouse_type(self) -> str:
+        pass
 
 class BasicType(ParseType):
     def __init__(self, type_name: str):
         self.type_name = type_name
+
+    def to_clickhouse_type(self) -> str:
+        return self.type_name
 
     def __repr__(self):
         return f"BasicType({self.type_name})"
@@ -15,12 +20,22 @@ class Array(ParseType):
     def __init__(self, type: ParseType):
         self.type = type
 
+    def to_clickhouse_type(self) -> str:
+        return f"Array({self.type.to_clickhouse_type()})"
+
     def __repr__(self):
         return f"Array({self.type})"
 
 class Nested(ParseType):
     def __init__(self, fields: dict):
         self.fields = fields
+
+    def to_clickhouse_type(self) -> str:
+        fields_str = ", ".join(
+            f"{name} {type.to_clickhouse_type()}"
+            for (name, type) in self.fields.items()
+        )
+        return f"Nested({fields_str})"
 
     def __repr__(self):
         return f"Nested({self.fields})"
