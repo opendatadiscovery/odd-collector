@@ -18,8 +18,6 @@ from ..grammar_parser.column_type import ParseType, Array, Nested
 
 
 class NestedColumnsTransformer:
-    def __init__(self, owner: Optional[str] = None):
-        self.owner = owner
 
     def build_nested_columns(self, columns: List[Column]):
 
@@ -90,6 +88,7 @@ class NestedColumnsTransformer:
         oddrn_generator: ClickHouseGenerator,
         table_oddrn_path: str,
         columns: List[NestedColumn],
+        owner: Optional[str] = None,
     ):
         def process_nested_column_items(
             column: NestedColumn,
@@ -129,7 +128,7 @@ class NestedColumnsTransformer:
                 ],
                 is_key=False,
                 parent_field_oddrn=parent_oddrn,
-                owner=self.owner,
+                owner=owner,
             )
 
             logger.debug(
@@ -165,7 +164,7 @@ class NestedColumnsTransformer:
                 dataset_field = DataSetField(
                     oddrn=oddrn,
                     name=column.name,
-                    owner=self.owner,
+                    owner=owner,
                     type=DataSetFieldType(
                         type=self._get_column_type(column.type),
                         is_nullable=column.type.startswith("Nullable"),

@@ -69,7 +69,7 @@ def map_table(
                 table, oddrn_generator, integration_engines
             )
 
-        transformer = NestedColumnsTransformer(owner=data_entity.owner)
+        transformer = NestedColumnsTransformer()
 
         required_columns = []
         logger.debug("Filter columns by table")
@@ -83,7 +83,7 @@ def map_table(
 
         logger.debug(f"Nested columns: {nested_columns}")
         column_data_fields = transformer.to_dataset_fields(
-            oddrn_generator, oddrn_path, nested_columns
+            oddrn_generator, oddrn_path, nested_columns, data_entity.owner
         )
 
         data_entity.dataset.field_list.extend(column_data_fields)
