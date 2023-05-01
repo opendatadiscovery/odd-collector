@@ -5,61 +5,60 @@ from odd_collector.adapters.clickhouse.mappers.columns import NestedColumnsTrans
 
 
 class TestColumnTransformator(unittest.TestCase):
-
     def test_transform_simple_column(self):
         column = Column(
-                database="test_database",
-                table="test_table",
-                name="test",
-                type="String",
-                position=0,
-                default_kind="",
-                default_expression="",
-                data_compressed_bytes="",
-                data_uncompressed_bytes="",
-                marks_bytes="",
-                comment="",
-                is_in_partition_key=False,
-                is_in_sorting_key=False,
-                is_in_primary_key=False,
-                is_in_sampling_key=False,
-                compression_codec=False
+            database="test_database",
+            table="test_table",
+            name="test",
+            type="String",
+            position=0,
+            default_kind="",
+            default_expression="",
+            data_compressed_bytes="",
+            data_uncompressed_bytes="",
+            marks_bytes="",
+            comment="",
+            is_in_partition_key=False,
+            is_in_sorting_key=False,
+            is_in_primary_key=False,
+            is_in_sampling_key=False,
+            compression_codec=False,
         )
         column1 = Column(
-                database="test_database",
-                table="test_table",
-                name="test1",
-                type="UInt64",
-                position=1,
-                default_kind="",
-                default_expression="",
-                data_compressed_bytes="",
-                data_uncompressed_bytes="",
-                marks_bytes="",
-                comment="",
-                is_in_partition_key=False,
-                is_in_sorting_key=False,
-                is_in_primary_key=False,
-                is_in_sampling_key=False,
-                compression_codec=False
+            database="test_database",
+            table="test_table",
+            name="test1",
+            type="UInt64",
+            position=1,
+            default_kind="",
+            default_expression="",
+            data_compressed_bytes="",
+            data_uncompressed_bytes="",
+            marks_bytes="",
+            comment="",
+            is_in_partition_key=False,
+            is_in_sorting_key=False,
+            is_in_primary_key=False,
+            is_in_sampling_key=False,
+            compression_codec=False,
         )
         column2 = Column(
-                database="test_database",
-                table="test_table",
-                name="test2",
-                type="String",
-                position=2,
-                default_kind="",
-                default_expression="",
-                data_compressed_bytes="",
-                data_uncompressed_bytes="",
-                marks_bytes="",
-                comment="",
-                is_in_partition_key=False,
-                is_in_sorting_key=False,
-                is_in_primary_key=False,
-                is_in_sampling_key=False,
-                compression_codec=False
+            database="test_database",
+            table="test_table",
+            name="test2",
+            type="String",
+            position=2,
+            default_kind="",
+            default_expression="",
+            data_compressed_bytes="",
+            data_uncompressed_bytes="",
+            marks_bytes="",
+            comment="",
+            is_in_partition_key=False,
+            is_in_sorting_key=False,
+            is_in_primary_key=False,
+            is_in_sampling_key=False,
+            compression_codec=False,
         )
         columns = [column, column1, column2]
 
@@ -85,40 +84,40 @@ class TestColumnTransformator(unittest.TestCase):
 
     def test_nested_columns(self):
         column = Column(
-                database="test_database",
-                table="test_table",
-                name="test.key",
-                type="Array(String)",
-                position=0,
-                default_kind="",
-                default_expression="",
-                data_compressed_bytes="",
-                data_uncompressed_bytes="",
-                marks_bytes="",
-                comment="",
-                is_in_partition_key=False,
-                is_in_sorting_key=False,
-                is_in_primary_key=False,
-                is_in_sampling_key=False,
-                compression_codec=False
+            database="test_database",
+            table="test_table",
+            name="test.key",
+            type="Array(String)",
+            position=0,
+            default_kind="",
+            default_expression="",
+            data_compressed_bytes="",
+            data_uncompressed_bytes="",
+            marks_bytes="",
+            comment="",
+            is_in_partition_key=False,
+            is_in_sorting_key=False,
+            is_in_primary_key=False,
+            is_in_sampling_key=False,
+            compression_codec=False,
         )
         column1 = Column(
-                database="test_database",
-                table="another_test_table",
-                name="test1",
-                type="UInt32",
-                position=1,
-                default_kind="",
-                default_expression="",
-                data_compressed_bytes="",
-                data_uncompressed_bytes="",
-                marks_bytes="",
-                comment="",
-                is_in_partition_key=False,
-                is_in_sorting_key=False,
-                is_in_primary_key=False,
-                is_in_sampling_key=False,
-                compression_codec=False
+            database="test_database",
+            table="another_test_table",
+            name="test1",
+            type="UInt32",
+            position=1,
+            default_kind="",
+            default_expression="",
+            data_compressed_bytes="",
+            data_uncompressed_bytes="",
+            marks_bytes="",
+            comment="",
+            is_in_partition_key=False,
+            is_in_sorting_key=False,
+            is_in_primary_key=False,
+            is_in_sampling_key=False,
+            compression_codec=False,
         )
         columns = [column, column1]
         expected_column = NestedColumn.from_column(
@@ -127,12 +126,9 @@ class TestColumnTransformator(unittest.TestCase):
             new_type="Nested",
             items=[
                 NestedColumn.from_column(
-                    column=column,
-                    new_name="key",
-                    new_type="String",
-                    items=[]
+                    column=column, new_name="key", new_type="String", items=[]
                 )
-            ]
+            ],
         )
         expected_column1 = NestedColumn.from_column(column1, items=[])
         transformator = NestedColumnsTransformer()
@@ -144,9 +140,9 @@ class TestColumnTransformator(unittest.TestCase):
         self.assertEqual(result[0].type, expected_column.type)
         self.assertEqual(result[0].items[0].name, expected_column.items[0].name)
         self.assertEqual(result[0].items[0].type, expected_column.items[0].type)
-        self.assertEqual(result[0].table, 'test_table')
+        self.assertEqual(result[0].table, "test_table")
 
-        self.assertEqual(result[1].table, 'another_test_table')
+        self.assertEqual(result[1].table, "another_test_table")
         self.assertEqual(result[1].name, expected_column1.name)
         self.assertEqual(result[1].type, expected_column1.type)
         self.assertEqual(result[1].items, expected_column1.items)
@@ -168,7 +164,7 @@ class TestColumnTransformator(unittest.TestCase):
             is_in_sorting_key=False,
             is_in_primary_key=False,
             is_in_sampling_key=False,
-            compression_codec=False
+            compression_codec=False,
         )
 
         column1 = Column(
@@ -187,7 +183,7 @@ class TestColumnTransformator(unittest.TestCase):
             is_in_sorting_key=False,
             is_in_primary_key=False,
             is_in_sampling_key=False,
-            compression_codec=False
+            compression_codec=False,
         )
 
         column2 = Column(
@@ -206,7 +202,7 @@ class TestColumnTransformator(unittest.TestCase):
             is_in_sorting_key=False,
             is_in_primary_key=False,
             is_in_sampling_key=False,
-            compression_codec=False
+            compression_codec=False,
         )
 
         column3 = Column(
@@ -225,7 +221,7 @@ class TestColumnTransformator(unittest.TestCase):
             is_in_sorting_key=False,
             is_in_primary_key=False,
             is_in_sampling_key=False,
-            compression_codec=False
+            compression_codec=False,
         )
 
         columns = [column, column1, column2, column3]
@@ -238,7 +234,7 @@ class TestColumnTransformator(unittest.TestCase):
         self.assertIsInstance(result[0], NestedColumn)
         self.assertIsInstance(result[1], NestedColumn)
         self.assertIsInstance(result[2], NestedColumn)
-        
+
         self.assertEqual(result[0].name, "a")
         self.assertEqual(len(result[0].items), 2)
         self.assertEqual(result[0].items[0].name, "b")
@@ -266,22 +262,22 @@ class TestColumnTransformator(unittest.TestCase):
 
     def test_type_shouldnt_processed(self):
         column = Column(
-                database="test_database",
-                table="test_table",
-                name="a",
-                type="Array(Nested(b String))",
-                position=0,
-                default_kind="",
-                default_expression="",
-                data_compressed_bytes="",
-                data_uncompressed_bytes="",
-                marks_bytes="",
-                comment="",
-                is_in_partition_key=False,
-                is_in_sorting_key=False,
-                is_in_primary_key=False,
-                is_in_sampling_key=False,
-                compression_codec=False
+            database="test_database",
+            table="test_table",
+            name="a",
+            type="Array(Nested(b String))",
+            position=0,
+            default_kind="",
+            default_expression="",
+            data_compressed_bytes="",
+            data_uncompressed_bytes="",
+            marks_bytes="",
+            comment="",
+            is_in_partition_key=False,
+            is_in_sorting_key=False,
+            is_in_primary_key=False,
+            is_in_sampling_key=False,
+            compression_codec=False,
         )
         columns = [column]
         transformator = NestedColumnsTransformer()
@@ -292,3 +288,36 @@ class TestColumnTransformator(unittest.TestCase):
         self.assertEqual(result[0].name, "a")
         # This is nested type, this is array. Column name should have '.' if type is Nested
         self.assertEqual(result[0].type, "Array(Nested(b String))")
+
+    def test_simple_tuple(self):
+        column = Column(
+            database="test_database",
+            table="test_table",
+            name="a.b",
+            type="Array(Nested(c Tuple(String, UInt32)))",
+            position=0,
+            default_kind="",
+            default_expression="",
+            data_compressed_bytes="",
+            data_uncompressed_bytes="",
+            marks_bytes="",
+            comment="",
+            is_in_partition_key=False,
+            is_in_sorting_key=False,
+            is_in_primary_key=False,
+            is_in_sampling_key=False,
+            compression_codec=False,
+        )
+        columns = [column]
+
+        transformer = NestedColumnsTransformer()
+        result = transformer.build_nested_columns(columns)
+
+        self.assertEqual(len(result), 1)
+        self.assertIsInstance(result[0], NestedColumn)
+        self.assertEqual(result[0].name, "a")
+        self.assertEqual(len(result[0].items), 1)
+
+        self.assertIsInstance(result[0].items[0], NestedColumn)
+        self.assertEqual(result[0].items[0].name, "b")
+        # TODO: add check that type of 'b' items in tuple

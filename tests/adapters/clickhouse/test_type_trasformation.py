@@ -5,7 +5,6 @@ from odd_models.models import Type
 
 
 class TestTypeTransformation(unittest.TestCase):
-
     def test_simple_type(self):
         transformer = NestedColumnsTransformer()
         simple_type = "Array"
