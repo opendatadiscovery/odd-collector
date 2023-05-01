@@ -81,7 +81,9 @@ def map_table(
 
         nested_columns = transformer.build_nested_columns(required_columns)
 
-        logger.debug(f"Set oddrn path to '{oddrn_path}' for nested columns {nested_columns}")
+        logger.debug(
+            f"Set oddrn path to '{oddrn_path}' for nested columns {nested_columns}"
+        )
         column_data_fields = transformer.to_dataset_fields(
             oddrn_generator, oddrn_path, nested_columns, data_entity.owner
         )

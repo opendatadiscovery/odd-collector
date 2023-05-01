@@ -18,7 +18,6 @@ from ..grammar_parser.column_type import ParseType, Array, Nested
 
 
 class NestedColumnsTransformer:
-
     def build_nested_columns(self, columns: List[Column]):
 
         parent_columns = OrderedDict()
