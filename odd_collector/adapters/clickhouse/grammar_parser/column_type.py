@@ -15,7 +15,7 @@ class BasicType(ParseType):
     def to_clickhouse_type(self) -> str:
         return self.type_name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"BasicType({self.type_name})"
 
 
@@ -26,7 +26,7 @@ class Array(ParseType):
     def to_clickhouse_type(self) -> str:
         return f"Array({self.type.to_clickhouse_type()})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Array({self.type})"
 
 
@@ -38,7 +38,7 @@ class Tuple(ParseType):
         subtypes = ", ".join(t.to_clickhouse_type() for t in self.types)
         return f"Tuple({subtypes})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Tuple({self.types})"
 
 
@@ -53,7 +53,7 @@ class Nested(ParseType):
         )
         return f"Nested({fields_str})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Nested({self.fields})"
 
 
