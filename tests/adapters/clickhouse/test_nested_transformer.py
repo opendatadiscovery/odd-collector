@@ -1,7 +1,7 @@
 import unittest
 
 from odd_collector.adapters.clickhouse.domain import Column, NestedColumn
-from odd_collector.adapters.clickhouse.mappers.columns import NestedColumnsTransformer
+from odd_collector.adapters.clickhouse.mappers.columns import build_nested_columns
 
 
 class TestColumnTransformator(unittest.TestCase):
@@ -67,9 +67,7 @@ class TestColumnTransformator(unittest.TestCase):
         expected_column2 = NestedColumn.from_column(column2, items=[])
         expected_result = [expected_column, expected_column1, expected_column2]
 
-        transformer = NestedColumnsTransformer()
-
-        result = transformer.build_nested_columns(columns)
+        result = build_nested_columns(columns)
         self.assertEqual(len(result), len(expected_result))
 
         for i in range(len(result)):
@@ -131,8 +129,7 @@ class TestColumnTransformator(unittest.TestCase):
             ],
         )
         expected_column1 = NestedColumn.from_column(column1, items=[])
-        transformator = NestedColumnsTransformer()
-        result = transformator.build_nested_columns(columns)
+        result = build_nested_columns(columns)
 
         self.assertEqual(len(result), 2)
         self.assertEqual(len(result[0].items), 1)
@@ -226,8 +223,7 @@ class TestColumnTransformator(unittest.TestCase):
 
         columns = [column, column1, column2, column3]
 
-        transformator = NestedColumnsTransformer()
-        result = transformator.build_nested_columns(columns)
+        result = build_nested_columns(columns)
 
         self.assertEqual(len(result), 3)
 
@@ -280,8 +276,7 @@ class TestColumnTransformator(unittest.TestCase):
             compression_codec=False,
         )
         columns = [column]
-        transformator = NestedColumnsTransformer()
-        result = transformator.build_nested_columns(columns)
+        result = build_nested_columns(columns)
 
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0], NestedColumn)
@@ -310,8 +305,7 @@ class TestColumnTransformator(unittest.TestCase):
         )
         columns = [column]
 
-        transformer = NestedColumnsTransformer()
-        result = transformer.build_nested_columns(columns)
+        result = build_nested_columns(columns)
 
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0], NestedColumn)

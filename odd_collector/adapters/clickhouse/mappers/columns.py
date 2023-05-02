@@ -86,7 +86,7 @@ def to_dataset_fields(
         column: NestedColumn,
         parent_oddrn: Optional[str],
         res: List,
-        first_time: bool = False,
+        is_parent_column: bool = False,
     ):
 
         # Unique oddrn for nested column
@@ -97,7 +97,7 @@ def to_dataset_fields(
         )
         column_type = _get_column_type(column.type)
 
-        if first_time:
+        if is_parent_column:
             oddrn = oddrn_generator.get_oddrn_by_path(
                 f"{table_oddrn_path}_columns", column.name
             )
@@ -139,7 +139,7 @@ def to_dataset_fields(
         if column.items:
             logger.debug(f"Column {column.name} has nested structure")
             nested_columns = process_nested_column_items(
-                column=column, parent_oddrn=None, res=[], first_time=True
+                column=column, parent_oddrn=None, res=[], is_parent_column=True
             )
             dataset_fields.extend(nested_columns)
 
