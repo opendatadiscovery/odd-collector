@@ -1,0 +1,34 @@
+?start: type
+
+?type: nested
+    | array
+    | tuple
+    | BASIC_TYPE
+
+BASIC_TYPE: "UInt64"
+          | "UInt32"
+          | "UInt8"
+          | "UInt128"
+          | "UInt256"
+          | "String"
+          | "Float32"
+          | "Float64"
+          | "Map"
+          | "Array"
+          | "Nullable"
+          | "UUID"
+          | "Enum"
+          | "Low Cardinality"
+          | "Bool"
+
+array: "Array" "(" type ")"
+
+tuple: "Tuple" "(" type ("," WS type) ")"
+
+nested: "Nested" "(" field ("," WS field)* ")"
+field: FIELD_NAME WS type
+FIELD_NAME: (LETTER | "_") (LETTER | "_" | DIGIT | "-")*
+
+%import common.WS
+%import common.LETTER
+%import common.DIGIT
