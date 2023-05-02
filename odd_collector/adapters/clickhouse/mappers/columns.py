@@ -89,7 +89,7 @@ def to_dataset_fields(
         parent_oddrn: Optional[str],
         res: List,
         is_parent_column: bool = False,
-    ) -> Union(List[DataSetField], DataSetField):
+    ) -> Union[List[DataSetField], DataSetField]:
 
         # Unique oddrn for nested column
         oddrn = f"{parent_oddrn}/keys/{column.name}"
