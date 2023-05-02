@@ -1,5 +1,5 @@
 import re
-from typing import Optional, List
+from typing import Optional, List, Union
 from collections import OrderedDict
 
 
@@ -89,7 +89,7 @@ def to_dataset_fields(
         parent_oddrn: Optional[str],
         res: List,
         is_parent_column: bool = False,
-    ) -> List[DataSetField]:
+    ) -> Union(List[DataSetField], DataSetField):
 
         # Unique oddrn for nested column
         oddrn = f"{parent_oddrn}/keys/{column.name}"
@@ -124,7 +124,7 @@ def to_dataset_fields(
         res.append(dataset_field)
 
         if not column.items:
-            res.append(dataset_field)
+            return dataset_field
         else:
             for item in column.items:
                 process_nested_column_items(
