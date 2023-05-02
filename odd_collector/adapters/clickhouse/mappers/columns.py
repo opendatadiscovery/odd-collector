@@ -10,6 +10,7 @@ from ..logger import logger
 from .types import TYPES_SQL_TO_ODD
 from ..grammar_parser.parser import parser, traverse_tree
 from ..grammar_parser.column_type import ParseType, Array, Nested
+from ..grammar_parser.exceptions import UnexpectedTypeError
 
 
 def build_nested_columns(columns: List[Column]):
@@ -44,7 +45,7 @@ def build_nested_columns(columns: List[Column]):
             type_tree = traverse_tree(grammar_tree)
             logger.debug(f"Parsed type tree: {type_tree}")
             if not isinstance(type_tree, Array):
-                raise Exception(
+                raise UnexpectedTypeError(
                     f"Invalid _tranverse_tree result type "
                     f"(should always be Array): {type(type_tree)}"
                 )
@@ -72,7 +73,7 @@ def build_nested_columns(columns: List[Column]):
             parent_columns[parent].items.append(child_nested_column)
 
         else:
-            raise Exception(f"Unexpected column name format: {column.name}")
+            raise ValueError(f"Unexpected column name format: {column.name}")
 
     return list(parent_columns.values())
 
