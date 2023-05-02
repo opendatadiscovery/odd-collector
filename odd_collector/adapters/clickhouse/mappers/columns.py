@@ -13,7 +13,7 @@ from ..grammar_parser.column_type import ParseType, Array, Nested
 from ..grammar_parser.exceptions import UnexpectedTypeError
 
 
-def build_nested_columns(columns: List[Column]):
+def build_nested_columns(columns: List[Column]) -> List[NestedColumn]:
 
     parent_columns = OrderedDict()
 
@@ -77,18 +77,19 @@ def build_nested_columns(columns: List[Column]):
 
     return list(parent_columns.values())
 
+
 def to_dataset_fields(
     oddrn_generator: ClickHouseGenerator,
     table_oddrn_path: str,
     columns: List[NestedColumn],
     owner: Optional[str] = None,
-):
+) -> List[DataSetField]:
     def process_nested_column_items(
         column: NestedColumn,
         parent_oddrn: Optional[str],
         res: List,
         is_parent_column: bool = False,
-    ):
+    ) -> List[DataSetField]:
 
         # Unique oddrn for nested column
         oddrn = f"{parent_oddrn}/keys/{column.name}"
@@ -123,7 +124,7 @@ def to_dataset_fields(
         res.append(dataset_field)
 
         if not column.items:
-            return dataset_field
+            res.append(dataset_field)
         else:
             for item in column.items:
                 process_nested_column_items(
