@@ -51,10 +51,14 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
             field_name_node, _, field_type_node = node.children
             field_name = traverse_tree(field_name_node)
             if not isinstance(field_name, str):
-                raise UnexpectedTypeError(f"Unexpected field name type: {type(field_name)}")
+                raise UnexpectedTypeError(
+                    f"Unexpected field name type: {type(field_name)}"
+                )
             field_type = traverse_tree(field_type_node)
             if not isinstance(field_type, ParseType):
-                raise UnexpectedTypeError(f"Unexpected field type type: {type(field_type)}")
+                raise UnexpectedTypeError(
+                    f"Unexpected field type type: {type(field_type)}"
+                )
             return Field(field_name, field_type)
 
         else:

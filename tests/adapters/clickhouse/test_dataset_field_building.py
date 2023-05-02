@@ -1,7 +1,10 @@
 import unittest
 
 from oddrn_generator import ClickHouseGenerator
-from odd_collector.adapters.clickhouse.mappers.columns import build_nested_columns, to_dataset_fields
+from odd_collector.adapters.clickhouse.mappers.columns import (
+    build_nested_columns,
+    to_dataset_fields,
+)
 from odd_models.models import DataSetField, Type
 from odd_collector.adapters.clickhouse.domain import Column, NestedColumn
 from odd_collector.adapters.clickhouse.mappers.tables import transformer
@@ -36,9 +39,7 @@ class TestDataSetFieldsBuilder(unittest.TestCase):
         columns = [column]
         nested_columns = build_nested_columns(columns)
         oddrn_path = "tables"
-        result = to_dataset_fields(
-            self.oddrn_generator, oddrn_path, nested_columns
-        )
+        result = to_dataset_fields(self.oddrn_generator, oddrn_path, nested_columns)
 
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0], DataSetField)
@@ -126,9 +127,7 @@ class TestDataSetFieldsBuilder(unittest.TestCase):
         columns = [column, column1, column2, column3]
         nested_columns = build_nested_columns(columns)
         oddrn_path = "tables"
-        result = to_dataset_fields(
-            self.oddrn_generator, oddrn_path, nested_columns
-        )
+        result = to_dataset_fields(self.oddrn_generator, oddrn_path, nested_columns)
 
         self.assertEqual(len(result), 10)
 

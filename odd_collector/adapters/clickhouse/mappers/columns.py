@@ -94,18 +94,14 @@ def to_dataset_fields(
         # Unique oddrn for nested column
         oddrn = f"{parent_oddrn}/keys/{column.name}"
 
-        logger.debug(
-            f"Column {column.name} has original clickhouse type {column.type}"
-        )
+        logger.debug(f"Column {column.name} has original clickhouse type {column.type}")
         column_type = _get_column_type(column.type)
 
         if is_parent_column:
             oddrn = oddrn_generator.get_oddrn_by_path(
                 f"{table_oddrn_path}_columns", column.name
             )
-            logger.debug(
-                f"Parse first order column {column.name} with oddrn {oddrn}"
-            )
+            logger.debug(f"Parse first order column {column.name} with oddrn {oddrn}")
 
         dataset_field = DataSetField(
             oddrn=oddrn,
@@ -115,7 +111,8 @@ def to_dataset_fields(
             ),
             is_key=False,
             parent_field_oddrn=parent_oddrn,
-            owner=owner,)
+            owner=owner,
+        )
 
         logger.debug(
             f"Dataset field {column.name} has type {column_type} and oddrn {oddrn}"
@@ -127,9 +124,7 @@ def to_dataset_fields(
             return dataset_field
         else:
             for item in column.items:
-                process_nested_column_items(
-                    column=item, parent_oddrn=oddrn, res=res
-                )
+                process_nested_column_items(column=item, parent_oddrn=oddrn, res=res)
         return res
 
     dataset_fields = []
