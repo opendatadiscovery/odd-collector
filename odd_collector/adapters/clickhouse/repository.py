@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Type, Union
+from typing import Iterable, Type, Union
 
 from clickhouse_connect import get_client
 from clickhouse_connect.driver import Client
@@ -113,7 +113,7 @@ class ClickHouseRepository(ClickHouseRepositoryBase):
         query: str,
         query_params: dict,
         map_to: Type[Union[Column, Table, IntegrationEngine]],
-    ) -> list:
+    ) -> Iterable:
         with client.query_row_block_stream(query, query_params) as stream:
             for block in stream:
                 for row in block:

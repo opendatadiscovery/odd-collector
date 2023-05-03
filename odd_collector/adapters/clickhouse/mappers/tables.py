@@ -1,14 +1,22 @@
 from typing import List
 
 import pytz
-from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
+from odd_models.models import (
+    DataEntity,
+    DataEntityGroup,
+    DataEntityType,
+    DataSet,
+    DataSetField,
+)
 from oddrn_generator import ClickHouseGenerator
 
 from ..domain import Column, IntegrationEngine, Table
 from . import _data_set_metadata_excluded_keys, _data_set_metadata_schema_url
-from .columns import map_column
+from .columns import build_nested_columns, to_dataset_fields
 from .metadata import extract_metadata
 from .transformer import extract_transformer_data
+from ..logger import logger
+from odd_collector.adapters.clickhouse.mappers import transformer
 
 
 def map_table(
@@ -61,12 +69,24 @@ def map_table(
                 table, oddrn_generator, integration_engines
             )
 
-        # Reduce time complexity now it is N_tables * M_columns
+        required_columns = []
+        logger.debug("Filter columns by table")
         for column in columns:
             if column.table == table.name:
-                data_entity.dataset.field_list.append(
-                    map_column(column, oddrn_generator, data_entity.owner, oddrn_path)
-                )
+                required_columns.append(column)
+
+        logger.debug(f"Columns for table {table.name} are {required_columns}")
+
+        nested_columns = build_nested_columns(required_columns)
+
+        logger.debug(
+            f"Set oddrn path to '{oddrn_path}' for nested columns {nested_columns}"
+        )
+        column_data_fields = to_dataset_fields(
+            oddrn_generator, oddrn_path, nested_columns, data_entity.owner
+        )
+
+        data_entity.dataset.field_list.extend(column_data_fields)
 
     data_entities.append(
         DataEntity(
@@ -77,6 +97,7 @@ def map_table(
             data_entity_group=DataEntityGroup(
                 entities_list=[de.oddrn for de in data_entities]
             ),
+            owner=None,
         )
     )
 
