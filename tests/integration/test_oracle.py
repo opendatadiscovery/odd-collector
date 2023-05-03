@@ -52,11 +52,12 @@ def test_oracle():
             user="test_user",
             host=oracle.get_container_host_ip(),
             port=oracle.get_exposed_port(1521),
-            thick_mode=True
+            thick_mode=True,
         )
 
         # import here because of patched imports in sqlalchemy_repository module
         from odd_collector.adapters.oracle.adapter import Adapter
+
         data_entities = Adapter(config).get_data_entity_list()
         database_services: list[DataEntity] = find_by_type(
             data_entities, DataEntityType.DATABASE_SERVICE
