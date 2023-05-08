@@ -1,9 +1,6 @@
 import pytest
-import time
 
 from testcontainers.clickhouse import ClickHouseContainer
-
-# from testcontainers.core.generic import DockerContainer
 from pydantic import SecretStr
 from clickhouse_driver import Client
 from funcy import lfilter
@@ -13,7 +10,6 @@ from odd_models.models import DataEntityType, DataEntityList
 from odd_collector.adapters.clickhouse.adapter import Adapter
 from odd_collector.domain.plugin import ClickhousePlugin
 
-
 def find_by_type(
     data_entity_list: DataEntityList, data_entity_type: DataEntityType
 ) -> list[DataEntity]:
@@ -22,12 +18,10 @@ def find_by_type(
         lambda data_entity: data_entity.type == data_entity_type, data_entity_list.items
     )
 
-
 create_databse = "CREATE DATABASE IF NOT EXISTS my_database"
 create_table = """
 CREATE TABLE my_database.test (a Date, b UInt64, c Nested(d String, e String, f Nested(g String))) ENGINE = MergeTree ORDER BY (a, b)
 """
-
 
 @pytest.mark.integration
 def test_clickhouse():
@@ -51,7 +45,7 @@ def test_clickhouse():
             port=8123,
             database="my_database",
             user="username",
-            password=SecretStr("password"),
+            password=SecretStr("password")
         )
 
         data_entities = Adapter(config).get_data_entity_list()
