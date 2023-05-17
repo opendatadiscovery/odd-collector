@@ -6,8 +6,7 @@ from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import ElasticSearchGenerator
 
-from odd_collector.adapters.elasticsearch.mappers.stream import map_stream
-
+from .mappers.stream import map_stream
 from .mappers.indexes import map_index
 from .logger import logger
 
@@ -54,10 +53,9 @@ class Adapter(AbstractAdapter):
                 )
 
         logger.debug("Process data streams")
-
         for item in data_streams_info['data_streams']:
-            self.process_stream_data(item)
-            
+            data_entity = self.__process_stream_data(item)
+            result.append(data_entity)
         return result
 
     def __get_mapping(self, index_name: str):
@@ -76,8 +74,8 @@ class Adapter(AbstractAdapter):
         response = self.__es_client.indices.get_data_stream("*")
         return response
 
-    def process_stream_data(self, data_stream):
-        return map_stream()
+    def __process_stream_data(self, data_stream):
+        return map_stream(data_stream, self.__oddrn_generator)
 
     def __process_index_data(self, index_name: str, index_mapping: dict):
         mapping = index_mapping["mappings"]["properties"]
