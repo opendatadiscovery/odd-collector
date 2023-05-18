@@ -56,7 +56,7 @@ def __get_field_type(props: Dict[str, Any], is_stream: bool=False) -> str:
     elif "properties" in props:
         return "object"
     else:
-        raise Exception("Undefine type")
+        return "unknown"
 
 
 def map_field(field_name, field_metadata: dict, oddrn_generator, is_stream: bool = False) -> DataSetField:

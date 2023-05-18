@@ -6,7 +6,7 @@ from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import ElasticSearchGenerator
 
-from .mappers.stream import map_stream
+from .mappers.stream import map_data_stream
 from .mappers.indexes import map_index
 from .logger import logger
 
@@ -52,10 +52,18 @@ class Adapter(AbstractAdapter):
                     f"Elasticsearch adapter failed to process index {index}: KeyError {e}"
                 )
 
-        logger.debug("Process data streams")
+        logger.debug("Process data streams and data stream templates")
         for item in data_streams_info['data_streams']:
-            data_entity = self.__process_stream_data(item)
-            result.append(data_entity)
+
+            template_name = item["template"]
+            logger.debug(f"Data stream {item['name']} has template {template_name}")
+
+            template = self.__get_data_stream_templates_info(template_name)
+            logger.debug(f"Template {template_name} has structure {template}")
+
+            data_stream_template_entities = self.__process_stream_data(item, template)
+            result.extend(data_stream_template_entities)
+
         return result
 
     def __get_mapping(self, index_name: str):
@@ -74,8 +82,12 @@ class Adapter(AbstractAdapter):
         response = self.__es_client.indices.get_data_stream("*")
         return response
 
-    def __process_stream_data(self, data_stream):
-        return map_stream(data_stream, self.__oddrn_generator)
+    def __get_data_stream_templates_info(self, template_name: str) -> Dict:
+        response = self.__es_client.indices.get_index_template(name=template_name)
+        return response
+
+    def __process_stream_data(self, data_stream, template_data):
+        return map_data_stream(data_stream, template_data['index_templates'], self.__oddrn_generator)
 
     def __process_index_data(self, index_name: str, index_mapping: dict):
         mapping = index_mapping["mappings"]["properties"]
