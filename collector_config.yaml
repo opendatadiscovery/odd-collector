@@ -1,13 +1,10 @@
-default_pulling_interval: 10
-token: ""
-platform_host_url: http://localhost:8080
+token: "WE3fO03LssZKjlPIgO07ABm6RlkI62hdIPxzaTOq"
+platform_host_url: http://localhost:8081
 chunk_size: 1000
 plugins:
-  - type: mysql
-    name: mysql_adapter
-    description: "Retrieve data from MySQL"
-    database: <database>
-    host: <host>
-    port: <port>
-    user: <user>
-    ssl_disabled: False
+  - type: hive
+    name: hive_adapter_new_2
+    description: "" # Optional string
+    host: 0.0.0.0
+    port: 9083
+    database: default

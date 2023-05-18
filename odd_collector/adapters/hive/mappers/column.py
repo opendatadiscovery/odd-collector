@@ -5,7 +5,6 @@ from oddrn_generator import HiveGenerator
 
 from odd_collector.adapters.hive.logger import logger
 from odd_collector.adapters.hive.mappers.columm_type import map_column_type
-from odd_collector.adapters.hive.mappers.statistics import FIELD_TYPE_SCHEMA
 from odd_collector.adapters.hive.models.column import Column
 from odd_collector.adapters.hive.models.column_types import (
     ArrayColumnType,
@@ -15,6 +14,8 @@ from odd_collector.adapters.hive.models.column_types import (
     StructColumnType,
     UnionColumnType,
 )
+
+from .statistics import map_statistic
 
 
 @dataclass
@@ -30,10 +31,10 @@ VIEW_CONTEXT = MapContext(table_path="views", columns_path="views_columns")
 def map_column(
     column: Column, generator: HiveGenerator, ctx: MapContext = TABLE_CONTEXT
 ) -> list[DataSetField]:
-    if isinstance(column.col_type, PrimitiveColumnType):
+    if isinstance(column.type, PrimitiveColumnType):
         return map_primitive_column(column, generator, ctx)
     elif isinstance(
-        column.col_type,
+        column.type,
         (MapColumnType, StructColumnType, ArrayColumnType, UnionColumnType),
     ):
         return map_complex_column(column, generator, ctx)
@@ -44,14 +45,14 @@ def map_column(
 def map_primitive_column(
     column: Column, generator: HiveGenerator, ctx: MapContext
 ) -> list[DataSetField]:
-    col_name = column.col_name
-    col_type = column.col_type
+    col_name = column.name
+    col_type = column.type
 
     generator.set_oddrn_paths(**{ctx.columns_path: col_name})
     dataset_field = DataSetField(
         oddrn=generator.get_oddrn_by_path(ctx.columns_path),
         name=col_name,
-        is_primary_key=column.is_primary,
+        owner=None,
         type=DataSetFieldType(
             type=map_column_type(col_type),
             is_nullable=True,
@@ -59,16 +60,8 @@ def map_primitive_column(
         ),
     )
 
-    if column.statistic:
-        statistic_handler = FIELD_TYPE_SCHEMA.get(column.col_type.field_type)
-        mapper_fn = statistic_handler["mapper"]
-        stats = {
-            statistic_handler["field_name"]: mapper_fn(
-                column.statistic.statsObj[0].statsData
-            )
-        }
-
-        dataset_field.stats = stats
+    if column.statistics:
+        dataset_field.stats = map_statistic(column.statistics)
 
     return [dataset_field]
 
@@ -76,26 +69,25 @@ def map_primitive_column(
 def map_complex_column(
     column: Column, generator: HiveGenerator, ctx: MapContext
 ) -> list[DataSetField]:
-    prefix = generator.get_oddrn_by_path(ctx.table_path) + "/columns"
-    return map_complex_type(prefix, column.col_name, column.col_type)
+    prefix = f"{generator.get_oddrn_by_path(ctx.table_path)}/columns"
+    return map_complex_type(prefix, column.name, column.type)
 
 
 def map_unknown_dataset_field(
     column: Column, generator: HiveGenerator, ctx: MapContext
 ) -> list[DataSetField]:
-    logger.warning(
-        f"Unknown column type {column.col_type=}. Return Unknown dataset field"
-    )
-    generator.set_oddrn_paths(tables_columns=column.col_name)
+    logger.warning(f"Unknown column type {column.type=}. Return Unknown dataset field")
+    generator.set_oddrn_paths(tables_columns=column.name)
     return [
         DataSetField(
             oddrn=generator.get_oddrn_by_path(ctx.columns_path),
-            name=column.col_name,
-            is_primary_key=column.is_primary,
+            name=column.name,
+            owner=None,
+            # is_primary_key=column.is_primary,
             type=DataSetFieldType(
                 type=Type.TYPE_UNKNOWN,
                 is_nullable=False,
-                logical_type=column.col_type.logical_type,
+                logical_type=column.type.logical_type,
             ),
         )
     ]
@@ -121,6 +113,7 @@ def map_primitive_type(
 ) -> list[DataSetField]:
     dataset_field = DataSetField(
         oddrn=f"{prefix}/{col_name}",
+        owner=None,
         name=col_name,
         type=DataSetFieldType(
             type=map_column_type(col_type),
@@ -134,6 +127,7 @@ def map_primitive_type(
 def map_union_type(prefix: str, col_name: str, col_type: UnionColumnType):
     dataset_field = DataSetField(
         oddrn=f"{prefix}/{col_name}",
+        owner=None,
         name=col_name,
         type=DataSetFieldType(
             type=Type.TYPE_UNION, is_nullable=False, logical_type=col_type.logical_type
@@ -145,6 +139,7 @@ def map_union_type(prefix: str, col_name: str, col_type: UnionColumnType):
 def map_array_type(prefix: str, col_name: str, col_type: ArrayColumnType):
     dataset_field = DataSetField(
         oddrn=f"{prefix}/{col_name}",
+        owner=None,
         name=col_name,
         type=DataSetFieldType(
             type=Type.TYPE_LIST, is_nullable=False, logical_type=col_type.logical_type
@@ -160,6 +155,7 @@ def map_struct_type(
 
     field = DataSetField(
         oddrn=f"{prefix}/{col_name}",
+        owner=None,
         name=col_name,
         type=DataSetFieldType(
             type=Type.TYPE_STRUCT, is_nullable=False, logical_type=col_type.logical_type
@@ -171,6 +167,7 @@ def map_struct_type(
     for key, value in col_type.fields.items():
         k = DataSetField(
             oddrn=f"{field.oddrn}/keys/{key}",
+            owner=None,
             name=key,
             type=DataSetFieldType(
                 type=Type.TYPE_STRING,
@@ -196,6 +193,7 @@ def map_map_type(
 ) -> list[DataSetField]:
     field = DataSetField(
         oddrn=f"{prefix}/{col_name}",
+        owner=None,
         name=col_name,
         type=DataSetFieldType(
             type=Type.TYPE_MAP, is_nullable=False, logical_type=col_type.logical_type
