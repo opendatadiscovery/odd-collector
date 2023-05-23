@@ -1,10 +1,8 @@
 # https://learn.microsoft.com/en-us/azure/databricks/sql/language-manual/sql-ref-datatypes
 
-from typing import Dict
-
 from odd_models.models import Type
 
-TYPES_SQL_TO_ODD: Dict[str, Type] = {
+TYPES_SQL_TO_ODD: dict[str, Type] = {
     "float": Type.TYPE_NUMBER,
     "struct": Type.TYPE_STRUCT,
     "bigint": Type.TYPE_INTEGER,

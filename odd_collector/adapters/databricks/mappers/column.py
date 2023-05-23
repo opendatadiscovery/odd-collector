@@ -1,5 +1,5 @@
 from oddrn_generator import DatabricksUnityCatalogGenerator
-from typing import Dict, Any
+from typing import Any
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from .types import TYPES_SQL_TO_ODD
 
@@ -11,10 +11,10 @@ def split_by_braces(value: str) -> str:
 
 
 def map_column(
-    oddrn_generator: DatabricksUnityCatalogGenerator, column_node: Dict[str, Any]
+    oddrn_generator: DatabricksUnityCatalogGenerator, column_metadata: dict[str, Any]
 ):
-    name = column_node.get("name")
-    _type = column_node.get("type_text")
+    name = column_metadata.get("name")
+    _type = column_metadata.get("type_text")
     return DataSetField(
         oddrn=oddrn_generator.get_oddrn_by_path("columns", name),
         name=name,

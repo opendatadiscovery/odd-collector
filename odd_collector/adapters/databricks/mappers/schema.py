@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from funcy import lpluck_attr
 from oddrn_generator import DatabricksUnityCatalogGenerator
 from odd_models.models import DataEntityGroup, DataEntityType, DataEntity
