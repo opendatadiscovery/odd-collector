@@ -1,11 +1,12 @@
 from typing import Dict, List
 
-from odd_models.models import DataEntity, DataEntityType, DataSet
+from odd_models.models import DataConsumer, DataEntity, DataEntityType, DataSet
 from .fields import map_field
 from ..logger import logger
+from . import metadata_extractor
 
 
-def map_stream(stream_data: Dict, oddrn_generator):
+def build_data_stream_data(stream_data: Dict, oddrn_generator):
     field_name = stream_data["name"]
     oddrn_generator.set_oddrn_paths(indexes=field_name)
     index_oddrn = oddrn_generator.get_oddrn_by_path("indexes")
@@ -18,14 +19,14 @@ def map_stream(stream_data: Dict, oddrn_generator):
         owner=None,
         description="",
         type=DataEntityType.VIEW,
-        metadata=None,
+        metadata=[metadata_extractor.extract_index_metadata(stream_data)],
         dataset=DataSet(parent_oddrn=None, rows_number=0, field_list=[])
     )
 
     return stream_data_entity
 
 
-def map_data_stream_template(template_data: List, oddrn_generator):
+def build_template_data(template_data: List, oddrn_generator):
     logger.debug(f"Lenght of template data is {len(template_data)}")
 
     if len(template_data) != 1:
@@ -60,7 +61,9 @@ def map_data_stream_template(template_data: List, oddrn_generator):
 
 
 def map_data_stream(stream_data, template_data, oddrn_generator):
-    data_stream_entity = map_stream(stream_data, oddrn_generator)
-    data_stream_template_entity = map_data_stream_template(template_data, oddrn_generator)
+    data_stream_entity = build_data_stream_data(stream_data, oddrn_generator)
+    data_stream_template_entity = build_template_data(template_data, oddrn_generator)
+
+    data_stream_entity.data_consumer = DataConsumer(inputs=[data_stream_template_entity.oddrn])
 
     return [data_stream_entity, data_stream_template_entity]

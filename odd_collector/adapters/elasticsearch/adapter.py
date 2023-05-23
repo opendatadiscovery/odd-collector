@@ -52,7 +52,7 @@ class Adapter(AbstractAdapter):
                     f"Elasticsearch adapter failed to process index {index}: KeyError {e}"
                 )
 
-        logger.debug("Process data streams and data stream templates")
+        logger.debug("Process data streams and their templates")
         for item in data_streams_info['data_streams']:
 
             template_name = item["template"]
@@ -87,6 +87,7 @@ class Adapter(AbstractAdapter):
         return response
 
     def __process_stream_data(self, data_stream, template_data):
+        logger.debug(f"Process data stream {data_stream['name']} with its template {template_data}")
         return map_data_stream(data_stream, template_data['index_templates'], self.__oddrn_generator)
 
     def __process_index_data(self, index_name: str, index_mapping: dict):
