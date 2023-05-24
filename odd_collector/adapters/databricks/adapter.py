@@ -8,6 +8,7 @@ from .mappers.table import map_table
 from .mappers.catalog import map_catalog
 from .client import DatabricksRestClient
 from itertools import groupby
+from odd_collector.logger import logger
 
 
 class Adapter(AbstractAdapter):
@@ -22,9 +23,8 @@ class Adapter(AbstractAdapter):
 
     async def get_data_entity_list(self) -> DataEntityList:
         catalogs = await self.__client.get_catalogs()
-        schemas_per_catalog = await self._get_schemas_per_catalog_list(catalogs)
-        metadata_raw = await self._get_tables_metadata(schemas_per_catalog)
-        metadata = self._group_metadata(metadata_raw)
+        schemas_per_catalog = await self._get_schemas_per_catalog(catalogs)
+        metadata = await self._get_tables_metadata(schemas_per_catalog)
 
         catalog_entities: list[DataEntity] = []
         schema_entities: list[DataEntity] = []
@@ -60,22 +60,21 @@ class Adapter(AbstractAdapter):
             items=[*tables_entities, *schema_entities, *catalog_entities],
         )
 
-    async def _get_schemas_per_catalog_list(self, catalogs: list) -> list[tuple]:
+    async def _get_schemas_per_catalog(self, catalogs: list) -> list[tuple]:
         schemas = [
             (catalog, schema)
             for catalog in catalogs
             for schema in await self.__client.get_schemas(catalog)
+            if schema not in ("information_schema",)
         ]
         return schemas
 
-    async def _get_tables_metadata(self, schemas_per_catalog: list) -> list[dict]:
-        tables = [
-            await self.__client.get_tables(catalog, schema)
-            for catalog, schema in schemas_per_catalog
-        ]
-        tables = [table for schemas in tables for table in schemas]
-
-        return tables
+    async def _get_tables_metadata(self, schemas_per_catalog: list) -> dict:
+        tables = []
+        for catalog, schema in schemas_per_catalog:
+            tables.extend(await self.__client.get_tables(catalog, schema))
+        metadata = self._group_metadata(tables)
+        return metadata
 
     @staticmethod
     def _group_metadata(data: list) -> dict:

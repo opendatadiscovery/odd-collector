@@ -30,19 +30,22 @@ class DatabricksRestClient:
 
     async def get_catalogs(self) -> list[str]:
         resp = await self._get_request(self.__requests["catalogs"])
-        catalogs = [catalog["name"] for catalog in resp["catalogs"]]
-        return catalogs
+        if resp:
+            catalogs = [catalog["name"] for catalog in resp["catalogs"]]
+            return catalogs
+        return []
 
     async def get_schemas(self, catalog: str) -> list[str]:
         params = {"catalog_name": catalog}
         resp = await self._get_request(self.__requests["schemas"], params)
-        schemas = [schema["name"] for schema in resp["schemas"]]
-        return schemas
+        if resp:
+            schemas = [schema["name"] for schema in resp["schemas"]]
+            return schemas
+        return []
 
     async def get_tables(self, catalog: str, schema: str) -> list[dict]:
         params = {"catalog_name": catalog, "schema_name": schema}
         resp = await self._get_request(self.__requests["tables"], params)
         if resp:
-            tables = [table for table in resp["tables"]]
-            return tables
+            return resp["tables"]
         return []
