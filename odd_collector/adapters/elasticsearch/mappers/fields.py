@@ -32,7 +32,7 @@ def is_logical(type_property: str) -> bool:
     return type_property == "boolean"
 
 
-def __get_field_type(props: Dict[str, Any], is_stream: bool=False) -> str:
+def __get_field_type(props: Dict[str, Any]) -> str:
     """
     Sample mapping for field types
     {'@timestamp' : {'type' : "alias","path" : "timestamp"},
@@ -49,9 +49,7 @@ def __get_field_type(props: Dict[str, Any], is_stream: bool=False) -> str:
     'int_field': {'type': 'long'},
     'float_field': {'type': 'float'},
     """
-    if is_stream:
-        return "data_stream"
-    elif "type" in props:
+    if "type" in props:
         return props["type"]
     elif "properties" in props:
         return "object"
@@ -59,14 +57,14 @@ def __get_field_type(props: Dict[str, Any], is_stream: bool=False) -> str:
         return "unknown"
 
 
-def map_field(field_name, field_metadata: dict, oddrn_generator, is_stream: bool = False) -> DataSetField:
-    data_type: str = __get_field_type(field_metadata, is_stream)
+def map_field(field_name, field_metadata: dict, oddrn_generator) -> DataSetField:
+    data_type: str = __get_field_type(field_metadata)
     logger.debug(f"Field {field_name} with metadata {field_metadata} has {data_type} type")
 
     oddrn_path: str = oddrn_generator.get_oddrn_by_path("fields", field_name)
     logger.debug(f"Field {field_name} has oddrn path {oddrn_path}")
 
-    field_type = TYPES_ELASTIC_TO_ODD.get(data_type, Type.TYPE_UNKNOWN) if not is_stream else Type.TYPE_STRUCT
+    field_type = TYPES_ELASTIC_TO_ODD.get(data_type, Type.TYPE_UNKNOWN)
 
     dsf: DataSetField = DataSetField(
         oddrn=oddrn_path,

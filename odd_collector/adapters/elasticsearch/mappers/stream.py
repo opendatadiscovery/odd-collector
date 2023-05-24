@@ -1,32 +1,12 @@
 from typing import Dict, List
 
-from odd_models.models import DataConsumer, DataEntity, DataEntityType, DataSet
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from .fields import map_field
 from ..logger import logger
 from . import metadata_extractor
 
 
-def build_data_stream_data(stream_data: Dict, oddrn_generator):
-    field_name = stream_data["name"]
-    oddrn_generator.set_oddrn_paths(indexes=field_name)
-    index_oddrn = oddrn_generator.get_oddrn_by_path("indexes")
-
-    logger.debug(f"Map Stream {stream_data}")
-
-    stream_data_entity =  DataEntity(
-        oddrn=index_oddrn,
-        name=field_name,
-        owner=None,
-        description="",
-        type=DataEntityType.VIEW,
-        metadata=[metadata_extractor.extract_index_metadata(stream_data)],
-        dataset=DataSet(parent_oddrn=None, rows_number=0, field_list=[])
-    )
-
-    return stream_data_entity
-
-
-def build_template_data(template_data: List, oddrn_generator):
+def get_template_structure(template_data: List, oddrn_generator):
     logger.debug(f"Lenght of template data is {len(template_data)}")
 
     if len(template_data) != 1:
@@ -34,7 +14,6 @@ def build_template_data(template_data: List, oddrn_generator):
 
     template_name = template_data[0]["name"]
     oddrn_generator.set_oddrn_paths(indexes=template_name)
-    index_oddrn = oddrn_generator.get_oddrn_by_path("indexes")
 
     index_template = template_data[0]['index_template']['template']
     if 'mappings' in index_template:
@@ -48,22 +27,32 @@ def build_template_data(template_data: List, oddrn_generator):
         ]
     else:
         fields = []
+    return fields
 
-    return DataEntity(
+
+def map_data_stream(stream_data, template_data, lifecycle_policies, oddrn_generator):
+    data_stream_fields = get_template_structure(template_data, oddrn_generator)
+
+    field_name = stream_data["name"]
+    oddrn_generator.set_oddrn_paths(indexes=field_name)
+    index_oddrn = oddrn_generator.get_oddrn_by_path("indexes")
+
+    logger.debug(f"Map Stream {stream_data} with lifecycle policies {lifecycle_policies}")
+
+    metadata = metadata_extractor.extract_index_metadata(stream_data)
+    if lifecycle_policies:
+        metadata['metadata'].update(lifecycle_policies)
+
+    logger.debug(f"Data stream {field_name} has meetadata {metadata}")
+
+    data_stream_entity =  DataEntity(
         oddrn=index_oddrn,
-        name=template_name,
+        name=field_name,
         owner=None,
         description="",
-        type=DataEntityType.TABLE,
-        metadata=None,
-        dataset=DataSet(parent_oddrn=None, rows_number=0, field_list=fields),
+        type=DataEntityType.VIEW,
+        metadata=[metadata],
+        dataset=DataSet(parent_oddrn=None, rows_number=0, field_list=data_stream_fields),
     )
 
-
-def map_data_stream(stream_data, template_data, oddrn_generator):
-    data_stream_entity = build_data_stream_data(stream_data, oddrn_generator)
-    data_stream_template_entity = build_template_data(template_data, oddrn_generator)
-
-    data_stream_entity.data_consumer = DataConsumer(inputs=[data_stream_template_entity.oddrn])
-
-    return [data_stream_entity, data_stream_template_entity]
+    return data_stream_entity
