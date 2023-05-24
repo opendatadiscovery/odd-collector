@@ -1,6 +1,6 @@
 from odd_collector_sdk.errors import MappingDataError
 from odd_collector.domain.plugin import DatabricksPlugin
-from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_collector_sdk.domain.adapter import AsyncAbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import DatabricksUnityCatalogGenerator
 from .mappers.schema import map_schema
@@ -8,21 +8,20 @@ from .mappers.table import map_table
 from .mappers.catalog import map_catalog
 from .client import DatabricksRestClient
 from itertools import groupby
-from odd_collector.logger import logger
 
 
-class Adapter(AbstractAdapter):
+class Adapter(AsyncAbstractAdapter):
     def __init__(self, config: DatabricksPlugin) -> None:
-        self.__oddrn_generator = DatabricksUnityCatalogGenerator(
+        self.oddrn_generator = DatabricksUnityCatalogGenerator(
             host_settings=config.workspace
         )
-        self.__client = DatabricksRestClient(config)
+        self.client = DatabricksRestClient(config)
 
     def get_data_source_oddrn(self) -> str:
-        return self.__oddrn_generator.get_data_source_oddrn()
+        return self.oddrn_generator.get_data_source_oddrn()
 
     async def get_data_entity_list(self) -> DataEntityList:
-        catalogs = await self.__client.get_catalogs()
+        catalogs = await self.client.get_catalogs()
         schemas_per_catalog = await self._get_schemas_per_catalog(catalogs)
         metadata = await self._get_tables_metadata(schemas_per_catalog)
 
@@ -38,18 +37,18 @@ class Adapter(AbstractAdapter):
                     schema = catalog[schema_name]
                     tables_entities_tmp: list[DataEntity] = []
                     tables_entities_tmp.extend(
-                        [map_table(self.__oddrn_generator, table) for table in schema]
+                        [map_table(self.oddrn_generator, table) for table in schema]
                     )
                     schema_entities_tmp.append(
                         map_schema(
-                            self.__oddrn_generator, schema_name, tables_entities_tmp
+                            self.oddrn_generator, schema_name, tables_entities_tmp
                         )
                     )
                     tables_entities.extend(tables_entities_tmp)
                 schema_entities.extend(schema_entities_tmp)
                 catalog_entities.append(
                     map_catalog(
-                        self.__oddrn_generator, catalog_name, schema_entities_tmp
+                        self.oddrn_generator, catalog_name, schema_entities_tmp
                     )
                 )
         except Exception as e:
@@ -64,7 +63,7 @@ class Adapter(AbstractAdapter):
         schemas = [
             (catalog, schema)
             for catalog in catalogs
-            for schema in await self.__client.get_schemas(catalog)
+            for schema in await self.client.get_schemas(catalog)
             if schema not in ("information_schema",)
         ]
         return schemas
@@ -72,7 +71,7 @@ class Adapter(AbstractAdapter):
     async def _get_tables_metadata(self, schemas_per_catalog: list) -> dict:
         tables = []
         for catalog, schema in schemas_per_catalog:
-            tables.extend(await self.__client.get_tables(catalog, schema))
+            tables.extend(await self.client.get_tables(catalog, schema))
         metadata = self._group_metadata(tables)
         return metadata
 
