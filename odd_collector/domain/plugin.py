@@ -281,7 +281,8 @@ class CouchbasePlugin(BasePlugin):
 class DatabricksPlugin(BasePlugin):
     type: Literal["databricks"]
     workspace: str
-    token: str
+    token: SecretStr
+    catalogs: Optional[list[str]] = None
 
 
 PLUGIN_FACTORY: PluginFactory = {

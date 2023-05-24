@@ -17,6 +17,7 @@ class Adapter(AsyncAbstractAdapter):
             host_settings=config.workspace
         )
         self.client = DatabricksRestClient(config)
+        self.catalogs = config.catalogs
 
     def get_data_source_oddrn(self) -> str:
         return self.oddrn_generator.get_data_source_oddrn()
@@ -31,26 +32,27 @@ class Adapter(AsyncAbstractAdapter):
 
         try:
             for catalog_name in metadata:
-                catalog = metadata[catalog_name]
-                schema_entities_tmp: list[DataEntity] = []
-                for schema_name in catalog:
-                    schema = catalog[schema_name]
-                    tables_entities_tmp: list[DataEntity] = []
-                    tables_entities_tmp.extend(
-                        [map_table(self.oddrn_generator, table) for table in schema]
-                    )
-                    schema_entities_tmp.append(
-                        map_schema(
-                            self.oddrn_generator, schema_name, tables_entities_tmp
+                if not self.catalogs or catalog_name in self.catalogs:
+                    catalog = metadata[catalog_name]
+                    schema_entities_tmp: list[DataEntity] = []
+                    for schema_name in catalog:
+                        schema = catalog[schema_name]
+                        tables_entities_tmp: list[DataEntity] = []
+                        tables_entities_tmp.extend(
+                            [map_table(self.oddrn_generator, table) for table in schema]
                         )
+                        schema_entities_tmp.append(
+                            map_schema(
+                                self.oddrn_generator, schema_name, tables_entities_tmp
+                            )
+                        )
+                        tables_entities.extend(tables_entities_tmp)
+                    schema_entities.extend(schema_entities_tmp)
+                    catalog_entities.append(
+                        map_catalog(self.oddrn_generator, catalog_name, schema_entities_tmp)
                     )
-                    tables_entities.extend(tables_entities_tmp)
-                schema_entities.extend(schema_entities_tmp)
-                catalog_entities.append(
-                    map_catalog(self.oddrn_generator, catalog_name, schema_entities_tmp)
-                )
         except Exception as e:
-            raise MappingDataError("Error during mapping") from e
+            raise MappingDataError(f"Error during mapping: {e}") from e
 
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),

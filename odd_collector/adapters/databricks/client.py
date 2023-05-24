@@ -1,5 +1,4 @@
 import aiohttp
-from databricks_cli.sdk.api_client import ApiClient
 from odd_collector_sdk.errors import DataSourceError
 from odd_collector.domain.plugin import DatabricksPlugin
 
@@ -7,8 +6,7 @@ from odd_collector.domain.plugin import DatabricksPlugin
 class DatabricksRestClient:
     def __init__(self, config: DatabricksPlugin):
         self.__host = f"https://{config.workspace}"
-        self.api_client = ApiClient(host=self.__host, token=config.token)
-        self.__headers = {"Authorization": f"Bearer {config.token}"}
+        self.__headers = {"Authorization": f"Bearer {config.token.get_secret_value()}"}
         self.__requests = {
             "catalogs": "/api/2.1/unity-catalog/catalogs",
             "schemas": "/api/2.1/unity-catalog/schemas",
