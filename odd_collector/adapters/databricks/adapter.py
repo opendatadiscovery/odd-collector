@@ -7,7 +7,8 @@ from .mappers.schema import map_schema
 from .mappers.table import map_table
 from .mappers.catalog import map_catalog
 from .client import DatabricksRestClient
-from itertools import groupby
+from funcy import group_by
+from collections import defaultdict
 
 
 class Adapter(AsyncAbstractAdapter):
@@ -24,7 +25,6 @@ class Adapter(AsyncAbstractAdapter):
         catalogs = await self.client.get_catalogs()
         schemas_per_catalog = await self._get_schemas_per_catalog(catalogs)
         metadata = await self._get_tables_metadata(schemas_per_catalog)
-
         catalog_entities: list[DataEntity] = []
         schema_entities: list[DataEntity] = []
         tables_entities: list[DataEntity] = []
@@ -47,9 +47,7 @@ class Adapter(AsyncAbstractAdapter):
                     tables_entities.extend(tables_entities_tmp)
                 schema_entities.extend(schema_entities_tmp)
                 catalog_entities.append(
-                    map_catalog(
-                        self.oddrn_generator, catalog_name, schema_entities_tmp
-                    )
+                    map_catalog(self.oddrn_generator, catalog_name, schema_entities_tmp)
                 )
         except Exception as e:
             raise MappingDataError("Error during mapping") from e
@@ -59,7 +57,7 @@ class Adapter(AsyncAbstractAdapter):
             items=[*tables_entities, *schema_entities, *catalog_entities],
         )
 
-    async def _get_schemas_per_catalog(self, catalogs: list) -> list[tuple]:
+    async def _get_schemas_per_catalog(self, catalogs: list[str]) -> list[tuple[str, str]]:
         schemas = [
             (catalog, schema)
             for catalog in catalogs
@@ -68,7 +66,9 @@ class Adapter(AsyncAbstractAdapter):
         ]
         return schemas
 
-    async def _get_tables_metadata(self, schemas_per_catalog: list) -> dict:
+    async def _get_tables_metadata(
+        self, schemas_per_catalog: list[tuple]
+    ) -> defaultdict[str, defaultdict[str, list]]:
         tables = []
         for catalog, schema in schemas_per_catalog:
             tables.extend(await self.client.get_tables(catalog, schema))
@@ -76,17 +76,9 @@ class Adapter(AsyncAbstractAdapter):
         return metadata
 
     @staticmethod
-    def _group_metadata(data: list) -> dict:
-        # Sort the data by catalog_name and schema_name
-        sorted_data = sorted(data, key=lambda x: (x["catalog_name"], x["schema_name"]))
-
-        # Group the sorted data by catalog_name and schema_name
-        grouped_data = {}
-        for key, group in groupby(
-            sorted_data, key=lambda x: (x["catalog_name"], x["schema_name"])
-        ):
-            catalog_name, schema_name = key
-            grouped_data.setdefault(catalog_name, {}).setdefault(
-                schema_name, []
-            ).extend(group)
-        return grouped_data
+    def _group_metadata(data: list[dict]) -> defaultdict[str, defaultdict[str, list]]:
+        grouped_metadata = defaultdict(lambda: defaultdict(list))
+        for catalog, items in group_by(lambda x: x["catalog_name"], data).items():
+            for item in items:
+                grouped_metadata[catalog][item["schema_name"]].append(item)
+        return grouped_metadata
