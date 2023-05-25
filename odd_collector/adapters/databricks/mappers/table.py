@@ -24,7 +24,6 @@ def map_table(
         updated_at=table_metadata["updated_at"],
         metadata=[],
         dataset=DataSet(
-            parent_oddrn=oddrn_generator.get_oddrn_by_path("tables"),
             field_list=[
                 map_column(oddrn_generator, column_node)
                 for column_node in columns_nodes

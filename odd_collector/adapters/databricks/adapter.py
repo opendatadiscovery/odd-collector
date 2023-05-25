@@ -9,6 +9,7 @@ from .mappers.catalog import map_catalog
 from .client import DatabricksRestClient
 from funcy import group_by
 from collections import defaultdict
+import asyncio
 
 
 class Adapter(AsyncAbstractAdapter):
@@ -49,7 +50,9 @@ class Adapter(AsyncAbstractAdapter):
                         tables_entities.extend(tables_entities_tmp)
                     schema_entities.extend(schema_entities_tmp)
                     catalog_entities.append(
-                        map_catalog(self.oddrn_generator, catalog_name, schema_entities_tmp)
+                        map_catalog(
+                            self.oddrn_generator, catalog_name, schema_entities_tmp
+                        )
                     )
         except Exception as e:
             raise MappingDataError(f"Error during mapping: {e}") from e
@@ -59,18 +62,16 @@ class Adapter(AsyncAbstractAdapter):
             items=[*tables_entities, *schema_entities, *catalog_entities],
         )
 
-    async def _get_schemas_per_catalog(self, catalogs: list[str]) -> list[tuple[str, str]]:
-        schemas = [
-            (catalog, schema)
-            for catalog in catalogs
-            for schema in await self.client.get_schemas(catalog)
-            if schema not in ("information_schema",)
-        ]
+    async def _get_schemas_per_catalog(self, catalogs: list[str]) -> list[tuple]:
+        response = await asyncio.gather(
+            *[self.client.get_schemas(catalog) for catalog in catalogs]
+        )
+        schemas = [item for catalog in response for item in catalog if item[1] not in ["information_schema"]]
         return schemas
 
     async def _get_tables_metadata(
         self, schemas_per_catalog: list[tuple]
-    ) -> defaultdict[str, defaultdict[str, list]]:
+    ) -> defaultdict[str, defaultdict]:
         tables = []
         for catalog, schema in schemas_per_catalog:
             tables.extend(await self.client.get_tables(catalog, schema))

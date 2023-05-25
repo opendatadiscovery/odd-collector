@@ -33,11 +33,11 @@ class DatabricksRestClient:
             return catalogs
         return []
 
-    async def get_schemas(self, catalog: str) -> list[str]:
+    async def get_schemas(self, catalog: str) -> list[tuple]:
         params = {"catalog_name": catalog}
         resp = await self._get_request(self.__requests["schemas"], params)
         if resp:
-            schemas = [schema["name"] for schema in resp["schemas"]]
+            schemas = [(catalog, schema["name"]) for schema in resp["schemas"]]
             return schemas
         return []
 
