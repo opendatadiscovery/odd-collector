@@ -1,6 +1,5 @@
 import logging
-from re import template
-from typing import Iterable, Dict, Optional, List
+from typing import Iterable, Dict, Optional
 
 from elasticsearch import Elasticsearch
 from odd_collector_sdk.domain.adapter import AbstractAdapter

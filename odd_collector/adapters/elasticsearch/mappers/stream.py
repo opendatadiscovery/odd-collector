@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import List
 
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
 from .fields import map_field
