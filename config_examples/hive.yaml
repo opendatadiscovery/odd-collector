@@ -6,11 +6,13 @@ plugins:
   - type: hive
     name: hive_adapter_new
     description: "" # Optional string
-    host: localhost # What host HiveServer2 runs on
-    scheme: # "http" | "https". Defaults to None.
-    port: 9083 # What port HiveServer2 runs on. Defaults to 10000 or 1000 if scheme is http or https
-    auth: NONE # "BASIC" |  "NOSASL" | "KERBEROS" | "NONE". Defaults to NONE
-    kerberos_service_name:  # Use with auth='KERBEROS' only
-    username: # Use with auth='LDAP' or auth='CUSTOM' only
-    password: # Use with auth='LDAP' or auth='CUSTOM' only
-    database: default
+    count_statistics: True # Optional boolean. Defaults to false
+    connection_params:
+      host: localhost # What host HiveServer2 runs on
+      scheme: # "http" | "https". Defaults to None.
+      port: 10000 # What port HiveServer2 runs on. Defaults to 10000 or 1000 if scheme is http or https
+      auth: NONE # "BASIC" |  "NOSASL" | "KERBEROS" | "NONE". Defaults to NONE
+      kerberos_service_name:  # Use with auth='KERBEROS' only
+      username: # Use with auth='LDAP' or auth='CUSTOM' only
+      password: # Use with auth='LDAP' or auth='CUSTOM' only
+      database: default
