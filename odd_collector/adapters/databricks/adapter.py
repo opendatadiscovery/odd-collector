@@ -66,7 +66,12 @@ class Adapter(AsyncAbstractAdapter):
         response = await asyncio.gather(
             *[self.client.get_schemas(catalog) for catalog in catalogs]
         )
-        schemas = [item for catalog in response for item in catalog if item[1] not in ["information_schema"]]
+        schemas = [
+            item
+            for catalog in response
+            for item in catalog
+            if item[1] not in ["information_schema"]
+        ]
         return schemas
 
     async def _get_tables_metadata(
