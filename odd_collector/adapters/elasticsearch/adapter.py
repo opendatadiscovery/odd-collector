@@ -52,8 +52,9 @@ class Adapter(AbstractAdapter):
 
         logger.debug("Process data streams and their templates")
         all_data_streams = self.__get_data_streams()
-        # Collect which streams use template
-        templates_info = self.get_templates_from_data_streams(all_data_streams)
+
+        logger.debug("Build template to data stream mapping")
+        templates_info = self.__get_templates_from_data_streams(all_data_streams)
 
         for template, data_streams in templates_info.items():
             template_meta = self.__get_data_stream_templates_info(template).get(
@@ -77,6 +78,7 @@ class Adapter(AbstractAdapter):
                 )
 
                 data_stream_entities.append(stream_data_entity)
+
             result.extend(data_stream_entities)
 
             logger.debug(f"Create template data entity {template}")
@@ -125,7 +127,14 @@ class Adapter(AbstractAdapter):
                 logger.debug(f"No lifecycle policy exists for this index {index}.")
                 return None
 
-    def get_templates_from_data_streams(self, data_streams):
+    def __get_templates_from_data_streams(self, data_streams):
+        """
+        Expected result
+        {
+             "template": [data_stream, data_stream1],
+             "another_template": [data_stream2]
+        }
+        """
         templates = {}
         for data_stream in data_streams:
             if data_stream["template"] not in templates:

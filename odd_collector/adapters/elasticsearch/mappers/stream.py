@@ -25,6 +25,7 @@ def get_template_structure(data_stream_name, template_data: List, oddrn_generato
             if not field_name.startswith("@")
         ]
     else:
+        logger.debug(f"Template {template_data[0]['name']} has empty structure")
         fields = []
     return fields
 
