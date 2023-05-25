@@ -59,7 +59,9 @@ def __get_field_type(props: Dict[str, Any]) -> str:
 
 def map_field(field_name, field_metadata: dict, oddrn_generator) -> DataSetField:
     data_type: str = __get_field_type(field_metadata)
-    logger.debug(f"Field {field_name} with metadata {field_metadata} has {data_type} type")
+    logger.debug(
+        f"Field {field_name} with metadata {field_metadata} has {data_type} type"
+    )
 
     oddrn_path: str = oddrn_generator.get_oddrn_by_path("fields", field_name)
     logger.debug(f"Field {field_name} has oddrn path {oddrn_path}")

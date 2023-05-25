@@ -57,16 +57,25 @@ class Adapter(AbstractAdapter):
         templates_info = self.get_templates_from_data_streams(all_data_streams)
 
         for template, data_streams in templates_info.items():
-            template_meta = self.__get_data_stream_templates_info(template).get("index_templates")
+            template_meta = self.__get_data_stream_templates_info(template).get(
+                "index_templates"
+            )
 
             data_stream_entities = []
-            logger.debug(f"Template {template} has structure {template_meta}")
+            logger.debug(f"Template {template} has metadata {template_meta}")
 
             for data_stream in data_streams:
-                logger.debug(f"Data stream {data_stream['name']} has template {template}")
+                logger.debug(
+                    f"Data stream {data_stream['name']} has template {template}"
+                )
 
                 lifecycle_policies = self.__get_rollover_policy(data_stream)
-                stream_data_entity = map_data_stream(data_stream, template_meta, lifecycle_policies, self.__oddrn_generator)
+                stream_data_entity = map_data_stream(
+                    data_stream,
+                    template_meta,
+                    lifecycle_policies,
+                    self.__oddrn_generator,
+                )
 
                 data_stream_entities.append(stream_data_entity)
             result.extend(data_stream_entities)
@@ -76,32 +85,41 @@ class Adapter(AbstractAdapter):
             data_streams_oddrn = [item.oddrn for item in data_stream_entities]
             logger.debug(f"List of data streams oddrn {data_streams_oddrn}")
 
-            template_entity = map_data_stream_template(template_meta, data_streams_oddrn, self.__oddrn_generator)
+            template_entity = map_data_stream_template(
+                template_meta, data_streams_oddrn, self.__oddrn_generator
+            )
             result.append(template_entity)
 
         return result
 
     def __get_rollover_policy(self, stream_data: Dict) -> Optional[Dict]:
-        backing_indices = [index_info['index_name'] for index_info in stream_data['indices']]
+        backing_indices = [
+            index_info["index_name"] for index_info in stream_data["indices"]
+        ]
         for index in backing_indices:
 
             index_settings = self.__es_client.indices.get(index=index)
-            lifecycle_policy = index_settings[index]['settings']['index'].get('lifecycle')
+            lifecycle_policy = index_settings[index]["settings"]["index"].get(
+                "lifecycle"
+            )
 
             if lifecycle_policy:
-                logger.debug(f"Index {index} has Lifecycle Policy {lifecycle_policy['name']}")
-                lifecycle_policy_data = self.__es_client.ilm.get_lifecycle(policy=lifecycle_policy['name'])
+                logger.debug(
+                    f"Index {index} has Lifecycle Policy {lifecycle_policy['name']}"
+                )
+                lifecycle_policy_data = self.__es_client.ilm.get_lifecycle(
+                    policy=lifecycle_policy["name"]
+                )
 
                 logger.debug(f"Lifecycle policy metadata {lifecycle_policy_data}")
-                rollover = lifecycle_policy_data[lifecycle_policy['name']]['policy']['phases']['hot']['actions']['rollover']
+                rollover = lifecycle_policy_data[lifecycle_policy["name"]]["policy"][
+                    "phases"
+                ]["hot"]["actions"]["rollover"]
 
-                max_zise = rollover['max_size'] if 'max_size' in rollover else None
-                max_age = rollover['max_age'] if 'max_age' in rollover else None
+                max_zise = rollover["max_size"] if "max_size" in rollover else None
+                max_age = rollover["max_age"] if "max_age" in rollover else None
 
-                lifecycle_metadata = {
-                    "max_age": max_age,
-                    "max_size": max_zise
-                }
+                lifecycle_metadata = {"max_age": max_age, "max_size": max_zise}
                 return lifecycle_metadata
 
             else:
@@ -111,10 +129,10 @@ class Adapter(AbstractAdapter):
     def get_templates_from_data_streams(self, data_streams):
         templates = {}
         for data_stream in data_streams:
-            if data_stream['template'] not in templates:
-                templates[data_stream['template']] = [data_stream]
+            if data_stream["template"] not in templates:
+                templates[data_stream["template"]] = [data_stream]
             else:
-                templates[data_stream['template']].append(data_stream)
+                templates[data_stream["template"]].append(data_stream)
         return templates
 
     def __get_mapping(self, index_name: str):
@@ -136,10 +154,6 @@ class Adapter(AbstractAdapter):
     def __get_data_stream_templates_info(self, template_name: str) -> Dict:
         response = self.__es_client.indices.get_index_template(name=template_name)
         return response
-
-    def __process_data_stream(self, data_stream, template_data, lifecycle_policies):
-        logger.debug(f"Process data stream {data_stream['name']} with its template {template_data}")
-        return map_data_stream(data_stream, template_data['index_templates'], lifecycle_policies, self.__oddrn_generator)
 
     def __process_index_data(self, index_name: str, index_mapping: dict):
         mapping = index_mapping["mappings"]["properties"]
