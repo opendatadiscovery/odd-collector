@@ -14,7 +14,8 @@ RUN apt-get update && \
     librdkafka-dev \
     unixodbc \
     unixodbc-dev \
-    openssl
+    openssl \
+    libsasl2-dev
 
 # For pyodbc
 RUN curl -s -o microsoft.asc https://packages.microsoft.com/keys/microsoft.asc \
