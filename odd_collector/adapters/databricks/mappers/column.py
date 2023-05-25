@@ -11,7 +11,9 @@ def split_by_braces(value: str) -> str:
     return value
 
 
-def map_column(oddrn_generator: DatabricksUnityCatalogGenerator, column: DatabricksColumn):
+def map_column(
+    oddrn_generator: DatabricksUnityCatalogGenerator, column: DatabricksColumn
+) -> DataSetField:
     name = column.name
     _type = column.type
     return DataSetField(

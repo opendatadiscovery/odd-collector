@@ -79,7 +79,7 @@ class Adapter(AsyncAbstractAdapter):
         return metadata
 
     @staticmethod
-    def _group_metadata(data: list[dict]) -> defaultdict[str, defaultdict[str, list]]:
+    def _group_metadata(data: list[dict]) -> defaultdict[str, defaultdict]:
         grouped_metadata = defaultdict(lambda: defaultdict(list))
         for catalog, items in group_by(lambda x: x["catalog_name"], data).items():
             for item in items:

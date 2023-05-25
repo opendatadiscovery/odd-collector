@@ -1,3 +1,4 @@
+from typing import Any
 from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
 from oddrn_generator import DatabricksUnityCatalogGenerator
 from odd_models.models import DataEntityType, DataSet
@@ -38,7 +39,7 @@ def get_column(table_info: dict, column_raw: dict) -> DatabricksColumn:
 
 def map_table(
     oddrn_generator: DatabricksUnityCatalogGenerator,
-    table_metadata: dict,
+    table_metadata: dict[str, Any],
 ) -> DataEntity:
     table = get_table(table_metadata)
     columns = table.columns
