@@ -27,6 +27,7 @@ class DatabasePlugin(WithHost, WithPort):
 
 class PostgreSQLPlugin(DatabasePlugin):
     type: Literal["postgresql"]
+    port: int = 5432
     database: str
     password: SecretStr = SecretStr("")
 
