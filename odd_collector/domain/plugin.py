@@ -293,6 +293,13 @@ class CouchbasePlugin(BasePlugin):
     num_sample_values: Optional[int] = 10
 
 
+class DatabricksPlugin(BasePlugin):
+    type: Literal["databricks"]
+    workspace: str
+    token: SecretStr
+    catalogs: Optional[list[str]] = None
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -329,4 +336,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "fivetran": FivetranPlugin,
     "cockroachdb": CockroachDBPlugin,
     "couchbase": CouchbasePlugin,
+    "databricks": DatabricksPlugin,
 }
