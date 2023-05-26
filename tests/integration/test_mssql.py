@@ -7,6 +7,12 @@ from testcontainers.mssql import SqlServerContainer
 
 from tests.integration.helpers import find_by_type
 
+create_user = """
+    CREATE LOGIN user_name WITH PASSWORD = 'yourStrong(!)Password';
+    CREATE USER user_name FOR LOGIN user_name;
+    GRANT SELECT TO user_name;
+"""
+
 create_tables = """
 CREATE TABLE Persons (
     PersonID int,
@@ -37,6 +43,7 @@ def test_mssql():
         engine = sqlalchemy.create_engine(mssql.get_connection_url())
 
         with engine.connect() as connection:
+            connection.exec_driver_sql(create_user)
             connection.exec_driver_sql(create_tables)
             connection.exec_driver_sql(create_view)
 
@@ -45,7 +52,7 @@ def test_mssql():
             name="test_mysql",
             database="tempdb",
             password=SecretStr("yourStrong(!)Password"),
-            user="SA",
+            user="user_name",
             host=mssql.get_container_host_ip(),
             port=mssql.get_exposed_port(1433),
         )
@@ -54,8 +61,6 @@ def test_mssql():
         database_services: list[DataEntity] = find_by_type(
             data_entities, DataEntityType.DATABASE_SERVICE
         )
-        print(data_entities)
-
         assert len(database_services) == 2  # 1 for the database, 1 for the schema
 
         tables = find_by_type(data_entities, DataEntityType.TABLE)

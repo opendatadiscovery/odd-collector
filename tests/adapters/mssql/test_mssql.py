@@ -5,11 +5,11 @@ from odd_models.models import DataEntityType
 
 from odd_collector.adapters.mssql.adapter import Adapter
 from odd_collector.adapters.mssql.models import Table, View
-from odd_collector.adapters.mssql.repository import Columns, DefaultConnector
+from odd_collector.adapters.mssql.repository import Columns, MysqlRepository
 from odd_collector.domain.plugin import MSSQLPlugin
 
 
-class TestDefaultConnector(DefaultConnector):
+class TestDefaultConnector(MysqlRepository):
     _table_response = [("AdventureWorks", "HumanResources", "Employee", "BASE TABLE")]
 
     _column_response = [
@@ -204,7 +204,7 @@ def config() -> MSSQLPlugin:
 
 def test_primary_keys(config, client):
     adapter = Adapter(config)
-    adapter._repo = client(config)
+    adapter.repository = client(config)
     data_entity_list = adapter.get_data_entity_list()
 
     table_elements = [

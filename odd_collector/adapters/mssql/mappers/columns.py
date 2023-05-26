@@ -2,7 +2,7 @@ from odd_models.models import DataSetField, DataSetFieldStat, DataSetFieldType, 
 from oddrn_generator import MssqlGenerator
 
 from ..models import Column
-from .metadata import map_metadata
+from .metadata import column_metadata
 from .types import TYPES_SQL_TO_ODD
 
 
@@ -16,7 +16,8 @@ def map_column(
             f"{parent_oddrn_path}_columns", column.column_name
         ),  # getting tables_columns or views_columns
         name=column.column_name,
-        metadata=map_metadata(column),
+        owner=None,
+        metadata=[column_metadata(entity=column)],
         type=DataSetFieldType(
             type=TYPES_SQL_TO_ODD.get(column.data_type, Type.TYPE_UNKNOWN),
             logical_type=column.data_type,
