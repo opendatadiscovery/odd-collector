@@ -48,8 +48,11 @@ class MySQLPlugin(DatabasePlugin):
 
 class MSSQLPlugin(DatabasePlugin):
     type: Literal["mssql"]
-    password: SecretStr
-    port: int = 1433
+    host: str
+    port: int
+    database: str
+    user: str
+    password: SecretStr = SecretStr("")
 
 
 class ClickhousePlugin(DatabasePlugin):
