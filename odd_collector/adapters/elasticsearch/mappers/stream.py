@@ -30,7 +30,9 @@ def get_template_structure(data_stream_name, template_data: List, oddrn_generato
     return fields
 
 
-def map_data_stream(stream_data, template_data, lifecycle_policies, oddrn_generator) -> DataEntity:
+def map_data_stream(
+    stream_data, template_data, lifecycle_policies, oddrn_generator
+) -> DataEntity:
     field_name = stream_data["name"]
 
     data_stream_fields = get_template_structure(
@@ -68,7 +70,9 @@ def map_data_stream(stream_data, template_data, lifecycle_policies, oddrn_genera
     return data_stream_entity
 
 
-def map_data_stream_template(template_data, data_streams_oddrn, oddrn_generator) -> DataEntity:
+def map_data_stream_template(
+    template_data, data_streams_oddrn, oddrn_generator
+) -> DataEntity:
 
     field_name = template_data[0]["name"]
 
