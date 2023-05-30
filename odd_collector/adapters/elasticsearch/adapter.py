@@ -54,7 +54,7 @@ class Adapter(AbstractAdapter):
         all_data_streams = self.__get_data_streams()
 
         logger.debug("Build template to data stream mapping")
-        templates_info = self.__get_templates_from_data_streams(all_data_streams)
+        templates_info = self.get_templates_from_data_streams(all_data_streams)
 
         for template, data_streams in templates_info.items():
             template_meta = self.__get_data_stream_templates_info(template).get(
@@ -127,7 +127,7 @@ class Adapter(AbstractAdapter):
                 logger.debug(f"No lifecycle policy exists for this index {index}.")
                 return None
 
-    def __get_templates_from_data_streams(self, data_streams):
+    def get_templates_from_data_streams(self, data_streams):
         """
         Expected result
         {
