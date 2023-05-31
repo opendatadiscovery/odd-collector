@@ -1,14 +1,13 @@
 from unittest import TestCase
 
+from odd_models.models import DataEntity
 from odd_collector.adapters.elasticsearch.adapter import Adapter, ElasticSearchGenerator
 from odd_collector.domain.plugin import ElasticsearchPlugin
 from odd_collector.adapters.elasticsearch.mappers.stream import (
-    DataEntity,
-    DataEntityType,
     map_data_stream,
     map_data_stream_template,
 )
-from odd_models.models import DataSetField, DataSetFieldType, Type
+from odd_models.models import Type
 
 
 class TestDataStreamMapping(TestCase):
