@@ -102,7 +102,9 @@ class Adapter(AbstractAdapter):
             for index in backing_indices:
 
                 index_settings = self.__es_client.indices.get(index=index)
-                lifecycle_policy = get_lax(index_settings, [index, "settings", "index", "lifecycle"])
+                lifecycle_policy = get_lax(
+                    index_settings, [index, "settings", "index", "lifecycle"]
+                )
 
                 if lifecycle_policy:
                     logger.debug(
@@ -114,9 +116,16 @@ class Adapter(AbstractAdapter):
 
                     logger.debug(f"Lifecycle policy metadata {lifecycle_policy_data}")
 
-                    rollover = get_lax(lifecycle_policy_data, [
-                            lifecycle_policy["name"], "policy", "phases", "hot", "actions", "rollover"
-                        ]
+                    rollover = get_lax(
+                        lifecycle_policy_data,
+                        [
+                            lifecycle_policy["name"],
+                            "policy",
+                            "phases",
+                            "hot",
+                            "actions",
+                            "rollover",
+                        ],
                     )
 
                     if rollover is not None:
@@ -134,6 +143,7 @@ class Adapter(AbstractAdapter):
                     return None
         except KeyError:
             logger.debug(f"Incorrect fields. Got fields: {stream_data}")
+            return None
 
     def get_templates_from_data_streams(self, data_streams: Dict) -> Dict:
         """
