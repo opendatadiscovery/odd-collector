@@ -117,10 +117,10 @@ class Adapter(AbstractAdapter):
                     "phases"
                 ]["hot"]["actions"]["rollover"]
 
-                max_zise = rollover["max_size"] if "max_size" in rollover else None
+                max_size = rollover["max_size"] if "max_size" in rollover else None
                 max_age = rollover["max_age"] if "max_age" in rollover else None
 
-                lifecycle_metadata = {"max_age": max_age, "max_size": max_zise}
+                lifecycle_metadata = {"max_age": max_age, "max_size": max_size}
                 return lifecycle_metadata
 
             else:
