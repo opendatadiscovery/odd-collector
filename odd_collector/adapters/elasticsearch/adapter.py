@@ -95,42 +95,45 @@ class Adapter(AbstractAdapter):
         return result
 
     def __get_rollover_policy(self, stream_data: Dict) -> Optional[Dict]:
-        backing_indices = [
-            index_info["index_name"] for index_info in stream_data["indices"]
-        ]
-        for index in backing_indices:
+        try:
+            backing_indices = [
+                index_info["index_name"] for index_info in stream_data["indices"]
+            ]
+            for index in backing_indices:
 
-            index_settings = self.__es_client.indices.get(index=index)
-            lifecycle_policy = get_lax(index_settings, [index, "settings", "index", "lifecycle"])
+                index_settings = self.__es_client.indices.get(index=index)
+                lifecycle_policy = get_lax(index_settings, [index, "settings", "index", "lifecycle"])
 
-            if lifecycle_policy:
-                logger.debug(
-                    f"Index {index} has Lifecycle Policy {lifecycle_policy['name']}"
-                )
-                lifecycle_policy_data = self.__es_client.ilm.get_lifecycle(
-                    policy=lifecycle_policy["name"]
-                )
+                if lifecycle_policy:
+                    logger.debug(
+                        f"Index {index} has Lifecycle Policy {lifecycle_policy['name']}"
+                    )
+                    lifecycle_policy_data = self.__es_client.ilm.get_lifecycle(
+                        policy=lifecycle_policy["name"]
+                    )
 
-                logger.debug(f"Lifecycle policy metadata {lifecycle_policy_data}")
+                    logger.debug(f"Lifecycle policy metadata {lifecycle_policy_data}")
 
-                rollover = get_lax(lifecycle_policy_data, [
-                        lifecycle_policy["name"], "policy", "phases", "hot", "actions", "rollover"
-                    ]
-                )
+                    rollover = get_lax(lifecycle_policy_data, [
+                            lifecycle_policy["name"], "policy", "phases", "hot", "actions", "rollover"
+                        ]
+                    )
 
-                if rollover is not None:
-                    max_size = rollover.get("max_size")
-                    max_age = rollover.get("max_age")
+                    if rollover is not None:
+                        max_size = rollover.get("max_size")
+                        max_age = rollover.get("max_age")
+                    else:
+                        max_size = None
+                        max_age = None
+
+                    lifecycle_metadata = {"max_age": max_age, "max_size": max_size}
+                    return lifecycle_metadata
+
                 else:
-                    max_size = None
-                    max_age = None
-
-                lifecycle_metadata = {"max_age": max_age, "max_size": max_size}
-                return lifecycle_metadata
-
-            else:
-                logger.debug(f"No lifecycle policy exists for this index {index}.")
-                return None
+                    logger.debug(f"No lifecycle policy exists for this index {index}.")
+                    return None
+        except KeyError:
+            logger.debug(f"Incorrect fields. Got fields: {stream_data}")
 
     def get_templates_from_data_streams(self, data_streams: Dict) -> Dict:
         """
