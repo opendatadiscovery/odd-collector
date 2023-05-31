@@ -1,6 +1,7 @@
 import logging
 from typing import Iterable, Dict, Optional
 
+from funcy import get_lax
 from elasticsearch import Elasticsearch
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
@@ -100,9 +101,7 @@ class Adapter(AbstractAdapter):
         for index in backing_indices:
 
             index_settings = self.__es_client.indices.get(index=index)
-            lifecycle_policy = index_settings[index]["settings"]["index"].get(
-                "lifecycle"
-            )
+            lifecycle_policy = get_lax(index_settings, [index, "settings", "index", "lifecycle"])
 
             if lifecycle_policy:
                 logger.debug(
@@ -113,12 +112,18 @@ class Adapter(AbstractAdapter):
                 )
 
                 logger.debug(f"Lifecycle policy metadata {lifecycle_policy_data}")
-                rollover = lifecycle_policy_data[lifecycle_policy["name"]]["policy"][
-                    "phases"
-                ]["hot"]["actions"]["rollover"]
 
-                max_size = rollover["max_size"] if "max_size" in rollover else None
-                max_age = rollover["max_age"] if "max_age" in rollover else None
+                rollover = get_lax(lifecycle_policy_data, [
+                        lifecycle_policy["name"], "policy", "phases", "hot", "actions", "rollover"
+                    ]
+                )
+
+                if rollover is not None:
+                    max_size = rollover.get("max_size")
+                    max_age = rollover.get("max_age")
+                else:
+                    max_size = None
+                    max_age = None
 
                 lifecycle_metadata = {"max_age": max_age, "max_size": max_size}
                 return lifecycle_metadata
@@ -127,7 +132,7 @@ class Adapter(AbstractAdapter):
                 logger.debug(f"No lifecycle policy exists for this index {index}.")
                 return None
 
-    def get_templates_from_data_streams(self, data_streams):
+    def get_templates_from_data_streams(self, data_streams: Dict) -> Dict:
         """
         Expected result
         {
