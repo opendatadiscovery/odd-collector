@@ -25,4 +25,5 @@ def map_column(
             logical_type=_type,
             is_nullable=False,
         ),
+        owner=None,
     )

@@ -1,3 +1,8 @@
+from collections import defaultdict
+import asyncio
+
+from funcy import group_by
+
 from odd_collector_sdk.errors import MappingDataError
 from odd_collector.domain.plugin import DatabricksPlugin
 from odd_collector_sdk.domain.adapter import AsyncAbstractAdapter
@@ -7,9 +12,6 @@ from .mappers.schema import map_schema
 from .mappers.table import map_table
 from .mappers.catalog import map_catalog
 from .client import DatabricksRestClient
-from funcy import group_by
-from collections import defaultdict
-import asyncio
 
 
 class Adapter(AsyncAbstractAdapter):
