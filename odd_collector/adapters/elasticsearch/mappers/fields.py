@@ -1,28 +1,30 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
+from ..logger import logger
+
 
 # As of ElasticSearch 7.x supported fields are listed here
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html#
 TYPES_ELASTIC_TO_ODD = {
-    "blob": "TYPE_STRING",
-    "boolean": "TYPE_BOOLEAN",
-    "constant_keyword": "TYPE_STRING",
-    "date": "TYPE_DATETIME",
-    "date_nanos": "TYPE_INTEGER",
-    "double": "TYPE_NUMBER",
-    "float": "TYPE_NUMBER",
-    "geo_point": "TYPE_MAP",
-    "flattened": "TYPE_MAP",
-    "half_float": "TYPE_NUMBER",
-    "integer": "TYPE_INTEGER",
-    "ip": "TYPE_STRING",
-    "keyword": "TYPE_STRING",
-    "long": "TYPE_INTEGER",
-    "nested": "TYPE_LIST",
-    "object": "TYPE_MAP",
-    "text": "TYPE_STRING",
-    "wildcard": "TYPE_STRING",
+    "blob": Type.TYPE_STRING,
+    "boolean": Type.TYPE_BOOLEAN,
+    "constant_keyword": Type.TYPE_STRING,
+    "date": Type.TYPE_DATETIME,
+    "date_nanos": Type.TYPE_INTEGER,
+    "double": Type.TYPE_NUMBER,
+    "float": Type.TYPE_NUMBER,
+    "geo_point": Type.TYPE_MAP,
+    "flattened": Type.TYPE_MAP,
+    "half_float": Type.TYPE_NUMBER,
+    "integer": Type.TYPE_INTEGER,
+    "ip": Type.TYPE_STRING,
+    "keyword": Type.TYPE_STRING,
+    "long": Type.TYPE_INTEGER,
+    "nested": Type.TYPE_LIST,
+    "object": Type.TYPE_MAP,
+    "text": Type.TYPE_STRING,
+    "wildcard": Type.TYPE_STRING,
 }
 
 
@@ -30,7 +32,7 @@ def is_logical(type_property: str) -> bool:
     return type_property == "boolean"
 
 
-def __get_field_type(props: Dict[str, Any]):
+def __get_field_type(props: Dict[str, Any]) -> str:
     """
     Sample mapping for field types
     {'@timestamp' : {'type' : "alias","path" : "timestamp"},
@@ -49,27 +51,35 @@ def __get_field_type(props: Dict[str, Any]):
     """
     if "type" in props:
         return props["type"]
-    if "properties" in props:
+    elif "properties" in props:
         return "object"
-    return None
+    else:
+        return "unknown"
 
 
 def map_field(field_name, field_metadata: dict, oddrn_generator) -> DataSetField:
     data_type: str = __get_field_type(field_metadata)
+    logger.debug(
+        f"Field {field_name} with metadata {field_metadata} has {data_type} type"
+    )
 
     oddrn_path: str = oddrn_generator.get_oddrn_by_path("fields", field_name)
+    logger.debug(f"Field {field_name} has oddrn path {oddrn_path}")
+
+    field_type = TYPES_ELASTIC_TO_ODD.get(data_type, Type.TYPE_UNKNOWN)
 
     dsf: DataSetField = DataSetField(
         oddrn=oddrn_path,
         name=field_name,
         metadata=[],
         type=DataSetFieldType(
-            type=TYPES_ELASTIC_TO_ODD.get(data_type, Type.TYPE_UNKNOWN),
-            logical_type=is_logical(data_type),
+            type=field_type,
+            logical_type=data_type,
             is_nullable=True,
         ),
         default_value=None,
         description=None,
+        owner=None,
     )
 
     return dsf
