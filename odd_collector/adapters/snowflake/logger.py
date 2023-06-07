@@ -1,3 +1,1 @@
-import logging
-
-logger = logging.getLogger("snowflake")
+from odd_collector_sdk.logger import logger
