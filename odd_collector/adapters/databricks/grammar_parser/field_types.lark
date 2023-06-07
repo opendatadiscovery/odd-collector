@@ -1,0 +1,24 @@
+?start: type
+
+BASIC_TYPE: "string"
+          | "int"
+          | "array"
+          | "struct"
+
+FIELD_NAME: (LETTER | "_") (LETTER | "_" | DIGIT | "-")*
+
+array: "array" "<" type ">"
+
+field: FIELD_NAME ":" type
+
+struct: "struct" "<" field ("," field)* ">"
+
+map: "map" "<" type "," type ">"
+
+?type: BASIC_TYPE
+     | array
+     | struct
+     | map
+
+%import common.LETTER
+%import common.DIGIT
