@@ -278,6 +278,11 @@ class CouchbasePlugin(BasePlugin):
     num_sample_values: Optional[int] = 10
 
 
+class SQLitePlugin(BasePlugin):
+    data_source: str
+    type: Literal["sqlite"]
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -314,4 +319,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "fivetran": FivetranPlugin,
     "cockroachdb": CockroachDBPlugin,
     "couchbase": CouchbasePlugin,
+    "sqlite": SQLitePlugin,
 }

@@ -1,0 +1,7 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: sqlite
+    name: sqlite_adapter
+    data_source: /path/to/local/file.db # in-memory database is not available as it won't be visible because each session has its own separate in-memory database.
