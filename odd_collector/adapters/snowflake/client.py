@@ -2,18 +2,18 @@ import contextlib
 import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Any, Callable, Dict, List, Type, Union
+from typing import Callable, Dict, List, Type, Union
 
 from funcy import lsplit
 from odd_collector_sdk.errors import DataSourceError
 from snowflake import connector
 from snowflake.connector.cursor import DictCursor
-from snowflake.connector.errors import DataError, ProgrammingError
 
 from odd_collector.domain.plugin import SnowflakePlugin
 from odd_collector.helpers import LowerKeyDict
 
 from .domain import Column, Pipe, RawPipe, RawStage, Table, View
+from .logger import logger
 
 TABLES_VIEWS_QUERY = """
 with recursive cte as (
@@ -223,9 +223,9 @@ class SnowflakeClient(SnowflakeClientBase):
             )
             cursor = DictCursor(connection)
             yield cursor
-        except (DataError, ProgrammingError) as e:
+        except Exception as e:
             raise DataSourceError(
-                "Error during getting information from Snowflake"
+                f"Error during getting information from Snowflake. {e}"
             ) from e
         finally:
             if cursor:
@@ -234,6 +234,8 @@ class SnowflakeClient(SnowflakeClientBase):
                 connection.close()
 
     def get_tables(self) -> List[Union[Table, View]]:
+        logger.info("Getting tables and views from Snowflake")
+
         def is_belongs(table: Table) -> Callable[[Column], bool]:
             def _(column: Column) -> bool:
                 return (
@@ -265,10 +267,12 @@ class SnowflakeClient(SnowflakeClientBase):
             return tables
 
     def get_raw_pipes(self) -> List[RawPipe]:
+        logger.info("Getting pipes from Snowflake")
         with self.connect() as cursor:
             return self._fetch_something(RAW_PIPES_QUERY, cursor, RawPipe)
 
     def get_raw_stages(self) -> List[RawStage]:
+        logger.info("Getting stages from Snowflake")
         with self.connect() as cursor:
             return self._fetch_something(RAW_STAGES_QUERY, cursor, RawStage)
 

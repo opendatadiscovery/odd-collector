@@ -1,5 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Dict
+
+from odd_collector.helpers.bytes_to_str import convert_bytes_to_str_in_dict
 
 
 @dataclass
@@ -30,8 +32,8 @@ class Column:
     domain_name: str
 
     @property
-    def metadata(self) -> Dict[str, str]:
-        return self.__dict__
+    def odd_metadata(self) -> Dict[str, str]:
+        return convert_bytes_to_str_in_dict(asdict(self))
 
     def __post_init__(self):
         self.is_primary_key = bool(self.is_primary_key)

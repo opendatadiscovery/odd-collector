@@ -1,27 +1,51 @@
-from funcy import get_in
-from hive_metastore_client.builders.table_builder import Table as HTable
+from dataclasses import dataclass
+from typing import Optional
 
-from odd_collector.adapters.hive.models.base_table import BaseTable
-from odd_collector.helpers.datatime_from_timestamp import datetime_from_timestamp
-from odd_collector.helpers.flatdict import FlatDict
+from funcy import omit
+
+from ..logger import logger
+from .column import Column
+from .table_description import TableDescription
 
 
-class Table(BaseTable):
-    @classmethod
-    def from_hive(cls, table: HTable) -> "Table":
-        metadata = {
-            "retention": table.retention,
-            "ownerType": table.ownerType,
-            "table_type": table.tableType,
-            "temporary": table.temporary,
-            **FlatDict(table.parameters),
-        }
-        return cls(
-            table_name=table.tableName,
-            table_database=table.dbName,
-            owner=table.owner,
-            table_type=table.tableType,
-            metadata=metadata,
-            rows_number=get_in(table.parameters, ["numRows"]),
-            create_time=datetime_from_timestamp(table.createTime),
-        )
+@dataclass
+class Table:
+    name: str
+    description: TableDescription
+
+    @property
+    def columns(self) -> list[Column]:
+        return self.description.columns
+
+    @property
+    def primary_keys(self) -> list[str]:
+        return self.description.primary_keys
+
+    @property
+    def rows_number(self) -> Optional[int]:
+        return self.description.table_parameters.get("numRows")
+
+    @property
+    def odd_metadata(self) -> dict[str, str]:
+        try:
+            table_params = omit(
+                self.description.table_parameters, ["COLUMN_STATS_ACCURATE"]
+            )
+
+            return {
+                **self.description.storage_information,
+                **self.description.storage_description_params,
+                **table_params,
+                **self.description.detailed_table_information,
+            }
+        except Exception as e:
+            logger.warning(f"Could not get table metadata for {self.name}. {e}")
+            return {}
+
+    @property
+    def owner(self) -> Optional[str]:
+        return self.description.detailed_table_information.get("Owner")
+
+    @property
+    def create_time(self) -> Optional[str]:
+        return self.description.detailed_table_information.get("CreateTime")

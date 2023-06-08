@@ -1,39 +1,26 @@
-from typing import Any, Optional
+import traceback
+from dataclasses import dataclass
+from typing import Optional
 
-from hive_metastore_client.builders.table_builder import Table as HTable
 from sql_metadata.parser import Parser
 
 from odd_collector.adapters.hive.logger import logger
-from odd_collector.adapters.hive.models.base_table import BaseTable
-from odd_collector.helpers.datatime_from_timestamp import datetime_from_timestamp
-from odd_collector.helpers.flatdict import FlatDict
+
+from .table import Table
 
 
-class View(BaseTable):
-    depends_on: list[str] = []
+@dataclass
+class View(Table):
+    @property
+    def depends_on(self) -> list[str]:
+        if (
+            not self.description
+            or not self.description.view_definition
+            or not self.description.view_definition.original_text
+        ):
+            return []
 
-    @classmethod
-    def from_hive(cls, table: HTable) -> "View":
-        metadata = {
-            "retention": table.retention,
-            "ownerType": table.ownerType,
-            "table_type": table.tableType,
-            "temporary": table.temporary,
-            "rewriteEnabled": table.rewriteEnabled,
-            "viewExpandedText": table.viewExpandedText,
-            "viewOriginalText": table.viewOriginalText,
-            **FlatDict(table.parameters),
-        }
-
-        return cls(
-            table_name=table.tableName,
-            table_database=table.dbName,
-            owner=table.owner,
-            table_type=table.tableType,
-            metadata=metadata,
-            depends_on=get_view_depended_names(table.viewOriginalText),
-            create_time=datetime_from_timestamp(table.createTime),
-        )
+        return get_view_depended_names(self.description.view_definition.original_text)
 
 
 def get_view_depended_names(view_text: Optional[str]) -> list[str]:
@@ -42,5 +29,6 @@ def get_view_depended_names(view_text: Optional[str]) -> list[str]:
     try:
         return Parser(view_text).tables
     except Exception as e:
-        logger.warning(f"Could get table names from view {view_text}. {e}")
+        logger.warning(f"Could get table names from view. {e}")
+        logger.debug(f"View {view_text}. {traceback.format_exc()}")
         return []

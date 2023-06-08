@@ -41,20 +41,20 @@ INSERT INTO TABLE one_row VALUES (1);
 
 ```text
 CREATE TABLE one_row_complex (
-    `boolean` BOOLEAN,
-    `tinyint` TINYINT,
-    `smallint` SMALLINT,
-    `int` INT,
-    `bigint` BIGINT,
-    `float` FLOAT,
-    `double` DOUBLE,
-    `string` STRING,
-    `timestamp` TIMESTAMP,
-    `binary` BINARY,
-    `array` ARRAY<int>,
-    `map` MAP<int, int>,
-    `struct` STRUCT<a: int, b: int>,
-    `decimal` DECIMAL(10, 1)
+    `boolean_col` BOOLEAN,
+    `tinyint_col` TINYINT,
+    `smallint_col` SMALLINT,
+    `int_col` INT,
+    `bigint_col` BIGINT,
+    `float_col` FLOAT,
+    `double_col` DOUBLE,
+    `string_col` STRING,
+    `timestamp_col` TIMESTAMP,
+    `binary_col` BINARY,
+    `array_col` ARRAY<int>,
+    `map_col` MAP<int, int>,
+    `struct_col` STRUCT<a: int, b: int>,
+    `decimal_col` DECIMAL(10, 1)
     );
 INSERT OVERWRITE TABLE one_row_complex SELECT
     true,
@@ -94,10 +94,26 @@ SELECT * FROM one_row_complex;
 #### Simple view depending on view and table
 
 ```text
-set hive.strict.checks.cartesian.product = false
+set hive.strict.checks.cartesian.product = false;
 ```
 
 ```text
 CREATE VIEW one_row_complex_view_2 AS
-SELECT t.`boolean`, v.`tinyint` FROM one_row_complex as t, one_row_complex_view as v;
+SELECT t.`boolean_col`, v.`tinyint_col` FROM one_row_complex as t, one_row_complex_view as v;
+```
+
+#### Primary and foreign keys
+
+```text
+create table pk(id1 integer, id2 integer,
+primary key(id1, id2) disable novalidate);
+
+create table fk(id1 integer, id2 integer,
+constraint c1 foreign key(id1, id2) references pk(id2, id1) disable novalidate);
+```
+
+#### Run analyze to count statistics
+
+```text
+ANALYZE TABLE one_row_complex COMPUTE STATISTICS FOR COLUMNS;
 ```

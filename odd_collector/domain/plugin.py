@@ -300,6 +300,13 @@ class SQLitePlugin(BasePlugin):
     data_source: str
     type: Literal["sqlite"]
 
+      
+class DatabricksPlugin(BasePlugin):
+    type: Literal["databricks"]
+    workspace: str
+    token: SecretStr
+    catalogs: Optional[list[str]] = None
+
 
 class DatabricksPlugin(BasePlugin):
     type: Literal["databricks"]
