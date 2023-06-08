@@ -2,7 +2,7 @@ from typing import List, Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
-from pydantic import SecretStr, validator
+from pydantic import BaseModel, SecretStr, validator
 
 from odd_collector.domain.predefined_data_source import PredefinedDatasourceParams
 
@@ -27,6 +27,7 @@ class DatabasePlugin(WithHost, WithPort):
 
 class PostgreSQLPlugin(DatabasePlugin):
     type: Literal["postgresql"]
+    port: int = 5432
     database: str
     password: SecretStr = SecretStr("")
 
@@ -47,8 +48,11 @@ class MySQLPlugin(DatabasePlugin):
 
 class MSSQLPlugin(DatabasePlugin):
     type: Literal["mssql"]
-    password: SecretStr
-    port: int = 1433
+    host: str
+    port: int
+    database: str
+    user: str
+    password: SecretStr = SecretStr("")
 
 
 class ClickhousePlugin(DatabasePlugin):
@@ -90,10 +94,24 @@ class SnowflakePlugin(DatabasePlugin):
     warehouse: str  # active warehouse
 
 
-class HivePlugin(WithHost, WithPort):
-    type: Literal["hive"]
+class HiveConnectionParams(BaseModel):
     database: str
-    port: int
+    host: str
+    port: Optional[int] = None
+    scheme: Optional[str] = None
+    username: Optional[str] = None
+    auth: Optional[str] = None
+    configuration: Optional[dict] = None
+    kerberos_service_name: Optional[str] = None
+    password: Optional[str] = None
+    check_hostname: Optional[str] = None  # "true" or "false"
+    ssl_cert: Optional[str] = None
+
+
+class HivePlugin(BasePlugin):
+    type: Literal["hive"]
+    count_statistics: bool = False
+    connection_params: HiveConnectionParams
 
 
 class ElasticsearchPlugin(WithHost, WithPort):
@@ -283,6 +301,13 @@ class SQLitePlugin(BasePlugin):
     type: Literal["sqlite"]
 
 
+class DatabricksPlugin(BasePlugin):
+    type: Literal["databricks"]
+    workspace: str
+    token: SecretStr
+    catalogs: Optional[list[str]] = None
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -320,4 +345,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "cockroachdb": CockroachDBPlugin,
     "couchbase": CouchbasePlugin,
     "sqlite": SQLitePlugin,
+    "databricks": DatabricksPlugin,
 }
