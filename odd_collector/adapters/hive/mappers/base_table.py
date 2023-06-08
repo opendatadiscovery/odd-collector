@@ -4,9 +4,10 @@ from oddrn_generator import HiveGenerator
 
 from odd_collector.adapters.hive.mappers.table import map_table
 from odd_collector.adapters.hive.mappers.view import map_view
-from odd_collector.adapters.hive.models.base_table import BaseTable
-from odd_collector.adapters.hive.models.table import Table
-from odd_collector.adapters.hive.models.view import View
+
+from ..models.base_table import BaseTable
+from ..models.table import Table
+from ..models.view import View
 
 
 def map_base_table(table: BaseTable, generator: HiveGenerator) -> DataEntity:

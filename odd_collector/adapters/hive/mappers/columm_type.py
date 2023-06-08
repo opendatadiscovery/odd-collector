@@ -26,9 +26,7 @@ TYPES_HIVE_TO_ODD = {
 
 
 def map_column_type(column_type: ColumnType):
-    odd_type = TYPES_HIVE_TO_ODD.get(column_type.field_type)
+    if column_type.field_type:
+        return TYPES_HIVE_TO_ODD.get(column_type.field_type, Type.TYPE_UNKNOWN)
 
-    if not odd_type:
-        odd_type = Type.TYPE_UNKNOWN
-
-    return odd_type
+    return Type.TYPE_UNKNOWN

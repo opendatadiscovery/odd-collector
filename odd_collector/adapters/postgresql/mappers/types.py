@@ -37,6 +37,7 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "json": Type.TYPE_STRING,
     "jsonb": Type.TYPE_STRING,
     "tsvector": Type.TYPE_STRING,
+    "name": Type.TYPE_CHAR,
     "bit": Type.TYPE_BINARY,  # BITOID recheck
     "boolean": Type.TYPE_BOOLEAN,  # BOOLOID
     "character": Type.TYPE_CHAR,  # BPCHAROID recheck
@@ -55,6 +56,7 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "timestamp with time zone": Type.TYPE_DATETIME,  # TIMESTAMPTZOID
     "bit varying": Type.TYPE_BINARY,  # VARBITOID recheck
     "character varying": Type.TYPE_STRING,  # VARCHAROID
+    "bytea": Type.TYPE_BINARY,
     "ARRAY": Type.TYPE_LIST,  # view information_schema.columns recheck
 }
 

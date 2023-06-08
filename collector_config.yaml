@@ -1,5 +1,5 @@
-default_pulling_interval: 10
-token: ""
+default_pulling_interval: 10 # Optional integer. Defaults to 0
+token: "" # Optional string
 platform_host_url: http://localhost:8080
 chunk_size: 1000
 plugins:

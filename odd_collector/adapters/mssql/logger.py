@@ -1,3 +1,1 @@
-import logging
-
-logger = logging.getLogger("mssql")
+from odd_collector_sdk.logger import logger

@@ -1,17 +1,28 @@
+from dataclasses import dataclass
 from typing import Optional
 
-from pydantic import BaseModel
-from thrift_files.libraries.thrift_hive_metastore_client.ttypes import ColumnStatistics
+from ..grammar_parser.parser import parser
+from ..grammar_parser.transformer import transformer
+from ..logger import logger
+from .column_statistics import ColumnStatistics
+from .column_types import ColumnType, UnionColumnType
 
-from odd_collector.adapters.hive.models.column_types import ColumnType
 
-
-class Column(BaseModel):
-    col_name: str
-    col_type: ColumnType
+@dataclass
+class Column:
+    name: str
+    type: ColumnType
     comment: Optional[str] = None
-    statistic: Optional[ColumnStatistics] = None
-    is_primary: Optional[bool] = False
+    statistics: Optional[ColumnStatistics] = None
 
-    class Config:
-        arbitrary_types_allowed = True
+
+def parse_column_type(column_type: str) -> ColumnType:
+    try:
+        parsed = parser.parse(column_type)
+        col_type: ColumnType = transformer.transform(parsed)
+        col_type.logical_type = column_type
+
+        return col_type
+    except Exception as e:
+        logger.error(f"Could not parse type {column_type}. {e}")
+        return UnionColumnType(logical_type=column_type)
