@@ -48,7 +48,7 @@ To learn more about collector types and ODD Platform's architecture, [read the d
 | Airbyte       | [config](config_examples/airbyte.yaml)                                                  |
 | SingleStore   | [config](config_examples/singlestore.yaml)                                              |
 | cockroachdb   | [config](config_examples/cockroachdb.yaml)                                              |
-| sqlite   | [config](config_examples/sqlite.yaml)                                              |
+| sqlite        | [config](config_examples/sqlite.yaml)                                              |
 
 ## Class diagram of adapter class hierarchy
 This may help you to understand which fields you need for each adapter in `collector_config.yaml` and also may be helpful for a new adapter developer.
