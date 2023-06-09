@@ -12,7 +12,7 @@ def get_table(raw: dict, columns: list[dict]) -> DuckDBTable:
         catalog=raw.pop("table_catalog"),
         schema=raw.pop("table_schema"),
         name=raw.pop("table_name"),
-        type=raw.pop("table_type"),
+        type=raw.get("table_type"),
         odd_metadata=raw,
         columns=[column for column in columns],
     )
@@ -25,8 +25,8 @@ def get_column(column_raw: dict) -> DuckDBColumn:
         table_schema=column_raw.pop("table_schema"),
         table_name=column_raw.pop("table_name"),
         name=column_raw.pop("column_name"),
-        type=column_raw.pop("data_type"),
-        is_nullable=column_raw.pop("is_nullable"),
+        type=column_raw.get("data_type"),
+        is_nullable=column_raw.get("is_nullable"),
         odd_metadata=column_raw,
     )
     return column
