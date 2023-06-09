@@ -9,7 +9,11 @@ class DuckDBClient:
         resp = self.conn.sql(
             f"SELECT schema_name FROM information_schema.schemata WHERE catalog_name = '{catalog}'"
         ).fetchall()
-        schemas = [item[0] for item in resp if item[0] not in ['pg_catalog', 'information_schema']]
+        schemas = [
+            item[0]
+            for item in resp
+            if item[0] not in ["pg_catalog", "information_schema"]
+        ]
         return schemas
 
     def get_tables_metadata(self, catalog: str, schema: str) -> list[dict]:

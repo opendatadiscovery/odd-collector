@@ -1,6 +1,7 @@
 # https://duckdb.org/docs/sql/data_types/overview
 
 from odd_models.models import Type
+
 TYPES_SQL_TO_ODD: dict[str, Type] = {
     "BIGINT": Type.TYPE_INTEGER,
     "BOOLEAN": Type.TYPE_BOOLEAN,
@@ -26,4 +27,3 @@ TYPES_SQL_TO_ODD: dict[str, Type] = {
     "MAP": Type.TYPE_MAP,
     "STRUCT": Type.TYPE_STRUCT,
 }
-

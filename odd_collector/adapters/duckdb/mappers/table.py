@@ -33,9 +33,7 @@ def get_column(column_raw: dict) -> DuckDBColumn:
 
 
 def map_table(
-    oddrn_generator: DuckDBGenerator,
-    table_metadata: dict,
-    columns_metadata: list[dict]
+    oddrn_generator: DuckDBGenerator, table_metadata: dict, columns_metadata: list[dict]
 ) -> DataEntity:
     table = get_table(table_metadata, columns_metadata)
     columns = table.columns

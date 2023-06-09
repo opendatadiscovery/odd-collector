@@ -11,9 +11,7 @@ def split_by_braces(value: str) -> str:
     return value
 
 
-def map_column(
-    oddrn_generator: DuckDBGenerator, column: DuckDBColumn
-) -> DataSetField:
+def map_column(oddrn_generator: DuckDBGenerator, column: DuckDBColumn) -> DataSetField:
     name = column.name
     _type = column.type
     return DataSetField(
