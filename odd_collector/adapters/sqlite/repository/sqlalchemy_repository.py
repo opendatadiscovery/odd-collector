@@ -41,17 +41,13 @@ class SqlAlchemyRepository(Repository):
 
     def get_views(self) -> Iterable[View]:
         names = self._inspector.get_view_names()
-
-        views: Dict[str, View] = {
-            view_name: View(
+        for view_name in names:
+            view = View(
                 name=view_name,
                 columns=self._get_columns(view_name),
                 view_definition=self._inspector.get_view_definition(view_name),
             )
-            for view_name in names
-        }
-
-        return iter(views.values())
+            yield view
 
     def _get_columns(self, table_name: str) -> List[Column]:
         return lmap(create_column, self._inspector.get_columns(table_name))

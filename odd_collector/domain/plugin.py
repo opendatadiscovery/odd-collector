@@ -2,7 +2,7 @@ from typing import List, Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
-from pydantic import BaseModel, SecretStr, validator
+from pydantic import BaseModel, SecretStr, validator, FilePath
 
 from odd_collector.domain.predefined_data_source import PredefinedDatasourceParams
 
@@ -297,7 +297,7 @@ class CouchbasePlugin(BasePlugin):
 
 
 class SQLitePlugin(BasePlugin):
-    data_source: str
+    data_source: FilePath
     type: Literal["sqlite"]
 
 
