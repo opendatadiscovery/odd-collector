@@ -303,6 +303,12 @@ class DatabricksPlugin(BasePlugin):
     catalogs: Optional[list[str]] = None
 
 
+class DuckDBPlugin(BasePlugin):
+    type: Literal["duckdb"]
+    path: str
+    databases: list[str]
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -340,4 +346,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "cockroachdb": CockroachDBPlugin,
     "couchbase": CouchbasePlugin,
     "databricks": DatabricksPlugin,
+    "duckdb": DuckDBPlugin,
 }
