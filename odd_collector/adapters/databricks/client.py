@@ -1,6 +1,7 @@
 import aiohttp
 from odd_collector_sdk.errors import DataSourceError
 from odd_collector.domain.plugin import DatabricksPlugin
+from .logger import logger
 
 
 class DatabricksRestClient:
@@ -20,6 +21,7 @@ class DatabricksRestClient:
             try:
                 async with session.get(url, params=params) as resp:
                     result = await resp.json()
+                    logger.debug(f"Result of request {url} is {result}") 
                 return result
             except Exception as e:
                 raise DataSourceError(

@@ -1,4 +1,5 @@
 from typing import Any
+
 from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
 from oddrn_generator import DatabricksUnityCatalogGenerator
 from odd_models.models import DataEntityType, DataSet
@@ -6,6 +7,7 @@ from odd_models.models import DataEntity
 from odd_collector.helpers.datetime_from_ms import datetime_from_milliseconds
 from .column import map_column
 from .models import DatabricksTable, DatabricksColumn
+from ..logger import logger
 
 
 def get_table(raw: dict) -> DatabricksTable:
@@ -48,6 +50,12 @@ def map_table(
         schemas=table.schema,
         tables=table.name,
     )
+    field_list = []
+    if columns is not None:
+        for column in columns:
+            processed_ds_fields = map_column(oddrn_generator, column) 
+            field_list.extend(processed_ds_fields)
+    
     return DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path("tables", table.name),
         name=table.name,
@@ -57,6 +65,6 @@ def map_table(
         updated_at=table.update_time,
         metadata=[extract_metadata("databricks", table, DefinitionType.DATASET)],
         dataset=DataSet(
-            field_list=[map_column(oddrn_generator, column) for column in columns],
+            field_list=field_list,
         ),
     )

@@ -2,8 +2,19 @@
 
 BASIC_TYPE: "string"
           | "int"
-          | "array"
-          | "struct"
+          | "float"
+          | "double"
+          | "bigint"
+          | "binary"
+          | "boolean"
+          | "date"
+          | "decimal"
+          | "void"
+          | "interval"
+          | "smallint"
+          | "timestamp"
+          | "timestamp_ntz"
+          | "tinyint"
 
 FIELD_NAME: (LETTER | "_") (LETTER | "_" | DIGIT | "-")*
 
