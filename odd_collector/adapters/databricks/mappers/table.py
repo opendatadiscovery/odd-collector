@@ -7,7 +7,6 @@ from odd_models.models import DataEntity
 from odd_collector.helpers.datetime_from_ms import datetime_from_milliseconds
 from .column import map_column
 from .models import DatabricksTable, DatabricksColumn
-from ..logger import logger
 
 
 def get_table(raw: dict) -> DatabricksTable:
