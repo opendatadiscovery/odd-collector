@@ -52,9 +52,9 @@ def map_table(
     field_list = []
     if columns is not None:
         for column in columns:
-            processed_ds_fields = map_column(oddrn_generator, column) 
+            processed_ds_fields = map_column(oddrn_generator, column)
             field_list.extend(processed_ds_fields)
-    
+
     return DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path("tables", table.name),
         name=table.name,

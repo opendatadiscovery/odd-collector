@@ -21,7 +21,7 @@ class DatabricksRestClient:
             try:
                 async with session.get(url, params=params) as resp:
                     result = await resp.json()
-                    logger.debug(f"Result of request {url} is {result}") 
+                    logger.debug(f"Result of request {url} is {result}")
                 return result
             except Exception as e:
                 raise DataSourceError(
