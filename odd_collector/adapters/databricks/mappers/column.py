@@ -5,6 +5,7 @@ from oddrn_generator import DatabricksUnityCatalogGenerator
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from .models import DatabricksColumn
 from .types import TYPES_SQL_TO_ODD
+from .exceptions import UndefinedType
 from ..logger import logger
 from ..grammar_parser.parser import parser, traverse_tree
 from ..grammar_parser.column_type import Struct, ArrayType, Map, BasicType, ParseType
@@ -103,9 +104,6 @@ def build_dataset_field(
             )
 
     _build_ds_field_from_type(column.name, column_type)
-    logger.debug("______________")
-    logger.debug(generated_dataset_fields)
-    logger.debug("______________")
     return generated_dataset_fields
 
 
@@ -128,7 +126,7 @@ def get_logical_type(type_field: Union[ParseType, str]) -> str:
             + ")"
         )
     else:
-        raise Exception(f"Undefiend type {type_field}")
+        raise UndefinedType(f"Undefiend type {type_field}")
 
 
 def get_databricks_type(type_field: Union[ParseType, str]) -> Type:
@@ -143,7 +141,7 @@ def get_databricks_type(type_field: Union[ParseType, str]) -> Type:
     elif isinstance(type_field, Struct):
         return Type.TYPE_STRUCT
     else:
-        raise Exception(f"Undefiend type {type_field}")
+        raise UndefinedType(f"Undefiend type {type_field}")
 
 
 def map_column(
