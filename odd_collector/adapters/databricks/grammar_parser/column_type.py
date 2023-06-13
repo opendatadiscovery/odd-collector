@@ -54,9 +54,9 @@ class Struct(ParseType):
         self.fields = fields
 
     def to_databricks_type(self) -> str:
-        fields_str = ", ",join(
-                f"{name}: {type_val.to_databricks_type()}"
-                for (name, type_val) in self.fields.items()
+        fields_str = ", ", join(
+            f"{name}: {type_val.to_databricks_type()}"
+            for (name, type_val) in self.fields.items()
         )
 
         return f"Struct<{fields_str}>"

@@ -1,4 +1,3 @@
-
 from lark import Lark, Tree, Token
 
 
@@ -10,9 +9,11 @@ parser = Lark.open("field_types.lark", rel_to=__file__, parser="lalr", start="ty
 
 def traverse_tree(node):
     if isinstance(node, Tree):
-        if node.data == 'array':
+        if node.data == "array":
             if len(node.children) != 1:
-                raise StructureError(f"Invalid array structure: expected 1 child, got: {len(node.children)}")
+                raise StructureError(
+                    f"Invalid array structure: expected 1 child, got: {len(node.children)}"
+                )
 
             child = node.children[0]
             child_value = traverse_tree(child)
@@ -22,7 +23,7 @@ def traverse_tree(node):
 
             return ArrayType(child_value)
 
-        elif node.data == 'map':
+        elif node.data == "map":
             subtypes = []
             for child in node.children:
                 child_value = traverse_tree(child)
@@ -31,7 +32,7 @@ def traverse_tree(node):
                 subtypes.append(child_value)
             return Map(subtypes[0], subtypes[1])
 
-        elif node.data == 'struct':
+        elif node.data == "struct":
             fields = {}
             for child in node.children:
                 value = traverse_tree(child)
@@ -41,7 +42,7 @@ def traverse_tree(node):
                     raise StructureError(f"Got an unexpected nested child: {value}")
             return Struct(fields)
 
-        elif node.data == 'field':
+        elif node.data == "field":
             if len(node.children) != 2:
                 raise StructureError(f"Unexpected field structure: {node}")
             field_name_node, field_type_node = node.children
@@ -59,11 +60,11 @@ def traverse_tree(node):
 
         else:
             raise UnexpectedTypeError(f"Unexpected tree type: {node.data}")
-        
+
     elif isinstance(node, Token):
-        if node.type == 'BASIC_TYPE':
+        if node.type == "BASIC_TYPE":
             return BasicType(node.value)
-        elif node.type == 'FIELD_NAME':
+        elif node.type == "FIELD_NAME":
             return node.value
         else:
             raise UnexpectedTypeError(f"Unexpected token type: {node.type}")
