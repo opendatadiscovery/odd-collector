@@ -16,7 +16,7 @@ def split_by_braces(value: str) -> str:
     return value
 
 
-def build_dataset_field(column: DatabricksColumn, oddrn_generator: DatabricksUnityCatalogGenerator):
+def build_dataset_field(column: DatabricksColumn, oddrn_generator: DatabricksUnityCatalogGenerator) -> List[DataSetField]:
     logger.debug(f"Build dataset field for {column.name} with type {column.type}")
     type_tree = parser.parse(column.type)
     column_type = traverse_tree(type_tree)
@@ -36,7 +36,7 @@ def build_dataset_field(column: DatabricksColumn, oddrn_generator: DatabricksUni
                     name=column_name,
                     metadata=[extract_metadata("databricks", column, DefinitionType.DATASET_FIELD)],
                     type=DataSetFieldType(
-                        type=Type.TYPE_LIST,
+                        type=Type.TYPE_STRUCT,
                         logical_type=get_logical_type(column_type),
                         is_nullable=False,
                     ),
@@ -46,10 +46,28 @@ def build_dataset_field(column: DatabricksColumn, oddrn_generator: DatabricksUni
             )
             for field_name, field_type in column_type.fields.items():
                 _build_ds_field_from_type(field_name, field_type, oddrn)
+        elif isinstance(column_type, Map):
+            generated_dataset_fields.append(
+                DataSetField(
+                    oddrn=oddrn,
+                    name=column_name,
+                    metadata=[extract_metadata("databricks", column, DefinitionType.DATASET_FIELD)],
+                    type=DataSetFieldType(
+                        type=Type.TYPE_MAP,
+                        logical_type=get_logical_type(column_type),
+                        is_nullable=False,
+                    ),
+                    owner=None,
+                    parent_field_oddrn=parent_oddrn
+                )
+            )
+            _build_ds_field_from_type("Key", column_type.key_type, oddrn)
+            _build_ds_field_from_type("Value", column_type.value_type, oddrn)
+
         else:
             odd_type = get_databricks_type(column_type)
             logical_type = get_logical_type(column_type)
-            logger.debug(f"ODD type and logical type for column {column_name}: {odd_type}, {logical_type}")
+            logger.debug(f"Column {column_name} has ODD type {odd_type} and logical type {logical_type}")
             generated_dataset_fields.append(
                 DataSetField(
                     oddrn=oddrn,
@@ -65,7 +83,9 @@ def build_dataset_field(column: DatabricksColumn, oddrn_generator: DatabricksUni
                 )
             )
     _build_ds_field_from_type(column.name, column_type)
-    logger.debug(f"Generated data set fields: {generated_dataset_fields}")
+    logger.debug("______________")
+    logger.debug(generated_dataset_fields)
+    logger.debug("______________")
     return generated_dataset_fields
 
 
@@ -93,6 +113,8 @@ def get_databricks_type(type_field: Union[ParseType, str]) -> Type:
         return Type.TYPE_MAP
     elif isinstance(type_field, str):
         return TYPES_SQL_TO_ODD.get(type_field, Type.TYPE_UNKNOWN)
+    elif isinstance(type_field, Struct):
+        return Type.TYPE_STRUCT
     else:
         raise Exception(f"Undefiend type {type_field}")
 
