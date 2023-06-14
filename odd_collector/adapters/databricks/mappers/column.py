@@ -5,7 +5,6 @@ from oddrn_generator import DatabricksUnityCatalogGenerator
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from .models import DatabricksColumn
 from .types import TYPES_SQL_TO_ODD
-from .exceptions import UndefinedType
 from ..logger import logger
 from ..grammar_parser.parser import parser, traverse_tree
 from ..grammar_parser.column_type import Struct, ArrayType, Map, BasicType, ParseType
@@ -79,7 +78,7 @@ def build_dataset_field(
             _build_ds_field_from_type("Value", column_type.value_type, oddrn)
 
         else:
-            odd_type = get_databricks_type(column_type)
+            odd_type = get_odd_type(column_type)
             logical_type = get_logical_type(column_type)
             logger.debug(
                 f"Column {column_name} has ODD type {odd_type} and logical type {logical_type}"
@@ -126,10 +125,10 @@ def get_logical_type(type_field: Union[ParseType, str]) -> str:
             + ")"
         )
     else:
-        raise UndefinedType(f"Undefiend type {type_field}")
+        return "Unknown" 
 
 
-def get_databricks_type(type_field: Union[ParseType, str]) -> Type:
+def get_odd_type(type_field: Union[ParseType, str]) -> Type:
     if isinstance(type_field, BasicType):
         return TYPES_SQL_TO_ODD.get(type_field.type_name, Type.TYPE_UNKNOWN)
     elif isinstance(type_field, ArrayType):
@@ -141,7 +140,7 @@ def get_databricks_type(type_field: Union[ParseType, str]) -> Type:
     elif isinstance(type_field, Struct):
         return Type.TYPE_STRUCT
     else:
-        raise UndefinedType(f"Undefiend type {type_field}")
+        return Type.TYPE_UNKNOWN
 
 
 def map_column(

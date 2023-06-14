@@ -1,2 +1,0 @@
-class UndefinedType(Exception):
-    pass
