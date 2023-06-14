@@ -125,7 +125,7 @@ def get_logical_type(type_field: Union[ParseType, str]) -> str:
             + ")"
         )
     else:
-        return "Unknown" 
+        return "Unknown"
 
 
 def get_odd_type(type_field: Union[ParseType, str]) -> Type:
