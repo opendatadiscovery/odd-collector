@@ -36,7 +36,9 @@ class DuckDBClient:
         return schemas
 
     @staticmethod
-    def get_tables_metadata(connection: DuckDBPyConnection, catalog: str, schema: str) -> list[dict]:
+    def get_tables_metadata(
+        connection: DuckDBPyConnection, catalog: str, schema: str
+    ) -> list[dict]:
         tables = connection.sql(
             f"""
             SELECT table_catalog, table_schema, table_name, table_type, is_insertable_into, is_typed 
@@ -58,7 +60,9 @@ class DuckDBClient:
         return metadata
 
     @staticmethod
-    def get_columns_metadata(connection: DuckDBPyConnection, catalog: str, schema: str, table: str) -> list[dict]:
+    def get_columns_metadata(
+        connection: DuckDBPyConnection, catalog: str, schema: str, table: str
+    ) -> list[dict]:
         columns = connection.sql(
             f"""
             SELECT table_catalog, table_schema, table_name, column_name, is_nullable, data_type, character_maximum_length, numeric_precision 
