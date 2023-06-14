@@ -1,12 +1,31 @@
-import duckdb
+import os
+import re
+from duckdb import connect, DuckDBPyConnection
 
 
 class DuckDBClient:
-    def __init__(self, connection: str):
-        self.conn = duckdb.connect(connection)
+    def __init__(self, paths: list[str]):
+        self.db_files = self.__get_db_files(paths)
 
-    def get_schemas(self, catalog: str):
-        resp = self.conn.sql(
+    def __validate_paths(self, paths: list[str]):
+        for path in paths:
+            if os.path.isfile(path):
+                yield path
+            elif os.path.isdir(path):
+                new_paths = [os.path.join(path, file) for file in os.listdir(path)]
+                yield from self.__validate_paths(new_paths)
+
+    def __get_db_files(self, paths: list[str]):
+        files = list(self.__validate_paths(paths))
+        print(files)
+        return {re.search(r"\/([^\/]*)\.", file).group(1): file for file in files}
+
+    def get_connection(self, catalog: str) -> DuckDBPyConnection:
+        return connect(self.db_files[catalog])
+
+    @staticmethod
+    def get_schemas(connection: DuckDBPyConnection, catalog: str):
+        resp = connection.sql(
             f"SELECT schema_name FROM information_schema.schemata WHERE catalog_name = '{catalog}'"
         ).fetchall()
         schemas = [
@@ -16,8 +35,9 @@ class DuckDBClient:
         ]
         return schemas
 
-    def get_tables_metadata(self, catalog: str, schema: str) -> list[dict]:
-        tables = self.conn.sql(
+    @staticmethod
+    def get_tables_metadata(connection: DuckDBPyConnection, catalog: str, schema: str) -> list[dict]:
+        tables = connection.sql(
             f"""
             SELECT table_catalog, table_schema, table_name, table_type, is_insertable_into, is_typed 
             FROM information_schema.tables
@@ -37,8 +57,9 @@ class DuckDBClient:
         ]
         return metadata
 
-    def get_columns_metadata(self, catalog: str, schema: str, table: str) -> list[dict]:
-        columns = self.conn.sql(
+    @staticmethod
+    def get_columns_metadata(connection: DuckDBPyConnection, catalog: str, schema: str, table: str) -> list[dict]:
+        columns = connection.sql(
             f"""
             SELECT table_catalog, table_schema, table_name, column_name, is_nullable, data_type, character_maximum_length, numeric_precision 
             FROM information_schema.columns

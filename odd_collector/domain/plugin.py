@@ -305,8 +305,8 @@ class DatabricksPlugin(BasePlugin):
 
 class DuckDBPlugin(BasePlugin):
     type: Literal["duckdb"]
-    path: str
-    databases: list[str]
+    paths: list[str]
+    host: Optional[str] = "localhost"
 
 
 PLUGIN_FACTORY: PluginFactory = {

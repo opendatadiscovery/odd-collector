@@ -7,40 +7,38 @@ from .mappers.schema import map_schema
 from .mappers.table import map_table
 from .mappers.catalog import map_catalog
 from .client import DuckDBClient
-import re
 
 
 class Adapter(AbstractAdapter):
     def __init__(self, config: DuckDBPlugin) -> None:
-        self.oddrn_generator = DuckDBGenerator(host_settings=config.path)
-        self.path = config.path
-        self.databases = config.databases
+        self.oddrn_generator = DuckDBGenerator(host_settings=config.host)
+        self.paths = config.paths
+        self.client = DuckDBClient(config.paths)
 
     def get_data_source_oddrn(self) -> str:
         return self.oddrn_generator.get_data_source_oddrn()
 
     async def get_data_entity_list(self) -> DataEntityList:
-
+        client = self.client
         catalog_entities: list[DataEntity] = []
         schema_entities: list[DataEntity] = []
         tables_entities: list[DataEntity] = []
 
         try:
-            for database in self.databases:
-                catalog = re.search(r"(.*)\.", database).group(1)
+            for catalog in client.db_files:
                 schema_entities_tmp = []
-                client = DuckDBClient(self.path + database)
-                schemas = client.get_schemas(catalog)
+                connection = client.get_connection(catalog)
+                schemas = client.get_schemas(connection, catalog)
                 for schema in schemas:
                     tables_entities_tmp = []
-                    tables = client.get_tables_metadata(catalog, schema)
+                    tables = client.get_tables_metadata(connection, catalog, schema)
                     self.oddrn_generator.set_oddrn_paths(
                         catalogs=catalog,
                         schemas=schema,
                     )
                     for table in tables:
                         columns = client.get_columns_metadata(
-                            catalog, schema, table["table_name"]
+                            connection, catalog, schema, table["table_name"]
                         )
                         tables_entities_tmp.append(
                             map_table(self.oddrn_generator, table, columns)
@@ -50,7 +48,12 @@ class Adapter(AbstractAdapter):
                     )
                     tables_entities.extend(tables_entities_tmp)
                 catalog_entities.append(
-                    map_catalog(self.oddrn_generator, catalog, schema_entities_tmp)
+                    map_catalog(
+                        self.oddrn_generator,
+                        catalog,
+                        schema_entities_tmp,
+                        client.db_files[catalog],
+                    )
                 )
                 schema_entities.extend(schema_entities_tmp)
         except Exception as e:
