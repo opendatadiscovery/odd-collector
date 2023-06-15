@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
 from odd_collector.models import Table, Column
 
@@ -11,5 +11,5 @@ class DatabricksColumn(Column):
 
 @dataclass()
 class DatabricksTable(Table):
-    columns: list[DatabricksColumn] = field(default_factory=list)
-    odd_metadata: dict[str, Any] = field(default_factory=dict)
+    columns: Optional[list[DatabricksColumn]] = field(default_factory=list)
+    odd_metadata: Optional[dict[str, Any]] = field(default_factory=dict)
