@@ -2,7 +2,7 @@ from typing import List, Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
-from pydantic import BaseModel, SecretStr, validator
+from pydantic import BaseModel, SecretStr, validator, FilePath
 
 from odd_collector.domain.predefined_data_source import PredefinedDatasourceParams
 
@@ -296,6 +296,11 @@ class CouchbasePlugin(BasePlugin):
     num_sample_values: Optional[int] = 10
 
 
+class SQLitePlugin(BasePlugin):
+    data_source: FilePath
+    type: Literal["sqlite"]
+
+
 class DatabricksPlugin(BasePlugin):
     type: Literal["databricks"]
     workspace: str
@@ -345,6 +350,7 @@ PLUGIN_FACTORY: PluginFactory = {
     "fivetran": FivetranPlugin,
     "cockroachdb": CockroachDBPlugin,
     "couchbase": CouchbasePlugin,
+    "sqlite": SQLitePlugin,
     "databricks": DatabricksPlugin,
     "duckdb": DuckDBPlugin,
 }
