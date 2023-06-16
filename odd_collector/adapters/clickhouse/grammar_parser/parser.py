@@ -2,7 +2,7 @@ from typing import Union
 
 from lark import Lark, Tree, Token
 
-from .column_type import ParseType, Field, Array, Tuple, Nested, BasicType
+from .column_type import ParseType, Field, Array, Tuple, Nested, BasicType, Map
 from .exceptions import *
 
 
@@ -32,6 +32,17 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
                     raise NonTypeObjectError(f"Tuple got a non-type object: {child}")
                 subtypes.append(child_value)
             return Tuple(subtypes)
+
+        elif node.data == "map":
+            subtypes = []
+            for child in node.children:
+                child_value = traverse_tree(child)
+                if child_value is None:
+                    continue
+                if not isinstance(child_value, ParseType):
+                    raise NonTypeObjectError(f"Tuple got a non-type object: {child}")
+                subtypes.append(child_value)
+            return Map(subtypes[0], subtypes[1])
 
         elif node.data == "nested":
             fields = {}

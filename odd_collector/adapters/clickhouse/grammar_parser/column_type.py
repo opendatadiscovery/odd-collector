@@ -42,6 +42,18 @@ class Tuple(ParseType):
         return f"Tuple({self.types})"
 
 
+class Map(ParseType):
+    def __init__(self, key_type: ParseType, value_type: ParseType):
+        self.key_type = key_type
+        self.value_type = value_type
+
+    def to_clickhouse_type(self) -> str:
+        return f"Map({self.key_type.to_clickhouse_type()}, {self.value_type.to_clickhouse_type()})"
+
+    def __repr__(self) -> str:
+        return f"Map({self.key_type}, {self.value_type})"
+
+
 class Nested(ParseType):
     def __init__(self, fields: dict):
         self.fields = fields
