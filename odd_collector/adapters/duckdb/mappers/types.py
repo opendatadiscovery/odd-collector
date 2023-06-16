@@ -23,7 +23,4 @@ TYPES_SQL_TO_ODD: dict[str, Type] = {
     "UUID": Type.TYPE_STRING,
     "VARCHAR": Type.TYPE_STRING,
     "INTERVAL": Type.TYPE_DURATION,
-    "ARRAY": Type.TYPE_LIST,
-    "MAP": Type.TYPE_MAP,
-    "STRUCT": Type.TYPE_STRUCT,
 }

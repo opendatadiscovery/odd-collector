@@ -42,6 +42,11 @@ def map_table(
         schemas=table.schema,
         tables=table.name,
     )
+    field_list = []
+    if columns is not None:
+        for column in columns:
+            processed_ds_fields = map_column(oddrn_generator, column)
+            field_list.extend(processed_ds_fields)
     return DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path("tables", table.name),
         name=table.name,
@@ -50,7 +55,5 @@ def map_table(
         created_at=table.create_time,
         updated_at=table.update_time,
         metadata=[extract_metadata("databricks", table, DefinitionType.DATASET)],
-        dataset=DataSet(
-            field_list=[map_column(oddrn_generator, column) for column in columns],
-        ),
+        dataset=DataSet(field_list=field_list),
     )
