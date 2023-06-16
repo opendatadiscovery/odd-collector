@@ -40,9 +40,7 @@ def build_dataset_field(
                     oddrn=oddrn,
                     name=column_name,
                     metadata=[
-                        extract_metadata(
-                            "duckdb", column, DefinitionType.DATASET_FIELD
-                        )
+                        extract_metadata("duckdb", column, DefinitionType.DATASET_FIELD)
                     ],
                     type=DataSetFieldType(
                         type=Type.TYPE_STRUCT,
@@ -61,9 +59,7 @@ def build_dataset_field(
                     oddrn=oddrn,
                     name=column_name,
                     metadata=[
-                        extract_metadata(
-                            "duckdb", column, DefinitionType.DATASET_FIELD
-                        )
+                        extract_metadata("duckdb", column, DefinitionType.DATASET_FIELD)
                     ],
                     type=DataSetFieldType(
                         type=Type.TYPE_MAP,
