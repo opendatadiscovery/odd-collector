@@ -8,7 +8,7 @@ from oddrn_generator import ClickHouseGenerator
 from ..domain import Column, NestedColumn
 from ..logger import logger
 from .types import TYPES_SQL_TO_ODD
-from ..grammar_parser.parser import parser, traverse_tree
+from ..grammar_parser.parser import Tuple, parser, traverse_tree
 from ..grammar_parser.column_type import ParseType, Array, Nested, Map, BasicType
 from ..grammar_parser.exceptions import UnexpectedTypeError
 
@@ -39,7 +39,7 @@ def build_dataset_fields(columns: List[Column], oddrn_generator, table_oddrn_pat
                         name=column_names[0],
                         type=DataSetFieldType(
                             type=type_to_oddrn_type(column_type),
-                            logical_type=column_type.to_clickhouse_type(),
+                            logical_type="Array",
                             is_nullable=False,
                         ),
                         owner=None
@@ -123,6 +123,8 @@ def type_to_oddrn_type(column_type):
         return TYPES_SQL_TO_ODD.get(column_type.type_name, Type.TYPE_UNKNOWN)
     elif isinstance(column_type, str):
         return TYPES_SQL_TO_ODD.get(column_type, Type.TYPE_UNKNOWN)
+    elif isinstance(column_type, Tuple):
+        return Type.TYPE_STRUCT
     else:
         return Type.TYPE_UNKNOWN
 
