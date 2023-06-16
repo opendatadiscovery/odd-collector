@@ -8,8 +8,8 @@ from oddrn_generator import ClickHouseGenerator
 from ..domain import Column, NestedColumn
 from ..logger import logger
 from .types import TYPES_SQL_TO_ODD
-from ..grammar_parser.parser import Tuple, parser, traverse_tree
-from ..grammar_parser.column_type import ParseType, Array, Nested, Map, BasicType
+from ..grammar_parser.parser import parser, traverse_tree
+from ..grammar_parser.column_type import ParseType, Array, Nested, Map, BasicType, Tuple, NamedTuple
 from ..grammar_parser.exceptions import UnexpectedTypeError
 
 
@@ -68,7 +68,7 @@ def build_dataset_fields(columns: List[Column], oddrn_generator, table_oddrn_pat
                 )
                 _build_dataset_fields("Key", column_type.key_type, oddrn)
                 _build_dataset_fields("Value", column_type.value_type, oddrn)
-            elif isinstance(column_type, Nested):
+            elif isinstance(column_type, Nested) or isinstance(column_type, NamedTuple):
                 generated_dataset_fields.append(
                     DataSetField(
                         oddrn=oddrn,
@@ -84,6 +84,22 @@ def build_dataset_fields(columns: List[Column], oddrn_generator, table_oddrn_pat
                 )
                 for field_name, field_type in column_type.fields.items():
                     _build_dataset_fields(field_name, field_type, oddrn)
+            elif isinstance(column_type, Tuple):
+                generated_dataset_fields.append(
+                    DataSetField(
+                        oddrn=oddrn,
+                        name=column_name,
+                        type=DataSetFieldType(
+                            type=Type.TYPE_STRUCT,
+                            logical_type=column_type.to_clickhouse_type(),
+                            is_nullable=False
+                        ),
+                        owner=None,
+                        parent_field_oddrn=parent_oddrn
+                    ),
+                )
+                for count, subtype in enumerate(column_type.types):
+                    _build_dataset_fields(str(count), subtype, oddrn)
             else:
                 odd_type = type_to_oddrn_type(column_type)
                 logger.debug(
@@ -124,6 +140,8 @@ def type_to_oddrn_type(column_type):
     elif isinstance(column_type, str):
         return TYPES_SQL_TO_ODD.get(column_type, Type.TYPE_UNKNOWN)
     elif isinstance(column_type, Tuple):
+        return Type.TYPE_STRUCT
+    elif isinstance(column_type, NamedTuple):
         return Type.TYPE_STRUCT
     else:
         return Type.TYPE_UNKNOWN

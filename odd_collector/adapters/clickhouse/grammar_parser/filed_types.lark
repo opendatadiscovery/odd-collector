@@ -2,6 +2,7 @@
 
 ?type: nested
     | array
+    | named_tuple
     | tuple
     | map
     | BASIC_TYPE
@@ -9,6 +10,7 @@
 BASIC_TYPE: "UInt64"
           | "UInt32"
           | "UInt8"
+          | "Int64"
           | "UInt128"
           | "UInt256"
           | "String"
@@ -24,7 +26,9 @@ BASIC_TYPE: "UInt64"
 
 array: "Array" "(" type ")"
 
-tuple: "Tuple" "(" type ("," WS type) ")"
+tuple: "Tuple" "(" type ("," WS type)* ")"
+
+named_tuple: "Tuple" "(" field ("," WS field)* ")"
 
 nested: "Nested" "(" field ("," WS field)* ")"
 
