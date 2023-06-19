@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-
 from funcy import join
 
 

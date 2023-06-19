@@ -1,5 +1,4 @@
 from lark import Lark, Tree, Token
-
 from .column_type import ParseType, Field, ListType, Struct, Map, BasicType, DUnion
 from .exceptions import *
 
