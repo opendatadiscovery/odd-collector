@@ -4,12 +4,22 @@ from lark import Lark, Tree, Token
 
 from .column_type import ParseType, Field, Array, Tuple, Nested, BasicType, Map, NamedTuple
 from .exceptions import *
+from ..logger import logger
+
+"""
+This parser uses earley type instead of larl type. We need to support different types of Tuple in Clickhouse
+named Tuples as example Tuple(a String, b Boolean), and we need to supplort classic Tuples as example
+Tuple(String, Boolean).
+
+LARL does not support the different types of Tuples presented in filed_types.lark
+"""
 
 
-parser = Lark.open("filed_types.lark", rel_to=__file__, parser="lalr", start="type")
+parser = Lark.open("filed_types.lark", rel_to=__file__, parser="earley", start="type")
 
 
 def traverse_tree(node) -> Union[ParseType, str, Field, None]:
+    logger.debug(f"Node: {node}")
     if isinstance(node, Tree):
         if node.data == "array":
             if len(node.children) != 1:
@@ -23,6 +33,7 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
             return Array(child_value)
 
         elif node.data == "tuple":
+            logger.debug(f"Get tuple node {node}") 
             subtypes = []
             for child in node.children:
                 child_value = traverse_tree(child)
@@ -34,6 +45,7 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
             return Tuple(subtypes)
 
         elif node.data == "named_tuple":
+            logger.debug(f"Get named tuple node {node}") 
             fields = {}
             for child in node.children:
                 value = traverse_tree(child)
