@@ -1,4 +1,3 @@
-from os import name
 import unittest
 
 from oddrn_generator import ClickHouseGenerator
