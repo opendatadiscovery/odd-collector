@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from funcy import lpluck_attr
+from pathlib import Path
 from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
 from oddrn_generator import DuckDBGenerator
 from odd_models.models import DataEntityGroup, DataEntityType, DataEntity
@@ -14,7 +15,7 @@ def map_catalog(
     oddrn_generator: DuckDBGenerator,
     catalog_name: str,
     schemas_entities: list[DataEntity],
-    db_file_path: str,
+    db_file_path: Path,
 ) -> DataEntity:
     return DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path("catalogs", catalog_name),
