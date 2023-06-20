@@ -2,7 +2,16 @@ from typing import Union
 
 from lark import Lark, Tree, Token
 
-from .column_type import ParseType, Field, Array, Tuple, Nested, BasicType, Map, NamedTuple
+from .column_type import (
+    ParseType,
+    Field,
+    Array,
+    Tuple,
+    Nested,
+    BasicType,
+    Map,
+    NamedTuple,
+)
 from .exceptions import *
 from ..logger import logger
 
@@ -33,7 +42,7 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
             return Array(child_value)
 
         elif node.data == "tuple":
-            logger.debug(f"Get tuple node {node}") 
+            logger.debug(f"Get tuple node {node}")
             subtypes = []
             for child in node.children:
                 child_value = traverse_tree(child)
@@ -45,7 +54,7 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
             return Tuple(subtypes)
 
         elif node.data == "named_tuple":
-            logger.debug(f"Get named tuple node {node}") 
+            logger.debug(f"Get named tuple node {node}")
             fields = {}
             for child in node.children:
                 value = traverse_tree(child)

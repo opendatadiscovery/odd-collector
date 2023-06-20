@@ -6,16 +6,30 @@ from ..domain import Column
 from ..logger import logger
 from .types import TYPES_SQL_TO_ODD
 from ..grammar_parser.parser import parser, traverse_tree
-from ..grammar_parser.column_type import ParseType, Array, Nested, Map, BasicType, Tuple, NamedTuple
+from ..grammar_parser.column_type import (
+    ParseType,
+    Array,
+    Nested,
+    Map,
+    BasicType,
+    Tuple,
+    NamedTuple,
+)
 
 
-def build_dataset_fields(columns: List[Column], oddrn_generator: ClickHouseGenerator, table_oddrn_path: str) -> List[DataSetField]:
+def build_dataset_fields(
+    columns: List[Column], oddrn_generator: ClickHouseGenerator, table_oddrn_path: str
+) -> List[DataSetField]:
     generated_dataset_fields = []
     ds_fields_oddrn = {}
 
-    def _build_dataset_fields(column_name: str, column_type: ParseType, parent_oddrn=None):
-        logger.debug(f"Process {column_name} with type {column_type} and parent {parent_oddrn}")
-        column_names = column_name.split('.')
+    def _build_dataset_fields(
+        column_name: str, column_type: ParseType, parent_oddrn=None
+    ):
+        logger.debug(
+            f"Process {column_name} with type {column_type} and parent {parent_oddrn}"
+        )
+        column_names = column_name.split(".")
         if parent_oddrn is None:
             oddrn = oddrn_generator.get_oddrn_by_path(
                 f"{table_oddrn_path}_columns", column_names[0]
@@ -38,15 +52,19 @@ def build_dataset_fields(columns: List[Column], oddrn_generator: ClickHouseGener
                             logical_type="Array",
                             is_nullable=False,
                         ),
-                        owner=None
+                        owner=None,
                     )
                 )
             else:
                 logger.debug(f"Alrady processed {column_names[0]}")
             if isinstance(column_type, Array):
-                _build_dataset_fields(column_names[1], column_type.type, ds_fields_oddrn[column_names[0]])
+                _build_dataset_fields(
+                    column_names[1], column_type.type, ds_fields_oddrn[column_names[0]]
+                )
             else:
-                logger.debug(f"Expect that in complex structure type starts with 'Array'. Started from {column_type}")
+                logger.debug(
+                    f"Expect that in complex structure type starts with 'Array'. Started from {column_type}"
+                )
         else:
             if isinstance(column_type, Map):
                 generated_dataset_fields.append(
@@ -56,7 +74,7 @@ def build_dataset_fields(columns: List[Column], oddrn_generator: ClickHouseGener
                         type=DataSetFieldType(
                             type=Type.TYPE_MAP,
                             logical_type=column_type.to_clickhouse_type(),
-                            is_nullable=False
+                            is_nullable=False,
                         ),
                         parent_field_oddrn=parent_oddrn,
                         owner=None,
@@ -72,10 +90,10 @@ def build_dataset_fields(columns: List[Column], oddrn_generator: ClickHouseGener
                         type=DataSetFieldType(
                             type=Type.TYPE_STRUCT,
                             logical_type=column_type.to_clickhouse_type(),
-                            is_nullable=False
+                            is_nullable=False,
                         ),
                         owner=None,
-                        parent_field_oddrn=parent_oddrn
+                        parent_field_oddrn=parent_oddrn,
                     ),
                 )
                 for field_name, field_type in column_type.fields.items():
@@ -88,10 +106,10 @@ def build_dataset_fields(columns: List[Column], oddrn_generator: ClickHouseGener
                         type=DataSetFieldType(
                             type=Type.TYPE_STRUCT,
                             logical_type=column_type.to_clickhouse_type(),
-                            is_nullable=False
+                            is_nullable=False,
                         ),
                         owner=None,
-                        parent_field_oddrn=parent_oddrn
+                        parent_field_oddrn=parent_oddrn,
                     ),
                 )
                 for count, subtype in enumerate(column_type.types):
@@ -114,7 +132,7 @@ def build_dataset_fields(columns: List[Column], oddrn_generator: ClickHouseGener
                         parent_field_oddrn=parent_oddrn,
                     )
                 )
-    
+
     for column in columns:
         type_tree = parser.parse(column.type)
         column_type = traverse_tree(type_tree)
