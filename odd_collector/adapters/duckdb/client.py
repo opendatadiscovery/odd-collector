@@ -13,20 +13,21 @@ class DuckDBClient:
     def __init__(self, paths: list[Path]):
         self.db_files = self.__get_db_files(paths)
 
-    def __validate_paths(self, paths: list[Path]) -> Iterable[Path]:
+    @staticmethod
+    def __validate_paths(paths: list[Path]) -> Iterable[Path]:
         for path in paths:
             if path.is_file():
                 yield path
             elif path.is_dir():
-                new_paths = [new_path for new_path in path.iterdir()]
-                yield from self.__validate_paths(new_paths)
+                files_paths = path.rglob("*.*")
+                yield from files_paths
 
     def __get_db_files(self, paths: list[Path]) -> dict[str, Path]:
         validated_paths = list(self.__validate_paths(paths))
         if validated_paths:
             return {path.stem: path for path in validated_paths}
         else:
-            raise NotValidPathError()
+            raise NotValidPathError
 
     def get_connection(self, catalog: str) -> DuckDBPyConnection:
         return connect(str(self.db_files[catalog]))

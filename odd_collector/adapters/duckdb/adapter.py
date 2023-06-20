@@ -1,3 +1,4 @@
+from duckdb import IOException
 from odd_collector_sdk.errors import MappingDataError
 from odd_collector.domain.plugin import DuckDBPlugin
 from odd_collector_sdk.domain.adapter import BaseAdapter
@@ -6,7 +7,8 @@ from oddrn_generator import DuckDBGenerator, Generator
 from .mappers.schema import map_schema
 from .mappers.table import map_table
 from .mappers.catalog import map_catalog
-from .client import DuckDBClient, NotValidPathError
+from .client import DuckDBClient
+from .logger import logger
 
 
 class Adapter(BaseAdapter):
@@ -59,6 +61,8 @@ class Adapter(BaseAdapter):
                     )
                 )
                 schema_entities.extend(schema_entities_tmp)
+        except IOException as e:
+            logger.error(f"Error during connection: {e}")
         except Exception as e:
             raise MappingDataError(f"Error during mapping: {e}") from e
 
