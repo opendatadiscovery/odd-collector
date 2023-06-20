@@ -35,7 +35,7 @@ class DuckDBClient:
         return connect(str(self.db_files[catalog]))
 
     @staticmethod
-    def get_schemas(connection: DuckDBPyConnection, catalog: str):
+    def get_schemas(connection: DuckDBPyConnection, catalog: str) -> list[str]:
         resp = connection.execute(
             query=f"SELECT schema_name FROM information_schema.schemata WHERE catalog_name = ?",
             parameters=(catalog,),
