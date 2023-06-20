@@ -2,6 +2,8 @@ from pathlib import Path
 from typing import Iterable
 from duckdb import connect, DuckDBPyConnection
 
+from odd_collector.adapters.duckdb.mappers.models import DuckDBTable, DuckDBColumn
+
 
 class NotValidPathError(Exception):
     def __init__(self):
@@ -48,8 +50,8 @@ class DuckDBClient:
     @staticmethod
     def get_tables_metadata(
         connection: DuckDBPyConnection, catalog: str, schema: str
-    ) -> list[dict]:
-        tables = connection.execute(
+    ) -> list[DuckDBTable]:
+        metadata = connection.execute(
             query=f"""
             SELECT table_catalog, table_schema, table_name, table_type, is_insertable_into, is_typed 
             FROM information_schema.tables
@@ -57,24 +59,28 @@ class DuckDBClient:
             """,
             parameters=(catalog, schema),
         ).fetchall()
-        metadata = [
-            {
-                "table_catalog": table[0],
-                "table_schema": table[1],
-                "table_name": table[2],
-                "table_type": table[3],
-                "is_insertable_into": table[4],
-                "is_typed": table[5],
-            }
-            for table in tables
+
+        tables = [
+            DuckDBTable(
+                catalog=item[0],
+                schema=item[1],
+                name=item[2],
+                type=item[3],
+                odd_metadata={
+                    "table_type": item[3],
+                    "is_insertable_into": item[4],
+                    "is_typed": item[5],
+                },
+            )
+            for item in metadata
         ]
-        return metadata
+        return tables
 
     @staticmethod
     def get_columns_metadata(
         connection: DuckDBPyConnection, catalog: str, schema: str, table: str
-    ) -> list[dict]:
-        columns = connection.execute(
+    ) -> list[DuckDBColumn]:
+        metadata = connection.execute(
             query=f"""
             SELECT table_catalog, table_schema, table_name, column_name, is_nullable, data_type, character_maximum_length, numeric_precision 
             FROM information_schema.columns
@@ -82,17 +88,22 @@ class DuckDBClient:
             """,
             parameters=(catalog, schema, table),
         ).fetchall()
-        metadata = [
-            {
-                "table_catalog": column[0],
-                "table_schema": column[1],
-                "table_name": column[2],
-                "column_name": column[3],
-                "is_nullable": column[4],
-                "data_type": column[5],
-                "character_maximum_length": column[6],
-                "numeric_precision": column[7],
-            }
-            for column in columns
+
+        columns = [
+            DuckDBColumn(
+                table_catalog=item[0],
+                table_schema=item[1],
+                table_name=item[2],
+                name=item[3],
+                is_nullable=item[4],
+                type=item[5],
+                odd_metadata={
+                    "is_nullable": item[4],
+                    "data_type": item[5],
+                    "character_maximum_length": item[6],
+                    "numeric_precision": item[7],
+                },
+            )
+            for item in metadata
         ]
-        return metadata
+        return columns

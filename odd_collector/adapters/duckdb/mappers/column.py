@@ -84,9 +84,7 @@ def build_dataset_field(
                     oddrn=oddrn,
                     name=column_name,
                     metadata=[
-                        extract_metadata(
-                            "databricks", column, DefinitionType.DATASET_FIELD
-                        )
+                        extract_metadata("duckdb", column, DefinitionType.DATASET_FIELD)
                     ],
                     type=DataSetFieldType(
                         type=odd_type,

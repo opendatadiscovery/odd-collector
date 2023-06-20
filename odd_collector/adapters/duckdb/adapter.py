@@ -43,7 +43,7 @@ class Adapter(BaseAdapter):
                     )
                     for table in tables:
                         columns = client.get_columns_metadata(
-                            connection, catalog, schema, table["table_name"]
+                            connection, catalog, schema, table.name
                         )
                         tables_entities_tmp.append(
                             map_table(self.generator, table, columns)
