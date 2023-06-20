@@ -6,17 +6,15 @@ from odd_models.models import (
     DataEntityGroup,
     DataEntityType,
     DataSet,
-    DataSetField,
 )
 from oddrn_generator import ClickHouseGenerator
 
 from ..domain import Column, IntegrationEngine, Table
 from . import _data_set_metadata_excluded_keys, _data_set_metadata_schema_url
-from .columns import build_nested_columns, re, to_dataset_fields, build_dataset_fields
+from .columns import  build_dataset_fields
 from .metadata import extract_metadata
 from .transformer import extract_transformer_data
 from ..logger import logger
-from odd_collector.adapters.clickhouse.mappers import transformer
 
 
 def map_table(
