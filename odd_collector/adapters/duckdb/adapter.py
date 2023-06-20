@@ -1,22 +1,25 @@
 from odd_collector_sdk.errors import MappingDataError
 from odd_collector.domain.plugin import DuckDBPlugin
-from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntity, DataEntityList
-from oddrn_generator import DuckDBGenerator
+from oddrn_generator import DuckDBGenerator, Generator
 from .mappers.schema import map_schema
 from .mappers.table import map_table
 from .mappers.catalog import map_catalog
-from .client import DuckDBClient
+from .client import DuckDBClient, NotValidPathError
 
 
-class Adapter(AbstractAdapter):
+class Adapter(BaseAdapter):
     def __init__(self, config: DuckDBPlugin) -> None:
-        self.oddrn_generator = DuckDBGenerator(host_settings=config.host)
+        super().__init__(config)
         self.paths = config.paths
         self.client = DuckDBClient(config.paths)
 
+    def create_generator(self) -> Generator:
+        return DuckDBGenerator(host_settings=self.config.host)
+
     def get_data_source_oddrn(self) -> str:
-        return self.oddrn_generator.get_data_source_oddrn()
+        return self.generator.get_data_source_oddrn()
 
     async def get_data_entity_list(self) -> DataEntityList:
         client = self.client
@@ -32,7 +35,7 @@ class Adapter(AbstractAdapter):
                 for schema in schemas:
                     tables_entities_tmp = []
                     tables = client.get_tables_metadata(connection, catalog, schema)
-                    self.oddrn_generator.set_oddrn_paths(
+                    self.generator.set_oddrn_paths(
                         catalogs=catalog,
                         schemas=schema,
                     )
@@ -41,15 +44,15 @@ class Adapter(AbstractAdapter):
                             connection, catalog, schema, table["table_name"]
                         )
                         tables_entities_tmp.append(
-                            map_table(self.oddrn_generator, table, columns)
+                            map_table(self.generator, table, columns)
                         )
                     schema_entities_tmp.append(
-                        map_schema(self.oddrn_generator, schema, tables_entities_tmp)
+                        map_schema(self.generator, schema, tables_entities_tmp)
                     )
                     tables_entities.extend(tables_entities_tmp)
                 catalog_entities.append(
                     map_catalog(
-                        self.oddrn_generator,
+                        self.generator,
                         catalog,
                         schema_entities_tmp,
                         client.db_files[catalog],

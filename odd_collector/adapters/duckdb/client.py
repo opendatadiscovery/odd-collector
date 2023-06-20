@@ -1,32 +1,41 @@
-import os
-import re
+from pathlib import Path
+from typing import Iterable
 from duckdb import connect, DuckDBPyConnection
 
 
+class NotValidPathError(Exception):
+    def __init__(self):
+        message = "None of the provided paths contains a valid database file"
+        super().__init__(message)
+
+
 class DuckDBClient:
-    def __init__(self, paths: list[str]):
+    def __init__(self, paths: list[Path]):
         self.db_files = self.__get_db_files(paths)
 
-    def __validate_paths(self, paths: list[str]):
+    def __validate_paths(self, paths: list[Path]) -> Iterable[Path]:
         for path in paths:
-            if os.path.isfile(path):
+            if path.is_file():
                 yield path
-            elif os.path.isdir(path):
-                new_paths = [os.path.join(path, file) for file in os.listdir(path)]
+            elif path.is_dir():
+                new_paths = [new_path for new_path in path.iterdir()]
                 yield from self.__validate_paths(new_paths)
 
-    def __get_db_files(self, paths: list[str]):
-        files = list(self.__validate_paths(paths))
-        print(files)
-        return {re.search(r"\/([^\/]*)\.", file).group(1): file for file in files}
+    def __get_db_files(self, paths: list[Path]) -> dict[str, Path]:
+        validated_paths = list(self.__validate_paths(paths))
+        if validated_paths:
+            return {path.stem: path for path in validated_paths}
+        else:
+            raise NotValidPathError()
 
     def get_connection(self, catalog: str) -> DuckDBPyConnection:
-        return connect(self.db_files[catalog])
+        return connect(str(self.db_files[catalog]))
 
     @staticmethod
     def get_schemas(connection: DuckDBPyConnection, catalog: str):
-        resp = connection.sql(
-            f"SELECT schema_name FROM information_schema.schemata WHERE catalog_name = '{catalog}'"
+        resp = connection.execute(
+            query=f"SELECT schema_name FROM information_schema.schemata WHERE catalog_name = ?",
+            parameters=(catalog,),
         ).fetchall()
         schemas = [
             item[0]
@@ -39,12 +48,13 @@ class DuckDBClient:
     def get_tables_metadata(
         connection: DuckDBPyConnection, catalog: str, schema: str
     ) -> list[dict]:
-        tables = connection.sql(
-            f"""
+        tables = connection.execute(
+            query=f"""
             SELECT table_catalog, table_schema, table_name, table_type, is_insertable_into, is_typed 
             FROM information_schema.tables
-            WHERE table_catalog = '{catalog}' AND table_schema = '{schema}'
-            """
+            WHERE table_catalog = ? AND table_schema = ?
+            """,
+            parameters=(catalog, schema),
         ).fetchall()
         metadata = [
             {
@@ -63,12 +73,13 @@ class DuckDBClient:
     def get_columns_metadata(
         connection: DuckDBPyConnection, catalog: str, schema: str, table: str
     ) -> list[dict]:
-        columns = connection.sql(
-            f"""
+        columns = connection.execute(
+            query=f"""
             SELECT table_catalog, table_schema, table_name, column_name, is_nullable, data_type, character_maximum_length, numeric_precision 
             FROM information_schema.columns
-            WHERE table_catalog = '{catalog}' AND table_schema = '{schema}' AND table_name = '{table}'
-            """
+            WHERE table_catalog = ? AND table_schema = ? AND table_name = ?
+            """,
+            parameters=(catalog, schema, table),
         ).fetchall()
         metadata = [
             {

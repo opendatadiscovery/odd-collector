@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List, Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
@@ -310,7 +311,7 @@ class DatabricksPlugin(BasePlugin):
 
 class DuckDBPlugin(BasePlugin):
     type: Literal["duckdb"]
-    paths: list[str]
+    paths: list[Path]
     host: Optional[str] = "localhost"
 
 
