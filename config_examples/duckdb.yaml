@@ -1,0 +1,9 @@
+default_pulling_interval: 10
+token: ""
+platform_host_url: http://localhost:8080
+chunk_size: 1000
+plugins:
+  - type: duckdb
+    name: duckdb_adapter
+    paths: [ /path/to/local/file.db, /path/to/local/dir ] # list of paths to the db files or to the folders containing db files
+    host: host # optional name of host, by default it's set to localhost
