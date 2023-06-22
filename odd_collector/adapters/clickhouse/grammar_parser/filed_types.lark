@@ -2,31 +2,40 @@
 
 ?type: nested
     | array
+    | named_tuple
     | tuple
+    | map
     | BASIC_TYPE
 
 BASIC_TYPE: "UInt64"
           | "UInt32"
           | "UInt8"
+          | "Int64"
           | "UInt128"
           | "UInt256"
           | "String"
           | "Float32"
           | "Float64"
-          | "Map"
           | "Array"
           | "Nullable"
           | "UUID"
           | "Enum"
           | "Low Cardinality"
           | "Bool"
+          | "Date"
 
 array: "Array" "(" type ")"
 
-tuple: "Tuple" "(" type ("," WS type) ")"
+tuple: "Tuple" "(" type ("," WS type)* ")"
+
+named_tuple: "Tuple" "(" field ("," WS field)* ")"
 
 nested: "Nested" "(" field ("," WS field)* ")"
+
+map: "Map" "(" type "," WS type ")"
+
 field: FIELD_NAME WS type
+
 FIELD_NAME: (LETTER | "_") (LETTER | "_" | DIGIT | "-")*
 
 %import common.WS

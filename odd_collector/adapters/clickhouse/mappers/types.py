@@ -23,6 +23,6 @@ TYPES_SQL_TO_ODD = {
     "UInt64": Type.TYPE_INTEGER,
     "Array": Type.TYPE_LIST,
     "Map": Type.TYPE_MAP,
-    # TODO: Change to TYPE_TUPLE
     "Tuple": Type.TYPE_STRUCT,
+    "Bool": Type.TYPE_BOOLEAN,
 }

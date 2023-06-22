@@ -8,6 +8,7 @@ from odd_collector.adapters.clickhouse.grammar_parser.column_type import (
     BasicType,
     Array,
     Nested,
+    Map,
 )
 
 
@@ -25,6 +26,18 @@ class TestTypeParser(unittest.TestCase):
         )
         result_length = len(result.type.fields)
         self.assertEqual(result_length, 1)
+
+    def test_map_type(self):
+        test_type = "Map(String, Bool)"
+        tree = parser.parse(test_type)
+        result = traverse_tree(tree)
+
+        self.assertIsInstance(result, Map)
+        self.assertIsInstance(result.key_type, BasicType)
+        self.assertIsInstance(result.value_type, BasicType)
+
+        self.assertEqual(result.key_type.type_name, "String")
+        self.assertEqual(result.value_type.type_name, "Bool")
 
     def test_complex_structure(self):
         test_type = (
