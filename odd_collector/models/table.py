@@ -19,3 +19,7 @@ class Table:
     sql_definition: Optional[str] = None
     columns: list["Column"] = dataclasses.field(default_factory=list)
     metadata: dict[str, Any] = dataclasses.field(default_factory=dict)
+
+    @property
+    def odd_metadata(self):
+        return self.metadata
