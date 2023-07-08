@@ -7,6 +7,7 @@ from odd_collector_sdk.logger import logger
 from odd_collector.domain.plugin import MySQLPlugin
 from odd_collector.helpers.bytes_to_str import convert_bytes_to_str
 from odd_collector.helpers.datetime import Datetime
+from odd_collector.helpers.lower_key_dict import LowerKeyDict
 from odd_collector.models import Column, Table
 
 
@@ -60,16 +61,17 @@ class Repository:
 
             tables = []
             for raw in cursor.fetchall():
+                raw = {**LowerKeyDict(raw)}
                 table = Table(
-                    catalog=raw.pop("TABLE_CATALOG"),
-                    schema=raw.pop("TABLE_SCHEMA"),
-                    comment=raw.pop("TABLE_COMMENT"),
-                    create_time=Datetime(raw.pop("CREATE_TIME")),
-                    update_time=Datetime(raw.pop("UPDATE_TIME")),
-                    name=(table_name := raw.pop("TABLE_NAME")),
-                    type=raw.pop("TABLE_TYPE"),
-                    sql_definition=raw.pop("VIEW_DEFINITION"),
-                    table_rows=raw.pop("TABLE_ROWS"),
+                    catalog=raw.pop("table_catalog"),
+                    schema=raw.pop("table_schema"),
+                    comment=raw.pop("table_comment"),
+                    create_time=Datetime(raw.pop("create_time")),
+                    update_time=Datetime(raw.pop("update_time")),
+                    name=(table_name := raw.pop("table_name")),
+                    type=raw.pop("table_type"),
+                    sql_definition=raw.pop("view_definition"),
+                    table_rows=raw.pop("table_rows"),
                     metadata=raw,
                     columns=[
                         column for column in columns if column.table_name == table_name
@@ -85,15 +87,16 @@ class Repository:
             columns = []
 
             for raw in cursor.fetchall():
+                raw = {**LowerKeyDict(raw)}
                 column = Column(
-                    table_catalog=raw.pop("TABLE_CATALOG"),
-                    table_name=raw.pop("TABLE_NAME"),
-                    table_schema=raw.pop("TABLE_SCHEMA"),
-                    name=raw.pop("COLUMN_NAME"),
-                    type=convert_bytes_to_str(raw.pop("DATA_TYPE")),
-                    is_nullable=raw.pop("IS_NULLABLE"),
-                    comment=convert_bytes_to_str(raw.pop("COLUMN_COMMENT")),
-                    default=raw.pop("COLUMN_DEFAULT"),
+                    table_catalog=raw.pop("table_catalog"),
+                    table_name=raw.pop("table_name"),
+                    table_schema=raw.pop("table_schema"),
+                    name=raw.pop("column_name"),
+                    type=convert_bytes_to_str(raw.pop("data_type")),
+                    is_nullable=raw.pop("is_nullable"),
+                    comment=convert_bytes_to_str(raw.pop("column_comment")),
+                    default=raw.pop("column_default"),
                     metadata=raw,
                 )
                 columns.append(column)
