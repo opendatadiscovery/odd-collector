@@ -3117,14 +3117,14 @@ sqlparse = "0.4.2"
 
 [[package]]
 name = "oddrn-generator"
-version = "0.1.82"
+version = "0.1.86"
 description = "Open Data Discovery Resource Name Generator"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "oddrn_generator-0.1.82-py3-none-any.whl", hash = "sha256:7cafe941540e394f2d3a3be6e7809f9aa92ec5f19b5dc4b841096c1e734281c5"},
-    {file = "oddrn_generator-0.1.82.tar.gz", hash = "sha256:e735b298d65ba86c9c53fa6e80c28be40509ce422011731afe28266a5763a497"},
+    {file = "oddrn_generator-0.1.86-py3-none-any.whl", hash = "sha256:9f86190977ed1021d3387df03e3136cf163c70b2700e6a1bc6eac2681543e733"},
+    {file = "oddrn_generator-0.1.86.tar.gz", hash = "sha256:eeb5adeaa3dc37ecde1f66f667df1c81e5c8aebc4f82de15dca63fcc315c3bba"},
 ]
 
 [package.dependencies]
@@ -5580,4 +5580,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "3a1aaac8f88ab3021ac050ca084467fd1333afdd9c1e538d39eb274c6555f0fb"
+content-hash = "5c4d984efab7c45103b7209384dda5bdad3db80ba8ebbd4ff9b896f96930d18a"

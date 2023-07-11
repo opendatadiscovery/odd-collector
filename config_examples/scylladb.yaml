@@ -1,0 +1,13 @@
+platform_host_url: http://localhost:8080
+default_pulling_interval: 10
+token: ""
+plugins:
+  - type: scylladb
+    name: scylladb_adapter
+    description: "" # Optional string
+    host: host
+    port: 9042 # Local ScyllaDB port
+    database: database # Keyspace name
+    user: user
+    password: password
+    contact_points: []

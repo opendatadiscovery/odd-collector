@@ -47,45 +47,45 @@ class AbstractRepository(ABC):
 
 
 class CassandraRepository(AbstractRepository):
-    __cluster = None
-    __session = None
+    _cluster = None
+    _session = None
 
     def __init__(self, config):
-        self.__host = config.host
-        self.__port = config.port
-        self.__keyspace = config.database
-        self.__username = config.user
-        self.__password = config.password
-        self.__contact_points = config.contact_points or [config.host]
-        # self.__execution_profile = config['execution_profile'] TODO To be added.
+        self._host = config.host
+        self._port = config.port
+        self._keyspace = config.database
+        self._username = config.user
+        self._password = config.password
+        self._contact_points = config.contact_points or [config.host]
+        # self._execution_profile = config['execution_profile'] TODO To be added.
 
     @contextlib.contextmanager
     def connection(self):
-        self.__connect()
+        self._connect()
         yield
-        self.__disconnect()
+        self._disconnect()
 
-    def __connect(self):
+    def _connect(self):
         try:
             profile = ExecutionProfile(row_factory=tuple_factory)
             auth_provider = PlainTextAuthProvider(
-                username=self.__username, password=self.__password
+                username=self._username, password=self._password
             )
-            self.__cluster = Cluster(
-                contact_points=self.__contact_points,
-                port=self.__port,
+            self._cluster = Cluster(
+                contact_points=self._contact_points,
+                port=self._port,
                 execution_profiles={EXEC_PROFILE_DEFAULT: profile},
                 auth_provider=auth_provider,
             )
-            self.__session = self.__cluster.connect(self.__keyspace)
+            self._session = self._cluster.connect(self._keyspace)
 
         except cassandra.DriverException as err:
             logging.error(err)
             raise DataSourceConnectionError("Can't connect to Cassandra database!")
 
-    def __disconnect(self):
+    def _disconnect(self):
         try:
-            self.__cluster.shutdown()
+            self._cluster.shutdown()
         except cassandra.DriverException as err:
             logging.error(err)
             raise DataSourceConnectionError(
@@ -93,29 +93,29 @@ class CassandraRepository(AbstractRepository):
             )
 
     def get_columns(self) -> List[ColumnMetadata]:
-        columns = self.__session.execute(
-            COLUMNS_METADATA_QUERY, {"keyspace": self.__keyspace}
+        columns = self._session.execute(
+            COLUMNS_METADATA_QUERY, {"keyspace": self._keyspace}
         )
-        return [ColumnMetadata(*self.__filter_data(column)) for column in columns]
+        return [ColumnMetadata(*self._filter_data(column)) for column in columns]
 
     def get_tables(self) -> List[TableMetadata]:
-        tables = self.__session.execute(
-            TABLE_METADATA_QUERY, {"keyspace": self.__keyspace}
+        tables = self._session.execute(
+            TABLE_METADATA_QUERY, {"keyspace": self._keyspace}
         )
-        return [TableMetadata(*self.__filter_data(table)) for table in tables]
+        return [TableMetadata(*self._filter_data(table)) for table in tables]
 
     def get_views(self) -> List[ViewMetadata]:
-        views = self.__session.execute(
-            VIEWS_METADATA_QUERY, {"keyspace": self.__keyspace}
+        views = self._session.execute(
+            VIEWS_METADATA_QUERY, {"keyspace": self._keyspace}
         )
         res = []
-        metadata = self.__cluster.metadata.keyspaces[self.__keyspace]
+        metadata = self._cluster.metadata.keyspaces[self._keyspace]
         for view in views:
             view = (*view, metadata.views[view[1]].as_cql_query())
-            res.append(ViewMetadata(*self.__filter_data(view)))
+            res.append(ViewMetadata(*self._filter_data(view)))
         return res
 
-    def __filter_data(self, data: Tuple[Any, Any]) -> Tuple[Any]:
+    def _filter_data(self, data: Tuple[Any, Any]) -> Tuple[Any]:
         """
         A method to filter the data obtained from the Cassandra database. It converts the Cassandra types
         OrderedMapSerializedKey, SortedSet to usual Python dictionary and list, respectively

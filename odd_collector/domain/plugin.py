@@ -137,6 +137,11 @@ class CassandraPlugin(DatabasePlugin):
     contact_points: list = []
 
 
+class ScyllaDBPlugin(DatabasePlugin):
+    type: Literal["scylladb"]
+    contact_points: list = []
+
+
 class KubeflowPlugin(BasePlugin):
     type: Literal["kubeflow"]
     host: str
@@ -346,4 +351,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "couchbase": CouchbasePlugin,
     "sqlite": SQLitePlugin,
     "databricks": DatabricksPlugin,
+    "scylladb": ScyllaDBPlugin,
 }
