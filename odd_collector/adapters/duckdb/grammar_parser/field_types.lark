@@ -1,0 +1,43 @@
+?start: type
+
+BASIC_TYPE: "BIGINT"
+          | "BOOLEAN"
+          | "BLOB"
+          | "DATE"
+          | "DOUBLE"
+          | "DECIMAL"
+          | "HUGEINT"
+          | "INTEGER"
+          | "REAL"
+          | "SMALLINT"
+          | "TIME"
+          | "TIMESTAMP"
+          | "TINYINT"
+          | "UBIGINT"
+          | "UINTEGER"
+          | "USMALLINT"
+          | "UTINYINT"
+          | "UUID"
+          | "VARCHAR"
+          | "INTERVAL"
+
+list: type"[]"
+
+FIELD_NAME: (LETTER | "_") (LETTER | "_" | DIGIT | "-" )*
+
+field: FIELD_NAME " " type
+
+struct: "STRUCT" "(" field (", " field)* ")"
+
+map: "MAP" "(" type ", " type ")"
+
+union: "UNION" "(" field (", " field)* ")"
+
+?type: BASIC_TYPE
+     | list
+     | struct
+     | map
+     | union
+
+%import common.LETTER
+%import common.DIGIT

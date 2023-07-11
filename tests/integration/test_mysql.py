@@ -65,3 +65,5 @@ def test_mysql():
         assert len(view.dataset.field_list) == 2
         assert len(view.data_transformer.inputs) == 1
         assert view.data_transformer.inputs[0] == table.oddrn
+
+        assert data_entities.json()

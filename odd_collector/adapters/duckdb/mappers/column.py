@@ -1,24 +1,24 @@
-from typing import List, Union
-
+from typing import Union
 from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
-from oddrn_generator import DatabricksUnityCatalogGenerator
+from oddrn_generator import DuckDBGenerator
 from odd_models.models import DataSetField, DataSetFieldType, Type
-from .models import DatabricksColumn
+from .models import DuckDBColumn
 from .types import TYPES_SQL_TO_ODD
 from ..logger import logger
 from ..grammar_parser.parser import parser, traverse_tree
-from ..grammar_parser.column_type import Struct, ArrayType, Map, BasicType, ParseType
-
-
-def split_by_braces(value: str) -> str:
-    if isinstance(value, str):
-        return value.split("(")[0].split("<")[0]
-    return value
+from ..grammar_parser.column_type import (
+    Struct,
+    ListType,
+    Map,
+    BasicType,
+    ParseType,
+    DUnion,
+)
 
 
 def build_dataset_field(
-    column: DatabricksColumn, oddrn_generator: DatabricksUnityCatalogGenerator
-) -> List[DataSetField]:
+    column: DuckDBColumn, oddrn_generator: DuckDBGenerator
+) -> list[DataSetField]:
     logger.debug(f"Build dataset field for {column.name} with type {column.type}")
     type_tree = parser.parse(column.type)
     column_type = traverse_tree(type_tree)
@@ -40,14 +40,12 @@ def build_dataset_field(
                     oddrn=oddrn,
                     name=column_name,
                     metadata=[
-                        extract_metadata(
-                            "databricks", column, DefinitionType.DATASET_FIELD
-                        )
+                        extract_metadata("duckdb", column, DefinitionType.DATASET_FIELD)
                     ],
                     type=DataSetFieldType(
                         type=Type.TYPE_STRUCT,
                         logical_type=get_logical_type(column_type),
-                        is_nullable=False,
+                        is_nullable=column.is_nullable,
                     ),
                     owner=None,
                     parent_field_oddrn=parent_oddrn,
@@ -61,14 +59,12 @@ def build_dataset_field(
                     oddrn=oddrn,
                     name=column_name,
                     metadata=[
-                        extract_metadata(
-                            "databricks", column, DefinitionType.DATASET_FIELD
-                        )
+                        extract_metadata("duckdb", column, DefinitionType.DATASET_FIELD)
                     ],
                     type=DataSetFieldType(
                         type=Type.TYPE_MAP,
                         logical_type=get_logical_type(column_type),
-                        is_nullable=False,
+                        is_nullable=column.is_nullable,
                     ),
                     owner=None,
                     parent_field_oddrn=parent_oddrn,
@@ -88,14 +84,12 @@ def build_dataset_field(
                     oddrn=oddrn,
                     name=column_name,
                     metadata=[
-                        extract_metadata(
-                            "databricks", column, DefinitionType.DATASET_FIELD
-                        )
+                        extract_metadata("duckdb", column, DefinitionType.DATASET_FIELD)
                     ],
                     type=DataSetFieldType(
                         type=odd_type,
                         logical_type=logical_type,
-                        is_nullable=False,
+                        is_nullable=column.is_nullable,
                     ),
                     owner=None,
                     parent_field_oddrn=parent_oddrn,
@@ -109,7 +103,7 @@ def build_dataset_field(
 def get_logical_type(type_field: Union[ParseType, str]) -> str:
     if isinstance(type_field, BasicType):
         return type_field.type_name
-    elif isinstance(type_field, ArrayType):
+    elif isinstance(type_field, ListType):
         return f"Array({get_logical_type(type_field.type)})"
     elif isinstance(type_field, Map):
         return f"Map({get_logical_type(type_field.key_type)}, {get_logical_type(type_field.value_type)})"
@@ -124,6 +118,15 @@ def get_logical_type(type_field: Union[ParseType, str]) -> str:
             )
             + ")"
         )
+    elif isinstance(type_field, DUnion):
+        return (
+            "Union("
+            + ", ".join(
+                f"{name}: {get_logical_type(type)}"
+                for name, type in type_field.fields.items()
+            )
+            + ")"
+        )
     else:
         return "Unknown"
 
@@ -131,10 +134,12 @@ def get_logical_type(type_field: Union[ParseType, str]) -> str:
 def get_odd_type(type_field: Union[ParseType, str]) -> Type:
     if isinstance(type_field, BasicType):
         return TYPES_SQL_TO_ODD.get(type_field.type_name, Type.TYPE_UNKNOWN)
-    elif isinstance(type_field, ArrayType):
+    elif isinstance(type_field, ListType):
         return Type.TYPE_LIST
     elif isinstance(type_field, Map):
         return Type.TYPE_MAP
+    elif isinstance(type_field, DUnion):
+        return Type.TYPE_UNION
     elif isinstance(type_field, str):
         return TYPES_SQL_TO_ODD.get(type_field, Type.TYPE_UNKNOWN)
     elif isinstance(type_field, Struct):
@@ -144,6 +149,6 @@ def get_odd_type(type_field: Union[ParseType, str]) -> Type:
 
 
 def map_column(
-    oddrn_generator: DatabricksUnityCatalogGenerator, column: DatabricksColumn
-) -> List[DataSetField]:
+    oddrn_generator: DuckDBGenerator, column: DuckDBColumn
+) -> list[DataSetField]:
     return build_dataset_field(column, oddrn_generator)

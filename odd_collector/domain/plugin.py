@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List, Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
@@ -313,6 +314,12 @@ class DatabricksPlugin(BasePlugin):
     catalogs: Optional[list[str]] = None
 
 
+class DuckDBPlugin(BasePlugin):
+    type: Literal["duckdb"]
+    paths: list[Path]
+    host: Optional[str] = "localhost"
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -351,5 +358,6 @@ PLUGIN_FACTORY: PluginFactory = {
     "couchbase": CouchbasePlugin,
     "sqlite": SQLitePlugin,
     "databricks": DatabricksPlugin,
+    "duckdb": DuckDBPlugin,
     "scylladb": ScyllaDBPlugin,
 }

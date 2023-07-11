@@ -1,98 +1,59 @@
-from typing import Union
-
 from lark import Lark, Tree, Token
-
-from .column_type import (
-    ParseType,
-    Field,
-    Array,
-    Tuple,
-    Nested,
-    BasicType,
-    Map,
-    NamedTuple,
-)
+from .column_type import ParseType, Field, ListType, Struct, Map, BasicType, DUnion
 from .exceptions import *
-from ..logger import logger
 
-"""
-This parser uses earley type instead of larl type. We need to support different types of Tuple in Clickhouse
-named Tuples as example Tuple(a String, b Boolean), and we need to supplort classic Tuples as example
-Tuple(String, Boolean).
-
-LARL does not support the different types of Tuples presented in filed_types.lark
-"""
+parser = Lark.open("field_types.lark", rel_to=__file__, parser="lalr", start="type")
 
 
-parser = Lark.open("filed_types.lark", rel_to=__file__, parser="earley", start="type")
-
-
-def traverse_tree(node) -> Union[ParseType, str, Field, None]:
-    logger.debug(f"Node: {node}")
+def traverse_tree(node):
     if isinstance(node, Tree):
-        if node.data == "array":
+        if node.data == "list":
             if len(node.children) != 1:
                 raise StructureError(
                     f"Invalid array structure: expected 1 child, got: {len(node.children)}"
                 )
+
             child = node.children[0]
             child_value = traverse_tree(child)
+
             if not isinstance(child_value, ParseType):
                 raise NonTypeObjectError(f"Array got a non-type object: {child}")
-            return Array(child_value)
 
-        elif node.data == "tuple":
-            logger.debug(f"Get tuple node {node}")
-            subtypes = []
-            for child in node.children:
-                child_value = traverse_tree(child)
-                if child_value is None:
-                    continue
-                if not isinstance(child_value, ParseType):
-                    raise NonTypeObjectError(f"Tuple got a non-type object: {child}")
-                subtypes.append(child_value)
-            return Tuple(subtypes)
-
-        elif node.data == "named_tuple":
-            logger.debug(f"Get named tuple node {node}")
-            fields = {}
-            for child in node.children:
-                value = traverse_tree(child)
-                if value is None:
-                    continue
-                elif isinstance(value, Field):
-                    fields[value.name] = value.value
-                else:
-                    raise StructureError(f"Got an unexpected nested child: {value}")
-            return NamedTuple(fields)
+            return ListType(child_value)
 
         elif node.data == "map":
             subtypes = []
             for child in node.children:
                 child_value = traverse_tree(child)
-                if child_value is None:
-                    continue
                 if not isinstance(child_value, ParseType):
                     raise NonTypeObjectError(f"Tuple got a non-type object: {child}")
                 subtypes.append(child_value)
             return Map(subtypes[0], subtypes[1])
 
-        elif node.data == "nested":
+        elif node.data == "struct":
             fields = {}
             for child in node.children:
                 value = traverse_tree(child)
-                if value is None:
-                    continue
-                elif isinstance(value, Field):
-                    fields[value.name] = value.value
+                if isinstance(value, Field):
+                    fields[value.name] = value.type_value
                 else:
                     raise StructureError(f"Got an unexpected nested child: {value}")
-            return Nested(fields)
+            return Struct(fields)
+
+        elif node.data == "union":
+            fields = {}
+            for child in node.children:
+                value = traverse_tree(child)
+                if isinstance(value, Field):
+                    fields[value.name] = value.type_value
+                else:
+                    raise StructureError(f"Got an unexpected nested child: {value}")
+            return DUnion(fields)
 
         elif node.data == "field":
-            if len(node.children) != 3:
+            if len(node.children) != 2:
                 raise StructureError(f"Unexpected field structure: {node}")
-            field_name_node, _, field_type_node = node.children
+            field_name_node, field_type_node = node.children
             field_name = traverse_tree(field_name_node)
             if not isinstance(field_name, str):
                 raise UnexpectedTypeError(
@@ -113,8 +74,6 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
             return BasicType(node.value)
         elif node.type == "FIELD_NAME":
             return node.value
-        elif node.type == "WS":
-            return None
         else:
             raise UnexpectedTypeError(f"Unexpected token type: {node.type}")
 
