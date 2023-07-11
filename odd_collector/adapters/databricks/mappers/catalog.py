@@ -16,4 +16,5 @@ def map_catalog(
         data_entity_group=DataEntityGroup(
             entities_list=lpluck_attr("oddrn", schemas_entities)
         ),
+        owner=None,
     )

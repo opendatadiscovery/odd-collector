@@ -6,17 +6,15 @@ from odd_models.models import (
     DataEntityGroup,
     DataEntityType,
     DataSet,
-    DataSetField,
 )
 from oddrn_generator import ClickHouseGenerator
 
 from ..domain import Column, IntegrationEngine, Table
 from . import _data_set_metadata_excluded_keys, _data_set_metadata_schema_url
-from .columns import build_nested_columns, to_dataset_fields
+from .columns import build_dataset_fields
 from .metadata import extract_metadata
 from .transformer import extract_transformer_data
 from ..logger import logger
-from odd_collector.adapters.clickhouse.mappers import transformer
 
 
 def map_table(
@@ -77,13 +75,8 @@ def map_table(
 
         logger.debug(f"Columns for table {table.name} are {required_columns}")
 
-        nested_columns = build_nested_columns(required_columns)
-
-        logger.debug(
-            f"Set oddrn path to '{oddrn_path}' for nested columns {nested_columns}"
-        )
-        column_data_fields = to_dataset_fields(
-            oddrn_generator, oddrn_path, nested_columns, data_entity.owner
+        column_data_fields = build_dataset_fields(
+            required_columns, oddrn_generator, oddrn_path
         )
 
         data_entity.dataset.field_list.extend(column_data_fields)
