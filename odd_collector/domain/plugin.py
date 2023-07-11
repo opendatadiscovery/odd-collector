@@ -358,6 +358,6 @@ PLUGIN_FACTORY: PluginFactory = {
     "couchbase": CouchbasePlugin,
     "sqlite": SQLitePlugin,
     "databricks": DatabricksPlugin,
-    "duckdb": DuckDBPlugin,
     "scylladb": ScyllaDBPlugin,
+    "duckdb": DuckDBPlugin,
 }
