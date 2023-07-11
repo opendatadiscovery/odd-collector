@@ -7,7 +7,11 @@ from cassandra.cluster import EXEC_PROFILE_DEFAULT, Cluster, ExecutionProfile
 from cassandra.query import tuple_factory
 from odd_collector_sdk.errors import DataSourceConnectionError
 
-from odd_collector.adapters.cassandra.repository import CassandraRepository, TABLE_METADATA_QUERY, VIEWS_METADATA_QUERY
+from odd_collector.adapters.cassandra.repository import (
+    CassandraRepository,
+    TABLE_METADATA_QUERY,
+    VIEWS_METADATA_QUERY,
+)
 from odd_collector.adapters.scylladb.mappers.models import (
     TableMetadata,
     ViewMetadata,

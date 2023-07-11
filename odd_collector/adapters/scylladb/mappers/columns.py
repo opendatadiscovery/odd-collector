@@ -32,7 +32,9 @@ def map_column(
         oddrn=oddrn_generator.get_oddrn_by_path(column_path),
         name=name,
         owner=owner,
-        metadata=[extract_metadata("scylladb", column_metadata, DefinitionType.DATASET_FIELD)],
+        metadata=[
+            extract_metadata("scylladb", column_metadata, DefinitionType.DATASET_FIELD)
+        ],
         type=DataSetFieldType(
             type=TYPES_CASSANDRA_TO_ODD.get(data_type, Type.TYPE_UNKNOWN),
             logical_type=data_type,

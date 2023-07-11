@@ -1,6 +1,15 @@
 from dataclasses import dataclass
 
-from cassandra.cqltypes import VarcharType, DoubleType, Int32Type, UUIDType, BytesType, MapType, SetType, BooleanType
+from cassandra.cqltypes import (
+    VarcharType,
+    DoubleType,
+    Int32Type,
+    UUIDType,
+    BytesType,
+    MapType,
+    SetType,
+    BooleanType,
+)
 
 from funcy import omit
 
@@ -35,7 +44,7 @@ class TableMetadata:
                 "keyspace_name",
                 "table_name",
                 "comment",
-            }
+            },
         )
 
 
@@ -60,7 +69,7 @@ class ColumnMetadata:
                 "column_name",
                 "column_name_bytes",
                 "type",
-            }
+            },
         )
 
 
@@ -99,5 +108,5 @@ class ViewMetadata:
                 "view_name",
                 "view_definition",
                 "comment",
-            }
+            },
         )
