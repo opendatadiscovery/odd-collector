@@ -6,6 +6,7 @@ from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransform
 from oddrn_generator import SnowflakeGenerator
 
 from odd_collector.adapters.snowflake.domain import View
+from odd_collector.adapters.snowflake.logger import logger
 
 from ..domain.entity import Connection
 from ..helpers import transform_datetime
@@ -17,6 +18,12 @@ from .metadata import map_metadata
 def map_view(view: View, generator: SnowflakeGenerator) -> DataEntity:
     generator = deepcopy(generator)
     generator.set_oddrn_paths(schemas=view.table_schema, views=view.table_name)
+
+    sql = None
+    try:
+        sql = sqlparse.format(view.view_definition)
+    except Exception:
+        logger.warning(f"Couldn't parse view definition {view.view_definition}")
 
     return DataEntity(
         oddrn=generator.get_oddrn_by_path("views"),
@@ -31,7 +38,7 @@ def map_view(view: View, generator: SnowflakeGenerator) -> DataEntity:
             field_list=map_columns(view.columns, EntityTypePathKey.VIEW, generator)
         ),
         data_transformer=DataTransformer(
-            sql=sqlparse.format(view.view_definition),
+            sql=sql,
             inputs=_map_connection(view.upstream, generator),
             outputs=_map_connection(view.downstream, generator),
         ),
