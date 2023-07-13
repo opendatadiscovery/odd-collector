@@ -1,9 +1,9 @@
 from typing import List, Optional, Tuple, Type
 
-from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity, DataEntityList
-from oddrn_generator import SnowflakeGenerator
+from oddrn_generator import Generator, SnowflakeGenerator
 
 from odd_collector.domain.plugin import SnowflakePlugin
 
@@ -12,22 +12,25 @@ from .domain import Pipe, Table, View
 from .map import map_database, map_pipe, map_schemas, map_table, map_view
 
 
-class Adapter(AbstractAdapter):
+class Adapter(BaseAdapter):
+    config: SnowflakePlugin
+    generator: SnowflakeGenerator
+
     def __init__(
         self,
         config: SnowflakePlugin,
         client: Optional[Type[SnowflakeClientBase]] = SnowflakeClient,
     ):
-        self._client = client(config)
-        self._config = config
         self._database_name = config.database.upper()
-        self._generator = SnowflakeGenerator(
-            host_settings=config.host,
+        self._client = client(config)
+
+        super().__init__(config)
+
+    def create_generator(self) -> Generator:
+        return SnowflakeGenerator(
+            host_settings=self.config.host,
             databases=self._database_name,
         )
-
-    def get_data_source_oddrn(self) -> str:
-        return self._generator.get_data_source_oddrn()
 
     def get_data_entity_list(self) -> DataEntityList:
         raw_pipes = self._client.get_raw_pipes()
@@ -45,7 +48,7 @@ class Adapter(AbstractAdapter):
                 for raw_stage in raw_stages
                 if raw_pipe.stage_full_name == raw_stage.stage_full_name
             )
-        pipes_entities = [map_pipe(pipe, self._generator) for pipe in pipes]
+        pipes_entities = [map_pipe(pipe, self.generator) for pipe in pipes]
         tables = self._client.get_tables()
 
         tables_with_data_entities: List[
@@ -79,16 +82,16 @@ class Adapter(AbstractAdapter):
 
         for table in tables:
             if isinstance(table, View):
-                result.append((table, map_view(table, self._generator)))
+                result.append((table, map_view(table, self.generator)))
             else:
-                result.append((table, map_table(table, self._generator)))
+                result.append((table, map_table(table, self.generator)))
 
         return result
 
     def _get_schemas_entities(
         self, tables_with_entities: List[Tuple[Table, DataEntity]]
     ) -> List[DataEntity]:
-        return map_schemas(tables_with_entities, self._generator)
+        return map_schemas(tables_with_entities, self.generator)
 
     def _get_database_entity(self, schemas: List[DataEntity]) -> DataEntity:
-        return map_database(self._database_name, schemas, self._generator)
+        return map_database(self._database_name, schemas, self.generator)

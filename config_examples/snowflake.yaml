@@ -4,10 +4,8 @@ token: ""
 plugins:
   - type: snowflake
     name: snowflake_adapter
-    host: account.snowflakecomputing.com
-    port: # Optional
     user: user
     password: password
-    database: database 
-    account: account # Optional account locator, if omit, will be taken from host <account>.snowflakecomputing.com
+    database: database
+    account: account # xxxx-yyyy
     warehouse: warehouse # i.e COMPUTE_WH

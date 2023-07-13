@@ -3,7 +3,7 @@ from typing import List, Literal, Optional
 
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
-from pydantic import BaseModel, SecretStr, validator, FilePath
+from pydantic import BaseModel, FilePath, SecretStr, validator
 
 from odd_collector.domain.predefined_data_source import PredefinedDatasourceParams
 
@@ -86,13 +86,17 @@ class KafkaPlugin(BasePlugin):
     broker_conf: dict
 
 
-class SnowflakePlugin(DatabasePlugin):
+class SnowflakePlugin(BasePlugin):
     type: Literal["snowflake"]
     database: str
-    port: Optional[int] = None
+    account: str
+    warehouse: str
+    user: str
     password: SecretStr
-    account: Optional[str]
-    warehouse: str  # active warehouse
+
+    @property
+    def host(self) -> str:
+        return f"{self.account.upper()}.snowflakecomputing.com"
 
 
 class HiveConnectionParams(BaseModel):
