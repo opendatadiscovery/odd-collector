@@ -1,12 +1,11 @@
 from typing import Union
 
-from cassandra.cqltypes import VarcharType
 from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import CassandraGenerator
 
 from .models import ColumnMetadata
-from .types import TYPES_CASSANDRA_TO_ODD
+from ...cassandra.mappers.types import TYPES_CASSANDRA_TO_ODD
 
 
 def map_column(
@@ -24,8 +23,8 @@ def map_column(
     :param owner: the owner of the column.
     :return:
     """
-    name: VarcharType = column_metadata.column_name
-    data_type: VarcharType = column_metadata.type
+    name: str = column_metadata.column_name
+    data_type: str = column_metadata.type
 
     oddrn_generator.set_oddrn_paths(**{column_path: name})
     dsf: DataSetField = DataSetField(
@@ -33,7 +32,9 @@ def map_column(
         name=name,
         owner=owner,
         metadata=[
-            extract_metadata("scylladb", column_metadata, DefinitionType.DATASET_FIELD)
+            extract_metadata(
+                "scylladb", column_metadata, DefinitionType.DATASET_FIELD, jsonify=True
+            )
         ],
         type=DataSetFieldType(
             type=TYPES_CASSANDRA_TO_ODD.get(data_type, Type.TYPE_UNKNOWN),

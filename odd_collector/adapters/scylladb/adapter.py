@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from funcy import concat, lpluck_attr
-from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import ScyllaDBGenerator
 
@@ -10,26 +10,20 @@ from .mappers.keyspaces import map_keyspace
 from .mappers.tables import map_tables
 from .mappers.views import map_views
 from .repository import ScyllaDBRepository
+from ...domain.plugin import ScyllaDBPlugin
 
 
-class Adapter(AbstractAdapter):
-    __cluster = None
-    __session = None
+class Adapter(BaseAdapter):
+    config: ScyllaDBPlugin
+    generator: ScyllaDBGenerator
 
-    def __init__(self, config):
-        self.__host = config.host
-        self.__port = config.port
-        self.__keyspace = config.database
-        self.__username = config.user
-        self.__password = config.password
-        self.__contact_points = config.contact_points or [config.host]
-        self.__repo = ScyllaDBRepository(config)
-        self.__oddrn_generator = ScyllaDBGenerator(
-            host_settings=f"{self.__host}", keyspaces=self.__keyspace
+    def __init__(self, config: ScyllaDBPlugin):
+        super().__init__(config)
+
+    def create_generator(self) -> ScyllaDBGenerator:
+        return ScyllaDBGenerator(
+            host_settings=f"{self.config.host}", keyspaces=self.config.database
         )
-
-    def get_data_source_oddrn(self) -> str:
-        return self.__oddrn_generator.get_data_source_oddrn()
 
     def get_data_entities(self) -> List[DataEntity]:
         """
@@ -39,20 +33,19 @@ class Adapter(AbstractAdapter):
         :return: list of data entities describing the keyspace and all its tables.
         """
         try:
-            with self.__repo.connection():
-                tables = self.__repo.get_tables()
-                columns = self.__repo.get_columns()
-                views = self.__repo.get_views()
+            repo = ScyllaDBRepository(self.config)
+            with repo.connection():
+                tables = repo.get_tables()
+                columns = repo.get_columns()
+                views = repo.get_views()
 
             tables_entities = map_tables(
-                self.__oddrn_generator, tables, columns, self.__keyspace
+                self.generator, tables, columns, self.config.database
             )
-            views_entities = map_views(self.__oddrn_generator, views, columns)
+            views_entities = map_views(self.generator, views, columns)
 
             oddrns = lpluck_attr("oddrn", concat(tables_entities, views_entities))
-            keyspace_entity = map_keyspace(
-                self.__oddrn_generator, self.__keyspace, oddrns
-            )
+            keyspace_entity = map_keyspace(self.generator, self.config.database, oddrns)
             return tables_entities + views_entities + [keyspace_entity]
 
         except Exception as e:

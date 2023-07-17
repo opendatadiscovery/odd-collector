@@ -1,7 +1,6 @@
 from collections import defaultdict
 from typing import Dict, List
 
-from cassandra.cqltypes import VarcharType
 from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import ScyllaDBGenerator
@@ -63,7 +62,7 @@ def get_data_entity(
     """
     data_entity_type = DataEntityType.TABLE
     oddrn_path = "tables"
-    table_name: VarcharType = metadata.table_name
+    table_name: str = metadata.table_name
 
     oddrn_generator.set_oddrn_paths(**{"keyspaces": keyspace, "tables": table_name})
     dataset = get_dataset(table_columns, oddrn_generator)
@@ -71,7 +70,9 @@ def get_data_entity(
         oddrn=oddrn_generator.get_oddrn_by_path(oddrn_path),
         name=table_name,
         type=data_entity_type,
-        metadata=[extract_metadata("scylladb", metadata, DefinitionType.DATASET)],
+        metadata=[
+            extract_metadata("scylladb", metadata, DefinitionType.DATASET, jsonify=True)
+        ],
         dataset=dataset,
     )
 

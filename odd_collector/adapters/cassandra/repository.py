@@ -1,7 +1,7 @@
 import contextlib
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Union
 
 import cassandra
 from cassandra.auth import PlainTextAuthProvider
@@ -115,7 +115,9 @@ class CassandraRepository(AbstractRepository):
             res.append(ViewMetadata(*self._filter_data(view)))
         return res
 
-    def _filter_data(self, data: Tuple[Any, Any]) -> Tuple[Any]:
+    def _filter_data(
+        self, data: Tuple[Any, Any]
+    ) -> tuple[Union[Union[dict, list], Any], ...]:
         """
         A method to filter the data obtained from the Cassandra database. It converts the Cassandra types
         OrderedMapSerializedKey, SortedSet to usual Python dictionary and list, respectively

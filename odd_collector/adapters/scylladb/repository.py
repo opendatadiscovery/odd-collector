@@ -11,10 +11,12 @@ from odd_collector.adapters.cassandra.repository import (
     CassandraRepository,
     TABLE_METADATA_QUERY,
     VIEWS_METADATA_QUERY,
+    COLUMNS_METADATA_QUERY,
 )
 from odd_collector.adapters.scylladb.mappers.models import (
     TableMetadata,
     ViewMetadata,
+    ColumnMetadata,
 )
 
 
@@ -62,3 +64,9 @@ class ScyllaDBRepository(CassandraRepository):
             view = (*view, metadata.views[view[1]].as_cql_query())
             res.append(ViewMetadata(*self._filter_data(view)))
         return res
+
+    def get_columns(self) -> List[ColumnMetadata]:
+        columns = self._session.execute(
+            COLUMNS_METADATA_QUERY, {"keyspace": self._keyspace}
+        )
+        return [ColumnMetadata(*self._filter_data(column)) for column in columns]

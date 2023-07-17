@@ -28,4 +28,5 @@ TYPES_CASSANDRA_TO_ODD: Dict[str, Type] = {
     "list": Type.TYPE_LIST,
     "set": Type.TYPE_LIST,
     "tuple": Type.TYPE_LIST,
+    "blob": Type.TYPE_BINARY,
 }

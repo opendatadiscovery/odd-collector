@@ -1,40 +1,31 @@
+import uuid
 from dataclasses import dataclass
-
-from cassandra.cqltypes import (
-    VarcharType,
-    DoubleType,
-    Int32Type,
-    UUIDType,
-    BytesType,
-    MapType,
-    SetType,
-    BooleanType,
-)
+from typing import Any, Dict
 
 from funcy import omit
 
 
 @dataclass(frozen=True)
 class TableMetadata:
-    keyspace_name: VarcharType
-    table_name: VarcharType
-    bloom_filter_fp_chance: DoubleType
-    caching: MapType
-    comment: VarcharType
-    compaction: MapType
-    compression: MapType
-    crc_check_chance: DoubleType
-    dclocal_read_repair_chance: DoubleType
-    default_time_to_live: Int32Type
-    extensions: MapType
-    flags: SetType
-    gc_grace_seconds: Int32Type
-    id: UUIDType
-    max_index_interval: Int32Type
-    memtable_flush_period_in_ms: Int32Type
-    min_index_interval: Int32Type
-    read_repair_chance: DoubleType
-    speculative_retry: VarcharType
+    keyspace_name: str
+    table_name: str
+    bloom_filter_fp_chance: float
+    caching: Dict[str, str]
+    comment: str
+    compaction: Dict[str, str]
+    compression: Dict[str, str]
+    crc_check_chance: float
+    dclocal_read_repair_chance: float
+    default_time_to_live: int
+    extensions: Dict[str, Any]
+    flags: list[str]
+    gc_grace_seconds: int
+    id: uuid
+    max_index_interval: int
+    memtable_flush_period_in_ms: int
+    min_index_interval: int
+    read_repair_chance: float
+    speculative_retry: str
 
     @property
     def odd_metadata(self):
@@ -50,14 +41,14 @@ class TableMetadata:
 
 @dataclass(frozen=True)
 class ColumnMetadata:
-    keyspace_name: VarcharType
-    table_name: VarcharType
-    column_name: VarcharType
-    clustering_order: VarcharType
-    column_name_bytes: BytesType
-    kind: VarcharType
-    position: Int32Type
-    type: VarcharType
+    keyspace_name: str
+    table_name: str
+    column_name: str
+    clustering_order: str
+    column_name_bytes: bytes
+    kind: str
+    position: int
+    type: str
 
     @property
     def odd_metadata(self):
@@ -75,28 +66,28 @@ class ColumnMetadata:
 
 @dataclass(frozen=True)
 class ViewMetadata:
-    keyspace_name: VarcharType
-    view_name: VarcharType
-    base_table_id: UUIDType
-    base_table_name: VarcharType
-    bloom_filter_fp_chance: DoubleType
-    caching: MapType
-    comment: VarcharType
-    compaction: MapType
-    compression: MapType
-    crc_check_chance: DoubleType
-    dclocal_read_repair_chance: DoubleType
-    default_time_to_live: Int32Type
-    extensions: MapType
-    gc_grace_seconds: Int32Type
-    id: UUIDType
-    include_all_columns: BooleanType
-    max_index_interval: Int32Type
-    memtable_flush_period_in_ms: Int32Type
-    min_index_interval: Int32Type
-    read_repair_chance: DoubleType
-    speculative_retry: VarcharType
-    where_clause: VarcharType
+    keyspace_name: str
+    view_name: str
+    base_table_id: uuid
+    base_table_name: str
+    bloom_filter_fp_chance: float
+    caching: Dict[str, str]
+    comment: str
+    compaction: Dict[str, str]
+    compression: Dict[str, str]
+    crc_check_chance: float
+    dclocal_read_repair_chance: float
+    default_time_to_live: int
+    extensions: dict[str, Any]
+    gc_grace_seconds: int
+    id: uuid
+    include_all_columns: bool
+    max_index_interval: int
+    memtable_flush_period_in_ms: int
+    min_index_interval: int
+    read_repair_chance: float
+    speculative_retry: str
+    where_clause: str
     view_definition: str
 
     @property
@@ -107,6 +98,7 @@ class ViewMetadata:
                 "keyspace_name",
                 "view_name",
                 "view_definition",
+                "where_clause",
                 "comment",
             },
         )

@@ -1,6 +1,7 @@
 from copy import deepcopy
 from typing import List
 
+from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
 from odd_models.models import DataEntity, DataEntityType, DataSet, DataTransformer
 from odd_models.utils import SqlParser
 from oddrn_generator import ScyllaDBGenerator
@@ -32,6 +33,9 @@ def map_views(
                 ]
             ),
             data_transformer=extract_transformer_data(view.view_definition, generator),
+            metadata=[
+                extract_metadata("scylladb", view, DefinitionType.DATASET, jsonify=True)
+            ],
         )
         data_entities.append(data_entity)
     return data_entities
