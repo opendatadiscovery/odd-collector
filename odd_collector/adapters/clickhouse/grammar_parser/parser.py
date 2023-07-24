@@ -1,19 +1,19 @@
 from typing import Union
 
-from lark import Lark, Tree, Token
+from lark import Lark, Token, Tree
 
+from ..logger import logger
 from .column_type import (
-    ParseType,
-    Field,
     Array,
-    Tuple,
-    Nested,
     BasicType,
+    Field,
     Map,
     NamedTuple,
+    Nested,
+    ParseType,
+    Tuple,
 )
 from .exceptions import *
-from ..logger import logger
 
 """
 This parser uses earley type instead of larl type. We need to support different types of Tuple in Clickhouse

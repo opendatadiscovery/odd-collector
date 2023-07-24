@@ -1,5 +1,6 @@
-from lark import Lark, Tree, Token
-from .column_type import ParseType, Field, ListType, Struct, Map, BasicType, DUnion
+from lark import Lark, Token, Tree
+
+from .column_type import BasicType, DUnion, Field, ListType, Map, ParseType, Struct
 from .exceptions import *
 
 parser = Lark.open("field_types.lark", rel_to=__file__, parser="lalr", start="type")

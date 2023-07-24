@@ -38,8 +38,9 @@ class PredefinedDataSource(ABC):
 class PostgresDatasource(PredefinedDataSource):
     def __init__(self, params):
         super().__init__(params)
-        self.generator = PostgresqlGenerator(host_settings=self._params.host)
-        self.generator.set_oddrn_paths(databases=self._params.database)
+        self.generator = PostgresqlGenerator(
+            host_settings=self._params.host, databases=self._params.database
+        )
 
     def get_inputs_oddrn(self, sql: str) -> List[str]:
         inputs, _ = SqlParser(sql=sql.strip("`")).get_response()

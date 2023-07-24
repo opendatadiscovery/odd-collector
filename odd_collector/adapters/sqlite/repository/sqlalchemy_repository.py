@@ -5,8 +5,9 @@ from funcy import lmap
 from sqlalchemy.util import FacadeDict
 
 from odd_collector.domain.plugin import SQLitePlugin
-from .base_repository import Repository
+
 from ..domain import Column, Table, View
+from .base_repository import Repository
 
 
 def create_column(data: Dict[str, Any]) -> Column:

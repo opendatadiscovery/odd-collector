@@ -1,8 +1,9 @@
 from pathlib import Path
 from typing import Iterable
-from duckdb import connect, DuckDBPyConnection
 
-from odd_collector.adapters.duckdb.mappers.models import DuckDBTable, DuckDBColumn
+from duckdb import DuckDBPyConnection, connect
+
+from odd_collector.adapters.duckdb.mappers.models import DuckDBColumn, DuckDBTable
 
 
 class NotValidPathError(Exception):

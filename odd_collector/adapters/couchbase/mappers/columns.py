@@ -1,8 +1,8 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
-
 from oddrn_generator import Generator
+
 from odd_collector.adapters.couchbase.mappers.types import TYPES_COUCHBASE_TO_ODD
 
 

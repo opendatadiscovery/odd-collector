@@ -1,9 +1,9 @@
-from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import SQLiteGenerator
 
-from .column import map_column
 from ..domain import Table
+from .column import map_column
 
 
 def map_table(generator: SQLiteGenerator, table: Table) -> DataEntity:

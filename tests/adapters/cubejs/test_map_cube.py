@@ -3,7 +3,6 @@ import pytest
 from odd_collector.adapters.cubejs.domain import Cube, Dimension
 from odd_collector.adapters.cubejs.generator import CubeJsGenerator
 from odd_collector.adapters.cubejs.mappers.cube import map_cube
-from odd_collector.domain.plugin import CubeJSPlugin
 from odd_collector.domain.predefined_data_source import (
     PostgresDatasource,
     PredefinedDatasourceParams,

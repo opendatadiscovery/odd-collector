@@ -1,11 +1,13 @@
 from unittest import TestCase
 
-from odd_collector.adapters.databricks.grammar_parser.parser import parser, traverse_tree
 from odd_collector.adapters.databricks.grammar_parser.column_type import *
+from odd_collector.adapters.databricks.grammar_parser.parser import (
+    parser,
+    traverse_tree,
+)
 
 
 class TestGrammarParser(TestCase):
-
     def test_array_type(self):
         test_type = "array<int>"
         tree = parser.parse(test_type)
@@ -28,7 +30,6 @@ class TestGrammarParser(TestCase):
         self.assertIn("a", fields)
         self.assertIsInstance(fields["a"], BasicType)
         self.assertEqual(fields["a"].type_name, "int")
-
 
         self.assertIn("b", fields)
         self.assertIsInstance(fields["b"], Struct)

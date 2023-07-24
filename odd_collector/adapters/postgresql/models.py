@@ -2,6 +2,19 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from funcy import omit
+from sql_metadata import Parser
+
+from .logger import logger
+
+
+@dataclass
+class Dependency:
+    name: str
+    schema: str
+
+    @property
+    def uid(self) -> str:
+        return f"{self.schema}.{self.name}"
 
 
 @dataclass(frozen=True)
@@ -130,3 +143,38 @@ class Table:
                 "description",
             },
         )
+
+    @property
+    def as_dependency(self) -> Dependency:
+        return Dependency(name=self.table_name, schema=self.table_schema)
+
+    @property
+    def dependencies(self) -> list[Dependency]:
+        try:
+            if not self.view_definition:
+                return []
+
+            parsed = Parser(self.view_definition.replace("(", "").replace(")", ""))
+            dependencies = []
+
+            for table in parsed.tables:
+                schema_name = table.split(".")
+
+                if len(schema_name) > 2:
+                    logger.warning(
+                        f"Couldn't parse schema and name from {table}. Must be in format <schema>.<table> or <table>."
+                    )
+                    continue
+
+                if len(schema_name) == 2:
+                    schema, name = schema_name
+                else:
+                    schema, name = "public", schema_name[0]
+
+                dependencies.append(Dependency(name=name, schema=schema))
+            return dependencies
+        except Exception as e:
+            logger.exception(
+                f"Couldn't parse dependencies from {self.view_definition}. {e}"
+            )
+            return []

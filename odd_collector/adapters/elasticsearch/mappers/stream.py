@@ -1,9 +1,10 @@
 from typing import List
 
 from odd_models.models import DataEntity, DataEntityGroup, DataEntityType, DataSet
-from .fields import map_field
+
 from ..logger import logger
 from . import metadata_extractor
+from .fields import map_field
 
 
 def get_template_structure(data_stream_name, template_data: List, oddrn_generator):
@@ -73,7 +74,6 @@ def map_data_stream(
 def map_data_stream_template(
     template_data, data_streams_oddrn, oddrn_generator
 ) -> DataEntity:
-
     field_name = template_data[0]["name"]
 
     oddrn_generator.set_oddrn_paths(indexes=field_name)

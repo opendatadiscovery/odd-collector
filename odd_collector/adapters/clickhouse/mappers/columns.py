@@ -2,19 +2,20 @@ from typing import List
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import ClickHouseGenerator
+
 from ..domain import Column
+from ..grammar_parser.column_type import (
+    Array,
+    BasicType,
+    Map,
+    NamedTuple,
+    Nested,
+    ParseType,
+    Tuple,
+)
+from ..grammar_parser.parser import parser, traverse_tree
 from ..logger import logger
 from .types import TYPES_SQL_TO_ODD
-from ..grammar_parser.parser import parser, traverse_tree
-from ..grammar_parser.column_type import (
-    ParseType,
-    Array,
-    Nested,
-    Map,
-    BasicType,
-    Tuple,
-    NamedTuple,
-)
 
 
 def build_dataset_fields(

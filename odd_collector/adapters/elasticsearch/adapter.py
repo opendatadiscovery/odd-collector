@@ -1,15 +1,15 @@
 import logging
-from typing import Iterable, Dict, Optional
+from typing import Dict, Iterable, Optional
 
-from funcy import get_lax
 from elasticsearch import Elasticsearch
+from funcy import get_lax
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import ElasticSearchGenerator
 
-from .mappers.stream import map_data_stream, map_data_stream_template
-from .mappers.indexes import map_index
 from .logger import logger
+from .mappers.indexes import map_index
+from .mappers.stream import map_data_stream, map_data_stream_template
 
 
 class Adapter(AbstractAdapter):
@@ -100,7 +100,6 @@ class Adapter(AbstractAdapter):
                 index_info["index_name"] for index_info in stream_data["indices"]
             ]
             for index in backing_indices:
-
                 index_settings = self.__es_client.indices.get(index=index)
                 lifecycle_policy = get_lax(
                     index_settings, [index, "settings", "index", "lifecycle"]

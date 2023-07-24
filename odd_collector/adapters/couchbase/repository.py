@@ -1,14 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-from acouchbase.cluster import Cluster, AsyncCluster
+from acouchbase.cluster import AsyncCluster, Cluster
 from couchbase.auth import PasswordAuthenticator
 from couchbase.exceptions import InternalServerFailureException
 from couchbase.options import ClusterOptions
 
 from odd_collector.adapters.couchbase.models import Collection
 from odd_collector.domain.plugin import CouchbasePlugin
-
 
 GET_COLLECTION_INFO_QUERY = """
     infer `{bucket}`.`{scope}`.`{collection}` 

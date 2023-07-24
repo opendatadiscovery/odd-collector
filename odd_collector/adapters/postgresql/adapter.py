@@ -6,7 +6,7 @@ from oddrn_generator import PostgresqlGenerator
 from odd_collector.domain.plugin import PostgreSQLPlugin
 
 from .mappers.database import map_database
-from .mappers.tables import map_table
+from .mappers.tables import map_tables
 from .repository import ConnectionParams, PostgreSQLRepository
 
 
@@ -26,7 +26,7 @@ class Adapter(BaseAdapter):
         with PostgreSQLRepository(ConnectionParams.from_config(self.config)) as repo:
             tables = repo.get_tables()
 
-            table_entities = map_table(generator=self.generator, tables=tables)
+            table_entities = map_tables(generator=self.generator, tables=tables)
 
             database_entity = map_database(
                 self.generator,

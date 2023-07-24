@@ -1,19 +1,21 @@
 from typing import Union
-from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
-from oddrn_generator import DuckDBGenerator
+
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataSetField, DataSetFieldType, Type
-from .models import DuckDBColumn
-from .types import TYPES_SQL_TO_ODD
-from ..logger import logger
-from ..grammar_parser.parser import parser, traverse_tree
+from oddrn_generator import DuckDBGenerator
+
 from ..grammar_parser.column_type import (
-    Struct,
+    BasicType,
+    DUnion,
     ListType,
     Map,
-    BasicType,
     ParseType,
-    DUnion,
+    Struct,
 )
+from ..grammar_parser.parser import parser, traverse_tree
+from ..logger import logger
+from .models import DuckDBColumn
+from .types import TYPES_SQL_TO_ODD
 
 
 def build_dataset_field(
@@ -28,7 +30,6 @@ def build_dataset_field(
     def _build_ds_field_from_type(
         column_name: str, column_type: Union[ParseType, str], parent_oddrn=None
     ):
-
         if parent_oddrn is None:
             oddrn = oddrn_generator.get_oddrn_by_path("columns", column_name)
         else:

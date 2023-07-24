@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from typing import Any, Optional
 
-from funcy import omit
-
 import sqlalchemy.sql.sqltypes as sqltype
+from funcy import omit
 
 
 @dataclass

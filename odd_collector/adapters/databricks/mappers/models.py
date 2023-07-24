@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-from odd_collector.models import Table, Column
+from odd_collector.models import Column, Table
 
 
 @dataclass(frozen=True)

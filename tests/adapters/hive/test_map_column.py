@@ -19,10 +19,10 @@ class TestFieldTypeParser(unittest.TestCase):
 
     def test_map_simple_column(self):
         column = Column(
-            col_name="name",
-            col_type=PrimitiveColumnType(field_type="string"),
+            name="name",
+            type=PrimitiveColumnType(field_type="string"),
             comment=None,
-            statistic=None,
+            statistics=None,
         )
         entities = map_column(column, self.generator)
 
@@ -37,13 +37,13 @@ class TestFieldTypeParser(unittest.TestCase):
 
     def test_map_map_column(self):
         column = Column(
-            col_name="name",
-            col_type=MapColumnType(
+            name="name",
+            type=MapColumnType(
                 key_type=PrimitiveColumnType(field_type="string"),
                 value_type=PrimitiveColumnType(field_type="int"),
             ),
             comment=None,
-            statistic=None,
+            statistics=None,
         )
         entities = map_column(column, self.generator)
 
@@ -70,8 +70,8 @@ class TestFieldTypeParser(unittest.TestCase):
 
     def test_map_nested_map_column(self):
         column = Column(
-            col_name="name",
-            col_type=MapColumnType(
+            name="name",
+            type=MapColumnType(
                 key_type=PrimitiveColumnType(field_type="string"),
                 value_type=MapColumnType(
                     key_type=PrimitiveColumnType(field_type="string"),
@@ -79,7 +79,7 @@ class TestFieldTypeParser(unittest.TestCase):
                 ),
             ),
             comment=None,
-            statistic=None,
+            statistics=None,
         )
         entities = map_column(column, self.generator)
 
@@ -118,8 +118,8 @@ class TestFieldTypeParser(unittest.TestCase):
 
     def test_map_stuct_column(self):
         column = Column(
-            col_name="address",
-            col_type=StructColumnType(
+            name="address",
+            type=StructColumnType(
                 fields={"city": PrimitiveColumnType(field_type="string")}
             ),
         )

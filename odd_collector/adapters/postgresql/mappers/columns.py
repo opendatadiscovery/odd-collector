@@ -1,4 +1,3 @@
-from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import (
     DataSetField,
     DataSetFieldEnumValue,
@@ -8,6 +7,7 @@ from odd_models.models import (
 from oddrn_generator import PostgresqlGenerator
 
 from ..models import Column
+from .metadata import get_column_metadata
 from .types import TYPES_SQL_TO_ODD
 
 
@@ -17,8 +17,8 @@ def is_enum(column: Column) -> bool:
 
 def map_column(
     column: Column,
-    oddrn_generator: PostgresqlGenerator,
-    parent_oddrn_path: str,
+    generator: PostgresqlGenerator,
+    path: str,
 ) -> DataSetField:
     name: str = column.column_name
     enum_values = None
@@ -33,11 +33,11 @@ def map_column(
 
     return DataSetField(
         owner=None,
-        oddrn=oddrn_generator.get_oddrn_by_path(
-            f"{parent_oddrn_path}_columns", name
+        oddrn=generator.get_oddrn_by_path(
+            f"{path}_columns", name
         ),  # getting tables_columns or views_columns
         name=name,
-        metadata=[extract_metadata("postgres", column, DefinitionType.DATASET_FIELD)],
+        metadata=[get_column_metadata(entity=column)],
         is_primary_key=column.is_primary,
         type=DataSetFieldType(
             type=data_type,

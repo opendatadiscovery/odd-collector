@@ -2312,17 +2312,18 @@ files = [
 
 [[package]]
 name = "lark-parser"
-version = "0.11.1"
+version = "0.12.0"
 description = "a modern parsing library"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "lark-parser-0.11.1.tar.gz", hash = "sha256:20bdefdf1b6e9bcb38165ea5cc4f27921a99c6f4c35264a3a953fd60335f1f8c"},
-    {file = "lark_parser-0.11.1-py2.py3-none-any.whl", hash = "sha256:8b747e1f544dcc2789e3feaddd2a50c6a73bed69d62e9c69760c1e1f7d23495f"},
+    {file = "lark-parser-0.12.0.tar.gz", hash = "sha256:15967db1f1214013dca65b1180745047b9be457d73da224fcda3d9dd4e96a138"},
+    {file = "lark_parser-0.12.0-py2.py3-none-any.whl", hash = "sha256:0eaf30cb5ba787fe404d73a7d6e61df97b21d5a63ac26c5008c78a494373c675"},
 ]
 
 [package.extras]
+atomic-cache = ["atomicwrites"]
 nearley = ["js2py"]
 regex = ["regex"]
 
@@ -3149,24 +3150,27 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.33"
+version = "0.3.41"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.33-py3-none-any.whl", hash = "sha256:4194faed8aa61741cca2d5724c30bf86c1f64df7ce4c8718e5edbdba299ada7a"},
-    {file = "odd_collector_sdk-0.3.33.tar.gz", hash = "sha256:6971c4c337db8a119f14d544f379ba7277ddd504c611b5cfa1034705ea2c62e9"},
+    {file = "odd_collector_sdk-0.3.41-py3-none-any.whl", hash = "sha256:2d50ffb9bc5d8464ea5ecd609fbdcc7b9f277902ee7f6986de65cf9a1e562174"},
+    {file = "odd_collector_sdk-0.3.41.tar.gz", hash = "sha256:3ca771998dfb54e8c80127b91c006cfeb271a62dcdb5a5437f0d2c1423a85622"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.8.1,<4.0.0"
 APScheduler = ">=3.8.1,<4.0.0"
+flatdict = ">=4.0.1,<5.0.0"
 funcy = ">=2.0,<3.0"
 importlib-metadata = ">=5.1.0,<6.0.0"
+lark-parser = ">=0.12.0,<0.13.0"
 loguru = ">=0.6.0,<0.7.0"
 odd-models = ">=2.0.28,<3.0.0"
 oddrn-generator = ">=0.1.73,<0.2.0"
+prettytable = ">=3.8.0,<4.0.0"
 pyaml-env = ">=1.1.5,<2.0.0"
 pydantic = ">=1.8.2,<2.0.0"
 tqdm = ">=4.64.1,<5.0.0"
@@ -3528,6 +3532,24 @@ all = ["google-auth", "requests-kerberos"]
 google-auth = ["google-auth"]
 kerberos = ["requests-kerberos"]
 tests = ["google-auth", "httpretty", "pytest", "pytest-runner", "requests-kerberos"]
+
+[[package]]
+name = "prettytable"
+version = "3.8.0"
+description = "A simple Python library for easily displaying tabular data in a visually appealing ASCII table format"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "prettytable-3.8.0-py3-none-any.whl", hash = "sha256:03481bca25ae0c28958c8cd6ac5165c159ce89f7ccde04d5c899b24b68bb13b7"},
+    {file = "prettytable-3.8.0.tar.gz", hash = "sha256:031eae6a9102017e8c7c7906460d150b7ed78b20fd1d8c8be4edaf88556c07ce"},
+]
+
+[package.dependencies]
+wcwidth = "*"
+
+[package.extras]
+tests = ["pytest", "pytest-cov", "pytest-lazy-fixture"]
 
 [[package]]
 name = "proto-plus"
@@ -5277,6 +5299,18 @@ files = [
 anyio = ">=3.0.0"
 
 [[package]]
+name = "wcwidth"
+version = "0.2.6"
+description = "Measures the displayed width of unicode strings in a terminal"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "wcwidth-0.2.6-py2.py3-none-any.whl", hash = "sha256:795b138f6875577cd91bba52baf9e445cd5118fd32723b460e30a0af30ea230e"},
+    {file = "wcwidth-0.2.6.tar.gz", hash = "sha256:a5220780a404dbe3353789870978e472cfe477761f06ee55077256e509b156d0"},
+]
+
+[[package]]
 name = "websocket-client"
 version = "1.6.0"
 description = "WebSocket client for Python with low level API options"
@@ -5657,4 +5691,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "3902b888f0927869dd45f1016ead624ebae21f6983fc14277659b651839d3044"
+content-hash = "4c32c4d507f9c280d14a4c3a785c81c3b4413e8193bf80b3c4e292177b3f1cb9"
