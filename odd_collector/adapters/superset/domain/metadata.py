@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 
 from odd_models.models import MetadataExtension
 
@@ -7,8 +7,8 @@ from .dataset import Dataset
 
 
 def create_metadata_extension_list(
-    schema_url: str, metadata: Dict[str, Any], keys_to_include: List[str]
-) -> List[MetadataExtension]:
+    schema_url: str, metadata: dict[str, Any], keys_to_include: list[str]
+) -> list[MetadataExtension]:
     return [
         MetadataExtension(
             schema_url=schema_url,
@@ -20,7 +20,7 @@ def create_metadata_extension_list(
 
 
 def add_owner(
-    metanode: Dict[Any, Any], data_unit: Union[Dashboard, Dataset]
+    metanode: dict[Any, Any], data_unit: Union[Dashboard, Dataset]
 ) -> Union[Dashboard, Dataset]:
     owners = metanode.get("owners")
     if (owners is not None) and (len(owners) > 0):
