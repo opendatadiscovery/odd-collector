@@ -3135,14 +3135,14 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.41"
+version = "0.3.42"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.41-py3-none-any.whl", hash = "sha256:2d50ffb9bc5d8464ea5ecd609fbdcc7b9f277902ee7f6986de65cf9a1e562174"},
-    {file = "odd_collector_sdk-0.3.41.tar.gz", hash = "sha256:3ca771998dfb54e8c80127b91c006cfeb271a62dcdb5a5437f0d2c1423a85622"},
+    {file = "odd_collector_sdk-0.3.42-py3-none-any.whl", hash = "sha256:d436a33bff91e997a00974d1fdb2d9658eefc9aa1affe4994625efd510e7198c"},
+    {file = "odd_collector_sdk-0.3.42.tar.gz", hash = "sha256:d778d040e03c93fba2a32869740446aeee94bfe52bc94ef5fe241327a54767ad"},
 ]
 
 [package.dependencies]
@@ -5676,4 +5676,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "a326c7748a4a7379aa8b1ecdd7eccc78d3851ed619c0ba591d23988c50479bd2"
+content-hash = "f0ee7f07a61b016dd4b9cd562ab7bdf90cae821497cf151218390f6222c8af57"
