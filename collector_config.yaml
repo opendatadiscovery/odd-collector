@@ -1,9 +1,12 @@
-token: "StW4MpUiSEs2rTf3ijeJKrwexPaPLiHKa07FI6O7" # Optional string
+default_pulling_interval: 60 # in minutes. If not specified, collector will pull data once.
 platform_host_url: http://localhost:8080
-chunk_size: 1000
+token: <token> # Required string, token for authentication
 plugins:
-  - type: superset
-    name: superset_adapter
-    server: http://localhost:8088/
-    username: admin
-    password: admin
+  - type: postgresql
+    name: postgresql_adapter
+    description: "" # Optional string
+    database: database
+    host: host
+    port: 5432
+    user: user
+    password: password
