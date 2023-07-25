@@ -6,6 +6,8 @@ import pymssql
 from funcy import group_by
 from pydantic import SecretStr
 
+from odd_collector.domain.plugin import MSSQLPlugin
+
 from .logger import logger
 from .models import Column, Table, View, ViewDependency
 
@@ -103,6 +105,16 @@ class ConnectionConfig:
     user: str
     password: SecretStr
     port: int
+
+    @classmethod
+    def from_plugin(cls, plugin: MSSQLPlugin) -> "ConnectionConfig":
+        return cls(
+            server=plugin.host,
+            database=plugin.database,
+            user=plugin.user,
+            password=plugin.password,
+            port=plugin.port,
+        )
 
 
 class MssqlRepository:

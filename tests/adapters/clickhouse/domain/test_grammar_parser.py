@@ -1,14 +1,14 @@
 import unittest
 
+from odd_collector.adapters.clickhouse.grammar_parser.column_type import (
+    Array,
+    BasicType,
+    Map,
+    Nested,
+)
 from odd_collector.adapters.clickhouse.grammar_parser.parser import (
     parser,
     traverse_tree,
-)
-from odd_collector.adapters.clickhouse.grammar_parser.column_type import (
-    BasicType,
-    Array,
-    Nested,
-    Map,
 )
 
 

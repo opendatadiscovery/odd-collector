@@ -1,13 +1,14 @@
 from typing import List, Union
 
-from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
-from oddrn_generator import DatabricksUnityCatalogGenerator
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 from odd_models.models import DataSetField, DataSetFieldType, Type
+from oddrn_generator import DatabricksUnityCatalogGenerator
+
+from ..grammar_parser.column_type import ArrayType, BasicType, Map, ParseType, Struct
+from ..grammar_parser.parser import parser, traverse_tree
+from ..logger import logger
 from .models import DatabricksColumn
 from .types import TYPES_SQL_TO_ODD
-from ..logger import logger
-from ..grammar_parser.parser import parser, traverse_tree
-from ..grammar_parser.column_type import Struct, ArrayType, Map, BasicType, ParseType
 
 
 def split_by_braces(value: str) -> str:
@@ -28,7 +29,6 @@ def build_dataset_field(
     def _build_ds_field_from_type(
         column_name: str, column_type: Union[ParseType, str], parent_oddrn=None
     ):
-
         if parent_oddrn is None:
             oddrn = oddrn_generator.get_oddrn_by_path("columns", column_name)
         else:

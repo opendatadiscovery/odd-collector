@@ -17,7 +17,7 @@ class TestFieldTypeParser(unittest.TestCase):
 
         self.assertIsInstance(transformed, ColumnType)
 
-    def test_aray_type(self):
+    def test_array_type(self):
         parsed = parser.parse("array<string>")
         transformed = transformer.transform(parsed)
 

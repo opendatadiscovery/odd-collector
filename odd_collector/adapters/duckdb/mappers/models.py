@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from odd_collector.helpers.datetime import Datetime
-from odd_collector.models import Table, Column
+from odd_collector.models import Column, Table
 
 
 @dataclass(frozen=True)

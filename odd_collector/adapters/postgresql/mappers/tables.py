@@ -1,6 +1,4 @@
-from typing import List
-
-from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
+from funcy import lmap, partial, silent
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import PostgresqlGenerator
 
@@ -8,46 +6,56 @@ from odd_collector.logger import logger
 
 from ..models import Table
 from .columns import map_column
+from .metadata import get_table_metadata
 from .views import map_view
 
 
-def _map_table(generator: PostgresqlGenerator, table: Table):
-    data_entity_type = DataEntityType.TABLE
+def map_table(generator: PostgresqlGenerator, table: Table):
     generator.set_oddrn_paths(
         **{"schemas": table.table_schema, "tables": table.table_name}
     )
+
+    map_table_column = partial(map_column, generator=generator, path="tables")
     return DataEntity(
         oddrn=generator.get_oddrn_by_path("tables"),
         name=table.table_name,
-        type=data_entity_type,
+        type=DataEntityType.TABLE,
         owner=table.table_owner,
         description=table.description,
-        metadata=[extract_metadata("postgres", table, DefinitionType.DATASET)],
+        metadata=[get_table_metadata(entity=table)],
         dataset=DataSet(
-            rows_number=int(table.table_rows) if table.table_rows is not None else None,
-            field_list=[map_column(c, generator, "tables") for c in table.columns],
+            rows_number=silent(int)(table.table_rows),
+            field_list=lmap(map_table_column, table.columns),
         ),
     )
 
 
-def map_table(
+def map_tables(
     generator: PostgresqlGenerator,
-    tables: List[Table],
-) -> List[DataEntity]:
-    data_entities: List[DataEntity] = []
+    tables: list[Table],
+) -> list[DataEntity]:
+    data_entities: dict[str, tuple[Table, DataEntity]] = {}
 
     for table in tables:
         logger.debug(f"Map table {table.table_name} {table.table_type}")
+
         if table.table_type == "BASE TABLE":
-            tbl = _map_table(generator, table)
+            entity = map_table(generator, table)
         elif table.table_type == "VIEW":
-            tbl = map_view(generator, table)
+            entity = map_view(generator, table)
         else:
             logger.warning(
                 f"Parsing only [BASE_TABLE, VIEW]. Got unknown {table.table_type=} {table.oid=}"
             )
             continue
 
-        data_entities.append(tbl)
+        data_entities[table.as_dependency.uid] = table, entity
 
-    return data_entities
+    for table, data_entity in data_entities.values():
+        for dependency in table.dependencies:
+            if dependency.uid in data_entities and data_entity.data_transformer:
+                data_entity.data_transformer.inputs.append(
+                    data_entities[dependency.uid][1].oddrn
+                )
+
+    return [entity for _, entity in data_entities.values()]

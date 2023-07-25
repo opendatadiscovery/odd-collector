@@ -1,13 +1,9 @@
-default_pulling_interval: 10 # Optional integer. Defaults to 0
-token: "" # Optional string
+token: "StW4MpUiSEs2rTf3ijeJKrwexPaPLiHKa07FI6O7" # Optional string
 platform_host_url: http://localhost:8080
 chunk_size: 1000
 plugins:
-  - type: mysql
-    name: mysql_adapter
-    description: "Retrieve data from MySQL"
-    database: <database>
-    host: <host>
-    port: <port>
-    user: <user>
-    ssl_disabled: False
+  - type: superset
+    name: superset_adapter
+    server: http://localhost:8088/
+    username: admin
+    password: admin

@@ -3,13 +3,12 @@ import traceback
 
 from pyhive import hive
 
-from odd_collector.adapters.hive.logger import logger
-from odd_collector.adapters.hive.models import View
-
 from ...domain.plugin import HiveConnectionParams
+from .logger import logger
 from .models.column_statistics import ColumnStatistics
 from .models.table import Table
 from .models.table_description import Initial, TableDescription
+from .models.view import View
 
 
 class HiveClient:

@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-from funcy import lpluck_attr
 from pathlib import Path
-from odd_collector_sdk.utils.metadata import extract_metadata, DefinitionType
+
+from funcy import lpluck_attr
+from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
+from odd_models.models import DataEntity, DataEntityGroup, DataEntityType
 from oddrn_generator import DuckDBGenerator
-from odd_models.models import DataEntityGroup, DataEntityType, DataEntity
 
 
 @dataclass

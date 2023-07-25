@@ -5,11 +5,15 @@ from odd_models.models import DataEntityType
 
 from odd_collector.adapters.mssql.adapter import Adapter
 from odd_collector.adapters.mssql.models import Table, View
-from odd_collector.adapters.mssql.repository import Columns, MysqlRepository
+from odd_collector.adapters.mssql.repository import (
+    Columns,
+    ConnectionConfig,
+    MssqlRepository,
+)
 from odd_collector.domain.plugin import MSSQLPlugin
 
 
-class TestDefaultConnector(MysqlRepository):
+class TestDefaultConnector(MssqlRepository):
     _table_response = [("AdventureWorks", "HumanResources", "Employee", "BASE TABLE")]
 
     _column_response = [
@@ -181,10 +185,11 @@ class TestDefaultConnector(MysqlRepository):
     def get_views(self) -> Iterable[View]:
         return []
 
+    def __enter__(self) -> "MssqlRepository":
+        return self
 
-@pytest.fixture
-def client():
-    return TestDefaultConnector
+    def __exit__(self, exc_type, exc_value, traceback):
+        ...
 
 
 @pytest.fixture
@@ -202,9 +207,19 @@ def config() -> MSSQLPlugin:
     )
 
 
-def test_primary_keys(config, client):
+@pytest.fixture
+def connection_config(config):
+    return ConnectionConfig.from_plugin(config)
+
+
+@pytest.fixture
+def repository(connection_config) -> MssqlRepository:
+    return TestDefaultConnector(connection_config)
+
+
+def test_primary_keys(config, repository):
     adapter = Adapter(config)
-    adapter.repository = client(config)
+    adapter.repository = repository
     data_entity_list = adapter.get_data_entity_list()
 
     table_elements = [

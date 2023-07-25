@@ -1,5 +1,5 @@
-from odd_models.models import Type
 import sqlalchemy.sql.sqltypes as sqltype
+from odd_models.models import Type
 
 
 def map_type(column_type: sqltype) -> Type:

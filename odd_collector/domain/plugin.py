@@ -188,7 +188,7 @@ class SupersetPlugin(BasePlugin):
     type: Literal["superset"]
     server: str
     username: str
-    password: str
+    password: SecretStr
 
 
 class RedashPlugin(BasePlugin):

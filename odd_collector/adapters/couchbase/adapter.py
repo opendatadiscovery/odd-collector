@@ -3,11 +3,10 @@ from odd_collector_sdk.domain.adapter import AsyncAbstractAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator import CouchbaseGenerator
 
+from ...domain.plugin import CouchbasePlugin
 from .mappers.bucket import map_bucket
 from .mappers.collections import map_collections
-
 from .repository import CouchbaseRepository
-from ...domain.plugin import CouchbasePlugin
 
 
 class Adapter(AsyncAbstractAdapter):

@@ -4,6 +4,7 @@ from odd_models.models import DataEntityList
 from oddrn_generator import SQLiteGenerator
 
 from odd_collector.domain.plugin import SQLitePlugin
+
 from .mappers.database import map_database
 from .mappers.table import map_table
 from .mappers.view import map_view

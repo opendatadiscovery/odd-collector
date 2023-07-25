@@ -1,8 +1,15 @@
 from unittest import TestCase
 
 from odd_models.models import Type
-from odd_collector.adapters.databricks.mappers.column import get_logical_type, get_databricks_type
-from odd_collector.adapters.databricks.grammar_parser.parser import parser, traverse_tree
+
+from odd_collector.adapters.databricks.grammar_parser.parser import (
+    parser,
+    traverse_tree,
+)
+from odd_collector.adapters.databricks.mappers.column import (
+    get_logical_type,
+    get_odd_type,
+)
 
 
 class TestCastTypes(TestCase):
@@ -12,7 +19,9 @@ class TestCastTypes(TestCase):
         column_type = traverse_tree(column_type_tree)
 
         logical_type = get_logical_type(column_type)
-        self.assertEqual(logical_type, "Struct(a: int, b: Struct(c: string, d: Array(int)))")
+        self.assertEqual(
+            logical_type, "Struct(a: int, b: Struct(c: string, d: Array(int)))"
+        )
 
     def test_logical_map_type(self):
         column_type_str = "map<string,int>"
@@ -27,7 +36,7 @@ class TestCastTypes(TestCase):
         column_type_tree = parser.parse(column_type_str)
         column_type = traverse_tree(column_type_tree)
 
-        odd_type = get_databricks_type(column_type)
+        odd_type = get_odd_type(column_type)
         self.assertIsInstance(odd_type, Type)
         self.assertEqual(odd_type, Type.TYPE_LIST)
 
@@ -35,6 +44,6 @@ class TestCastTypes(TestCase):
         column_type_tree = parser.parse(column_type_str)
         column_type = traverse_tree(column_type_tree)
 
-        odd_type = get_databricks_type(column_type)
+        odd_type = get_odd_type(column_type)
         self.assertIsInstance(odd_type, Type)
         self.assertEqual(odd_type, Type.TYPE_MAP)

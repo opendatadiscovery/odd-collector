@@ -1,15 +1,11 @@
 from typing import List
 
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
-from odd_models.models import (
-    DataEntity,
-    DataEntityType,
-    DataSet,
-)
+from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import CouchbaseGenerator
 
-from .columns import map_columns
 from ..models import Collection
+from .columns import map_columns
 
 
 def _map_collection(generator: CouchbaseGenerator, collection: Collection):

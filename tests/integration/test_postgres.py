@@ -1,5 +1,6 @@
 import pytest
 import sqlalchemy
+from funcy import filter, first
 from odd_models import DataEntity
 from odd_models.models import DataEntityType
 from pydantic import SecretStr
@@ -24,6 +25,28 @@ SELECT *
 FROM TABLE_ONE
 """
 
+create_second_view = """
+CREATE VIEW VIEW_TWO AS
+SELECT t.code, v.title
+FROM TABLE_ONE t, VIEW_ONE v
+"""
+
+create_schema = """
+CREATE SCHEMA IF NOT EXISTS other_schema;
+"""
+
+create_view_three = """
+CREATE VIEW other_schema.VIEW_THREE AS
+SELECT *
+FROM TABLE_ONE
+"""
+
+create_view_four = """
+CREATE VIEW VIEW_FOUR AS
+SELECT v1.code, v3.title
+FROM VIEW_ONE v1, other_schema.VIEW_THREE v3
+"""
+
 from odd_collector.adapters.postgresql.adapter import Adapter
 from odd_collector.domain.plugin import PostgreSQLPlugin
 
@@ -39,6 +62,10 @@ def test_postgres():
             connection.exec_driver_sql(create_enum)
             connection.exec_driver_sql(create_tables)
             connection.exec_driver_sql(create_view)
+            connection.exec_driver_sql(create_second_view)
+            connection.exec_driver_sql(create_schema)
+            connection.exec_driver_sql(create_view_three)
+            connection.exec_driver_sql(create_view_four)
 
         config = PostgreSQLPlugin(
             type="postgresql",
@@ -56,9 +83,31 @@ def test_postgres():
         )
         assert len(database_services) == 1
         database_service = database_services[0]
-        assert len(database_service.data_entity_group.entities_list) == 2
+        assert len(database_service.data_entity_group.entities_list) == 5
 
         tables = find_by_type(data_entities, DataEntityType.TABLE)
         assert len(tables) == 1
         table = tables[0]
         assert len(table.dataset.field_list) == 7
+
+        views = find_by_type(data_entities, DataEntityType.VIEW)
+        assert len(views) == 4
+        view_one = first(filter(lambda x: x.name == "view_one", views))
+        assert len(view_one.dataset.field_list) == 7
+
+        view_two = first(filter(lambda x: x.name == "view_two", views))
+        assert len(view_two.dataset.field_list) == 2
+        depends = view_two.data_transformer.inputs
+        assert len(depends) == 2
+
+        assert table.oddrn in depends
+        assert view_one.oddrn in depends
+
+        view_three = first(filter(lambda x: x.name == "view_three", views))
+        depends = view_three.data_transformer.inputs
+        assert table.oddrn in depends
+
+        view_four = first(filter(lambda x: x.name == "view_four", views))
+        depends = view_four.data_transformer.inputs
+        assert view_one.oddrn in depends
+        assert view_three.oddrn in depends
