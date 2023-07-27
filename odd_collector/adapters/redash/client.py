@@ -32,7 +32,7 @@ class RedashClient(RestClient):
                 "page": page,
             }
             async with ClientSession() as session:
-                response = await self.fetch_async_response(
+                response = await self.fetch(
                     session,
                     RequestArgs(
                         method="GET",
@@ -53,7 +53,7 @@ class RedashClient(RestClient):
 
     async def __get_data_sources_nodes(self) -> Dict[str, Any]:
         async with ClientSession() as session:
-            return await self.fetch_async_response(
+            return await self.fetch(
                 session,
                 RequestArgs(
                     method="GET",
@@ -68,7 +68,7 @@ class RedashClient(RestClient):
             self.__base_url + f"dashboards/{common_node['slug']}"
             for common_node in common_nodes
         ]
-        nodes = await self.fetch_all_async_responses(
+        nodes = await self.fetch_all(
             [RequestArgs("GET", url, None, self.__headers) for url in urls]
         )
         return [Dashboard.from_response(node) for node in nodes]
@@ -79,7 +79,7 @@ class RedashClient(RestClient):
             self.__base_url + f"data_sources/{datasource_common_node['id']}"
             for datasource_common_node in common_nodes
         ]
-        nodes = await self.fetch_all_async_responses(
+        nodes = await self.fetch_all(
             [RequestArgs("GET", url, None, self.__headers) for url in urls]
         )
         return [DataSource.from_response(node) for node in nodes]

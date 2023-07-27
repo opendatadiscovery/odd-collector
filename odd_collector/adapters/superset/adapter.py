@@ -1,24 +1,18 @@
-from typing import Dict, List, Type
+from typing import Type
 from urllib.parse import urlparse
 
-from funcy import group_by, lmap, partial, silent
+from funcy import partial, walk_values
 from odd_collector_sdk.domain.adapter import BaseAdapter
-from odd_models.models import DataEntity, DataEntityList
+from odd_models.models import DataEntityList
 from oddrn_generator import Generator
 from oddrn_generator.generators import SupersetGenerator
-from oddrn_generator.utils.external_generators import (
-    ExternalGeneratorMappingError,
-    ExternalSnowflakeGenerator,
-)
 
 from odd_collector.domain.plugin import SupersetPlugin
 
 from .client import SupersetClient
-from .domain.database import Database
-from .domain.dataset import Dataset
-from .mappers.backends import backends_factory
-from .mappers.dashboards import map_dashboard
-from .mappers.datasets import map_table
+from .domain.dataset import create_dataset_oddrn
+from .mappers.chart import map_chart
+from .mappers.dashboard import add_to_group, map_dashboard
 
 
 class Adapter(BaseAdapter):
@@ -37,72 +31,30 @@ class Adapter(BaseAdapter):
         return SupersetGenerator(host_settings=host)
 
     async def get_data_entity_list(self) -> DataEntityList:
-        datasets = await self._get_datasets()
-        databases_dict = await self._get_databases_dict()
-        dashboards = await self.client.get_dashboards()
+        async with self.client.connect() as client:
+            datasets = await client.fetch_datasets()
+            dashboards = await client.fetch_dashboards()
+            charts = await client.fetch_charts()
 
-        views_entities_dict, datasets_oddrns_dict = self._split_views_and_tables(
-            datasets, databases_dict
-        )
-        for dataset_id, dataset in views_entities_dict.items():
-            datasets_oddrns_dict.update({dataset_id: dataset.oddrn})
+            dashboards_entities = walk_values(
+                partial(map_dashboard, self.generator), dashboards
+            )
+            charts_entities = walk_values(partial(map_chart, self.generator), charts)
 
-        dashboards_entities = [
-            map_dashboard(self.generator, datasets_oddrns_dict, dashboard)
-            for dashboard in dashboards
-        ]
-        return DataEntityList(
-            data_source_oddrn=self.get_data_source_oddrn(),
-            items=[*list(views_entities_dict.values()), *dashboards_entities],
-        )
+            for chart_id, chart in charts.items():
+                chart_entity = charts_entities[chart_id]
 
-    async def _get_datasets(self) -> list[Dataset]:
-        datasets = await self.client.get_datasets()
-        datasets_by_id: dict[int, Dataset] = {
-            dataset.id: dataset for dataset in datasets
-        }
+                # Add chart to dashboards group
+                for dashboard_id in chart.dashboard_ids:
+                    if dashboard_entity := dashboards_entities.get(dashboard_id):
+                        add_to_group(dashboard_entity, chart_entity)
 
-        datasets_ids = [dset.id for dset in datasets]
-        datasets_columns = await self.client.get_datasets_columns(datasets_ids)
+                # Generate dataset datasets oddrn and add it to chart inputs
+                dataset = datasets[chart.dataset_id]
+                if dataset_oddrn := create_dataset_oddrn(dataset):
+                    chart_entity.data_consumer.inputs.append(dataset_oddrn)
 
-        for dataset_id, columns in datasets_columns.items():
-            datasets_by_id[dataset_id].columns = columns
-
-        return list(datasets_by_id.values())
-
-    async def _get_databases_dict(self) -> dict[int, Database]:
-        databases = await self.client.get_databases()
-        return {database.id: database for database in databases}
-
-    def _split_views_and_tables(
-        self, datasets: List[Dataset], databases: dict[int, Database]
-    ) -> (dict[int, DataEntity], dict[int, str]):
-        views_entities_dict: dict[int, DataEntity] = {}
-        datasets_oddrns_dict: dict[int, str] = {}
-
-        for dataset in datasets:
-            database_id = dataset.database_id
-            database = databases.get(database_id)
-            backend_name = database.backend
-            backend_cls = backends_factory.get(backend_name)
-            if backend_cls is None:
-                raise ExternalGeneratorMappingError(backend_name)
-
-            backend = backend_cls(database).get_external_generator()
-
-            if isinstance(backend, ExternalSnowflakeGenerator):
-                dataset.name = dataset.name.upper()
-                dataset.schema = dataset.schema.upper()
-
-            if dataset.kind == "virtual":
-                view_entity = map_table(
-                    self._oddrn_generator, dataset, external_backend=backend
-                )
-                views_entities_dict.update({dataset.id: view_entity})
-            else:
-                gen = backend.get_generator_for_schema_lvl(dataset.schema)
-                gen.get_oddrn_by_path(backend.table_path_name, dataset.name)
-                oddrn = gen.get_oddrn_by_path(backend.table_path_name)
-                datasets_oddrns_dict.update({dataset.id: oddrn})
-
-        return views_entities_dict, datasets_oddrns_dict
+            return DataEntityList(
+                data_source_oddrn=self.get_data_source_oddrn(),
+                items=[*charts_entities.values(), *dashboards_entities.values()],
+            )
