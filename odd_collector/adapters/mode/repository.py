@@ -69,7 +69,7 @@ class ModeRepository(ModeRepositoryBase):
         )
         logger.debug(f"Sending of GET request {request_url}")
         async with ClientSession() as session:
-            result = await self.rest_client.fetch_async_response(session, request_args)
+            result = await self.rest_client.fetch(session, request_args)
         logger.debug(f"Response for GET request {request_url}: {result}")
         return result
 
