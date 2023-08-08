@@ -84,7 +84,7 @@ class Column:
     is_primary: bool = False
 
     @property
-    def odd_metadata(self) -> dict:
+    def odd_metadata(self):
         return omit(
             self.__dict__,
             {

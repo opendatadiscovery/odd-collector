@@ -18,7 +18,7 @@ from odd_collector.domain.plugin import PostgreSQLPlugin
 @dataclass(frozen=True)
 class ConnectionParams:
     host: str
-    port: str
+    port: int
     dbname: str
     user: str
     password: str
@@ -93,7 +93,7 @@ class PostgreSQLRepository:
                 join pg_catalog.pg_class c on c.oid = a.attrelid
                 join pg_catalog.pg_namespace n on n.oid = c.relnamespace
             where i.indisprimary
-            and c.relkind in ('r', 'v')
+            and c.relkind in ('r', 'v', 'm')
             and a.attnum > 0
             and n.nspname not like 'pg_temp_%'
             and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
@@ -102,11 +102,12 @@ class PostgreSQLRepository:
     @property
     def tables_query(self):
         return """
-            select c.oid
+            select
+                c.oid
                 , it.table_catalog
-                , it.table_schema
-                , it.table_name
-                , it.table_type
+                , n.nspname as table_schema
+                , c.relname as table_name
+                , c.relkind as table_type
                 , it.self_referencing_column_name
                 , it.reference_generation
                 , it.user_defined_type_catalog
@@ -115,7 +116,7 @@ class PostgreSQLRepository:
                 , it.is_insertable_into
                 , it.is_typed
                 , it.commit_action
-                , iw.view_definition
+                , pg_get_viewdef(c.oid, true)            as view_definition
                 , iw.check_option                        as view_check_option
                 , iw.is_updatable                        as view_is_updatable
                 , iw.is_insertable_into                  as view_is_insertable_into
@@ -127,10 +128,9 @@ class PostgreSQLRepository:
                 , pg_catalog.obj_description(c.oid)      as description
             from pg_catalog.pg_class c
                     join pg_catalog.pg_namespace n on n.oid = c.relnamespace
-                    join information_schema.tables it on it.table_schema = n.nspname and it.table_name = c.relname
+                    left join information_schema.tables it on it.table_schema = n.nspname and it.table_name = c.relname
                     left join information_schema.views iw on iw.table_schema = n.nspname and iw.table_name = c.relname
-            where c.relkind in ('r', 'v')
-            and it.table_type in ('BASE TABLE', 'VIEW')
+            where c.relkind in ('r', 'v', 'm')
             and n.nspname not like 'pg_temp_%'
             and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
             order by n.nspname, c.relname
@@ -140,15 +140,15 @@ class PostgreSQLRepository:
     def columns_query(self):
         return """
             select
-                a.attrelid  
+                a.attrelid
                 , ic.table_catalog
-                , ic.table_schema
-                , ic.table_name
-                , ic.column_name
+                , nspname as table_schema
+                , c.relname as table_name
+                , a.attname as column_name
                 , ic.ordinal_position
                 , ic.column_default
                 , ic.is_nullable
-                , ic.data_type
+                , t.typname as data_type
                 , ic.character_maximum_length
                 , ic.character_octet_length
                 , ic.numeric_precision
@@ -190,9 +190,11 @@ class PostgreSQLRepository:
             from pg_catalog.pg_attribute a
                     join pg_catalog.pg_class c on c.oid = a.attrelid
                     join pg_catalog.pg_namespace n on n.oid = c.relnamespace
-                    join information_schema.columns ic on ic.table_schema = n.nspname and ic.table_name = c.relname and
-                                                        ic.ordinal_position = a.attnum
-            where c.relkind in ('r', 'v')
+                    join pg_catalog.pg_type t on t.oid = a.atttypid
+                    left join information_schema.columns ic on ic.table_schema = n.nspname
+                        and ic.table_name = c.relname
+                        and ic.ordinal_position = a.attnum
+            where c.relkind in ('r', 'v', 'm')
             and a.attnum > 0
             and n.nspname not like 'pg_temp_%'
             and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
