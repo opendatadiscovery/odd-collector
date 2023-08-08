@@ -47,6 +47,12 @@ SELECT v1.code, v3.title
 FROM VIEW_ONE v1, other_schema.VIEW_THREE v3
 """
 
+create_materialized_view = """
+CREATE MATERIALIZED VIEW materialized_view AS
+SELECT *
+FROM TABLE_ONE
+"""
+
 from odd_collector.adapters.postgresql.adapter import Adapter
 from odd_collector.domain.plugin import PostgreSQLPlugin
 
@@ -66,6 +72,7 @@ def test_postgres():
             connection.exec_driver_sql(create_schema)
             connection.exec_driver_sql(create_view_three)
             connection.exec_driver_sql(create_view_four)
+            connection.exec_driver_sql(create_materialized_view)
 
         config = PostgreSQLPlugin(
             type="postgresql",
@@ -83,7 +90,7 @@ def test_postgres():
         )
         assert len(database_services) == 1
         database_service = database_services[0]
-        assert len(database_service.data_entity_group.entities_list) == 5
+        assert len(database_service.data_entity_group.entities_list) == 6
 
         tables = find_by_type(data_entities, DataEntityType.TABLE)
         assert len(tables) == 1
@@ -91,7 +98,7 @@ def test_postgres():
         assert len(table.dataset.field_list) == 7
 
         views = find_by_type(data_entities, DataEntityType.VIEW)
-        assert len(views) == 4
+        assert len(views) == 5
         view_one = first(filter(lambda x: x.name == "view_one", views))
         assert len(view_one.dataset.field_list) == 7
 
@@ -111,3 +118,10 @@ def test_postgres():
         depends = view_four.data_transformer.inputs
         assert view_one.oddrn in depends
         assert view_three.oddrn in depends
+
+        mat_view = first(filter(lambda x: x.name == "materialized_view", views))
+        depends = mat_view.data_transformer.inputs
+        assert len(mat_view.dataset.field_list) == 7
+        assert table.oddrn in depends
+
+        assert data_entities.json()
