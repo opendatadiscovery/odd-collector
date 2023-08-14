@@ -7,17 +7,18 @@ from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import ElasticSearchGenerator
 
+from odd_collector.domain.plugin import ElasticsearchPlugin
+
 from .logger import logger
 from .mappers.indexes import map_index
 from .mappers.stream import map_data_stream, map_data_stream_template
 
 
 class Adapter(AbstractAdapter):
-    def __init__(self, config) -> None:
+    def __init__(self, config: ElasticsearchPlugin) -> None:
         self.__es_client = Elasticsearch(
             config.host,
-            port=config.port,
-            http_auth=config.http_auth,
+            http_auth=config.http_auth.split(":") if config.http_auth else None,
             use_ssl=config.use_ssl,
             verify_certs=config.verify_certs,
             ca_certs=config.ca_certs,
@@ -34,13 +35,15 @@ class Adapter(AbstractAdapter):
         return self.__oddrn_generator.get_data_source_oddrn()
 
     def get_datasets(self) -> Iterable[DataEntity]:
-        logger.debug("Collect dataset")
+        logger.info(
+            "Start collecting datasets from Elasticsearch at {self.config.host}"
+        )
         result = []
+        logger.info("Get indices")
         indices = self.__get_indices()
+        logger.info(f"Got {indices=}")
 
-        logger.debug(f"Indeces are {indices}")
-
-        logger.debug("Process indeces")
+        logger.debug("Process indices")
         for index in indices:
             mapping = self.__get_mapping(index["index"])[index["index"]]
             logger.debug(f"Mapping for index {index['index']} is {mapping}")
@@ -51,10 +54,10 @@ class Adapter(AbstractAdapter):
                     f"Elasticsearch adapter failed to process index {index}: KeyError {e}"
                 )
 
-        logger.debug("Process data streams and their templates")
+        logger.info("Process data streams and their templates")
         all_data_streams = self.__get_data_streams()
 
-        logger.debug("Build template to data stream mapping")
+        logger.info("Build template to data stream mapping")
         templates_info = self.get_templates_from_data_streams(all_data_streams)
 
         for template, data_streams in templates_info.items():
@@ -165,7 +168,7 @@ class Adapter(AbstractAdapter):
 
     def __get_indices(self):
         # System indices startswith `.` character
-        logger.debug("Get system indeces start with .")
+        logger.debug("Get system indices start with .")
         return [
             _
             for _ in self.__es_client.cat.indices(format="json")

@@ -119,7 +119,7 @@ class HivePlugin(BasePlugin):
     connection_params: HiveConnectionParams
 
 
-class ElasticsearchPlugin(WithHost, WithPort):
+class ElasticsearchPlugin(WithHost):
     type: Literal["elasticsearch"]
     http_auth: Optional[str] = None
     use_ssl: Optional[bool] = None
@@ -206,7 +206,7 @@ class CubeJSPlugin(BasePlugin):
 
     @validator("token")
     def validate_token(cls, value: Optional[SecretStr], values):
-        if values.get("dev_mode") == False and value is None:
+        if values.get("dev_mode") is False and value is None:
             raise ValueError("Token must be set in production mode")
 
         return value

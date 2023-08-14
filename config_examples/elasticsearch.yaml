@@ -5,9 +5,8 @@ plugins:
   - type: elasticsearch
     name: elasticsearch_adapter
     description: "" # Optional string
-    host: host
-    port: 0000
-    http_auth: ""     # Optional string, default None
-    use_ssl: ""       # Optional boolean, default None
-    verify_certs: ""  # Optional boolean, default None
-    ca_certs: ""      # Optional string, default None
+    host: host      # Optional string, i.e https://localhost:9200
+    http_auth:      # Optional string, i.e elastic:my_strong_password, default None
+    use_ssl:        # Optional boolean, default None
+    verify_certs:   # Optional boolean, default None
+    ca_certs:       # Optional string, default None
