@@ -175,7 +175,7 @@ class Adapter(AbstractAdapter):
         ]
 
     def __get_data_streams(self) -> Dict:
-        response = self.__es_client.indices.get_data_stream(name='*')
+        response = self.__es_client.indices.get_data_stream(name="*")
         return response["data_streams"]
 
     def __get_data_stream_templates_info(self, template_name: str) -> Dict:
