@@ -121,8 +121,10 @@ class HivePlugin(BasePlugin):
 
 class ElasticsearchPlugin(WithHost):
     type: Literal["elasticsearch"]
-    http_auth: Optional[str] = None
-    use_ssl: Optional[bool] = None
+    host: str
+    port: str
+    username: str
+    password: str
     verify_certs: Optional[bool] = None
     ca_certs: Optional[str] = None
 

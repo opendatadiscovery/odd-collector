@@ -17,9 +17,8 @@ from .mappers.stream import map_data_stream, map_data_stream_template
 class Adapter(AbstractAdapter):
     def __init__(self, config: ElasticsearchPlugin) -> None:
         self.__es_client = Elasticsearch(
-            config.host,
-            http_auth=config.http_auth.split(":") if config.http_auth else None,
-            use_ssl=config.use_ssl,
+            hosts=[f"{config.host}:{config.port}"],
+            basic_auth=(config.username, config.password),
             verify_certs=config.verify_certs,
             ca_certs=config.ca_certs,
         )
@@ -113,7 +112,7 @@ class Adapter(AbstractAdapter):
                         f"Index {index} has Lifecycle Policy {lifecycle_policy['name']}"
                     )
                     lifecycle_policy_data = self.__es_client.ilm.get_lifecycle(
-                        policy=lifecycle_policy["name"]
+                        name=lifecycle_policy["name"]
                     )
 
                     logger.debug(f"Lifecycle policy metadata {lifecycle_policy_data}")
@@ -164,7 +163,7 @@ class Adapter(AbstractAdapter):
         return templates
 
     def __get_mapping(self, index_name: str):
-        return self.__es_client.indices.get_mapping(index_name)
+        return self.__es_client.indices.get_mapping(index=index_name)
 
     def __get_indices(self):
         # System indices startswith `.` character
@@ -176,7 +175,7 @@ class Adapter(AbstractAdapter):
         ]
 
     def __get_data_streams(self) -> Dict:
-        response = self.__es_client.indices.get_data_stream("*")
+        response = self.__es_client.indices.get_data_stream(name='*')
         return response["data_streams"]
 
     def __get_data_stream_templates_info(self, template_name: str) -> Dict:
