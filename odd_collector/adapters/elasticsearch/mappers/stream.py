@@ -14,11 +14,13 @@ def get_template_structure(data_stream_name, template_data: List, oddrn_generato
         raise Exception("Expected one Data Stream has one Data Stream Template")
 
     oddrn_generator.set_oddrn_paths(indexes=data_stream_name)
+    index_template = template_data[0]["index_template"].get("template", {})
+    logger.debug(f"Got index template: {index_template}")
 
-    index_template = template_data[0]["index_template"]["template"]
     if "mappings" in index_template:
         mapping = index_template["mappings"]
-        properties = mapping["properties"]
+        properties = mapping.get("properties", [])
+        logger.debug(f"Got properties: {properties}")
 
         fields = [
             map_field(field_name, properties[field_name], oddrn_generator)
