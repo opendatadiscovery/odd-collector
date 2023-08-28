@@ -3,7 +3,7 @@ default_pulling_interval: 10
 token: ""
 plugins:
   - type: elasticsearch
-    name: elasticsearch_adapter2
+    name: elasticsearch_adapter
     description: "" # Optional string
     host: host      # https://localhost
     port: port      # 9200
