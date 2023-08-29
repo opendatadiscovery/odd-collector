@@ -1,10 +1,10 @@
-from typing import Any
-
 import aiohttp
 from odd_collector_sdk.errors import DataSourceError
 from odd_collector.domain.plugin import CKANPlugin
 from .logger import logger
 import ssl
+
+from .mappers.models import Organization, CKANDataset
 
 # Disable SSL context verification for testing
 ssl_context = ssl.create_default_context()
@@ -44,18 +44,18 @@ class CKANRestClient:
             return resp["result"]
         return []
 
-    async def get_organization_details(self, organization_name: str) -> dict[str, Any]:
+    async def get_organization_details(self, organization_name: str) -> Organization:
         url = "/api/action/organization_show"
         params = {"id": organization_name}
         resp = await self._get_request(url, params)
         if resp and resp["success"]:
-            return resp["result"]
+            return Organization(resp["result"])
         return {}
 
-    async def get_datasets(self, organization_id) -> list[dict]:
+    async def get_datasets(self, organization_id) -> list[CKANDataset]:
         url = "/api/3/action/package_search"
         params = {"q": f"owner_org:{organization_id}"}
         resp = await self._get_request(url, params)
         if resp and resp["success"]:
-            return resp["result"]["results"]
+            return [CKANDataset(dataset) for dataset in resp["result"]["results"]]
         return []
