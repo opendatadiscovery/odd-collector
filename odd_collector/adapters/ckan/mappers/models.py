@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 
 from odd_collector_sdk.utils.metadata import HasMetadata
 from odd_collector.adapters.ckan.utils import get_metadata, get_groups
@@ -56,7 +57,7 @@ class Dataset(CKANObject):
         return self.data["resources"]
 
     @property
-    def odd_metadata(self) -> dict:
+    def odd_metadata(self) -> dict[str, Any]:
         metadata = get_metadata(self.data, self.excluded_keys)
         transformed = get_groups(metadata)
         return transformed
@@ -82,7 +83,7 @@ class ResourceField(HasMetadata):
         return self.data["type"]
 
     @property
-    def odd_metadata(self) -> dict:
+    def odd_metadata(self) -> dict[str, Any]:
         return self.data["schema"]
 
     @property
