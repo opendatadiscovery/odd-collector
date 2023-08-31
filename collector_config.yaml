@@ -1,9 +1,12 @@
 default_pulling_interval: 60 # in minutes. If not specified, collector will pull data once.
 platform_host_url: http://localhost:8080
-token: "ePtMxFvjtYt7xF07AwVuLWZEjSPBx7uM0qrkFBoC" # Required string, token for authentication
+token: <token> # Required string, token for authentication
 plugins:
-  - type: ckan
-    name: ckan_adapter
-    host: "34.116.245.97"
-    port: "8443"
-#    tokeEn: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJWS245dGsySkxJdF9VTzczMk9Ub2hEeUZ4M2RyOERPZDBDdlVZdmxrVWNJIiwiaWF0IjoxNjkyODYzMDUyfQ.KLxPgB2IdQ833jTdXk-47vbH42nw6R_MNlm1eZ4taFs"
+  - type: postgresql
+    name: postgresql_adapter
+    description: "" # Optional string
+    database: database
+    host: host
+    port: 5432
+    user: user
+    password: password
