@@ -7,7 +7,7 @@ from odd_collector.domain.plugin import CKANPlugin
 
 from .client import CKANRestClient
 from .mappers.group import map_group
-from .mappers.models import CKANResource
+from .mappers.models import Resource
 from .mappers.organization import map_organization
 from .mappers.dataset import map_dataset
 from .mappers.resource import map_resource
@@ -37,17 +37,18 @@ class Adapter(AsyncAbstractAdapter):
                 )
                 datasets = await self.client.get_datasets(organization.id)
                 for dataset in datasets:
+                    resources_entities_tmp = []
                     self.oddrn_generator.set_oddrn_paths(
                         organizations=organization_name,
                         datasets=dataset.name,
                     )
-                    resources = [
-                        CKANResource(resource) for resource in dataset.resources
-                    ]
-                    resources_entities_tmp = [
-                        map_resource(self.oddrn_generator, resource)
-                        for resource in resources
-                    ]
+
+                    for resource_raw in dataset.resources:
+                        resource = Resource(resource_raw)
+                        fields = await self.client.get_resource_fields(resource.id)
+                        resources_entities_tmp.append(
+                            map_resource(self.oddrn_generator, resource, fields)
+                        )
 
                     datasets_entities_tmp.append(
                         map_dataset(

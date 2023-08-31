@@ -39,14 +39,14 @@ class Organization(CKANObject):
 
 
 @dataclass
-class CKANGroup(CKANObject):
+class Group(CKANObject):
     @property
     def datasets(self) -> list[dict]:
         return [dataset for dataset in self.data["packages"]]
 
 
 @dataclass
-class CKANDataset(CKANObject):
+class Dataset(CKANObject):
     @property
     def tags(self) -> list[str]:
         return self.data["tags"]
@@ -63,5 +63,28 @@ class CKANDataset(CKANObject):
 
 
 @dataclass
-class CKANResource(CKANObject):
-    pass
+class Resource(CKANObject):
+    @property
+    def id(self) -> str:
+        return self.data["id"]
+
+
+@dataclass
+class ResourceField(HasMetadata):
+    data: dict
+
+    @property
+    def name(self) -> str:
+        return self.data["id"]
+
+    @property
+    def type(self) -> str:
+        return self.data["type"]
+
+    @property
+    def odd_metadata(self) -> dict:
+        return self.data["schema"]
+
+    @property
+    def is_nullable(self) -> bool:
+        return False if self.odd_metadata["notnull"] else True

@@ -4,12 +4,12 @@ from odd_models import DataEntityGroup
 from odd_models.models import DataEntity, DataEntityType
 from oddrn_generator import CKANGenerator
 
-from odd_collector.adapters.ckan.mappers.models import CKANDataset
+from odd_collector.adapters.ckan.mappers.models import Dataset
 
 
 def map_dataset(
     oddrn_generator: CKANGenerator,
-    dataset: CKANDataset,
+    dataset: Dataset,
     resources_entities: list[DataEntity],
 ) -> DataEntity:
     return DataEntity(
