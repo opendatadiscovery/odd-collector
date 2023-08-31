@@ -2,14 +2,8 @@ import aiohttp
 from odd_collector_sdk.errors import DataSourceError
 from odd_collector.domain.plugin import CKANPlugin
 from .logger import logger
-import ssl
 
 from .mappers.models import Organization, Dataset, Group, ResourceField
-
-# Disable SSL context verification for testing
-ssl_context = ssl.create_default_context()
-ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE
 
 
 class CKANRestClient:
@@ -21,9 +15,7 @@ class CKANRestClient:
 
     async def _get_request(self, url: str, params: dict = None) -> dict:
         async with aiohttp.ClientSession(
-            self.__host,
-            headers=self.__headers,
-            connector=aiohttp.TCPConnector(ssl=ssl_context),
+            self.__host, headers=self.__headers
         ) as session:
             try:
                 async with session.get(url, params=params) as resp:
@@ -37,9 +29,7 @@ class CKANRestClient:
 
     async def _post_request(self, url: str, payload: dict = None) -> dict:
         async with aiohttp.ClientSession(
-            self.__host,
-            headers=self.__headers,
-            connector=aiohttp.TCPConnector(ssl=ssl_context),
+            self.__host, headers=self.__headers
         ) as session:
             try:
                 async with session.post(url, json=payload) as resp:
