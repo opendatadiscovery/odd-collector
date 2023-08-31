@@ -17,6 +17,8 @@ def map_resource(
         type=DataEntityType.FILE,
         metadata=[extract_metadata("ckan", resource, DefinitionType.DATASET_FIELD)],
         dataset=DataSet(
-            field_list=[map_field(oddrn_generator, field) for field in fields] if fields else []
+            field_list=[map_field(oddrn_generator, field) for field in fields]
+            if fields
+            else []
         ),
     )

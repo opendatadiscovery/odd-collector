@@ -12,10 +12,10 @@ def map_group(
     for dataset in group.datasets:
         dataset_name = dataset["name"]
         organization_name = dataset["organization"]["name"]
-        oddrn_generator.set_oddrn_paths(
-            organizations=organization_name
+        oddrn_generator.set_oddrn_paths(organizations=organization_name)
+        datasets_oddrns.append(
+            oddrn_generator.get_oddrn_by_path("datasets", dataset_name)
         )
-        datasets_oddrns.append(oddrn_generator.get_oddrn_by_path("datasets", dataset_name))
     return DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path("groups", group.name),
         name=group.name,
