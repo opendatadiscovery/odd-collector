@@ -6,6 +6,7 @@ from oddrn_generator import CKANGenerator
 from odd_collector.domain.plugin import CKANPlugin
 
 from .client import CKANRestClient
+from .mappers.group import map_group
 from .mappers.models import CKANResource
 from .mappers.organization import map_organization
 from .mappers.dataset import map_dataset
@@ -22,9 +23,11 @@ class Adapter(AsyncAbstractAdapter):
 
     async def get_data_entity_list(self) -> DataEntityList:
         organizations = await self.client.get_organizations()
+        groups = await self.client.get_groups()
         organization_entities: list[DataEntity] = []
         datasets_entities: list[DataEntity] = []
         resources_entities: list[DataEntity] = []
+        groups_entities: list[DataEntity] = []
 
         try:
             for organization_name in organizations:
@@ -60,10 +63,19 @@ class Adapter(AsyncAbstractAdapter):
                 )
                 datasets_entities.extend(datasets_entities_tmp)
 
+            for group_name in groups:
+                group = await self.client.get_group_details(group_name)
+                groups_entities.append(map_group(self.oddrn_generator, group))
+
         except Exception as e:
             raise MappingDataError(f"Error during mapping: {e}") from e
 
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=[*resources_entities, *datasets_entities, *organization_entities],
+            items=[
+                *resources_entities,
+                *datasets_entities,
+                *organization_entities,
+                *groups_entities,
+            ],
         )

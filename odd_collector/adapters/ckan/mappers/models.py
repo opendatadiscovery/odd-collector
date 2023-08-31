@@ -39,6 +39,13 @@ class Organization(CKANObject):
 
 
 @dataclass
+class CKANGroup(CKANObject):
+    @property
+    def datasets(self) -> list[dict]:
+        return [dataset for dataset in self.data["packages"]]
+
+
+@dataclass
 class CKANDataset(CKANObject):
     @property
     def tags(self) -> list[str]:

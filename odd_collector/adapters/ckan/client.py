@@ -4,7 +4,7 @@ from odd_collector.domain.plugin import CKANPlugin
 from .logger import logger
 import ssl
 
-from .mappers.models import Organization, CKANDataset
+from .mappers.models import Organization, CKANDataset, CKANGroup
 
 # Disable SSL context verification for testing
 ssl_context = ssl.create_default_context()
@@ -16,9 +16,7 @@ class CKANRestClient:
     def __init__(self, config: CKANPlugin):
         self.__host = f"https://{config.host}:{config.port}"
         self.__headers = (
-            {"Authorization": f"Bearer {config.token.get_secret_value()}"}
-            if config.token
-            else None
+            {"Authorization": config.token.get_secret_value()} if config.token else None
         )
 
     async def _get_request(self, url: str, params: dict = None) -> dict:
@@ -34,7 +32,7 @@ class CKANRestClient:
                 return result
             except Exception as e:
                 raise DataSourceError(
-                    f"Error during getting data from workspace {self.__host}"
+                    f"Error during getting data from workspace {self.__host}: {e}"
                 ) from e
 
     async def get_organizations(self) -> list[str]:
@@ -52,9 +50,24 @@ class CKANRestClient:
             return Organization(resp["result"])
         return {}
 
+    async def get_groups(self) -> list[str]:
+        url = "/api/action/group_list"
+        resp = await self._get_request(url)
+        if resp and resp["success"]:
+            return resp["result"]
+        return []
+
+    async def get_group_details(self, group_name: str) -> CKANGroup:
+        url = "/api/action/group_show"
+        params = {"id": group_name, "include_datasets": "True"}
+        resp = await self._get_request(url, params)
+        if resp and resp["success"]:
+            return CKANGroup(resp["result"])
+        return {}
+
     async def get_datasets(self, organization_id) -> list[CKANDataset]:
         url = "/api/3/action/package_search"
-        params = {"q": f"owner_org:{organization_id}"}
+        params = {"q": f"owner_org:{organization_id}", "include_private": "True"}
         resp = await self._get_request(url, params)
         if resp and resp["success"]:
             return [CKANDataset(dataset) for dataset in resp["result"]["results"]]
