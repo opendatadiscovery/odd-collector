@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from functools import cached_property
 from typing import Any
 
 from odd_collector_sdk.utils.metadata import HasMetadata
@@ -47,23 +48,6 @@ class Group(CKANObject):
 
 
 @dataclass
-class Dataset(CKANObject):
-    @property
-    def tags(self) -> list[str]:
-        return self.data["tags"]
-
-    @property
-    def resources(self) -> list[dict]:
-        return self.data["resources"]
-
-    @property
-    def odd_metadata(self) -> dict[str, Any]:
-        metadata = get_metadata(self.data, self.excluded_keys)
-        transformed = get_groups(metadata)
-        return transformed
-
-
-@dataclass
 class Resource(CKANObject):
     @property
     def id(self) -> str:
@@ -89,3 +73,20 @@ class ResourceField(HasMetadata):
     @property
     def is_nullable(self) -> bool:
         return False if self.odd_metadata["notnull"] else True
+
+
+@dataclass
+class Dataset(CKANObject):
+    @property
+    def tags(self) -> list[str]:
+        return self.data["tags"]
+
+    @cached_property
+    def resources(self) -> list[Resource]:
+        return [Resource(resource) for resource in self.data["resources"]]
+
+    @property
+    def odd_metadata(self) -> dict[str, Any]:
+        metadata = get_metadata(self.data, self.excluded_keys)
+        transformed = get_groups(metadata)
+        return transformed

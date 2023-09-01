@@ -1,5 +1,5 @@
 from odd_collector_sdk.domain.adapter import AsyncAbstractAdapter
-from odd_collector_sdk.errors import MappingDataError
+from odd_collector_sdk.errors import MappingDataError, DataSourceError
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import CKANGenerator
 
@@ -7,7 +7,6 @@ from odd_collector.domain.plugin import CKANPlugin
 
 from .client import CKANRestClient
 from .mappers.group import map_group
-from .mappers.models import Resource
 from .mappers.organization import map_organization
 from .mappers.dataset import map_dataset
 from .mappers.resource import map_resource
@@ -30,21 +29,17 @@ class Adapter(AsyncAbstractAdapter):
         groups_entities: list[DataEntity] = []
 
         try:
-            for organization_name in organizations:
+            for organization in organizations:
                 datasets_entities_tmp: list[DataEntity] = []
-                organization = await self.client.get_organization_details(
-                    organization_name
-                )
                 datasets = await self.client.get_datasets(organization.id)
                 for dataset in datasets:
                     resources_entities_tmp = []
                     self.oddrn_generator.set_oddrn_paths(
-                        organizations=organization_name,
+                        organizations=organization.name,
                         datasets=dataset.name,
                     )
 
-                    for resource_raw in dataset.resources:
-                        resource = Resource(resource_raw)
+                    for resource in dataset.resources:
                         fields = await self.client.get_resource_fields(resource.id)
                         resources_entities_tmp.append(
                             map_resource(self.oddrn_generator, resource, fields)
@@ -67,6 +62,9 @@ class Adapter(AsyncAbstractAdapter):
             for group_name in groups:
                 group = await self.client.get_group_details(group_name)
                 groups_entities.append(map_group(self.oddrn_generator, group))
+
+        except DataSourceError:
+            raise
 
         except Exception as e:
             raise MappingDataError(f"Error during mapping: {e}") from e
