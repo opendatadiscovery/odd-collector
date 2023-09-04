@@ -1,13 +1,15 @@
 import dataclasses
 from typing import Any, Optional
 
+from odd_collector_sdk.utils.metadata import HasMetadata
+
 from odd_collector.helpers.datetime import Datetime
 
 from .column import Column
 
 
 @dataclasses.dataclass
-class Table:
+class Table(HasMetadata):
     catalog: str
     schema: str
     name: str

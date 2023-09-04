@@ -1218,25 +1218,41 @@ files = [
 ]
 
 [[package]]
-name = "elasticsearch"
-version = "7.14.0"
-description = "Python client for Elasticsearch"
+name = "elastic-transport"
+version = "8.4.0"
+description = "Transport classes and utilities shared among Python Elastic client libraries"
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4"
+python-versions = ">=3.6"
 files = [
-    {file = "elasticsearch-7.14.0-py2.py3-none-any.whl", hash = "sha256:084979d21cc2955903ecc215bb40b8180207b2bcb5e52ec0ec7dd6f60affd01e"},
-    {file = "elasticsearch-7.14.0.tar.gz", hash = "sha256:f3ab1454e646170bbc6796b8707e4bff125234391d2acc022221e1c0313becb4"},
+    {file = "elastic-transport-8.4.0.tar.gz", hash = "sha256:b9ad708ceb7fcdbc6b30a96f886609a109f042c0b9d9f2e44403b3133ba7ff10"},
+    {file = "elastic_transport-8.4.0-py3-none-any.whl", hash = "sha256:19db271ab79c9f70f8c43f8f5b5111408781a6176b54ab2e54d713b6d9ceb815"},
 ]
 
 [package.dependencies]
 certifi = "*"
-urllib3 = ">=1.21.1,<2"
+urllib3 = ">=1.26.2,<2"
+
+[package.extras]
+develop = ["aiohttp", "mock", "pytest", "pytest-asyncio", "pytest-cov", "pytest-httpserver", "pytest-mock", "requests", "trustme"]
+
+[[package]]
+name = "elasticsearch"
+version = "8.7.0"
+description = "Python client for Elasticsearch"
+category = "main"
+optional = false
+python-versions = ">=3.6, <4"
+files = [
+    {file = "elasticsearch-8.7.0-py3-none-any.whl", hash = "sha256:a06482f4c338ab6ace5cf89ee351cf3ee1854083f29a3b875433e608424fb48c"},
+    {file = "elasticsearch-8.7.0.tar.gz", hash = "sha256:1849356db4192fbb75b2b8f3d55edb0fb07f8d855f386b318a7889222b49591f"},
+]
+
+[package.dependencies]
+elastic-transport = ">=8,<9"
 
 [package.extras]
 async = ["aiohttp (>=3,<4)"]
-develop = ["black", "coverage", "jinja2", "mock", "pytest", "pytest-cov", "pyyaml", "requests (>=2.0.0,<3.0.0)", "sphinx (<1.7)", "sphinx-rtd-theme"]
-docs = ["sphinx (<1.7)", "sphinx-rtd-theme"]
 requests = ["requests (>=2.4.0,<3.0.0)"]
 
 [[package]]
@@ -3135,14 +3151,14 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "odd-collector-sdk"
-version = "0.3.42"
+version = "0.3.43"
 description = "ODD Collector"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_collector_sdk-0.3.42-py3-none-any.whl", hash = "sha256:d436a33bff91e997a00974d1fdb2d9658eefc9aa1affe4994625efd510e7198c"},
-    {file = "odd_collector_sdk-0.3.42.tar.gz", hash = "sha256:d778d040e03c93fba2a32869740446aeee94bfe52bc94ef5fe241327a54767ad"},
+    {file = "odd_collector_sdk-0.3.43-py3-none-any.whl", hash = "sha256:3d260bb83ed2d3728667e365f5d4a91a5bf8025959367ddba599f2b4c0ad7b22"},
+    {file = "odd_collector_sdk-0.3.43.tar.gz", hash = "sha256:7a2a403940f3d9765a736ce4278dc105e1c33eaabfc08dcc80c317499e96be67"},
 ]
 
 [package.dependencies]
@@ -5676,4 +5692,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "a23e1e3fd25f5bd44aec9c1588862959366ca5dc155da7919994f7619381f1f0"
+content-hash = "0a9f9cfc19bf0cfe26d454b7979eb32fcb55ce1cabc6701557c787886bccacff"
