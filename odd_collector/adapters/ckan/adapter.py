@@ -1,15 +1,18 @@
+from collections import defaultdict
+
+from odd_collector.domain.plugin import CKANPlugin
 from odd_collector_sdk.domain.adapter import AsyncAbstractAdapter
 from odd_collector_sdk.errors import MappingDataError, DataSourceError
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import CKANGenerator
 
-from odd_collector.domain.plugin import CKANPlugin
 
 from .client import CKANRestClient
 from .mappers.group import map_group
 from .mappers.organization import map_organization
 from .mappers.dataset import map_dataset
 from .mappers.resource import map_resource
+from .utils import group_dataset_oddrns
 
 
 class Adapter(AsyncAbstractAdapter):
@@ -23,6 +26,7 @@ class Adapter(AsyncAbstractAdapter):
     async def get_data_entity_list(self) -> DataEntityList:
         organizations = await self.client.get_organizations()
         groups = await self.client.get_groups()
+        grouped_datasets_oddrns = defaultdict(list)
         organization_entities: list[DataEntity] = []
         datasets_entities: list[DataEntity] = []
         resources_entities: list[DataEntity] = []
@@ -33,12 +37,18 @@ class Adapter(AsyncAbstractAdapter):
                 datasets_entities_tmp: list[DataEntity] = []
                 datasets = await self.client.get_datasets(organization.id)
                 for dataset in datasets:
+
                     resources_entities_tmp = []
                     self.oddrn_generator.set_oddrn_paths(
                         organizations=organization.name,
                         datasets=dataset.name,
                     )
-
+                    group_dataset_oddrns(
+                        self.oddrn_generator,
+                        dataset.name,
+                        dataset.groups,
+                        grouped_datasets_oddrns,
+                    )
                     for resource in dataset.resources:
                         fields = await self.client.get_resource_fields(resource.id)
                         resources_entities_tmp.append(
@@ -61,7 +71,11 @@ class Adapter(AsyncAbstractAdapter):
 
             for group_name in groups:
                 group = await self.client.get_group_details(group_name)
-                groups_entities.append(map_group(self.oddrn_generator, group))
+                groups_entities.append(
+                    map_group(
+                        self.oddrn_generator, group, grouped_datasets_oddrns[group_name]
+                    )
+                )
 
         except DataSourceError:
             raise

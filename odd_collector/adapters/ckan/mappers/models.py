@@ -4,7 +4,7 @@ from functools import cached_property
 from typing import Any
 
 from odd_collector_sdk.utils.metadata import HasMetadata
-from odd_collector.adapters.ckan.utils import get_metadata, get_groups
+from odd_collector.adapters.ckan.utils import get_metadata
 
 
 @dataclass
@@ -87,6 +87,8 @@ class Dataset(CKANObject):
 
     @property
     def odd_metadata(self) -> dict[str, Any]:
-        metadata = get_metadata(self.data, self.excluded_keys)
-        transformed = get_groups(metadata)
-        return transformed
+        return get_metadata(self.data, self.excluded_keys)
+
+    @property
+    def groups(self) -> list[str]:
+        return [group["name"] for group in self.data["groups"]]

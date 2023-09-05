@@ -5,15 +5,8 @@ from odd_collector.adapters.ckan.mappers.models import Group
 
 
 def map_group(
-    oddrn_generator: CKANGenerator,
-    group: Group,
+    oddrn_generator: CKANGenerator, group: Group, datasets_oddrns: list[str]
 ) -> DataEntity:
-    datasets_oddrns: list[str] = []
-    for dataset in group.datasets:
-        oddrn_generator.set_oddrn_paths(organizations=dataset["organization"]["name"])
-        datasets_oddrns.append(
-            oddrn_generator.get_oddrn_by_path("datasets", dataset["name"])
-        )
     return DataEntity(
         oddrn=oddrn_generator.get_oddrn_by_path("groups", group.name),
         name=group.name,
