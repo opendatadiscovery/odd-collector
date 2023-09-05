@@ -326,6 +326,11 @@ class DuckDBPlugin(BasePlugin):
     host: Optional[str] = "localhost"
 
 
+class CKANPlugin(WithHost, WithPort):
+    type: Literal["ckan"]
+    token: Optional[SecretStr] = None
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -366,4 +371,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "databricks": DatabricksPlugin,
     "scylladb": ScyllaDBPlugin,
     "duckdb": DuckDBPlugin,
+    "ckan": CKANPlugin,
 }
