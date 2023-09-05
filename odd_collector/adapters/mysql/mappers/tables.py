@@ -6,6 +6,7 @@ from oddrn_generator import MysqlGenerator
 
 from odd_collector.models import Table
 
+from ..logger import logger
 from .columns import map_column
 from .views import map_view
 
@@ -34,8 +35,8 @@ def map_table(generator: MysqlGenerator, table: Table) -> DataEntity:
 def map_tables(
     generator: MysqlGenerator,
     tables: list[Table],
-):
-    data_entities: list[DataEntity] = []
+) -> list[DataEntity]:
+    data_entities: dict[str, tuple[Table, DataEntity]] = {}
 
     for table in tables:
         if table.type == "VIEW":
@@ -43,8 +44,16 @@ def map_tables(
         elif table.type == "BASE TABLE":
             data_entity = map_table(generator, table)
         else:
+            logger.warning(f"Can't parse {table.type=}. Available [VIEW, BASE_TABLE]")
             continue
 
-        data_entities.append(data_entity)
+        data_entities[table.uid] = (table, data_entity)
 
-    return data_entities
+    for table, data_entity in data_entities.values():
+        for dependency in table.dependencies:
+            if dependency.uid in data_entities and data_entity.data_transformer:
+                data_entity.data_transformer.inputs.append(
+                    data_entities[dependency.uid][1].oddrn
+                )
+
+    return [data_entity for _, data_entity in data_entities.values()]
