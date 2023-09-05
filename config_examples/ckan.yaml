@@ -1,0 +1,9 @@
+default_pulling_interval: 60 # in minutes. If not specified, collector will pull data once.
+platform_host_url: http://localhost:8080
+token: ""
+plugins:
+  - type: ckan
+    name: ckan_adapter
+    host: localhost
+    port: 8443
+    token: token
