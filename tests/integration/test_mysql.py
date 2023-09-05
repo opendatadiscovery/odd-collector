@@ -5,7 +5,7 @@ from odd_models.models import DataEntityType
 from pydantic import SecretStr
 from testcontainers.mysql import MySqlContainer
 
-from tests.integration.helpers import find_by_type
+from tests.integration.helpers import find_by_name, find_by_type
 
 create_tables = """
 CREATE TABLE Persons (
@@ -23,6 +23,12 @@ FROM Persons
 WHERE City = 'Sandnes';
 """
 
+create_view_from_view = """
+CREATE VIEW persons_last_names AS
+SELECT LastName
+FROM persons_names;
+"""
+
 from odd_collector.adapters.mysql.adapter import Adapter
 from odd_collector.domain.plugin import MySQLPlugin
 
@@ -35,6 +41,7 @@ def test_mysql():
         with engine.connect() as connection:
             connection.exec_driver_sql(create_tables)
             connection.exec_driver_sql(create_view)
+            connection.exec_driver_sql(create_view_from_view)
 
         config = MySQLPlugin(
             type="mysql",
@@ -52,7 +59,7 @@ def test_mysql():
         )
         assert len(database_services) == 1
         database_service = database_services[0]
-        assert len(database_service.data_entity_group.entities_list) == 2
+        assert len(database_service.data_entity_group.entities_list) == 3
 
         tables = find_by_type(data_entities, DataEntityType.TABLE)
         assert len(tables) == 1
@@ -60,10 +67,16 @@ def test_mysql():
         assert len(table.dataset.field_list) == 5
 
         views = find_by_type(data_entities, DataEntityType.VIEW)
-        assert len(views) == 1
-        view = views[0]
-        assert len(view.dataset.field_list) == 2
-        assert len(view.data_transformer.inputs) == 1
-        assert view.data_transformer.inputs[0] == table.oddrn
+        assert len(views) == 2
+
+        persons_view = find_by_name(data_entities, "persons_names")
+        assert len(persons_view.dataset.field_list) == 2
+        assert len(persons_view.data_transformer.inputs) == 1
+        assert persons_view.data_transformer.inputs[0] == table.oddrn
+
+        last_names_view = find_by_name(data_entities, "persons_last_names")
+        assert len(last_names_view.dataset.field_list) == 1
+        assert len(last_names_view.data_transformer.inputs) == 1
+        assert last_names_view.data_transformer.inputs[0] == persons_view.oddrn
 
         assert data_entities.json()
