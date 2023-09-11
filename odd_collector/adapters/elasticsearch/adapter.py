@@ -1,5 +1,6 @@
 import logging
 from typing import Dict, Iterable, Optional
+from urllib.parse import urlparse
 
 from elasticsearch import Elasticsearch
 from funcy import get_lax
@@ -22,7 +23,9 @@ class Adapter(AbstractAdapter):
             verify_certs=config.verify_certs,
             ca_certs=config.ca_certs,
         )
-        self.__oddrn_generator = ElasticSearchGenerator(host_settings=config.host)
+        self.__oddrn_generator = ElasticSearchGenerator(
+            host_settings=urlparse(config.host).netloc
+        )
 
     def get_data_entity_list(self) -> DataEntityList:
         return DataEntityList(
@@ -34,9 +37,7 @@ class Adapter(AbstractAdapter):
         return self.__oddrn_generator.get_data_source_oddrn()
 
     def get_datasets(self) -> Iterable[DataEntity]:
-        logger.info(
-            "Start collecting datasets from Elasticsearch at {self.config.host}"
-        )
+        logger.info(f"Start collecting datasets from Elasticsearch at {self.config}")
         result = []
         logger.info("Get indices")
         indices = self.__get_indices()
