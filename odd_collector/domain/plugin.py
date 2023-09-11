@@ -124,7 +124,7 @@ class ElasticsearchPlugin(WithHost):
     host: str
     port: str
     username: str
-    password: str
+    password: SecretStr
     verify_certs: Optional[bool] = None
     ca_certs: Optional[str] = None
 

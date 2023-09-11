@@ -19,7 +19,7 @@ class Adapter(AbstractAdapter):
     def __init__(self, config: ElasticsearchPlugin) -> None:
         self.__es_client = Elasticsearch(
             hosts=[f"{config.host}:{config.port}"],
-            basic_auth=(config.username, config.password),
+            basic_auth=(config.username, config.password.get_secret_value()),
             verify_certs=config.verify_certs,
             ca_certs=config.ca_certs,
         )
@@ -37,7 +37,7 @@ class Adapter(AbstractAdapter):
         return self.__oddrn_generator.get_data_source_oddrn()
 
     def get_datasets(self) -> Iterable[DataEntity]:
-        logger.info(f"Start collecting datasets from Elasticsearch at {self.config}")
+        logger.debug(f"Start collecting datasets from Elasticsearch at {self.config}")
         result = []
         logger.info("Get indices")
         indices = self.__get_indices()
