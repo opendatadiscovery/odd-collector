@@ -23,5 +23,5 @@ def get_oddrn_list(tables, oddrn_generator: RedshiftGenerator) -> list[str]:
     for table in tables:
         source = table.split(".")
         table_name = source[1] if len(source) > 1 else source[0]
-        response.append(oddrn_generator.get_oddrn_by_path("tables", table_name))
+        response.append(oddrn_generator.get_oddrn_by_path("views", table_name))
     return response
