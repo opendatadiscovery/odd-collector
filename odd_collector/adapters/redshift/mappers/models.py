@@ -8,6 +8,40 @@ class RedshiftAdapterMetadata(ABC):
     pass
 
 
+# Metadata Schemas All
+@dataclass(frozen=True)
+class MetadataSchemaBase(RedshiftAdapterMetadata):
+    database_name: Any
+    schema_name: Any
+    schema_owner: Any
+    schema_type: Any
+    schema_acl: Any
+    source_database: Any
+    schema_option: Any
+
+
+# Metadata Schemas Redshift
+@dataclass(frozen=True)
+class MetadataSchemaRedshift(RedshiftAdapterMetadata):
+    database_name: Any
+    schema_name: Any
+    schema_owner: Any
+    schema_type: Any
+    schema_acl: Any
+    schema_option: Any
+
+
+# Metadata Schemas External
+@dataclass(frozen=True)
+class MetadataSchemaExternal(RedshiftAdapterMetadata):
+    esoid: Any
+    eskind: Any
+    schemaname: Any
+    esowner: Any
+    databasename: Any
+    esoptions: Any
+
+
 # Metadata Tables
 @dataclass(frozen=True)
 class MetadataTableBase(RedshiftAdapterMetadata):

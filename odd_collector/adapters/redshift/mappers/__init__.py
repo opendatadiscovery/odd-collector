@@ -48,3 +48,5 @@ _data_set_field_metadata_excluded_keys_redshift: set = {
     "is_nullable",
     "remarks",
 }
+
+_schema_excluded_keys: set = {"database_name", "schema_name"}

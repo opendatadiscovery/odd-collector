@@ -1,5 +1,7 @@
 from dataclasses import asdict
-
+from . import _schema_excluded_keys
+from funcy import omit
+from odd_collector_sdk.utils.metadata import HasMetadata
 from odd_models.models import MetadataExtension
 
 from odd_collector.adapters.redshift.mappers.models import (
@@ -12,7 +14,23 @@ from odd_collector.adapters.redshift.mappers.models import (
     MetadataTableInfo,
     MetadataTableRedshift,
     RedshiftAdapterMetadata,
+    MetadataSchemaBase,
+    MetadataSchemaExternal,
+    MetadataSchemaRedshift,
 )
+
+
+class MetadataSchema(HasMetadata):
+    database_name: str
+    schema_name: str
+    base: MetadataSchemaBase = None
+    redshift: MetadataSchemaRedshift = None
+    external: MetadataSchemaExternal = None
+
+    @property
+    def odd_metadata(self) -> dict:
+        meta = asdict(self.base)
+        return omit(meta, _schema_excluded_keys)
 
 
 class MetadataTable:
@@ -34,6 +52,51 @@ class MetadataColumn:
     base: MetadataColumnBase = None
     redshift: MetadataColumnRedshift = None
     external: MetadataColumnExternal = None
+
+
+class MetadataSchemas:
+    items: list[MetadataSchema]
+
+    def __init__(
+        self,
+        schemas_base: list[tuple],
+        schemas_redshift: list[tuple],
+        schemas_external: list[tuple],
+    ) -> None:
+        ms: list[MetadataSchema] = []
+        redshift_index: int = 0
+        external_index: int = 0
+
+        for schema in schemas_base:
+            m: MetadataSchema = MetadataSchema()
+            ms.append(m)
+            m.base = MetadataSchemaBase(*schema)
+            m.database_name = m.base.database_name
+            m.schema_name = m.base.schema_name
+
+            if redshift_index < len(schemas_redshift):
+                mredshift: MetadataSchemaRedshift = MetadataSchemaRedshift(
+                    *schemas_redshift[redshift_index]
+                )
+                if (
+                    mredshift.database_name == m.database_name
+                    and mredshift.schema_name == m.schema_name
+                ):
+                    m.redshift = mredshift
+                    redshift_index += 1
+
+            if external_index < len(schemas_external):
+                mexternal: MetadataSchemaExternal = MetadataSchemaExternal(
+                    *schemas_external[external_index]
+                )
+                if (
+                    mexternal.databasename == m.database_name
+                    and mexternal.schemaname == m.schema_name
+                ):
+                    m.external = mexternal
+                    external_index += 1
+
+        self.items = ms
 
 
 class MetadataTables:

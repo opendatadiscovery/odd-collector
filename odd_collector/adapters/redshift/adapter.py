@@ -2,9 +2,11 @@ from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntity, DataEntityList
 from oddrn_generator import RedshiftGenerator, Generator
 
+from .mappers.database import map_database
+from .mappers.schema import map_schema
 from ...domain.plugin import RedshiftPlugin
 from .logger import logger
-from .mappers.metadata import MetadataColumns, MetadataTables
+from .mappers.metadata import MetadataSchemas
 from .mappers.tables import map_table
 from .repository import RedshiftRepository
 
@@ -24,25 +26,45 @@ class Adapter(BaseAdapter):
     def get_data_source_oddrn(self) -> str:
         return self.generator.get_data_source_oddrn()
 
-    def get_data_entities(self) -> list[DataEntity]:
+    def get_data_entity_list(self) -> DataEntityList:
         try:
-            mtables: MetadataTables = self.repository.get_tables()
-            mcolumns: MetadataColumns = self.repository.get_columns()
+            mschemas: MetadataSchemas = self.repository.get_schemas()
             primary_keys = self.repository.get_primary_keys()
 
-            logger.debug(
-                f"Load {len(mtables.items)} Datasets DataEntities from database"
-            )
+            table_entities: list[DataEntity] = []
+            schema_entities: list[DataEntity] = []
+            database_entities: list[DataEntity] = []
 
-            return map_table(
-                self.generator, mtables, mcolumns, primary_keys, self.database
+            self.generator.set_oddrn_paths(**{"databases": self.config.database})
+
+            for schema in mschemas.items:
+                table_entities_tmp: list[DataEntity] = []
+                schema_name = schema.schema_name
+                self.generator.set_oddrn_paths(**{"schemas": schema_name})
+                mtables = self.repository.get_tables(schema_name)
+                for table in mtables.items:
+                    mcolumns = self.repository.get_columns(
+                        schema_name, table.table_name
+                    )
+                    table_entities_tmp.append(
+                        map_table(self.generator, table, mcolumns, primary_keys)
+                    )
+                schema_entities.append(
+                    map_schema(self.generator, schema, table_entities_tmp)
+                )
+                table_entities.extend(table_entities_tmp)
+
+            database_entities.append(
+                map_database(self.generator, self.config.database, schema_entities)
+            )
+            logger.info(database_entities)
+            return DataEntityList(
+                data_source_oddrn=self.get_data_source_oddrn(),
+                items=[
+                    *table_entities,
+                    *schema_entities,
+                    *database_entities,
+                ],
             )
         except Exception as e:
             logger.error(f"Failed to load metadata for tables: {e}")
-        return []
-
-    def get_data_entity_list(self) -> DataEntityList:
-        return DataEntityList(
-            data_source_oddrn=self.get_data_source_oddrn(),
-            items=self.get_data_entities(),
-        )
