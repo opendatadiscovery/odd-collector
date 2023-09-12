@@ -1,4 +1,7 @@
-from dataclasses import asdict
+from dataclasses import asdict, dataclass, field
+
+from sql_metadata import Parser
+
 from . import _schema_excluded_keys
 from funcy import omit
 from odd_collector_sdk.utils.metadata import HasMetadata
@@ -18,11 +21,23 @@ from odd_collector.adapters.redshift.mappers.models import (
     MetadataSchemaExternal,
     MetadataSchemaRedshift,
 )
+from ..logger import logger
 
 
+@dataclass
+class Dependency:
+    name: str
+    schema: str
+
+    @property
+    def uid(self) -> str:
+        return f"{self.schema}.{self.name}"
+
+
+@dataclass
 class MetadataSchema(HasMetadata):
-    database_name: str
-    schema_name: str
+    database_name: str = None
+    schema_name: str = None
     base: MetadataSchemaBase = None
     redshift: MetadataSchemaRedshift = None
     external: MetadataSchemaExternal = None
@@ -33,25 +48,65 @@ class MetadataSchema(HasMetadata):
         return omit(meta, _schema_excluded_keys)
 
 
+@dataclass
+class MetadataColumn:
+    database_name: str = None
+    schema_name: str = None
+    table_name: str = None
+    column_name: str = None
+    ordinal_position: int = None
+    base: MetadataColumnBase = None
+    redshift: MetadataColumnRedshift = None
+    external: MetadataColumnExternal = None
+
+
+@dataclass
 class MetadataTable:
-    database_name: str
-    schema_name: str
-    table_name: str
+    database_name: str = None
+    schema_name: str = None
+    table_name: str = None
     base: MetadataTableBase = None
     all: MetadataTableAll = None
     redshift: MetadataTableRedshift = None
     external: MetadataTableExternal = None
     info: MetadataTableInfo = None
+    columns: list[MetadataColumn] = field(default_factory=list)
+    primary_keys: list[str] = field(default_factory=list)
 
+    @property
+    def as_dependency(self) -> Dependency:
+        return Dependency(name=self.table_name, schema=self.schema_name)
 
-class MetadataColumn:
-    database_name: str
-    schema_name: str
-    table_name: str
-    ordinal_position: int
-    base: MetadataColumnBase = None
-    redshift: MetadataColumnRedshift = None
-    external: MetadataColumnExternal = None
+    @property
+    def dependencies(self) -> list[Dependency]:
+        try:
+            if not self.all.view_ddl:
+                return []
+
+            parsed = Parser(self.all.view_ddl.replace("(", "").replace(")", ""))
+            dependencies = []
+
+            for table in parsed.tables:
+                schema_name = table.split(".")
+
+                if len(schema_name) > 2:
+                    logger.warning(
+                        f"Couldn't parse schema and name from {table}. Must be in format <schema>.<table> or <table>."
+                    )
+                    continue
+
+                if len(schema_name) == 2:
+                    schema, name = schema_name
+                else:
+                    schema, name = "public", schema_name[0]
+
+                dependencies.append(Dependency(name=name, schema=schema))
+            return dependencies
+        except Exception as e:
+            logger.exception(
+                f"Couldn't parse dependencies from {self.all.view_ddl}. {e}"
+            )
+            return []
 
 
 class MetadataSchemas:
@@ -191,6 +246,7 @@ class MetadataColumns:
             m.database_name = m.base.database_name
             m.schema_name = m.base.schema_name
             m.table_name = m.base.table_name
+            m.column_name = m.base.column_name
             m.ordinal_position = m.base.ordinal_position
 
             if redshift_index < len(columns_redshift):

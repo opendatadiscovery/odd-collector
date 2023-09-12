@@ -7,12 +7,12 @@ from .metadata import MetadataSchema
 
 
 def map_schema(
-    oddrn_generator: RedshiftGenerator,
+    generator: RedshiftGenerator,
     schema: MetadataSchema,
     table_entities: list[DataEntity],
 ) -> DataEntity:
     return DataEntity(
-        oddrn=oddrn_generator.get_oddrn_by_path("schemas", schema.schema_name),
+        oddrn=generator.get_oddrn_by_path("schemas", schema.schema_name),
         name=schema.schema_name,
         owner=schema.base.schema_owner,
         metadata=[extract_metadata("redshift", schema, DefinitionType.DATASET)],

@@ -4,12 +4,12 @@ from oddrn_generator import RedshiftGenerator
 
 
 def map_database(
-    oddrn_generator: RedshiftGenerator,
+    generator: RedshiftGenerator,
     database_name: str,
     schemas_entities: list[DataEntity],
 ) -> DataEntity:
     return DataEntity(
-        oddrn=oddrn_generator.get_oddrn_by_path("databases", database_name),
+        oddrn=generator.get_oddrn_by_path("databases", database_name),
         name=database_name,
         type=DataEntityType.DATABASE_SERVICE,
         metadata=[],

@@ -15,11 +15,11 @@ from odd_collector.adapters.redshift.mappers.metadata import (
 
 class AbstractRepository(ABC):
     @abstractmethod
-    def get_tables(self, schema: str):
+    def get_tables(self):
         pass
 
     @abstractmethod
-    def get_columns(self, schema: str, table: str):
+    def get_columns(self):
         pass
 
 
@@ -38,20 +38,20 @@ class RedshiftRepository(AbstractRepository):
             self.__execute(self.metadata_schemas_external_query(self.__schemas)),
         )
 
-    def get_tables(self, schema) -> MetadataTables:
+    def get_tables(self) -> MetadataTables:
         return MetadataTables(
-            self.__execute(self.metadata_tables_base_query([schema])),
-            self.__execute(self.metadata_tables_all_query([schema])),
-            self.__execute(self.metadata_tables_redshift_query([schema])),
-            self.__execute(self.metadata_tables_external_query([schema])),
-            self.__execute(self.metadata_tables_info_query([schema])),
+            self.__execute(self.metadata_tables_base_query(self.__schemas)),
+            self.__execute(self.metadata_tables_all_query(self.__schemas)),
+            self.__execute(self.metadata_tables_redshift_query(self.__schemas)),
+            self.__execute(self.metadata_tables_external_query(self.__schemas)),
+            self.__execute(self.metadata_tables_info_query(self.__schemas)),
         )
 
-    def get_columns(self, schema, table) -> MetadataColumns:
+    def get_columns(self) -> MetadataColumns:
         return MetadataColumns(
-            self.__execute(self.metadata_columns_base_query([schema], table)),
-            self.__execute(self.metadata_columns_redshift_query([schema], table)),
-            self.__execute(self.metadata_columns_external_query([schema], table)),
+            self.__execute(self.metadata_columns_base_query(self.__schemas)),
+            self.__execute(self.metadata_columns_redshift_query(self.__schemas)),
+            self.__execute(self.metadata_columns_external_query(self.__schemas)),
         )
 
     def get_primary_keys(self) -> list[tuple]:
@@ -214,7 +214,7 @@ class RedshiftRepository(AbstractRepository):
             """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_columns_base_query(self, schemas: Optional[list[str]], table: str):
+    def metadata_columns_base_query(self, schemas: Optional[list[str]]):
         return sql.SQL(
             """
             select
@@ -231,13 +231,12 @@ class RedshiftRepository(AbstractRepository):
                 c.schema_name {predicate} ({schemas})
                 and c.schema_name not like 'pg_temp_%'
                 and t.table_type in ('BASE TABLE', 'VIEW')
-                and c.table_name = '{table}'
             order by
                 c.database_name, c.schema_name, c.table_name, c.ordinal_position
             """
-        ).format(**self.filter_schemas_params(schemas), table=sql.Literal(AsIs(table)))
+        ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_columns_redshift_query(self, schemas: Optional[list[str]], table: str):
+    def metadata_columns_redshift_query(self, schemas: Optional[list[str]]):
         return sql.SQL(
             """
             select
@@ -249,13 +248,12 @@ class RedshiftRepository(AbstractRepository):
             where
                 schema_name {predicate} ({schemas})
                 and schema_name not like 'pg_temp_%'
-                and table_name = '{table}'
             order by
                 database_name, schema_name, table_name, ordinal_position
             """
-        ).format(**self.filter_schemas_params(schemas), table=sql.Literal(AsIs(table)))
+        ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_columns_external_query(self, schemas: Optional[list[str]], table: str):
+    def metadata_columns_external_query(self, schemas: Optional[list[str]]):
         return sql.SQL(
             """
             select
@@ -266,11 +264,10 @@ class RedshiftRepository(AbstractRepository):
             where
                 schemaname {predicate} ({schemas})
                 and schemaname not like 'pg_temp_%'
-                and tablename = '{table}'
             order by
                 schemaname, tablename, columnnum
         """
-        ).format(**self.filter_schemas_params(schemas), table=sql.Literal(AsIs(table)))
+        ).format(**self.filter_schemas_params(schemas))
 
     @property
     def primary_keys_query(self):
