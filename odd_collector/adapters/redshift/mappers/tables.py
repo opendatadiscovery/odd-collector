@@ -1,7 +1,4 @@
-from functools import partial
-
 import pytz
-from funcy import lmap
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import RedshiftGenerator
 
@@ -16,12 +13,7 @@ def map_table(generator: RedshiftGenerator, table: MetadataTable) -> DataEntity:
     generator.set_oddrn_paths(
         **{"schemas": table.schema_name, "tables": table.table_name}
     )
-    map_table_column = partial(
-        map_column,
-        oddrn_generator=generator,
-        owner=table.all.table_owner,
-        parent_oddrn_path="tables",
-    )
+
     # DataEntity
     data_entity: DataEntity = DataEntity(
         oddrn=generator.get_oddrn_by_path("tables"),
@@ -29,7 +21,18 @@ def map_table(generator: RedshiftGenerator, table: MetadataTable) -> DataEntity:
         owner=table.all.table_owner,
         metadata=[],
         type=DataEntityType.TABLE,
-        dataset=DataSet(field_list=lmap(map_table_column, table.columns)),
+        dataset=DataSet(
+            field_list=[
+                map_column(
+                    column,
+                    generator,
+                    table.all.table_owner,
+                    "tables",
+                    column.column_name in table.primary_keys,
+                )
+                for column in table.columns
+            ]
+        ),
         description=table.base.remarks if table.base is not None else None,
     )
 
