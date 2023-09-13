@@ -49,9 +49,7 @@ class Adapter(BaseAdapter):
 
             for schema in mschemas.items:
                 tables = tables_by_schema.get(schema.schema_name, [])
-                table_entities_tmp = (
-                    map_tables(self.generator, tables)  # if tables else []
-                )
+                table_entities_tmp = map_tables(self.generator, tables)
                 schema_entities.append(
                     map_schema(self.generator, schema, table_entities_tmp)
                 )
@@ -69,7 +67,7 @@ class Adapter(BaseAdapter):
                 ],
             )
         except Exception as e:
-            logger.error(f"Failed to load metadata for tables: {e}")
+            logger.error("Failed to load metadata for tables", exc_info=True)
 
     @staticmethod
     def append_columns(mtables: MetadataTables, mcolumns: MetadataColumns):
