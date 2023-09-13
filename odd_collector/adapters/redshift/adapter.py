@@ -40,15 +40,17 @@ class Adapter(BaseAdapter):
             database_entities: list[DataEntity] = []
 
             self.generator.set_oddrn_paths(**{"databases": self.database})
+
+            tables_by_schema = {}
+            for mtable in mtables.items:
+                if mtable.schema_name not in tables_by_schema:
+                    tables_by_schema[mtable.schema_name] = []
+                tables_by_schema[mtable.schema_name].append(mtable)
+
             for schema in mschemas.items:
-                tables = [
-                    mtable
-                    for mtable in mtables.items
-                    if mtable.schema_name == schema.schema_name
-                ]
-                # self.generator.set_oddrn_paths(**{"schemas": schema.schema_name})
+                tables = tables_by_schema.get(schema.schema_name, [])
                 table_entities_tmp = (
-                    map_tables(self.generator, tables) if tables else []
+                    map_tables(self.generator, tables)  # if tables else []
                 )
                 schema_entities.append(
                     map_schema(self.generator, schema, table_entities_tmp)
