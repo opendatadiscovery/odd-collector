@@ -1,0 +1,21 @@
+name: Check latest tag
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/${{ github.event.repository.name }}
+
+jobs:
+  check_latest_tag:
+    runs-on: ubuntu-latest
+    name: Build and push docker image to GHCR
+    steps:
+      - uses: oprypin/find-latest-tag@v1
+        with:
+          repository: opendatadiscovery/odd-collector  # The repository to scan.
+          releases-only: true  # We know that all relevant tags have a GitHub release for them.
+        id: octokit  # The step ID to refer to later.
+
+      - run: echo "Octokit is at version ${{ steps.octokit.outputs.tag }}"
