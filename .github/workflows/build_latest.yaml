@@ -40,6 +40,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.octokit.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:0.1.42
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
