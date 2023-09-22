@@ -7,5 +7,5 @@ plugins:
     user: user
     password: password
     database: database
-    account: account # xxxx-yyyy
+    account: account # my24396.eu-central-1
     warehouse: warehouse # i.e COMPUTE_WH
