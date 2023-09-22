@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Any
-
 from funcy import omit
 from sql_metadata import Parser
 
 from .logger import logger
+from odd_collector_sdk.utils.metadata import HasMetadata
 
 
 @dataclass
@@ -178,3 +178,19 @@ class Table:
                 f"Couldn't parse dependencies from {self.view_definition}. {e}"
             )
             return []
+
+
+@dataclass(frozen=True)
+class Schema(HasMetadata):
+    schema_name: str
+    schema_owner: str
+    oid: int
+    description: str
+    total_size_bytes: int
+
+    @property
+    def odd_metadata(self):
+        return omit(
+            self.__dict__,
+            {"schema_name"},
+        )

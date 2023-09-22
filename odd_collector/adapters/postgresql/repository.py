@@ -12,6 +12,7 @@ from odd_collector.adapters.postgresql.models import (
     EnumTypeLabel,
     PrimaryKey,
     Table,
+    Schema,
 )
 from odd_collector.domain.plugin import PostgreSQLPlugin
 
@@ -47,10 +48,10 @@ class PostgreSQLRepository:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.conn.close()
 
-    def get_schemas(self) -> list[str]:
+    def get_schemas(self) -> list[Schema]:
         with self.conn.cursor() as cur:
             schemas = [
-                raw[0]
+                Schema(*raw)
                 for raw in self.execute(self.schemas_query, cur)
                 if self.schemas_filter.is_allowed(raw[0])
                 and raw[0]
@@ -65,7 +66,7 @@ class PostgreSQLRepository:
         return schemas
 
     def get_tables(self) -> list[Table]:
-        schemas = self.get_schemas()
+        schemas = [schema.schema_name for schema in self.get_schemas()]
         schemas_str = ", ".join([f"'{schema}'" for schema in schemas])
         query = self.tables_query(schemas_str)
 
@@ -123,10 +124,15 @@ class PostgreSQLRepository:
     @property
     def schemas_query(self):
         return """
-            SELECT nspname AS schema_name
-            FROM pg_namespace
-            ORDER BY nspname;
-
+           select 
+                n.nspname as schema_name, 
+                pg_catalog.pg_get_userbyid(n.nspowner) as schema_owner,
+                n.oid as oid,
+                pg_catalog.obj_description(n.oid, 'pg_namespace') as description,
+                pg_total_relation_size(n.oid) as total_size_bytes
+            from pg_catalog.pg_namespace n
+            where n.nspname not like 'pg_temp_%'
+            and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema');
         """
 
     def tables_query(self, schemas: str):

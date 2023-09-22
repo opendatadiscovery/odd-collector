@@ -40,7 +40,7 @@ class Adapter(BaseAdapter):
                 tables_by_schema[table.table_schema].append(table)
 
             for schema in schemas:
-                tables_per_schema = tables_by_schema.get(schema, [])
+                tables_per_schema = tables_by_schema.get(schema.schema_name, [])
                 table_entities_tmp = map_tables(self.generator, tables_per_schema)
                 schema_entities.append(
                     map_schema(self.generator, schema, table_entities_tmp)
