@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models import DataEntity
 from odd_models.models import DataEntityList
@@ -33,10 +35,8 @@ class Adapter(BaseAdapter):
             schemas = repo.get_schemas()
             self.generator.set_oddrn_paths(**{"databases": self.config.database})
 
-            tables_by_schema = {}
+            tables_by_schema = defaultdict(list)
             for table in tables:
-                if table.table_schema not in tables_by_schema:
-                    tables_by_schema[table.table_schema] = []
                 tables_by_schema[table.table_schema].append(table)
 
             for schema in schemas:
