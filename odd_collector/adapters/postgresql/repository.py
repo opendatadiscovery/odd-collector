@@ -4,6 +4,7 @@ from typing import Union
 
 import psycopg2
 from funcy.seqs import group_by
+from odd_collector_sdk.domain.filter import Filter
 from psycopg2 import sql
 
 from odd_collector.adapters.postgresql.models import (
@@ -35,8 +36,9 @@ class ConnectionParams:
 
 
 class PostgreSQLRepository:
-    def __init__(self, conn_params: ConnectionParams):
+    def __init__(self, conn_params: ConnectionParams, schemas_filter: Filter):
         self.conn_params = conn_params
+        self.schemas_filter = schemas_filter
 
     def __enter__(self):
         self.conn = psycopg2.connect(**asdict(self.conn_params))
@@ -49,7 +51,11 @@ class PostgreSQLRepository:
         self,
     ) -> list[Table]:
         with self.conn.cursor() as cur:
-            tables = [Table(*raw) for raw in self.execute(self.tables_query, cur)]
+            tables = [
+                Table(*raw)
+                for raw in self.execute(self.tables_query, cur)
+                if self.schemas_filter.is_allowed(raw[2])
+            ]
             grouped_columns = group_by(attrgetter("attrelid"), self.get_columns())
 
             for table in tables:

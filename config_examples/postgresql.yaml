@@ -10,3 +10,6 @@ plugins:
     port: 0000
     user: user
     password: password
+    schemas_filter: # Optional, if not provided all schemas from the database will be fetched
+      include: [ patterns_to_include ] # Schema name patterns to include
+      exclude: [ patterns_to_exclude ] # Schema name patterns to exclude

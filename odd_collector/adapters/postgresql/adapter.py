@@ -23,7 +23,9 @@ class Adapter(BaseAdapter):
         )
 
     def get_data_entity_list(self) -> DataEntityList:
-        with PostgreSQLRepository(ConnectionParams.from_config(self.config)) as repo:
+        with PostgreSQLRepository(
+            ConnectionParams.from_config(self.config), self.config.schemas_filter
+        ) as repo:
             tables = repo.get_tables()
 
             table_entities = map_tables(generator=self.generator, tables=tables)
