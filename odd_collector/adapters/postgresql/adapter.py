@@ -1,5 +1,5 @@
-from funcy import lpluck_attr
 from odd_collector_sdk.domain.adapter import BaseAdapter
+from odd_models import DataEntity
 from odd_models.models import DataEntityList
 from oddrn_generator import PostgresqlGenerator
 
@@ -7,6 +7,7 @@ from odd_collector.domain.plugin import PostgreSQLPlugin
 
 from .mappers.database import map_database
 from .mappers.tables import map_tables
+from .mappers.schemas import map_schema
 from .repository import ConnectionParams, PostgreSQLRepository
 
 
@@ -26,17 +27,31 @@ class Adapter(BaseAdapter):
         with PostgreSQLRepository(
             ConnectionParams.from_config(self.config), self.config.schemas_filter
         ) as repo:
+            table_entities: list[DataEntity] = []
+            schema_entities: list[DataEntity] = []
             tables = repo.get_tables()
+            schemas = repo.get_schemas()
+            self.generator.set_oddrn_paths(**{"databases": self.config.database})
 
-            table_entities = map_tables(generator=self.generator, tables=tables)
+            tables_by_schema = {}
+            for table in tables:
+                if table.table_schema not in tables_by_schema:
+                    tables_by_schema[table.table_schema] = []
+                tables_by_schema[table.table_schema].append(table)
+
+            for schema in schemas:
+                tables_per_schema = tables_by_schema.get(schema, [])
+                table_entities_tmp = map_tables(self.generator, tables_per_schema)
+                schema_entities.append(
+                    map_schema(self.generator, schema, table_entities_tmp)
+                )
+                table_entities.extend(table_entities_tmp)
 
             database_entity = map_database(
-                self.generator,
-                self.config.database,
-                lpluck_attr("oddrn", table_entities),
+                self.generator, self.config.database, schema_entities
             )
 
             return DataEntityList(
                 data_source_oddrn=self.get_data_source_oddrn(),
-                items=[*table_entities, database_entity],
+                items=[*table_entities, *schema_entities, database_entity],
             )
