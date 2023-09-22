@@ -34,6 +34,8 @@ from odd_models.models import DataEntityType, Type
 TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "date": Type.TYPE_DATETIME,
     "text": Type.TYPE_STRING,
+    "varchar": Type.TYPE_STRING,
+    "_varchar": Type.TYPE_STRING,
     "json": Type.TYPE_STRING,
     "jsonb": Type.TYPE_STRING,
     "tsvector": Type.TYPE_STRING,
@@ -45,6 +47,8 @@ TYPES_SQL_TO_ODD: Dict[str, Type] = {
     "double precision": Type.TYPE_NUMBER,  # FLOAT8OID
     "smallint": Type.TYPE_INTEGER,  # INT2OID
     "integer": Type.TYPE_INTEGER,  # INT4OID
+    "int4": Type.TYPE_INTEGER,  # INT4OID
+    "int8": Type.TYPE_INTEGER,  # INT4OID
     "bigint": Type.TYPE_INTEGER,  # INT8OID recheck
     "numeric": Type.TYPE_NUMBER,  # NUMERICOID
     "interval": Type.TYPE_DURATION,  # INTERVALOID recheck

@@ -4,6 +4,7 @@ from typing import Union
 
 import psycopg2
 from funcy.seqs import group_by
+from odd_collector_sdk.domain.filter import Filter
 from psycopg2 import sql
 
 from odd_collector.adapters.postgresql.models import (
@@ -35,8 +36,9 @@ class ConnectionParams:
 
 
 class PostgreSQLRepository:
-    def __init__(self, conn_params: ConnectionParams):
+    def __init__(self, conn_params: ConnectionParams, schemas_filter: Filter):
         self.conn_params = conn_params
+        self.schemas_filter = schemas_filter
 
     def __enter__(self):
         self.conn = psycopg2.connect(**asdict(self.conn_params))
@@ -45,11 +47,30 @@ class PostgreSQLRepository:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.conn.close()
 
-    def get_tables(
-        self,
-    ) -> list[Table]:
+    def get_schemas(self) -> list[str]:
         with self.conn.cursor() as cur:
-            tables = [Table(*raw) for raw in self.execute(self.tables_query, cur)]
+            schemas = [
+                raw[0]
+                for raw in self.execute(self.schemas_query, cur)
+                if self.schemas_filter.is_allowed(raw[0])
+                and raw[0]
+                not in (
+                    "pg_toast",
+                    "pg_internal",
+                    "catalog_history",
+                    "pg_catalog",
+                    "information_schema",
+                )
+            ]
+        return schemas
+
+    def get_tables(self) -> list[Table]:
+        schemas = self.get_schemas()
+        schemas_str = ", ".join([f"'{schema}'" for schema in schemas])
+        query = self.tables_query(schemas_str)
+
+        with self.conn.cursor() as cur:
+            tables = [Table(*raw) for raw in self.execute(query, cur)]
             grouped_columns = group_by(attrgetter("attrelid"), self.get_columns())
 
             for table in tables:
@@ -100,8 +121,16 @@ class PostgreSQLRepository:
         """
 
     @property
-    def tables_query(self):
+    def schemas_query(self):
         return """
+            SELECT nspname AS schema_name
+            FROM pg_namespace
+            ORDER BY nspname;
+
+        """
+
+    def tables_query(self, schemas: str):
+        return f"""
             select
                 c.oid
                 , it.table_catalog
@@ -132,7 +161,7 @@ class PostgreSQLRepository:
                     left join information_schema.views iw on iw.table_schema = n.nspname and iw.table_name = c.relname
             where c.relkind in ('r', 'v', 'm')
             and n.nspname not like 'pg_temp_%'
-            and n.nspname not in ('pg_toast', 'pg_internal', 'catalog_history', 'pg_catalog', 'information_schema')
+            and n.nspname in ({schemas}) 
             order by n.nspname, c.relname
         """
 

@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import List, Literal, Optional
 
+from odd_collector_sdk.domain.filter import Filter
 from odd_collector_sdk.domain.plugin import Plugin as BasePlugin
 from odd_collector_sdk.types import PluginFactory
 from pydantic import BaseModel, FilePath, SecretStr, validator
@@ -31,6 +32,7 @@ class PostgreSQLPlugin(DatabasePlugin):
     port: int = 5432
     database: str
     password: SecretStr = SecretStr("")
+    schemas_filter: Filter = Filter()
 
 
 class OdbcPlugin(DatabasePlugin):
