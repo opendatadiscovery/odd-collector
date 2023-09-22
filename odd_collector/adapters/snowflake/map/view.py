@@ -63,6 +63,7 @@ def _map_connection(
         ).value
 
         generator_params = {
+            "databases": connection.table_catalog,
             "schemas": connection.table_schema,
             path_key: connection.table_name,
         }
