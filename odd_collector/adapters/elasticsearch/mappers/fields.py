@@ -1,8 +1,7 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from odd_models.models import DataSetField, DataSetFieldType, Type
-
-from ..logger import logger
+from oddrn_generator import ElasticSearchGenerator
 
 # As of ElasticSearch 7.x supported fields are listed here
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html#
@@ -57,15 +56,14 @@ def __get_field_type(props: Dict[str, Any]) -> str:
         return "unknown"
 
 
-def map_field(field_name, field_metadata: dict, oddrn_generator) -> DataSetField:
+def map_field(
+    field_name: str,
+    field_metadata: dict,
+    oddrn_generator: ElasticSearchGenerator,
+    path: str,
+) -> DataSetField:
     data_type: str = __get_field_type(field_metadata)
-    logger.debug(
-        f"Field {field_name} with metadata {field_metadata} has {data_type} type"
-    )
-
-    oddrn_path: str = oddrn_generator.get_oddrn_by_path("fields", field_name)
-    logger.debug(f"Field {field_name} has oddrn path {oddrn_path}")
-
+    oddrn_path: str = oddrn_generator.get_oddrn_by_path(path, field_name)
     field_type = TYPES_ELASTIC_TO_ODD.get(data_type, Type.TYPE_UNKNOWN)
 
     dsf: DataSetField = DataSetField(

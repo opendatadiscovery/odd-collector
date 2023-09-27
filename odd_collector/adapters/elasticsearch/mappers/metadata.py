@@ -1,32 +1,44 @@
-from typing import Any, Dict, Set
+import json
+from dataclasses import dataclass
+from typing import Any
 
-from humps import decamelize
-
-SCHEMA_FILE_URL = (
-    "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/"
-    "main/specification/extensions/elasticsearch.json"
+from funcy import walk_values
+from odd_collector_sdk.utils.metadata import (
+    DefinitionType,
+    HasMetadata,
+    MetadataExtension,
+    extract_metadata,
 )
 
+from ..logger import logger
 
-class MetadataExtractor:
-    __index_excludes = {"uuid", "index", "pri", "rep"}
 
-    def extract_index_metadata(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        return {
-            "schema_url": f"{SCHEMA_FILE_URL}#/definitions/ElasticSearchDataSetExtension",
-            "metadata": self.__extract_all_entries(data, exclude=self.__index_excludes),
-        }
+@dataclass
+class MetadataWrapper(HasMetadata):
+    odd_metadata: dict[str, Any]
 
-    def __extract_all_entries(
-        self, dikt: Dict[str, Any], exclude: Set[str], prefix: str = None
-    ) -> Dict[str, Any]:
-        entries = {}
-        for k, v in dikt.items():
-            key_prefix = k if prefix is None else f"{prefix}::{k}"
 
-            if key_prefix not in exclude:
-                if isinstance(v, dict):
-                    entries.update(self.__extract_all_entries(v, exclude, key_prefix))
-                else:
-                    entries[decamelize(key_prefix)] = v
-        return entries
+def extract_index_metadata(data: dict[str, Any]) -> MetadataExtension:
+    meta_wrapper = MetadataWrapper(odd_metadata=data)
+    return extract_metadata("elasticsearch", meta_wrapper, DefinitionType.DATASET)
+
+
+def extract_template_metadata(data: dict[str, Any]) -> MetadataExtension:
+    metadata = data
+
+    try:
+        metadata = walk_values(json.dumps, metadata)
+    except Exception as e:
+        logger.warning(f"Can't convert template metadata to json. {str(e)}")
+        logger.debug(f"Template metadata: {data!r}")
+
+    meta_wrapper = MetadataWrapper(odd_metadata=metadata)
+
+    return extract_metadata("elasticsearch", meta_wrapper, DefinitionType.DATASET)
+
+
+def extract_data_stream_metadata(data: dict[str, Any]) -> MetadataExtension:
+    meta_wrapper = MetadataWrapper(odd_metadata=data)
+    return extract_metadata(
+        "elasticsearch", meta_wrapper, DefinitionType.DATASET, flatten=True
+    )
