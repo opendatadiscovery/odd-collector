@@ -1,109 +1,114 @@
-import logging
-from typing import Dict, Iterable, Optional
+from typing import Optional
 from urllib.parse import urlparse
 
-from elasticsearch import Elasticsearch
-from funcy import get_lax
-from odd_collector_sdk.domain.adapter import AbstractAdapter
+from funcy import get_in, get_lax
+from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntity, DataEntityList
-from oddrn_generator import ElasticSearchGenerator
+from oddrn_generator import ElasticSearchGenerator, Generator
 
 from odd_collector.domain.plugin import ElasticsearchPlugin
 
+from .client import Client
 from .logger import logger
-from .mappers.indexes import map_index
-from .mappers.stream import map_data_stream, map_data_stream_template
+from .mappers.indices import map_index
+from .mappers.stream import map_data_stream
+from .mappers.template import TemplateEntity, map_template
 
 
-class Adapter(AbstractAdapter):
+class Adapter(BaseAdapter):
+    config: ElasticsearchPlugin
+    generator: ElasticSearchGenerator
+
     def __init__(self, config: ElasticsearchPlugin) -> None:
-        self.__es_client = Elasticsearch(
-            hosts=[f"{config.host}:{config.port}"],
-            basic_auth=(config.username, config.password.get_secret_value()),
-            verify_certs=config.verify_certs,
-            ca_certs=config.ca_certs,
-        )
-        self.__oddrn_generator = ElasticSearchGenerator(
-            host_settings=urlparse(config.host).netloc
-        )
+        super().__init__(config)
+        self.client = Client(config)
+
+    def create_generator(self) -> Generator:
+        return ElasticSearchGenerator(host_settings=urlparse(self.config.host).netloc)
 
     def get_data_entity_list(self) -> DataEntityList:
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=self.get_datasets(),
+            items=list(self.get_datasets()),
         )
 
-    def get_data_source_oddrn(self) -> str:
-        return self.__oddrn_generator.get_data_source_oddrn()
+    def get_datasets(self) -> list[DataEntity]:
+        logger.debug(
+            f"Start collecting datasets from Elasticsearch at {self.config.host} with port {self.config.port}"
+        )
 
-    def get_datasets(self) -> Iterable[DataEntity]:
-        logger.debug(f"Start collecting datasets from Elasticsearch at {self.config}")
-        result = []
-        logger.info("Get indices")
-        indices = self.__get_indices()
-        logger.info(f"Got {indices=}")
+        indices = self.client.get_indices("*")
+        templates = self.client.get_index_template("*")
 
-        logger.debug("Process indices")
-        for index in indices:
-            mapping = self.__get_mapping(index["index"])[index["index"]]
-            logger.debug(f"Mapping for index {index['index']} is {mapping}")
+        mappings = self.client.get_mapping()
+        data_streams = self.client.get_data_streams()
+
+        indices = [
+            index for index in indices if not index["index"].startswith(".internal")
+        ]
+        logger.success(f"Got {len(indices)} indices")
+
+        index_by_names = {index["index"]: index for index in indices}
+        templates_by_names = {
+            tmpl["name"]: tmpl for tmpl in templates if not tmpl["name"].startswith(".")
+        }
+        streams_by_names = {stream["name"]: stream for stream in data_streams}
+        mappings_by_names = dict(mappings.items())
+
+        indices_entities: dict[str, DataEntity] = {}
+        for index_name, index in index_by_names.items():
+            indices_entities[index_name] = map_index(
+                index=index,
+                generator=self.generator,
+                properties=get_in(
+                    mappings_by_names,
+                    [index_name, "mappings", "properties"],
+                    default={},
+                ),
+            )
+
+        # map templates
+        template_entities: dict[str, TemplateEntity] = {}
+        for tmpl_name, tmpl in templates_by_names.items():
+            data_entity = map_template(tmpl, self.generator)
+            pattern = tmpl["index_template"]["index_patterns"]
+
+            # Here we are trying to get all indices that match the pattern
+            # to show that current template works with index
+            # But if we can't get them, we just skip
             try:
-                result.append(self.__process_index_data(index, mapping))
-            except KeyError as e:
-                logging.warning(
-                    f"Elasticsearch adapter failed to process index {index}: KeyError {e}"
-                )
+                for index_name in self.client.get_indices(index=pattern, h="index"):
+                    if index_entity := indices_entities.get(index_name["index"]):
+                        data_entity.add_output(index_entity)
+            except Exception as e:
+                logger.warning(e)
+                continue
 
-        logger.info("Process data streams and their templates")
-        all_data_streams = self.__get_data_streams()
+            template_entities[tmpl_name] = data_entity
 
-        logger.info("Build template to data stream mapping")
-        templates_info = self.get_templates_from_data_streams(all_data_streams)
+        # map data streams
+        stream_entities = {}
+        for stream_name, stream in streams_by_names.items():
+            stream_data_entity = map_data_stream(stream, self.generator)
+            stream_entities[stream_name] = stream_data_entity
 
-        for template, data_streams in templates_info.items():
-            template_meta = self.__get_data_stream_templates_info(template).get(
-                "index_templates"
-            )
+            if template_entity := template_entities.get(stream["template"]):
+                template_entity.add_input(stream_data_entity)
 
-            data_stream_entities = []
-            logger.debug(f"Template {template} has metadata {template_meta}")
+        return [
+            *indices_entities.values(),
+            *stream_entities.values(),
+            *template_entities.values(),
+        ]
 
-            for data_stream in data_streams:
-                logger.debug(
-                    f"Data stream {data_stream['name']} has template {template}"
-                )
-
-                lifecycle_policies = self.__get_rollover_policy(data_stream)
-                stream_data_entity = map_data_stream(
-                    data_stream,
-                    template_meta,
-                    lifecycle_policies,
-                    self.__oddrn_generator,
-                )
-
-                data_stream_entities.append(stream_data_entity)
-
-            result.extend(data_stream_entities)
-
-            logger.debug(f"Create template data entity {template}")
-
-            data_streams_oddrn = [item.oddrn for item in data_stream_entities]
-            logger.debug(f"List of data streams oddrn {data_streams_oddrn}")
-
-            template_entity = map_data_stream_template(
-                template_meta, data_streams_oddrn, self.__oddrn_generator
-            )
-            result.append(template_entity)
-
-        return result
-
-    def __get_rollover_policy(self, stream_data: Dict) -> Optional[Dict]:
+    # TODO: implement mapping rollover policies
+    def _get_rollover_policy(self, stream_data: dict) -> Optional[dict]:
         try:
             backing_indices = [
                 index_info["index_name"] for index_info in stream_data["indices"]
             ]
             for index in backing_indices:
-                index_settings = self.__es_client.indices.get(index=index)
+                index_settings = self.client.get_indices(index)
                 lifecycle_policy = get_lax(
                     index_settings, [index, "settings", "index", "lifecycle"]
                 )
@@ -112,7 +117,7 @@ class Adapter(AbstractAdapter):
                     logger.debug(
                         f"Index {index} has Lifecycle Policy {lifecycle_policy['name']}"
                     )
-                    lifecycle_policy_data = self.__es_client.ilm.get_lifecycle(
+                    lifecycle_policy_data = self.client.ilm.get_lifecycle(
                         name=lifecycle_policy["name"]
                     )
 
@@ -139,51 +144,9 @@ class Adapter(AbstractAdapter):
 
                     lifecycle_metadata = {"max_age": max_age, "max_size": max_size}
                     return lifecycle_metadata
-
                 else:
                     logger.debug(f"No lifecycle policy exists for this index {index}.")
                     return None
         except KeyError:
             logger.debug(f"Incorrect fields. Got fields: {stream_data}")
             return None
-
-    def get_templates_from_data_streams(self, data_streams: Dict) -> Dict:
-        """
-        Expected result
-        {
-             "template": [data_stream, data_stream1],
-             "another_template": [data_stream2]
-        }
-        """
-        templates = {}
-        for data_stream in data_streams:
-            if data_stream["template"] not in templates:
-                templates[data_stream["template"]] = [data_stream]
-            else:
-                templates[data_stream["template"]].append(data_stream)
-        return templates
-
-    def __get_mapping(self, index_name: str):
-        return self.__es_client.indices.get_mapping(index=index_name)
-
-    def __get_indices(self):
-        # System indices startswith `.` character
-        logger.debug("Get system indices start with .")
-        return [
-            _
-            for _ in self.__es_client.cat.indices(format="json")
-            if not _["index"].startswith(".")
-        ]
-
-    def __get_data_streams(self) -> Dict:
-        response = self.__es_client.indices.get_data_stream(name="*")
-        return response["data_streams"]
-
-    def __get_data_stream_templates_info(self, template_name: str) -> Dict:
-        response = self.__es_client.indices.get_index_template(name=template_name)
-        return response
-
-    def __process_index_data(self, index_name: str, index_mapping: dict):
-        mapping = index_mapping["mappings"]["properties"]
-        logger.debug(f"Process mapping for index {index_name} with mapping {mapping}")
-        return map_index(index_name, mapping, self.__oddrn_generator)
