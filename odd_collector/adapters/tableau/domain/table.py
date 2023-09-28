@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 from funcy import lmapcat, lpluck
 
@@ -14,8 +14,8 @@ class Table:
         db_id: str,
         db_name: str,
         connection_type: str,
-        columns: List[Column] = None,
-        owners: List[str] = None,
+        columns: list[Column] = None,
+        owners: list[str] = None,
         description: str = None,
     ):
         self.id = id
@@ -58,11 +58,11 @@ def create_table(**kwargs) -> Table:
     return constructor(**kwargs)
 
 
-def databases_to_tables(databases_response: List[Any]) -> List[Table]:
+def databases_to_tables(databases_response: list[Any]) -> list[Table]:
     return lmapcat(traverse_tables, databases_response)
 
 
-def traverse_tables(database_response) -> List[Table]:
+def traverse_tables(database_response) -> list[Table]:
     connection_type = database_response.get("connectionType")
     db_name = database_response.get("name")
     db_id = database_response.get("id")

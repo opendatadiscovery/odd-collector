@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Union
 from urllib.parse import urlparse
 
 import tableauserverclient as TSC
@@ -90,45 +90,48 @@ query GetTablesColumns($ids: [ID], $count: Int, $after: String){
 
 
 class TableauBaseClient(ABC):
+    def __init__(self, config: TableauPlugin) -> None:
+        self.config = config
+
     @abstractmethod
     def get_server_host(self):
         raise NotImplementedError
 
     @abstractmethod
-    def get_sheets(self) -> List[Sheet]:
+    def get_sheets(self) -> list[Sheet]:
         raise NotImplementedError
 
     @abstractmethod
-    def get_tables(self) -> List[Table]:
+    def get_tables(self) -> list[Table]:
         raise NotImplementedError
 
     @abstractmethod
-    def get_tables_columns(self, tables_ids: List[str]) -> Dict[str, Table]:
+    def get_tables_columns(self, tables_ids: list[str]) -> dict[str, list[Column]]:
         raise NotImplementedError
 
 
 class TableauClient(TableauBaseClient):
     def __init__(self, config: TableauPlugin) -> None:
-        self.__config = config
-        self.__auth = self.__get_auth(config)
+        super().__init__(config)
+        self.__auth = self._get_auth(config)
         self.server = TSC.Server(config.server, use_server_version=True)
 
     def get_server_host(self):
-        return urlparse(self.__config.server).netloc
+        return urlparse(self.config.server).netloc
 
-    def get_sheets(self) -> List[Sheet]:
-        sheets_response = self.__query(query=sheets_query, root_key="sheetsConnection")
+    def get_sheets(self) -> list[Sheet]:
+        sheets_response = self._query(query=sheets_query, root_key="sheetsConnection")
 
         return [Sheet.from_response(response) for response in sheets_response]
 
-    def get_tables(self) -> List[Table]:
-        databases_response = self.__query(
+    def get_tables(self) -> list[Table]:
+        databases_response = self._query(
             query=databases_query, root_key="databasesConnection"
         )
         return databases_to_tables(databases_response)
 
-    def get_tables_columns(self, table_ids: List[str]) -> Dict[str, List[Column]]:
-        response: List = self.__query(
+    def get_tables_columns(self, table_ids: list[str]) -> Dict[str, list[Column]]:
+        response: list = self._query(
             query=tables_columns_query,
             variables={"ids": table_ids},
             root_key="tablesConnection",
@@ -139,14 +142,14 @@ class TableauClient(TableauBaseClient):
             for table in response
         }
 
-    def __query(
+    def _query(
         self,
         query: str,
         root_key: str,
         variables: object = None,
     ) -> Any:
         if variables is None:
-            variables = {"count": self.__config.pagination_size}
+            variables = {"count": self.config.pagination_size}
 
         with self.server.auth.sign_in(self.__auth):
             try:
@@ -173,18 +176,18 @@ class TableauClient(TableauBaseClient):
                 ) from e
 
     @staticmethod
-    def __get_auth(
+    def _get_auth(
         config: TableauPlugin,
     ) -> Union[PersonalAccessTokenAuth, TableauAuth]:
         try:
             if config.token_value and config.token_name:
-                return TSC.PersonalAccessTokenAuth(
+                return PersonalAccessTokenAuth(
                     config.token_name,
                     config.token_value.get_secret_value(),
                     config.site,
                 )
             else:
-                return TSC.TableauAuth(
+                return TableauAuth(
                     config.user,
                     config.password.get_secret_value(),
                     config.site,

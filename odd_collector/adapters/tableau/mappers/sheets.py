@@ -12,7 +12,7 @@ from . import DATA_CONSUMER_EXCLUDED_KEYS, DATA_CONSUMER_SCHEMA, TABLEAU_DATETIM
 from .metadata import extract_metadata
 
 
-def __map_date(date: str = None) -> Optional[str]:
+def __map_date(date: Optional[str] = None) -> Optional[str]:
     if not date:
         return None
 
