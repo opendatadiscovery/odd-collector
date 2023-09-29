@@ -1,17 +1,15 @@
-from abc import ABC, abstractmethod
-from typing import Any, Dict, Union
-from urllib.parse import urlparse
+from typing import Any, Union
 
 import tableauserverclient as TSC
-from funcy import lmap
 from odd_collector_sdk.errors import DataSourceAuthorizationError, DataSourceError
 from tableauserverclient import PersonalAccessTokenAuth, TableauAuth
 
+from odd_collector.adapters.tableau.domain.table import Table
 from odd_collector.domain.plugin import TableauPlugin
 
-from .domain.column import Column
+from .domain.database import ConnectionParams, EmbeddedDatabase, ExternalDatabase
 from .domain.sheet import Sheet
-from .domain.table import Table, databases_to_tables
+from .logger import logger
 
 sheets_query = """
 query GetSheets($count: Int, $after: String) {
@@ -49,6 +47,7 @@ query GetDatabases($count: Int, $after: String) {
         nodes {
             id
             name
+            isEmbedded
             connectionType
             downstreamOwners {
                 name
@@ -58,6 +57,13 @@ query GetDatabases($count: Int, $after: String) {
                 schema
                 name
                 description
+                columns {
+                    id
+                    name
+                    remoteType
+                    isNullable
+                    description
+                }
             }
         }
         pageInfo {
@@ -67,18 +73,18 @@ query GetDatabases($count: Int, $after: String) {
     }
 }
 """
-tables_columns_query = """
-query GetTablesColumns($ids: [ID], $count: Int, $after: String){
-    tablesConnection(filter: {idWithin: $ids}, first: $count, after: $after, orderBy: {field: NAME, direction: ASC}) {
+
+database_servers_query = """
+query DatabaseServersConnection($count: Int, $after: String) {
+    databaseServersConnection(first: $count, after: $after, orderBy: {field: NAME, direction: ASC}) {
         nodes {
             id
-            columns {
-                id
-                name
-                remoteType
-                isNullable
-                description
-            }
+            name
+            isEmbedded
+            connectionType
+            hostName
+            port
+            service
         }
         pageInfo {
           hasNextPage
@@ -89,57 +95,56 @@ query GetTablesColumns($ids: [ID], $count: Int, $after: String){
 """
 
 
-class TableauBaseClient(ABC):
+class TableauClient:
     def __init__(self, config: TableauPlugin) -> None:
         self.config = config
-
-    @abstractmethod
-    def get_server_host(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_sheets(self) -> list[Sheet]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_tables(self) -> list[Table]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_tables_columns(self, tables_ids: list[str]) -> dict[str, list[Column]]:
-        raise NotImplementedError
-
-
-class TableauClient(TableauBaseClient):
-    def __init__(self, config: TableauPlugin) -> None:
-        super().__init__(config)
         self.__auth = self._get_auth(config)
         self.server = TSC.Server(config.server, use_server_version=True)
-
-    def get_server_host(self):
-        return urlparse(self.config.server).netloc
 
     def get_sheets(self) -> list[Sheet]:
         sheets_response = self._query(query=sheets_query, root_key="sheetsConnection")
 
         return [Sheet.from_response(response) for response in sheets_response]
 
-    def get_tables(self) -> list[Table]:
-        databases_response = self._query(
-            query=databases_query, root_key="databasesConnection"
-        )
-        return databases_to_tables(databases_response)
+    def get_databases(self) -> dict[str, Union[EmbeddedDatabase, ExternalDatabase]]:
+        databases = self._query(query=databases_query, root_key="databasesConnection")
+        connection_params = self.get_servers()
 
-    def get_tables_columns(self, table_ids: list[str]) -> Dict[str, list[Column]]:
-        response: list = self._query(
-            query=tables_columns_query,
-            variables={"ids": table_ids},
-            root_key="tablesConnection",
-        )
+        result = {}
+        for db in databases:
+            if db.get("isEmbedded"):
+                result[db.get("id")] = EmbeddedDatabase.from_dict(**db)
+            else:
+                try:
+                    database = ExternalDatabase(
+                        id=db.get("id"),
+                        name=db.get("name"),
+                        connection_type=db.get("connectionType"),
+                        connection_params=connection_params[db.get("id")],
+                        tables=db.get("tables"),
+                    )
+                    result[database.id] = database
+                except Exception as e:
+                    logger.warning(f"Couldn't get database: {db.get('name')} {e}")
+                    continue
+
+        return result
+
+    def get_tables(self) -> dict[str, Table]:
+        databases = self.get_databases()
 
         return {
-            table.get("id"): lmap(Column.from_response, table.get("columns"))
-            for table in response
+            table.id: table
+            for database in databases.values()
+            for table in database.tables
+        }
+
+    def get_servers(self) -> dict[str, ConnectionParams]:
+        servers = self._query(
+            query=database_servers_query, root_key="databaseServersConnection"
+        )
+        return {
+            server.get("id"): ConnectionParams.from_dict(**server) for server in servers
         }
 
     def _query(

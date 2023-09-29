@@ -1,11 +1,9 @@
-from typing import List
-
-from funcy import first, partial
+from funcy import partial
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import TableauGenerator
 
-from ..domain.table import Table
+from ..domain.table import EmbeddedTable
 from . import DATA_SET_EXCLUDED_KEYS, DATA_SET_SCHEMA
 from .columns import map_column
 from .metadata import extract_metadata
@@ -15,33 +13,32 @@ extract_metadata = partial(
 )
 
 
-def map_table(oddrn_generator: TableauGenerator, table: Table) -> DataEntity:
+def map_table(generator: TableauGenerator, table: EmbeddedTable) -> DataEntity:
     # TODO: Now table model doesn't have metadata field, need to add it
     metadata = extract_metadata(metadata={})
     # Each database has multiple owners, by odd specification we can attach only 1 owner
     # take first owner or None
-    owner = first(table.owners)
+    owner = None
+    generator.set_oddrn_paths(
+        databases=table.db_id,
+        schemas=table.schema or "unknown_schema",
+        tables=table.id,
+    )
     try:
         return DataEntity(
-            oddrn=table.get_oddrn(oddrn_generator),
+            oddrn=generator.get_oddrn_by_path("tables"),
             name=table.name,
             owner=owner,
             metadata=metadata,
             description=table.description,
             type=DataEntityType.TABLE,
-            dataset=create_dataset(oddrn_generator, table),
+            dataset=create_dataset(generator, table),
         )
     except Exception as e:
         raise MappingDataError(f"Mapping table {table.name} failed") from e
 
 
-def map_tables(
-    oddrn_generator: TableauGenerator, tables: List[Table]
-) -> List[DataEntity]:
-    return [map_table(oddrn_generator, table) for table in tables]
-
-
-def create_dataset(oddrn_generator, table: Table):
+def create_dataset(oddrn_generator, table: EmbeddedTable):
     parent_oddrn = oddrn_generator.get_oddrn_by_path("tables")
     columns = [map_column(oddrn_generator, column) for column in table.columns]
 

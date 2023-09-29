@@ -1,24 +1,21 @@
-class Column:
-    def __init__(
-        self,
-        id: str,
-        name: str,
-        is_nullable: bool,
-        remote_type: str = None,
-        description: str = None,
-    ):
-        self.id = id
-        self.name = name
-        self.remote_type = remote_type
-        self.is_nullable = is_nullable
-        self.description = description or None
+from dataclasses import dataclass
+from typing import Optional
 
-    @staticmethod
-    def from_response(response):
-        return Column(
-            response.get("id"),
-            response.get("name"),
-            response.get("isNullable"),
-            response.get("remoteType"),
-            response.get("description"),
+
+@dataclass
+class Column:
+    id: str
+    name: str
+    is_nullable: bool
+    remote_type: Optional[str] = None
+    description: Optional[str] = None
+
+    @classmethod
+    def from_dict(cls, **data) -> "Column":
+        return cls(
+            data["id"],
+            data["name"],
+            data["isNullable"],
+            data.get("remoteType"),
+            data.get("description"),
         )
