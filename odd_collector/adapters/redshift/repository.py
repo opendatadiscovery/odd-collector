@@ -273,6 +273,7 @@ class RedshiftRepository(AbstractRepository):
     def primary_keys_query(self):
         return """
                 select 
+                    kcu.table_schema,
                     kcu.table_name,
                     kcu.column_name
                 from information_schema.table_constraints tco
