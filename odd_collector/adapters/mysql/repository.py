@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass
+from typing import Optional
 
 import mysql.connector
 from odd_collector_sdk.errors import DataSourceConnectionError
@@ -17,7 +18,7 @@ class ConnectionParams:
     port: int
     database: str
     user: str
-    password: str
+    password: Optional[str]
     ssl_disabled: bool
 
     @classmethod
@@ -27,7 +28,7 @@ class ConnectionParams:
             port=config.port,
             database=config.database,
             user=config.user,
-            password=config.password.get_secret_value(),
+            password=config.password.get_secret_value() if config.password else None,
             ssl_disabled=config.ssl_disabled,
         )
 
@@ -83,7 +84,7 @@ class Repository:
 
     def get_columns(self) -> list[Column]:
         with self.conn.cursor(dictionary=True) as cursor:
-            cursor.execute(self.columns_query)
+            cursor.execute(self.columns_query, (self.conn_params.database,))
             columns = []
 
             for raw in cursor.fetchall():
@@ -105,36 +106,36 @@ class Repository:
 
     @property
     def tables_query(self):
-        return f"""
-        select t.table_catalog,
-               t.table_schema,
-               t.table_name,
-               t.table_type,
-               t.engine,
-               t.version,
-               t.row_format,
-               t.table_rows,
-               t.avg_row_length,
-               t.data_length,
-               t.max_data_length,
-               t.index_length,
-               t.data_free,
-               t.auto_increment,
-               t.create_time,
-               t.update_time,
-               t.check_time,
-               t.table_collation,
-               t.checksum,
-               t.create_options,
-               t.table_comment,
-               v.view_definition
-        from information_schema.tables t
-                 left join information_schema.views v
-                           on t.TABLE_CATALOG = v.TABLE_CATALOG and
-                              t.TABLE_SCHEMA = v.TABLE_SCHEMA and
-                              t.TABLE_NAME = v.TABLE_NAME
-        where t.table_schema = %s
-        order by t.table_catalog, t.table_schema, t.table_name
+        return """
+            select t.table_catalog,
+                t.table_schema,
+                t.table_name,
+                t.table_type,
+                t.engine,
+                t.version,
+                t.row_format,
+                t.table_rows,
+                t.avg_row_length,
+                t.data_length,
+                t.max_data_length,
+                t.index_length,
+                t.data_free,
+                t.auto_increment,
+                t.create_time,
+                t.update_time,
+                t.check_time,
+                t.table_collation,
+                t.checksum,
+                t.create_options,
+                t.table_comment,
+                v.view_definition
+            from information_schema.tables t
+                    left join information_schema.views v
+                            on t.TABLE_CATALOG = v.TABLE_CATALOG and
+                                t.TABLE_SCHEMA = v.TABLE_SCHEMA and
+                                t.TABLE_NAME = v.TABLE_NAME
+            where t.table_schema = %s
+            order by t.table_catalog, t.table_schema, t.table_name
         """
 
     @property
@@ -164,5 +165,6 @@ class Repository:
                 generation_expression
             from information_schema.columns
             where table_schema not in ('information_schema', 'mysql', 'performance_schema', 'sys')
+            and table_schema = %s
             order by table_catalog, table_schema, table_name, ordinal_position;
         """
