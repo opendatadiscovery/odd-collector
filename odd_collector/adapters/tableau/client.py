@@ -1,17 +1,15 @@
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Union
-from urllib.parse import urlparse
+from typing import Any, Union
 
 import tableauserverclient as TSC
-from funcy import lmap
 from odd_collector_sdk.errors import DataSourceAuthorizationError, DataSourceError
 from tableauserverclient import PersonalAccessTokenAuth, TableauAuth
 
+from odd_collector.adapters.tableau.domain.table import Table
 from odd_collector.domain.plugin import TableauPlugin
 
-from .domain.column import Column
+from .domain.database import ConnectionParams, EmbeddedDatabase, ExternalDatabase
 from .domain.sheet import Sheet
-from .domain.table import Table, databases_to_tables
+from .logger import logger
 
 sheets_query = """
 query GetSheets($count: Int, $after: String) {
@@ -49,6 +47,7 @@ query GetDatabases($count: Int, $after: String) {
         nodes {
             id
             name
+            isEmbedded
             connectionType
             downstreamOwners {
                 name
@@ -58,6 +57,13 @@ query GetDatabases($count: Int, $after: String) {
                 schema
                 name
                 description
+                columns {
+                    id
+                    name
+                    remoteType
+                    isNullable
+                    description
+                }
             }
         }
         pageInfo {
@@ -67,18 +73,18 @@ query GetDatabases($count: Int, $after: String) {
     }
 }
 """
-tables_columns_query = """
-query GetTablesColumns($ids: [ID], $count: Int, $after: String){
-    tablesConnection(filter: {idWithin: $ids}, first: $count, after: $after, orderBy: {field: NAME, direction: ASC}) {
+
+database_servers_query = """
+query DatabaseServersConnection($count: Int, $after: String) {
+    databaseServersConnection(first: $count, after: $after, orderBy: {field: NAME, direction: ASC}) {
         nodes {
             id
-            columns {
-                id
-                name
-                remoteType
-                isNullable
-                description
-            }
+            name
+            isEmbedded
+            connectionType
+            hostName
+            port
+            service
         }
         pageInfo {
           hasNextPage
@@ -89,64 +95,69 @@ query GetTablesColumns($ids: [ID], $count: Int, $after: String){
 """
 
 
-class TableauBaseClient(ABC):
-    @abstractmethod
-    def get_server_host(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_sheets(self) -> List[Sheet]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_tables(self) -> List[Table]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_tables_columns(self, tables_ids: List[str]) -> Dict[str, Table]:
-        raise NotImplementedError
-
-
-class TableauClient(TableauBaseClient):
+class TableauClient:
     def __init__(self, config: TableauPlugin) -> None:
-        self.__config = config
-        self.__auth = self.__get_auth(config)
+        self.config = config
+        self.__auth = self._get_auth(config)
         self.server = TSC.Server(config.server, use_server_version=True)
 
-    def get_server_host(self):
-        return urlparse(self.__config.server).netloc
-
-    def get_sheets(self) -> List[Sheet]:
-        sheets_response = self.__query(query=sheets_query, root_key="sheetsConnection")
+    def get_sheets(self) -> list[Sheet]:
+        sheets_response = self._query(query=sheets_query, root_key="sheetsConnection")
 
         return [Sheet.from_response(response) for response in sheets_response]
 
-    def get_tables(self) -> List[Table]:
-        databases_response = self.__query(
-            query=databases_query, root_key="databasesConnection"
-        )
-        return databases_to_tables(databases_response)
+    def get_databases(self) -> dict[str, Union[EmbeddedDatabase, ExternalDatabase]]:
+        logger.debug("Getting databases")
+        databases = self._query(query=databases_query, root_key="databasesConnection")
 
-    def get_tables_columns(self, table_ids: List[str]) -> Dict[str, List[Column]]:
-        response: List = self.__query(
-            query=tables_columns_query,
-            variables={"ids": table_ids},
-            root_key="tablesConnection",
-        )
+        connection_params = self.get_servers()
+
+        result = {}
+        for db in databases:
+            if db.get("isEmbedded"):
+                result[db.get("id")] = EmbeddedDatabase.from_dict(**db)
+            else:
+                try:
+                    database = ExternalDatabase(
+                        id=db.get("id"),
+                        name=db.get("name"),
+                        connection_type=db.get("connectionType"),
+                        connection_params=connection_params[db.get("id")],
+                        tables=db.get("tables"),
+                    )
+                    result[database.id] = database
+                except Exception as e:
+                    logger.warning(f"Couldn't get database: {db.get('name')} {e}")
+                    continue
+
+        logger.debug(f"Got {len(result)} databases")
+        return result
+
+    def get_tables(self) -> dict[str, Table]:
+        databases = self.get_databases()
 
         return {
-            table.get("id"): lmap(Column.from_response, table.get("columns"))
-            for table in response
+            table.id: table
+            for database in databases.values()
+            for table in database.tables
         }
 
-    def __query(
+    def get_servers(self) -> dict[str, ConnectionParams]:
+        servers = self._query(
+            query=database_servers_query, root_key="databaseServersConnection"
+        )
+        return {
+            server.get("id"): ConnectionParams.from_dict(**server) for server in servers
+        }
+
+    def _query(
         self,
         query: str,
         root_key: str,
         variables: object = None,
     ) -> Any:
         if variables is None:
-            variables = {"count": self.__config.pagination_size}
+            variables = {"count": self.config.pagination_size}
 
         with self.server.auth.sign_in(self.__auth):
             try:
@@ -173,18 +184,18 @@ class TableauClient(TableauBaseClient):
                 ) from e
 
     @staticmethod
-    def __get_auth(
+    def _get_auth(
         config: TableauPlugin,
     ) -> Union[PersonalAccessTokenAuth, TableauAuth]:
         try:
             if config.token_value and config.token_name:
-                return TSC.PersonalAccessTokenAuth(
+                return PersonalAccessTokenAuth(
                     config.token_name,
                     config.token_value.get_secret_value(),
                     config.site,
                 )
             else:
-                return TSC.TableauAuth(
+                return TableauAuth(
                     config.user,
                     config.password.get_secret_value(),
                     config.site,

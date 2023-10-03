@@ -170,7 +170,7 @@ class Neo4jPlugin(DatabasePlugin):
 class TableauPlugin(BasePlugin):
     type: Literal["tableau"]
     server: str
-    site: str
+    site: Optional[str]
     user: Optional[str]
     password: Optional[SecretStr]
     token_name: Optional[str]

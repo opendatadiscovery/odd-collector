@@ -1,18 +1,17 @@
 from datetime import datetime
 from functools import partial
-from typing import List, Optional
+from typing import Optional
 
 import pytz
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataConsumer, DataEntity, DataEntityType
-from oddrn_generator import TableauGenerator
 
 from ..domain.sheet import Sheet
 from . import DATA_CONSUMER_EXCLUDED_KEYS, DATA_CONSUMER_SCHEMA, TABLEAU_DATETIME_FORMAT
 from .metadata import extract_metadata
 
 
-def __map_date(date: str = None) -> Optional[str]:
+def __map_date(date: Optional[str] = None) -> Optional[str]:
     if not date:
         return None
 
@@ -30,7 +29,7 @@ extract_metadata = partial(
 )
 
 
-def map_sheet(oddrn_generator, sheet: Sheet, tables: List[DataEntity]) -> DataEntity:
+def map_sheet(oddrn_generator, sheet: Sheet) -> DataEntity:
     """
     Args:
         oddrn_generator: Generator
@@ -51,15 +50,7 @@ def map_sheet(oddrn_generator, sheet: Sheet, tables: List[DataEntity]) -> DataEn
             created_at=__map_date(sheet.created),
             updated_at=__map_date(sheet.updated),
             type=DataEntityType.DASHBOARD,
-            data_consumer=DataConsumer(inputs=[de.oddrn for de in tables]),
+            data_consumer=DataConsumer(inputs=[]),
         )
     except Exception as e:
         raise MappingDataError(f"Mapping sheet {sheet.name} failed") from e
-
-
-def map_sheets(
-    oddrn_generator: TableauGenerator,
-    sheets: List[Sheet],
-    tables: List[DataEntity],
-) -> List[DataEntity]:
-    return [map_sheet(oddrn_generator, sheet, tables) for sheet in sheets]

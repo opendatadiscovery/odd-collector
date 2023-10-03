@@ -26,6 +26,7 @@ def map_column(oddrn_generator: TableauGenerator, column: Column) -> DataSetFiel
             oddrn=oddrn_generator.get_oddrn_by_path("columns", column_name),
             name=column_name,
             metadata=extract_metadata(metadata=metadata),
+            owner=None,
             type=DataSetFieldType(
                 type=map_type(column_type),
                 logical_type=column_type,
