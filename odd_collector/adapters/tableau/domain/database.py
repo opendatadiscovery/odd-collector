@@ -61,7 +61,9 @@ class ExternalDatabase:
             if kwargs["connection_type"].lower() in subclass._CONNECTION_TYPE:
                 return super().__new__(subclass)
 
-        raise NotImplementedError("Database is not supported")
+        raise NotImplementedError(
+            f"Database {kwargs['connection_type']}  is not supported"
+        )
 
     def __post_init__(self):
         self.tables = [self.create_table(**table) for table in self.tables]

@@ -107,7 +107,9 @@ class TableauClient:
         return [Sheet.from_response(response) for response in sheets_response]
 
     def get_databases(self) -> dict[str, Union[EmbeddedDatabase, ExternalDatabase]]:
+        logger.debug("Getting databases")
         databases = self._query(query=databases_query, root_key="databasesConnection")
+
         connection_params = self.get_servers()
 
         result = {}
@@ -128,6 +130,7 @@ class TableauClient:
                     logger.warning(f"Couldn't get database: {db.get('name')} {e}")
                     continue
 
+        logger.debug(f"Got {len(result)} databases")
         return result
 
     def get_tables(self) -> dict[str, Table]:
