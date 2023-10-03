@@ -33,8 +33,8 @@ def map_table(generator: PostgresqlGenerator, table: Table):
 def map_tables(
     generator: PostgresqlGenerator,
     tables: list[Table],
-) -> list[DataEntity]:
-    data_entities: dict[str, tuple[Table, DataEntity]] = {}
+) -> dict[str, DataEntity]:
+    data_entities: dict[str, DataEntity] = {}
 
     for table in tables:
         logger.debug(f"Map table {table.table_name} {table.table_type}")
@@ -49,13 +49,6 @@ def map_tables(
             )
             continue
 
-        data_entities[table.as_dependency.uid] = table, entity
+        data_entities[table.as_dependency.uid] = entity
 
-    for table, data_entity in data_entities.values():
-        for dependency in table.dependencies:
-            if dependency.uid in data_entities and data_entity.data_transformer:
-                data_entity.data_transformer.inputs.append(
-                    data_entities[dependency.uid][1].oddrn
-                )
-
-    return [entity for _, entity in data_entities.values()]
+    return data_entities
