@@ -15,7 +15,7 @@ def find_by_type(
 def find_by_name(data_entity_list: DataEntityList, name: str) -> DataEntity:
     return next(
         filter(
-            lambda data_entity: data_entity.name == name,
+            lambda data_entity: data_entity.name.lower() == name.lower(),
             data_entity_list.items,
         )
     )

@@ -5,11 +5,13 @@ from odd_models import DataEntity
 from odd_models.models import DataEntityList
 from oddrn_generator import PostgresqlGenerator
 
+from odd_collector.adapters.postgresql.models import Table
 from odd_collector.domain.plugin import PostgreSQLPlugin
 
+from .logger import logger
 from .mappers.database import map_database
-from .mappers.tables import map_tables
 from .mappers.schemas import map_schema
+from .mappers.tables import map_tables
 from .repository import ConnectionParams, PostgreSQLRepository
 
 
@@ -29,10 +31,13 @@ class Adapter(BaseAdapter):
         with PostgreSQLRepository(
             ConnectionParams.from_config(self.config), self.config.schemas_filter
         ) as repo:
-            table_entities: list[DataEntity] = []
             schema_entities: list[DataEntity] = []
+
+            all_table_entities: dict[str, DataEntity] = {}
+
             tables = repo.get_tables()
             schemas = repo.get_schemas()
+
             self.generator.set_oddrn_paths(**{"databases": self.config.database})
 
             tables_by_schema = defaultdict(list)
@@ -40,18 +45,47 @@ class Adapter(BaseAdapter):
                 tables_by_schema[table.table_schema].append(table)
 
             for schema in schemas:
-                tables_per_schema = tables_by_schema.get(schema.schema_name, [])
+                tables_per_schema: list[Table] = tables_by_schema.get(
+                    schema.schema_name, []
+                )
                 table_entities_tmp = map_tables(self.generator, tables_per_schema)
                 schema_entities.append(
-                    map_schema(self.generator, schema, table_entities_tmp)
+                    map_schema(
+                        self.generator, schema, list(table_entities_tmp.values())
+                    )
                 )
-                table_entities.extend(table_entities_tmp)
+                all_table_entities |= table_entities_tmp
 
             database_entity = map_database(
                 self.generator, self.config.database, schema_entities
             )
 
+            create_lineage(tables, all_table_entities)
+
             return DataEntityList(
                 data_source_oddrn=self.get_data_source_oddrn(),
-                items=[*table_entities, *schema_entities, database_entity],
+                items=[*all_table_entities.values(), *schema_entities, database_entity],
             )
+
+
+def create_lineage(tables: list[Table], data_entities: dict[str, DataEntity]) -> None:
+    views = [table for table in tables if table.table_type in ("v", "m")]
+
+    for view in views:
+        try:
+            depending_entity = data_entities.get(view.as_dependency.uid)
+
+            if depending_entity.data_transformer is None:
+                continue
+
+            for dependency in view.dependencies:
+                if dependency_entity := data_entities.get(dependency.uid):
+                    if (
+                        dependency_entity.oddrn
+                        not in depending_entity.data_transformer.inputs
+                    ):
+                        depending_entity.data_transformer.inputs.append(
+                            dependency_entity.oddrn
+                        )
+        except Exception as e:
+            logger.warning(f"Error creating lineage for {view.table_name} {e=}")
