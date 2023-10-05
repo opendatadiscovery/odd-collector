@@ -1,18 +1,22 @@
 from collections import defaultdict
+
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntity, DataEntityList
-from oddrn_generator import RedshiftGenerator, Generator
+from oddrn_generator import Generator, RedshiftGenerator
 
-from .mappers.database import map_database
-from .mappers.schema import map_schema
 from ...domain.plugin import RedshiftPlugin
 from .logger import logger
-from .mappers.metadata import MetadataSchemas, MetadataTables, MetadataColumns
+from .mappers.database import map_database
+from .mappers.metadata import MetadataColumns, MetadataSchemas, MetadataTables
+from .mappers.schema import map_schema
 from .mappers.tables import map_tables
 from .repository import RedshiftRepository
 
 
 class Adapter(BaseAdapter):
+    config: RedshiftPlugin
+    generator: RedshiftGenerator
+
     def __init__(self, config: RedshiftPlugin) -> None:
         super().__init__(config)
         self.database = config.database

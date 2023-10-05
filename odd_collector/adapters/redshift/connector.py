@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 
 import psycopg2
 
+from odd_collector.domain.plugin import RedshiftPlugin
+
 
 class AbstractConnector(ABC):  # TODO: Create one abstract connector for all adapters
     @abstractmethod
@@ -11,7 +13,7 @@ class AbstractConnector(ABC):  # TODO: Create one abstract connector for all ada
 
 
 class RedshiftConnector(AbstractConnector):
-    def __init__(self, config) -> None:
+    def __init__(self, config: RedshiftPlugin) -> None:
         self._data_source = f"postgresql://{config.host}:{config.port}/{config.database}?user={config.user}&password={config.password.get_secret_value()}&connect_timeout={config.connection_timeout}"
 
     @contextlib.contextmanager
