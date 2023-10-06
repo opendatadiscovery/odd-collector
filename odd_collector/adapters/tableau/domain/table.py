@@ -1,7 +1,11 @@
 from dataclasses import dataclass, field
 from typing import Optional, Union
 
-from oddrn_generator import BigQueryStorageGenerator, SnowflakeGenerator
+from oddrn_generator import (
+    BigQueryStorageGenerator,
+    RedshiftGenerator,
+    SnowflakeGenerator,
+)
 
 from .column import Column
 
@@ -73,6 +77,24 @@ class SnowflakeTable(ExternalTable):
             tables=self.name.upper(),
         )
         return generator.get_oddrn_by_path("databases")
+
+
+@dataclass
+class RedshiftTable(ExternalTable):
+    host: str
+    database: str
+    name: str
+    schema: str
+
+    def get_oddrn(self):
+        generator = RedshiftGenerator(
+            host_settings=self.host,
+            databases=self.database,
+            schemas=self.schema,
+            tables=self.name,
+        )
+
+        return generator.get_oddrn_by_path("tables")
 
 
 @dataclass
