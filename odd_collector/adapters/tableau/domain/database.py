@@ -5,7 +5,7 @@ from typing import ClassVar, Optional, Union
 from funcy import first, get_lax
 
 from .connection_params import ConnectionParams
-from .table import EmbeddedTable, SnowflakeTable
+from .table import EmbeddedTable, RedshiftTable, SnowflakeTable
 
 
 @dataclass
@@ -85,4 +85,19 @@ class SnowflakeDatabase(ExternalDatabase):
             name=data["name"],
             connection_type="snowflake",
             schema=data["schema"],
+        )
+
+
+@dataclass
+class RedshiftDatabase(ExternalDatabase):
+    _CONNECTION_TYPE: ClassVar[tuple[str]] = ("redshift",)
+
+    def create_table(self, **data) -> RedshiftTable:
+        return RedshiftTable(
+            id=data["id"],
+            host=self.connection_params.host,
+            database=self.connection_params.name,
+            name=data["name"],
+            schema=data["schema"],
+            connection_type="redshift",
         )

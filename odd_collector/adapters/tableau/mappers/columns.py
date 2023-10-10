@@ -15,7 +15,7 @@ extract_metadata = partial(
 )
 
 
-def map_column(oddrn_generator: TableauGenerator, column: Column) -> DataSetField:
+def map_column(generator: TableauGenerator, column: Column) -> DataSetField:
     column_name = column.name
     column_type = column.remote_type
 
@@ -23,7 +23,7 @@ def map_column(oddrn_generator: TableauGenerator, column: Column) -> DataSetFiel
     metadata = {}
     try:
         return DataSetField(
-            oddrn=oddrn_generator.get_oddrn_by_path("columns", column_name),
+            oddrn=generator.get_oddrn_by_path("columns", column_name),
             name=column_name,
             metadata=extract_metadata(metadata=metadata),
             owner=None,

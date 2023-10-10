@@ -6,12 +6,14 @@ import pytz
 from odd_collector_sdk.errors import MappingDataError
 from odd_models.models import DataConsumer, DataEntity, DataEntityType
 
+from odd_collector.adapters.tableau.logger import log_entity
+
 from ..domain.sheet import Sheet
 from . import DATA_CONSUMER_EXCLUDED_KEYS, DATA_CONSUMER_SCHEMA, TABLEAU_DATETIME_FORMAT
 from .metadata import extract_metadata
 
 
-def __map_date(date: Optional[str] = None) -> Optional[str]:
+def map_data(date: Optional[str] = None) -> Optional[str]:
     if not date:
         return None
 
@@ -29,6 +31,7 @@ extract_metadata = partial(
 )
 
 
+@log_entity
 def map_sheet(oddrn_generator, sheet: Sheet) -> DataEntity:
     """
     Args:
@@ -47,8 +50,8 @@ def map_sheet(oddrn_generator, sheet: Sheet) -> DataEntity:
             name=sheet.name,
             owner=sheet.owner,
             metadata=extract_metadata(metadata={}),
-            created_at=__map_date(sheet.created),
-            updated_at=__map_date(sheet.updated),
+            created_at=map_data(sheet.created),
+            updated_at=map_data(sheet.updated),
             type=DataEntityType.DASHBOARD,
             data_consumer=DataConsumer(inputs=[]),
         )

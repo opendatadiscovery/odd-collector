@@ -38,9 +38,10 @@ def map_table(generator: TableauGenerator, table: EmbeddedTable) -> DataEntity:
         raise MappingDataError(f"Mapping table {table.name} failed") from e
 
 
-def create_dataset(oddrn_generator, table: EmbeddedTable):
-    parent_oddrn = oddrn_generator.get_oddrn_by_path("tables")
-    columns = [map_column(oddrn_generator, column) for column in table.columns]
+def create_dataset(generator: TableauGenerator, table: EmbeddedTable):
+    parent_oddrn = generator.get_oddrn_by_path("tables")
+
+    columns = [map_column(generator, column) for column in table.columns]
 
     return DataSet(
         parent_oddrn=parent_oddrn,

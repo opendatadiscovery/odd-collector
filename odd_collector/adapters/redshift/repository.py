@@ -3,6 +3,7 @@ from typing import Any, Optional, Union
 
 from psycopg2 import sql
 from psycopg2.extensions import AsIs
+from psycopg2.sql import Composed
 
 from odd_collector.adapters.redshift.connector import RedshiftConnector
 from odd_collector.adapters.redshift.logger import logger
@@ -80,7 +81,7 @@ class RedshiftRepository(AbstractRepository):
             "schemas": sql.Literal(AsIs(", ".join(f"'{s}'" for s in schemas))),
         }
 
-    def metadata_schemas_base_query(self, schemas: Optional[list[str]]):
+    def metadata_schemas_base_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -95,7 +96,7 @@ class RedshiftRepository(AbstractRepository):
         """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_schemas_redshift_query(self, schemas: Optional[list[str]]):
+    def metadata_schemas_redshift_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -111,7 +112,7 @@ class RedshiftRepository(AbstractRepository):
     """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_schemas_external_query(self, schemas: Optional[list[str]]):
+    def metadata_schemas_external_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -127,7 +128,7 @@ class RedshiftRepository(AbstractRepository):
         """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_tables_base_query(self, schemas: Optional[list[str]]):
+    def metadata_tables_base_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -143,7 +144,7 @@ class RedshiftRepository(AbstractRepository):
         """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_tables_all_query(self, schemas: Optional[list[str]]):
+    def metadata_tables_all_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -169,7 +170,7 @@ class RedshiftRepository(AbstractRepository):
             """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_tables_redshift_query(self, schemas: Optional[list[str]]):
+    def metadata_tables_redshift_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -185,7 +186,7 @@ class RedshiftRepository(AbstractRepository):
     """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_tables_external_query(self, schemas: Optional[list[str]]):
+    def metadata_tables_external_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -203,7 +204,7 @@ class RedshiftRepository(AbstractRepository):
         """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_tables_info_query(self, schemas: Optional[list[str]]):
+    def metadata_tables_info_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -222,7 +223,7 @@ class RedshiftRepository(AbstractRepository):
             """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_columns_base_query(self, schemas: Optional[list[str]]):
+    def metadata_columns_base_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -245,7 +246,7 @@ class RedshiftRepository(AbstractRepository):
             """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_columns_redshift_query(self, schemas: Optional[list[str]]):
+    def metadata_columns_redshift_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -263,7 +264,7 @@ class RedshiftRepository(AbstractRepository):
             """
         ).format(**self.filter_schemas_params(schemas))
 
-    def metadata_columns_external_query(self, schemas: Optional[list[str]]):
+    def metadata_columns_external_query(self, schemas: Optional[list[str]]) -> Composed:
         return sql.SQL(
             """
             select
@@ -280,7 +281,7 @@ class RedshiftRepository(AbstractRepository):
         ).format(**self.filter_schemas_params(schemas))
 
     @property
-    def primary_keys_query(self):
+    def primary_keys_query(self) -> str:
         return """
                 select 
                     kcu.table_schema,

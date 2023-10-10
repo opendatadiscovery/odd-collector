@@ -1,7 +1,11 @@
 from dataclasses import dataclass, field
 from typing import Optional, Union
 
-from oddrn_generator import BigQueryStorageGenerator, SnowflakeGenerator
+from oddrn_generator import (
+    BigQueryStorageGenerator,
+    RedshiftGenerator,
+    SnowflakeGenerator,
+)
 
 from .column import Column
 
@@ -24,6 +28,10 @@ class EmbeddedTable:
 
     @classmethod
     def from_dict(cls, **kwargs):
+        columns = [
+            Column.from_dict(**response) for response in kwargs.get("columns", [])
+        ]
+
         return cls(
             id=kwargs["id"],
             name=kwargs["name"],
@@ -31,9 +39,7 @@ class EmbeddedTable:
             db_name=kwargs["db_name"],
             connection_type=kwargs["connection_type"],
             schema=kwargs["schema"],
-            columns=[
-                Column.from_dict(**response) for response in kwargs.get("columns", [])
-            ],
+            columns=columns,
             owners=kwargs.get("owners"),
             description=kwargs.get("description"),
         )
@@ -73,6 +79,24 @@ class SnowflakeTable(ExternalTable):
             tables=self.name.upper(),
         )
         return generator.get_oddrn_by_path("databases")
+
+
+@dataclass
+class RedshiftTable(ExternalTable):
+    host: str
+    database: str
+    name: str
+    schema: str
+
+    def get_oddrn(self):
+        generator = RedshiftGenerator(
+            host_settings=self.host,
+            databases=self.database,
+            schemas=self.schema,
+            tables=self.name,
+        )
+
+        return generator.get_oddrn_by_path("tables")
 
 
 @dataclass
