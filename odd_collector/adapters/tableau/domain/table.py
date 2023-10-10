@@ -28,6 +28,10 @@ class EmbeddedTable:
 
     @classmethod
     def from_dict(cls, **kwargs):
+        columns = [
+            Column.from_dict(**response) for response in kwargs.get("columns", [])
+        ]
+
         return cls(
             id=kwargs["id"],
             name=kwargs["name"],
@@ -35,9 +39,7 @@ class EmbeddedTable:
             db_name=kwargs["db_name"],
             connection_type=kwargs["connection_type"],
             schema=kwargs["schema"],
-            columns=[
-                Column.from_dict(**response) for response in kwargs.get("columns", [])
-            ],
+            columns=columns,
             owners=kwargs.get("owners"),
             description=kwargs.get("description"),
         )

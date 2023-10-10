@@ -1,3 +1,5 @@
+from typing import Optional
+
 from odd_models.models import Type
 
 __TYPES_SQL_TO_ODD: dict[str, Type] = {
@@ -40,5 +42,7 @@ __TYPES_SQL_TO_ODD: dict[str, Type] = {
 }
 
 
-def map_type(tableau_type: str, default: Type = Type.TYPE_UNKNOWN):
+def map_type(tableau_type: Optional[str], default: Type = Type.TYPE_UNKNOWN):
+    if tableau_type is None:
+        return default
     return __TYPES_SQL_TO_ODD.get(tableau_type, default)
