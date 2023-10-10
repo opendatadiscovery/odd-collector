@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pytz
 from odd_models.models import DataEntity, DataEntityType, DataSet
 from oddrn_generator import RedshiftGenerator
@@ -5,7 +7,7 @@ from oddrn_generator import RedshiftGenerator
 from ..logger import logger
 from . import _data_set_metadata_excluded_keys_info, _data_set_metadata_schema_url_info
 from .columns import map_column
-from .metadata import _append_metadata_extension, MetadataTable
+from .metadata import MetadataTable, _append_metadata_extension
 from .views import map_view
 
 
@@ -88,8 +90,16 @@ def map_tables(
     for table, data_entity in data_entities.values():
         for dependency in table.dependencies:
             if dependency.uid in data_entities and data_entity.data_transformer:
+                generator = deepcopy(generator)
+                generator.set_oddrn_paths(
+                    **{
+                        "databases": dependency.database,
+                        "schemas": dependency.schema,
+                        "tables": dependency.name,
+                    }
+                )
                 data_entity.data_transformer.inputs.append(
-                    data_entities[dependency.uid][1].oddrn
+                    generator.get_oddrn_by_path("tables")
                 )
 
     return [entity for _, entity in data_entities.values()]

@@ -1,33 +1,34 @@
 from dataclasses import asdict, dataclass, field
 
-from sql_metadata import Parser
-
-from . import _schema_excluded_keys
 from funcy import omit
 from odd_collector_sdk.utils.metadata import HasMetadata
 from odd_models.models import MetadataExtension
+from sqllineage.runner import LineageRunner
 
 from odd_collector.adapters.redshift.mappers.models import (
     MetadataColumnBase,
     MetadataColumnExternal,
     MetadataColumnRedshift,
+    MetadataSchemaBase,
+    MetadataSchemaExternal,
+    MetadataSchemaRedshift,
     MetadataTableAll,
     MetadataTableBase,
     MetadataTableExternal,
     MetadataTableInfo,
     MetadataTableRedshift,
     RedshiftAdapterMetadata,
-    MetadataSchemaBase,
-    MetadataSchemaExternal,
-    MetadataSchemaRedshift,
 )
+
 from ..logger import logger
+from . import _schema_excluded_keys
 
 
 @dataclass
 class Dependency:
     name: str
     schema: str
+    database: str = None
 
     @property
     def uid(self) -> str:
@@ -83,28 +84,37 @@ class MetadataTable:
             if not self.all.view_ddl:
                 return []
 
-            parsed = Parser(self.all.view_ddl.replace("(", "").replace(")", ""))
+            parsed = LineageRunner(sql=self.all.view_ddl, dialect="redshift")
             dependencies = []
 
-            for table in parsed.tables:
-                schema_name = table.split(".")
+            for table in parsed.source_tables:
+                schema_name = table.schema.raw_name.split(".")
+                name = table.raw_name
 
-                if len(schema_name) > 2:
+                if len(schema_name) == 1:
+                    schema = schema_name[0]
+                    dependencies.append(
+                        Dependency(
+                            name=name, schema=schema, database=self.database_name
+                        )
+                    )
+                elif len(schema_name) == 2:
+                    dbname, schema = schema_name
+                    dependencies.append(
+                        Dependency(name=name, schema=schema, database=dbname)
+                    )
+                else:
+                    logger.debug(self.all.view_ddl)
                     logger.warning(
-                        f"Couldn't parse schema and name from {table}. Must be in format <schema>.<table> or <table>."
+                        f"Couldn't get dependencies {table}. Wrong schema name format."
                     )
                     continue
 
-                if len(schema_name) == 2:
-                    schema, name = schema_name
-                else:
-                    schema, name = "public", schema_name[0]
-
-                dependencies.append(Dependency(name=name, schema=schema))
             return dependencies
         except Exception as e:
-            logger.exception(
-                f"Couldn't parse dependencies from {self.all.view_ddl}. {e}"
+            logger.debug(self.all.view_ddl)
+            logger.warning(
+                f"Couldn't parse dependencies {self.database_name}.{self.schema_name}.{self.table_name}. {e}"
             )
             return []
 

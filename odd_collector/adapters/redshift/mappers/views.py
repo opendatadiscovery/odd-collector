@@ -11,16 +11,18 @@ from odd_collector.adapters.redshift.mappers.metadata import MetadataTable
 
 
 def map_view(generator: RedshiftGenerator, view: MetadataTable) -> DataEntity:
-    generator.set_oddrn_paths(**{"schemas": view.schema_name, "views": view.table_name})
+    generator.set_oddrn_paths(
+        **{"schemas": view.schema_name, "tables": view.table_name}
+    )
     map_view_column = partial(
         map_column,
         oddrn_generator=generator,
         owner=view.all.table_owner,
-        parent_oddrn_path="views",
+        parent_oddrn_path="tables",
     )
 
     data_entity: DataEntity = DataEntity(
-        oddrn=generator.get_oddrn_by_path("views"),
+        oddrn=generator.get_oddrn_by_path("tables"),
         name=view.table_name,
         type=DataEntityType.VIEW,
         owner=view.all.table_owner,
