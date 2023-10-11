@@ -1,10 +1,12 @@
 from typing import List, Type
 
+from funcy import lpluck_attr
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntity, DataEntityList
 
 from odd_collector.adapters.druid.client import DruidBaseClient, DruidClient
 from odd_collector.adapters.druid.generator import DruidGenerator
+from odd_collector.adapters.druid.mappers.database import to_data_entity_group
 from odd_collector.adapters.druid.mappers.tables import table_to_data_entity
 from odd_collector.domain.plugin import DruidPlugin
 
@@ -23,9 +25,17 @@ class Adapter(AbstractAdapter):
         return self.__oddrn_generator.get_data_source_oddrn()
 
     async def get_data_entity_list(self) -> DataEntityList:
+        # Get data entities
+        tables_entities = await self.get_data_entities()
+
+        # Create entity group
+        oddrns = lpluck_attr("oddrn", tables_entities)
+        database_entity = to_data_entity_group(self.__oddrn_generator, "druid", oddrns)
+
+        # Return
         return DataEntityList(
             data_source_oddrn=self.get_data_source_oddrn(),
-            items=(await self.get_data_entities()),
+            items=tables_entities + [database_entity],
         )
 
     async def get_data_entities(self) -> List[DataEntity]:
