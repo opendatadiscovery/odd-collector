@@ -12,7 +12,6 @@ class Client:
             username, password = config.username, config.password.get_secret_value()
             auth = (username, password)
 
-
         self._os = OpenSearch(
             hosts=[f"{config.host}:{config.port}"],
             http_auth=auth,
