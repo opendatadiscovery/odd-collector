@@ -336,11 +336,11 @@ class CKANPlugin(WithHost, WithPort):
 class OpensearchPlugin(WithHost):
     type: Literal["opensearch"]
     host: str
-    port: int
-    http_compress: bool = True
-    use_ssl: bool = True
-    username: str
-    password: SecretStr
+    port: Optional[int] = 443
+    http_compress: Optional[bool] = True
+    use_ssl: Optional[bool] = True
+    username: Optional[str]
+    password: Optional[SecretStr]
     verify_certs: Optional[bool] = None
     ca_certs: Optional[str] = None
 

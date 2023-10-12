@@ -7,23 +7,13 @@ from odd_collector.domain.plugin import OpensearchPlugin
 
 class Client:
     def __init__(self, config: OpensearchPlugin):
-        username, password = config.username, config.password.get_secret_value()
-        if username and password:
-            self._os = OpenSearch(
-                hosts=[f"{config.host}:{config.port}"],
-                basic_auth=(username, password),
-                verify_certs=config.verify_certs,
-                ca_certs=config.ca_certs,
-                use_ssl=config.use_ssl,
-            )
-        else:
-            self._os = OpenSearch(
-                hosts=[f"{config.host}:{config.port}"],
-                basic_auth=(username, password),
-                verify_certs=config.verify_certs,
-                ca_certs=config.ca_certs,
-                use_ssl=config.use_ssl,
-            )
+        self._os = OpenSearch(
+            hosts=[f"{config.host}:{config.port}"],
+            basic_auth=(config.username, config.password.get_secret_value()),
+            verify_certs=config.verify_certs,
+            ca_certs=config.ca_certs,
+            use_ssl=config.use_ssl,
+        )
         assert self._os.ping()
 
     def get_indices(self, index: Optional[str] = None, h=None) -> list:
