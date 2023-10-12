@@ -333,6 +333,18 @@ class CKANPlugin(WithHost, WithPort):
     token: Optional[SecretStr] = None
 
 
+class OpensearchPlugin(WithHost):
+    type: Literal["opensearch"]
+    host: str
+    port: Optional[int] = 443
+    http_compress: Optional[bool] = True
+    use_ssl: Optional[bool] = True
+    username: Optional[str]
+    password: Optional[SecretStr]
+    verify_certs: Optional[bool] = None
+    ca_certs: Optional[str] = None
+
+
 PLUGIN_FACTORY: PluginFactory = {
     "postgresql": PostgreSQLPlugin,
     "mysql": MySQLPlugin,
@@ -374,4 +386,5 @@ PLUGIN_FACTORY: PluginFactory = {
     "scylladb": ScyllaDBPlugin,
     "duckdb": DuckDBPlugin,
     "ckan": CKANPlugin,
+    "opensearch": OpensearchPlugin,
 }

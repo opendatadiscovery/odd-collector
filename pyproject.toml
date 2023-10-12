@@ -54,6 +54,7 @@ odd-models = "^2.0.32"
 couchbase = "^4.1.3"
 pyhive = { version = "^0.6.5", extras = ["hive"] }
 duckdb = "^0.8.0"
+opensearch-py = "^2.3.2"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.0.4"
