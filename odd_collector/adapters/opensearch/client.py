@@ -7,9 +7,15 @@ from odd_collector.domain.plugin import OpensearchPlugin
 
 class Client:
     def __init__(self, config: OpensearchPlugin):
+        auth = None
+        if config.username and config.password:
+            username, password = config.username, config.password.get_secret_value()
+            auth = (username, password)
+
+
         self._os = OpenSearch(
             hosts=[f"{config.host}:{config.port}"],
-            basic_auth=(config.username, config.password.get_secret_value()),
+            http_auth=auth,
             verify_certs=config.verify_certs,
             ca_certs=config.ca_certs,
             use_ssl=config.use_ssl,
