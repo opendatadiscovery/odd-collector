@@ -6,6 +6,8 @@ from ..logger import logger
 from .column_type import (
     Array,
     BasicType,
+    DateTime,
+    DateTime64,
     Field,
     Map,
     NamedTuple,
@@ -23,13 +25,23 @@ Tuple(String, Boolean).
 LARL does not support the different types of Tuples presented in filed_types.lark
 """
 
-
 parser = Lark.open("filed_types.lark", rel_to=__file__, parser="earley", start="type")
 
 
 def traverse_tree(node) -> Union[ParseType, str, Field, None]:
     logger.debug(f"Node: {node}")
+
     if isinstance(node, Tree):
+        if node.data == "date":
+            return BasicType("Date")
+        if node.data == "date32":
+            return BasicType("Date32")
+        if node.data == "datetime":
+            return DateTime("DateTime", node.children[0].value)
+        if node.data == "datetime64":
+            return DateTime64(
+                "DateTime64", node.children[0].value, node.children[2].value
+            )
         if node.data == "array":
             if len(node.children) != 1:
                 raise StructureError(

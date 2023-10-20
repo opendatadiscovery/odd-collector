@@ -2,6 +2,7 @@ from odd_models.models import Type
 
 TYPES_SQL_TO_ODD = {
     "Date": Type.TYPE_DATETIME,
+    "Date32": Type.TYPE_DATETIME,
     "DateTime": Type.TYPE_DATETIME,
     "DateTime64": Type.TYPE_DATETIME,
     "String": Type.TYPE_STRING,
