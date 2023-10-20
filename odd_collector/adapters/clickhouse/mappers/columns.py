@@ -5,8 +5,12 @@ from oddrn_generator import ClickHouseGenerator
 
 from ..domain import Column
 from ..grammar_parser.column_type import (
+    AggregateFunction,
     Array,
     BasicType,
+    DateTime,
+    DateTime64,
+    LowCardinality,
     Map,
     NamedTuple,
     Nested,
@@ -19,7 +23,7 @@ from .types import TYPES_SQL_TO_ODD
 
 
 def build_dataset_fields(
-    columns: List[Column], oddrn_generator: ClickHouseGenerator, table_oddrn_path: str
+    columns: list[Column], oddrn_generator: ClickHouseGenerator, table_oddrn_path: str
 ) -> List[DataSetField]:
     generated_dataset_fields = []
     ds_fields_oddrn = {}
@@ -143,14 +147,17 @@ def build_dataset_fields(
     return generated_dataset_fields
 
 
-def type_to_oddrn_type(column_type):
+def type_to_oddrn_type(column_type: ParseType) -> Type:
     if isinstance(column_type, Array):
         return Type.TYPE_LIST
     elif isinstance(column_type, Nested):
         return Type.TYPE_STRUCT
     elif isinstance(column_type, Map):
         return Type.TYPE_MAP
-    elif isinstance(column_type, BasicType):
+    elif isinstance(
+        column_type,
+        (BasicType, DateTime, DateTime64, LowCardinality, AggregateFunction),
+    ):
         return TYPES_SQL_TO_ODD.get(column_type.type_name, Type.TYPE_UNKNOWN)
     elif isinstance(column_type, str):
         return TYPES_SQL_TO_ODD.get(column_type, Type.TYPE_UNKNOWN)

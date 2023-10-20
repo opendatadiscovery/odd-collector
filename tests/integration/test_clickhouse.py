@@ -21,7 +21,17 @@ def find_by_type(
 
 create_databse = "CREATE DATABASE IF NOT EXISTS my_database"
 create_table = """
-CREATE TABLE my_database.test (a Date, b UInt64, c Nested(d String, e String, f Nested(g String))) ENGINE = MergeTree ORDER BY (a, b)
+CREATE TABLE my_database.test (
+    a Date,
+    b UInt64, 
+    c Nested(d String, e String, f Nested(g String)),
+    d Date32,
+    e DateTime('UTC'),
+    f DateTime64(3, 'UTC'),
+    c_uuid UUID,
+    c_agg AggregateFunction(uniq, UInt64),
+    c_low_cardinality LowCardinality(String)
+) ENGINE = MergeTree ORDER BY (a, b)
 """
 
 
@@ -63,4 +73,6 @@ def test_clickhouse():
         tables = find_by_type(data_entities, DataEntityType.TABLE)
         assert len(tables) == 1
         table = tables[0]
-        assert len(table.dataset.field_list) == 7
+        assert len(table.dataset.field_list) == 13
+
+        assert data_entities.json()

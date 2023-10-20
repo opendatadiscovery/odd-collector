@@ -1,10 +1,16 @@
 ?start: type
 
 ?type: nested
+    | aggregate
     | array
     | named_tuple
     | tuple
     | map
+    | low_cardinality
+    | date
+    | date32
+    | datetime
+    | datetime64
     | BASIC_TYPE
 
 BASIC_TYPE: "UInt64"
@@ -20,11 +26,21 @@ BASIC_TYPE: "UInt64"
           | "Nullable"
           | "UUID"
           | "Enum"
-          | "Low Cardinality"
           | "Bool"
-          | "Date"
 
 array: "Array" "(" type ")"
+
+aggregate: "AggregateFunction" /\((.*)\)/
+
+params: (", " BASIC_TYPE)*
+low_cardinality: "LowCardinality" /\((.*)\)/
+
+
+uniq: "uniq"
+anyif: "anyIf"
+quantiles: "quantiles" "(" NUMBER "," WS NUMBER ")"
+
+functions: uniq | anyif | quantiles
 
 tuple: "Tuple" "(" type ("," WS type)* ")"
 
@@ -33,11 +49,22 @@ named_tuple: "Tuple" "(" field ("," WS field)* ")"
 nested: "Nested" "(" field ("," WS field)* ")"
 
 map: "Map" "(" type "," WS type ")"
-
 field: FIELD_NAME WS type
 
+date:  "Date"
+
+date32: "Date32"
+
+datetime: "DateTime" "(" TIMEZONE ")"
+
+datetime64: "DateTime64" "(" DIGIT "," WS TIMEZONE ")"
+
 FIELD_NAME: (LETTER | "_") (LETTER | "_" | DIGIT | "-")*
+TIMEZONE: "'" (LETTER | "/" )* "'"
+fn_args: /.*/
 
 %import common.WS
 %import common.LETTER
+%import common.NUMBER
 %import common.DIGIT
+%import common.WORD
