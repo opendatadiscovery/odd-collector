@@ -19,6 +19,30 @@ class BasicType(ParseType):
         return f"BasicType({self.type_name})"
 
 
+class AggregateFunction(ParseType):
+    def __init__(self, type_name: str, params: str):
+        self.type_name = type_name
+        self.params = params
+
+    def to_clickhouse_type(self) -> str:
+        return f"{self.type_name}{self.params})"
+
+    def __repr__(self) -> str:
+        return f"AggregateFunction({self.type_name})"
+
+
+class LowCardinality(ParseType):
+    def __init__(self, type_name: str, params: str):
+        self.type_name = type_name
+        self.params = params
+
+    def to_clickhouse_type(self) -> str:
+        return f"{self.type_name}{self.params})"
+
+    def __repr__(self) -> str:
+        return f"LowCardinality({self.type_name})"
+
+
 class DateTime(ParseType):
     def __init__(self, type_name: str, time_zone: str):
         self.type_name = type_name

@@ -5,10 +5,12 @@ from oddrn_generator import ClickHouseGenerator
 
 from ..domain import Column
 from ..grammar_parser.column_type import (
+    AggregateFunction,
     Array,
     BasicType,
     DateTime,
     DateTime64,
+    LowCardinality,
     Map,
     NamedTuple,
     Nested,
@@ -152,7 +154,10 @@ def type_to_oddrn_type(column_type: ParseType) -> Type:
         return Type.TYPE_STRUCT
     elif isinstance(column_type, Map):
         return Type.TYPE_MAP
-    elif isinstance(column_type, (BasicType, DateTime, DateTime64)):
+    elif isinstance(
+        column_type,
+        (BasicType, DateTime, DateTime64, LowCardinality, AggregateFunction),
+    ):
         return TYPES_SQL_TO_ODD.get(column_type.type_name, Type.TYPE_UNKNOWN)
     elif isinstance(column_type, str):
         return TYPES_SQL_TO_ODD.get(column_type, Type.TYPE_UNKNOWN)

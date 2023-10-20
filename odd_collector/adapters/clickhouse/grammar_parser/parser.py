@@ -4,11 +4,13 @@ from lark import Lark, Token, Tree
 
 from ..logger import logger
 from .column_type import (
+    AggregateFunction,
     Array,
     BasicType,
     DateTime,
     DateTime64,
     Field,
+    LowCardinality,
     Map,
     NamedTuple,
     Nested,
@@ -32,6 +34,10 @@ def traverse_tree(node) -> Union[ParseType, str, Field, None]:
     logger.debug(f"Node: {node}")
 
     if isinstance(node, Tree):
+        if node.data == "aggregate":
+            return AggregateFunction("AggregateFunction", node.children[0].value)
+        if node.data == "low_cardinality":
+            return LowCardinality("LowCardinality", node.children[0].value)
         if node.data == "date":
             return BasicType("Date")
         if node.data == "date32":

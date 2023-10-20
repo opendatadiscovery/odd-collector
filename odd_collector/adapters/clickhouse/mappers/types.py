@@ -26,4 +26,6 @@ TYPES_SQL_TO_ODD = {
     "Map": Type.TYPE_MAP,
     "Tuple": Type.TYPE_STRUCT,
     "Bool": Type.TYPE_BOOLEAN,
+    "LowCardinality": Type.TYPE_UNION,
+    "AggregateFunction": Type.TYPE_UNKNOWN,
 }
