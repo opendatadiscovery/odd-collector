@@ -77,24 +77,29 @@ ON  C.table_catalog = PK.table_catalog
 AND C.table_schema = PK.table_schema
 AND C.table_name = PK.table_name
 AND C.column_name = PK.column_name
-ORDER BY table_catalog, table_schema, table_name, ordinal_position
+ORDER BY C.table_catalog, C.table_schema, C.table_name, C.ordinal_position
 """
 
 VIEWS_QUERY: str = """
-    select
-        tvu.view_catalog as view_catalog,
-        tvu.view_schema as view_schema,
-        tvu.view_name as view_name,
-        tvu.table_catalog as table_catalog,
-        tvu.table_schema as table_schema,
-        tvu.table_name as table_name,
-        tb.table_type as table_type
-    from information_schema.view_table_usage tvu
-    inner join information_schema.tables tb
-            on tvu.table_catalog = tb.table_catalog
-            and tvu.table_schema = tb.table_schema
-            and tvu.table_name = tb.table_name
-    order by view_catalog, view_schema, view_name, table_catalog, table_schema, table_name
+select
+    tvu.view_catalog as view_catalog,
+    tvu.view_schema as view_schema,
+    tvu.view_name as view_name,
+    tvu.table_catalog as table_catalog,
+    tvu.table_schema as table_schema,
+    tvu.table_name as table_name,
+    tb.table_type as table_type
+from information_schema.view_table_usage tvu
+inner join information_schema.tables tb
+        on tvu.table_catalog = tb.table_catalog
+        and tvu.table_schema = tb.table_schema
+        and tvu.table_name = tb.table_name
+order by tvu.view_catalog,
+         tvu.view_schema,
+         tvu.view_name,
+         tvu.table_catalog,
+         tvu.table_schema,
+         tvu.table_name
 """
 
 

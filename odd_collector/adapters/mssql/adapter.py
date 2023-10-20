@@ -1,12 +1,10 @@
 from collections import defaultdict
-from typing import Dict, Generator, Set
 
 from funcy import lpluck_attr
 from odd_collector_sdk.domain.adapter import BaseAdapter
 from odd_models.models import DataEntityList
 from oddrn_generator import Generator, MssqlGenerator
 
-from odd_collector.adapters.mssql.mappers.views import map_view
 from odd_collector.domain.plugin import MSSQLPlugin
 
 from .mappers.database import map_database
@@ -45,7 +43,7 @@ class Adapter(BaseAdapter):
 
         with self.repository as repository:
             columns = repository.get_columns()
-            schemas: Dict[str, Set[str]] = defaultdict(set)
+            schemas: dict[str, set[str]] = defaultdict(set)
 
             tables_data_entities = []
             for table in repository.get_tables():
