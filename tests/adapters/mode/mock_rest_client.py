@@ -487,7 +487,7 @@ class TestRestClient:
             },
         }
 
-    async def fetch_async_response(self, session, request_args: RequestArgs):
+    async def fetch(self, session, request_args: RequestArgs):
         response = None
         if "/api/account/data_sources" in request_args.url:
             response = self.data_sources
