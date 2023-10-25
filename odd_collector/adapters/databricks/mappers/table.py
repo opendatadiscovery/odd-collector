@@ -34,7 +34,7 @@ def get_column(table_info: dict, column_raw: dict) -> DatabricksColumn:
         name=column_raw.pop("name"),
         type=column_raw.get("type_text"),
         is_nullable=column_raw.get("nullable"),
-        odd_metadata=column_raw,
+        metadata=column_raw,
     )
     return column
 

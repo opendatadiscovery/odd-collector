@@ -107,8 +107,8 @@ def test_data_base_service(data_entity_list: odd_models.DataEntityList):
     other_schema = find_by_name(data_entity_list, "other_schema")
 
     assert database is not None
-    public_schema is not None
-    other_schema is not None
+    assert public_schema is not None
+    assert other_schema is not None
 
     assert database.data_entity_group is not None
     assert len(database.data_entity_group.entities_list) == 2
